@@ -1,9 +1,13 @@
 package com.softlines.fastpos.jwtsecurity.securitydetails;
 
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class CustomJWTuserDetails implements UserDetails {
@@ -17,7 +21,15 @@ public class CustomJWTuserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        ArrayList<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+        for (Role role:
+             jwTuser.getRoles()) {
+            for (Privilege privilege:
+                 role.getPrivileges()) {
+                grantedAuthorities.add(new SimpleGrantedAuthority(privilege.getName()));
+            }
+        }
+        return grantedAuthorities;
     }
 
     @Override
@@ -47,6 +59,6 @@ public class CustomJWTuserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return jwTuser.isEnabled();
     }
 }

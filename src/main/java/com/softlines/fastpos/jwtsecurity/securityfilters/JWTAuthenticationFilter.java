@@ -54,7 +54,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             HttpServletResponse res,
                                             FilterChain chain,
                                             Authentication auth) {
-
         String token = JWT.create()
                 .withSubject(auth.getName())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
