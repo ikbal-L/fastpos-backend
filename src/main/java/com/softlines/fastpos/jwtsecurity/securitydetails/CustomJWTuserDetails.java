@@ -1,5 +1,6 @@
 package com.softlines.fastpos.jwtsecurity.securitydetails;
 
+import com.softlines.fastpos.jwtsecurity.securitydomain.DbInfo;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
@@ -60,5 +61,9 @@ public class CustomJWTuserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return jwTuser.isEnabled();
+    }
+
+    public DbInfo getDbInfo() {
+        return jwTuser.getDbInfo();
     }
 }

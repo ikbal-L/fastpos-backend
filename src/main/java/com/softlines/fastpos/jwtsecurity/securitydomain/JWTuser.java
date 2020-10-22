@@ -35,7 +35,7 @@ public class JWTuser {
     @Column(name = "token_expired")
     private boolean tokenExpired;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(targetEntity = Role.class, fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(
@@ -44,10 +44,19 @@ public class JWTuser {
                     name = "role_id", referencedColumnName = "id"))
     private Collection<Role> roles;
 
+    @OneToOne(targetEntity = DbInfo.class, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_dbinfo",
+            joinColumns = @JoinColumn(
+                    name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "dbinfo_id", referencedColumnName = "id"))
+    private DbInfo dbInfo;
+
     public JWTuser() {
     }
 
-    public JWTuser(long id, String username, String password, String pinCode, String firstName, String lastName, String email, boolean enabled, boolean tokenExpired, Collection<Role> roles) {
+    public JWTuser(long id, String username, String password, String pinCode, String firstName, String lastName, String email, boolean enabled, boolean tokenExpired, Collection<Role> roles, DbInfo dbInfo) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -58,6 +67,7 @@ public class JWTuser {
         this.enabled = enabled;
         this.tokenExpired = tokenExpired;
         this.roles = roles;
+        this.dbInfo = dbInfo;
     }
 
     public long getId() {
@@ -138,5 +148,13 @@ public class JWTuser {
 
     public void setRoles(Collection<Role> roles) {
         this.roles = roles;
+    }
+
+    public DbInfo getDbInfo() {
+        return dbInfo;
+    }
+
+    public void setDbInfo(DbInfo dbInfo) {
+        this.dbInfo = dbInfo;
     }
 }

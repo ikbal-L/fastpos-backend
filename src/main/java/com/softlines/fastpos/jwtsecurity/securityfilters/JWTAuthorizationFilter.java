@@ -3,8 +3,15 @@ package com.softlines.fastpos.jwtsecurity.securityfilters;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
+import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -20,6 +27,7 @@ import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstant
 import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstants.TOKEN_PREFIX;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
+
 
     public JWTAuthorizationFilter(AuthenticationManager authManager) {
         super(authManager);
@@ -52,7 +60,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             String user = decoded.getSubject();
 
             if (user != null) {
-                return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                return new UsernamePasswordAuthenticationToken(user, decoded.getClaim("dbID").asLong(), new ArrayList<>());
             }
             return null;
         }
