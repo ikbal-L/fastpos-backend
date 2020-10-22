@@ -35,7 +35,7 @@ public class JWTuser {
     @Column(name = "token_expired")
     private boolean tokenExpired;
 
-    @ManyToMany(targetEntity = Role.class, fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(
@@ -44,7 +44,7 @@ public class JWTuser {
                     name = "role_id", referencedColumnName = "id"))
     private Collection<Role> roles;
 
-    @OneToOne(targetEntity = DbInfo.class, fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_dbinfo",
             joinColumns = @JoinColumn(

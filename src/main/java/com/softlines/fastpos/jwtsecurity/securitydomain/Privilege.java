@@ -13,16 +13,12 @@ public class Privilege {
     @Column(name = "name")
     private String name;
 
-    @ManyToMany(mappedBy = "privileges")
-    private Collection<Role> roles;
-
     public Privilege() {
     }
 
     public Privilege(Long id, String name, Collection<Role> roles) {
         this.id = id;
         this.name = name;
-        this.roles = roles;
     }
 
     public Privilege(String name) {
@@ -45,11 +41,4 @@ public class Privilege {
         this.name = name;
     }
 
-    public Collection<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Collection<Role> roles) {
-        this.roles = roles;
-    }
 }

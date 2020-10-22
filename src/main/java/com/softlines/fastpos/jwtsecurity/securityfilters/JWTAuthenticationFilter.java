@@ -57,14 +57,17 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             HttpServletResponse res,
                                             FilterChain chain,
                                             Authentication auth) {
-
-        String token = JWT.create()
-                .withSubject(auth.getName())
-                .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .withClaim("dbID", ((CustomJWTuserDetails)auth.getPrincipal()).getDbInfo().getId())
-                .sign(HMAC512(SECRET.getBytes()));
-
+        String token = createToken(auth.getName(), ((CustomJWTuserDetails)auth.getPrincipal()).getDbInfo().getId());
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+    }
+
+    private String createToken(String name, long dbID) {
+        String token = JWT.create()
+                .withSubject(name)
+                .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .withClaim("dbID", dbID)
+                .sign(HMAC512(SECRET.getBytes()));
+        return token;
     }
 
 

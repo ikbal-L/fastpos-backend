@@ -12,8 +12,6 @@ public class Role {
 
     @Column(name = "name")
     private String name;
-    @ManyToMany(mappedBy = "roles")
-    private Collection<JWTuser> users;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -30,7 +28,6 @@ public class Role {
     public Role(Long id, String name, Collection<JWTuser> users, Collection<Privilege> privileges) {
         this.id = id;
         this.name = name;
-        this.users = users;
         this.privileges = privileges;
     }
 
@@ -52,14 +49,6 @@ public class Role {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Collection<JWTuser> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Collection<JWTuser> users) {
-        this.users = users;
     }
 
     public Collection<Privilege> getPrivileges() {
