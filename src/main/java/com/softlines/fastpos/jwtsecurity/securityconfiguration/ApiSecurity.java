@@ -5,7 +5,6 @@ import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
 import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
-import org.apache.catalina.Group;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.security.core.Authentication;
@@ -21,6 +20,8 @@ public class ApiSecurity {
     JWTuserRepository jwTuserRepository;
 
     ArrayList<GrantedAuthority> grantedAuthorities;
+
+    ArrayList<String> roles;
 
     public  boolean checkGrants(Authentication auth, String privilege){
 
@@ -40,11 +41,22 @@ public class ApiSecurity {
         CustomContextHolder.clear();
         CustomContextHolder.setId((Long)auth.getCredentials());
 
-        //return true;
         return grantedAuthorities.contains(new SimpleGrantedAuthority(privilege));
     }
 
-    LocalContainerEntityManagerFactoryBean bb(){
-        return null;
+    public boolean checkRoles(Authentication auth, String role) {
+
+        Assert.notNull(auth, "Authentication is null");
+        Assert.notNull(auth, "privilege is null");
+        Assert.isTrue(auth.isAuthenticated(), "User Not Authenticated");
+
+        roles = new ArrayList<>();
+        JWTuser jwTuser = jwTuserRepository.findByUsername(auth.getName());
+
+        for (Role userRole:
+                jwTuser.getRoles()) {
+            roles.add(userRole.getName());
+        }
+        return roles.contains(role);
     }
 }

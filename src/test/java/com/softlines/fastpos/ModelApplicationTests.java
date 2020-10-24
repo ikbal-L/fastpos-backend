@@ -1,5 +1,6 @@
 package com.softlines.fastpos;
 
+import com.softlines.fastpos.jwtsecurity.jwtcontroller.JWTRestController;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
 import org.junit.jupiter.api.Test;
@@ -13,10 +14,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.softlines.fastpos.jwtsecurity.securityfilters.JWTAuthenticationFilter.createToken;
 import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstants.HEADER_STRING;
+import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstants.TOKEN_PREFIX;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -32,22 +38,22 @@ class ModelApplicationTests {
 	@Autowired
 	private JWTuserRepository jwTuserRepository;
 
+	@Autowired
+	private JWTRestController jwtRestController;
+
 	@Test
-	public void givenEmployees_whenGetEmployees_thenStatus200() throws Exception {
+	public void addingUsersGetsUsers() throws Exception {
 		createTestUser("TestAdmin");
 		createTestUser("TestUser");
 
 		mvc.perform(get("/dbtest/users").contentType(MediaType.APPLICATION_JSON)
-				.header(HEADER_STRING, "Bearer " +
-						"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImR" +
-						"iSUQiOjEsImV4cCI6MTYwMzQ0NTQxM30.wMP6NfPVlIN2CQ30o_uaEGfB-Ol" +
-						"iI6o2kfA35TTWmHHeO8FZpKz5_DLOb0LFhx7lVrkkAbC-eKx1SzqwXpufBA"))
+				.header(HEADER_STRING, TOKEN_PREFIX + createToken("TestAdmin")))
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(2))))
-				.andExpect(jsonPath("$[2].username", is("TestAdmin")))
-				.andExpect(jsonPath("$[3].username", is("TestUser")));
+				.andExpect(jsonPath("$[4].username", is("TestAdmin")))
+				.andExpect(jsonPath("$[5].username", is("TestUser")));
 
 		deleteTestUser("TestAdmin");
 		deleteTestUser("TestUser");
@@ -55,13 +61,8 @@ class ModelApplicationTests {
 
 	@Test
 	public void testUserPrivilege() throws Exception{
-
-
 		mvc.perform(get("/dbtest/")
-				.header(HEADER_STRING, "Bearer " +
-						"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiZGJJRCI6" +
-						"MiwiZXhwIjoxNjAzNDYxMzk4fQ.QQqCWHHdBBqmXRTus828hMIwHXxYRpN2GZhq3Y3dAAsD" +
-						"rYe6Tz8NCFiN87gdWEJSDwfuy0BH7cNQlTTPCx6HqA")
+				.header(HEADER_STRING, TOKEN_PREFIX + createToken("user"))
 				.contentType(MediaType.APPLICATION_JSON))
 				.andDo(print())
 				.andExpect(status().isForbidden());
@@ -73,10 +74,7 @@ class ModelApplicationTests {
 
 
 		mvc.perform(get("/dbtest/")
-				.header(HEADER_STRING, "Bearer " +
-						"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImRiSUQi" +
-						"OjEsImV4cCI6MTYwMzQ2Mjg4OX0.ARMehJRAY3CW56F3Kq07neiZp5Rds8aSusuJt" +
-						"lMTFBnrYP6NMtnwdbjyRNsuY0avTO51-01_OmCv74Tx08qPwQ")
+				.header(HEADER_STRING, TOKEN_PREFIX + createToken("admin"))
 				.contentType(MediaType.APPLICATION_JSON))
 				.andDo(print())
 				.andExpect(status().isOk())
@@ -88,17 +86,54 @@ class ModelApplicationTests {
 	public void testUsersNumber() throws Exception{
 
 		mvc.perform(get("/dbtest/users").contentType(MediaType.APPLICATION_JSON)
-				.header(HEADER_STRING, "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9." +
-						"eyJzdWIiOiJhZG1pbiIsImRiSUQiOjEsImV4cCI6MTYwMzQ0NTQxM30.wMP6NfPVl" +
-						"IN2CQ30o_uaEGfB-OliI6o2kfA35TTWmHHeO8FZpKz5_DLOb0LFhx7lVrkkAbC-eK" +
-						"x1SzqwXpufBA"))
+				.header(HEADER_STRING, TOKEN_PREFIX + createToken("admin")))
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$", hasSize(equalTo(2))))
+				.andExpect(jsonPath("$", hasSize(equalTo(4))))
 				.andExpect(jsonPath("$[0].username", is("admin")))
-				.andExpect(jsonPath("$[1].username", is("user")));
+				.andExpect(jsonPath("$[1].username", is("user")))
+				.andExpect(jsonPath("$[2].username", is("user3")))
+				.andExpect(jsonPath("$[3].username", is("user2")));
 
+	}
+
+	@Test
+	public void testWhenUserWithUserRoleDeleteAnotherUser() throws Exception{
+
+		mvc.perform(delete("/delete/user2").contentType(MediaType.APPLICATION_JSON)
+				.header(HEADER_STRING, TOKEN_PREFIX + createToken("user")))
+				.andDo(print())
+				.andExpect(status().isForbidden());
+
+	}
+
+	@Test
+	public void adminDeleteUserAndReturn200() throws Exception{
+
+		createTestUser("TestUser");
+		mvc.perform(delete("/delete/TestUser").contentType(MediaType.APPLICATION_JSON)
+				.header(HEADER_STRING, TOKEN_PREFIX + createToken("admin")))
+				.andDo(print())
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	public void getByIdWillReturnTheSameUserThen200() throws Exception{
+
+		mvc.perform(get("/getbyID/{id}", 1l).contentType(MediaType.APPLICATION_JSON)
+				.header(HEADER_STRING, TOKEN_PREFIX + createToken("admin")))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("username", is("admin")));
+	}
+
+	@Test
+	public void testController() throws Exception{
+
+		JWTuser jwTuser = jwtRestController.getById(1l);
+
+		assertEquals(jwTuser.getUsername(), jwTuserRepository.findById(1l).get().getUsername());
 	}
 
 	private void deleteTestUser(String name) {
@@ -107,10 +142,8 @@ class ModelApplicationTests {
 
 	private void createTestUser(String name) {
 		JWTuser jwTuser = new JWTuser();
-
 		jwTuser.setUsername(name);
 		jwTuser.setPassword("password");
-
 		jwTuserRepository.saveAndFlush(jwTuser);
 	}
 }

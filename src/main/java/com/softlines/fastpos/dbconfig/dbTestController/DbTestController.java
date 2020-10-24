@@ -1,7 +1,5 @@
 package com.softlines.fastpos.dbconfig.dbTestController;
 
-import com.softlines.fastpos.dbconfig.configuration.CustomContextHolder;
-import com.softlines.fastpos.domain.Product;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
 import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
@@ -9,20 +7,17 @@ import com.softlines.fastpos.jwtsecurity.securityrepository.PrivilegeRepository;
 import com.softlines.fastpos.jwtsecurity.securityrepository.RoleRepository;
 import com.softlines.fastpos.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.sql.DataSource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstants.HEADER_STRING;
 
 @RestController
 @RequestMapping("/dbtest")
 public class DbTestController {
-
-//    @Autowired
-//    @Qualifier("customRoutingDataSource")
-//    DataSource dataSource;
 
     @Autowired
     ProductRepository productRepository;
@@ -46,6 +41,7 @@ public class DbTestController {
 
     @GetMapping("/users")
     public List<JWTuser> getAllUsers() {
+
         return jwTuserRepository.findAll();
     }
 

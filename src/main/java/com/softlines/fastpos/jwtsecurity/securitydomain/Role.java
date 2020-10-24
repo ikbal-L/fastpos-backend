@@ -25,7 +25,7 @@ public class Role {
     public Role() {
     }
 
-    public Role(Long id, String name, Collection<JWTuser> users, Collection<Privilege> privileges) {
+    public Role(Long id, String name, Collection<Privilege> privileges) {
         this.id = id;
         this.name = name;
         this.privileges = privileges;

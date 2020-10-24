@@ -4,6 +4,8 @@ import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softlines.fastpos.jwtsecurity.securitydetails.CustomJWTuserDetails;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
+import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,6 +31,7 @@ import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstant
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private AuthenticationManager authenticationManager;
+    private static long dbID;
 
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
@@ -57,11 +60,12 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             HttpServletResponse res,
                                             FilterChain chain,
                                             Authentication auth) {
-        String token = createToken(auth.getName(), ((CustomJWTuserDetails)auth.getPrincipal()).getDbInfo().getId());
+        dbID = ((CustomJWTuserDetails)auth.getPrincipal()).getDbInfo().getId();
+        String token = createToken(auth.getName());
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
     }
 
-    private String createToken(String name, long dbID) {
+    public static String createToken(String name) {
         String token = JWT.create()
                 .withSubject(name)
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
