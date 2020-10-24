@@ -1,6 +1,6 @@
 package com.softlines.fastpos;
 
-import com.softlines.fastpos.jwtsecurity.jwtcontroller.JWTRestController;
+import com.softlines.fastpos.jwtsecurity.jwtcontroller.UserController;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ class ModelApplicationTests {
 	private JWTuserRepository jwTuserRepository;
 
 	@Autowired
-	private JWTRestController jwtRestController;
+	private UserController userController;
 
 	@Test
 	public void addingUsersGetsUsers() throws Exception {
@@ -131,7 +131,7 @@ class ModelApplicationTests {
 	@Test
 	public void testController() throws Exception{
 
-		JWTuser jwTuser = jwtRestController.getById(1l);
+		JWTuser jwTuser = userController.getById(1l);
 
 		assertEquals(jwTuser.getUsername(), jwTuserRepository.findById(1l).get().getUsername());
 	}
