@@ -18,4 +18,9 @@ public interface JWTuserRepository extends JpaRepository<JWTuser, Long> {
     @Transactional
     @Query(value= "DELETE FROM Users_roles WHERE user_id = ?1 AND role_id = ?2", nativeQuery = true)
     void removeRole(long userId, long roleId);
+
+    @Modifying
+    @Transactional
+    @Query(value= "DELETE FROM Users_roles WHERE user_id = ?1", nativeQuery = true)
+    void removeRoleConstraint(long userId);
 }

@@ -8,12 +8,12 @@ import com.softlines.fastpos.jwtsecurity.securityrepository.RoleRepository;
 import com.softlines.fastpos.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-
-import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstants.HEADER_STRING;
 
 @RestController
 @RequestMapping("/dbtest")
@@ -27,33 +27,11 @@ public class DbTestController {
     @Autowired
     PrivilegeRepository privilegeRepository;
 
-    @PreAuthorize("@apiAuth.checkGrants(authentication, 'WRITE_PRIVILEGE')")
+    @PreAuthorize("@apiAuth.checkGrants(authentication, 'READ_PRIVILEGE')")
     @GetMapping(value = "/", produces = "application/json")
     public String testDbRerouting(){
-
         String name = productRepository.findAll().get(0).getName();
         return name;
-
-    }
-
-    @Autowired
-    JWTuserRepository jwTuserRepository;
-
-    @GetMapping("/users")
-    public List<JWTuser> getAllUsers() {
-
-        return jwTuserRepository.findAll();
-    }
-
-    @GetMapping("/getbyID/{id}")
-    public JWTuser getAllUsers(@PathVariable long id) {
-        JWTuser jwTuser = jwTuserRepository.findById(id).get();
-        return jwTuser;
-    }
-
-    @GetMapping("/getRoleByID/{id}")
-    public Role role(@PathVariable long id){
-        return roleRepository.findById(id).get();
     }
 
 }

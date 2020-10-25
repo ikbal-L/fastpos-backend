@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
     @Query(value= "SELECT * FROM Role WHERE Role.name= ?1", nativeQuery = true)
@@ -19,6 +21,17 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 
     @Modifying
     @Transactional
-    @Query(value= "DELETE FROM securitydb.roles_privileges WHERE role_id = ?1 AND privilege_id = ?2", nativeQuery = true)
-    void removePrivilege(Long id, Long id1);
+    @Query(value= "DELETE FROM Roles_privileges WHERE role_id = ?1 AND privilege_id = ?2", nativeQuery = true)
+    void removePrivilege(long roleId, long privilegeId);
+
+    @Modifying
+    @Transactional
+    @Query(value= "DELETE FROM Roles_privileges WHERE role_id = ?1", nativeQuery = true)
+    void removePrivilegeConstraint(Long roleId);
+
+    @Modifying
+    @Transactional
+    @Query(value= "DELETE FROM Users_roles WHERE role_id = ?1", nativeQuery = true)
+    void removeUserConstraint(Long roleId);
+
 }
