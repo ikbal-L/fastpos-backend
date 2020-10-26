@@ -34,4 +34,8 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     @Query(value= "DELETE FROM Users_roles WHERE role_id = ?1", nativeQuery = true)
     void removeUserConstraint(Long roleId);
 
+    @Modifying
+    @Transactional
+    @Query(value= "UPDATE Role SET name = ?1 WHERE id = ?2", nativeQuery = true)
+    void updateRoleName(String newName, long roleId);
 }
