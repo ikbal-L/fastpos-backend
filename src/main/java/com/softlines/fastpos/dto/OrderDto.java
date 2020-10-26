@@ -28,7 +28,7 @@ public class OrderDto {
     boolean additivesVisibility;
     OrderState orderstate;
     OrderType type;
-    List<OrderItemDto> orderItemDto;
+    List<OrderItemDto> orderItems;
 
 //    Session session;
 //    Customer customer;

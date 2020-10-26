@@ -6,8 +6,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 @Data
 @Entity
 @Table(name = "Additive")
@@ -19,11 +17,6 @@ public class Additive {
     String description;
     String backgroundString;
     int rank;
-    @ManyToMany(fetch =  FetchType.EAGER , mappedBy = "additives")
-    List<Product> products;
 //     List<Ingredient> Ingrediants ;
-
-
-
 
 }

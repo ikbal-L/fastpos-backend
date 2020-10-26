@@ -25,7 +25,7 @@ public class AdditiveController {
     DtoService dtoService;
 
     @PostMapping("/save")
-    public ResponseEntity<AdditiveDto> addAdditive(@RequestBody AdditiveDto additiveDto) {
+    public ResponseEntity addAdditive(@RequestBody AdditiveDto additiveDto) {
         try {
 
             Optional<Additive> optionalAdditive = additiveRepository.findById(additiveDto.getId());
@@ -54,8 +54,7 @@ public class AdditiveController {
             else
                 return ResponseEntity.notFound().build();
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
     }
 
@@ -71,8 +70,7 @@ public class AdditiveController {
                 return ResponseEntity.notFound().build();
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
     }
 
@@ -90,13 +88,12 @@ public class AdditiveController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<AdditiveDto> deleteAdditive(@PathVariable long id) {
+    public ResponseEntity deleteAdditive(@PathVariable long id) {
         try {
             Optional<Additive> additiveToDel = additiveRepository.findById(id);
             if (additiveToDel.isPresent()) {

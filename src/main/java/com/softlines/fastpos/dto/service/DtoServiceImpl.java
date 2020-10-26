@@ -36,30 +36,31 @@ public class DtoServiceImpl implements DtoService {
     OrderItemMapper orderItemMapper;
 
     @Override
-    public Product productDtoToProduct(ProductDto pDto) {
+    public Product productDtoToProduct(ProductDto pDto, boolean getDataFromRepository) {
         List<Additive> additives = new ArrayList<Additive>();
         Product p = productMapper.toProduct(pDto);
-
-        for (Long idAdditive : pDto.getIdAdditives()) {
-            additives.add(additiveRepository.findById(idAdditive).get());
+        if (getDataFromRepository) {
+            for (Long idAdditive : pDto.getIdAdditives()) {
+                additives.add(additiveRepository.findById(idAdditive).get());
+            }
+            p.setAdditives(additives);
+            p.setCategory(categoryRepository.findById(pDto.getCategoryId()).get());
         }
-
-        p.setAdditives(additives);
-        p.setCategory(categoryRepository.findById(pDto.getCategoryId()).get());
         return p;
 
     }
 
     @Override
-    public Category categoryDtoToCategory(CategoryDto categoryDto) {
+    public Category categoryDtoToCategory(CategoryDto categoryDto, boolean getDataFromRepository) {
         List<Product> products = new ArrayList<Product>();
         Category category = categoryMapper.toCategory(categoryDto);
-
-        for (Long idProduct : categoryDto.getIdProducts()) {
-            products.add(productRepository.findById(idProduct).get());
+        if (getDataFromRepository) {
+            for (Long idProduct : categoryDto.getIdProducts()) {
+                products.add(productRepository.findById(idProduct).get());
+            }
+            category.setProducts(products);
         }
 
-        category.setProducts(products);
         return category;
 
     }
@@ -69,11 +70,9 @@ public class DtoServiceImpl implements DtoService {
     public OrderItem orderItemDtoToOrderItem(OrderItemDto oiDto) {
         List<Additive> additives = new ArrayList<Additive>();
         OrderItem orderItem = orderItemMapper.toOrderItem(oiDto);
-
         for (Long idAdditive : oiDto.getIdAdditives()) {
             additives.add(additiveRepository.findById(idAdditive).get());
         }
-
         orderItem.setAdditive(additives);
         orderItem.setProduct(productRepository.findById(oiDto.getProductId()).get());
 
@@ -85,17 +84,14 @@ public class DtoServiceImpl implements DtoService {
     public List<OrderItem> orderItemDtoListToOrderItemList(List<OrderItemDto> oiDtos) {
         List<Additive> additives = new ArrayList<Additive>();
         List<OrderItem> orderItems = orderItemMapper.toOrderItemList(oiDtos);
-
         for (int i = 0; i < oiDtos.size(); i++) {
             additives.clear();
             for (Long idAdditive : oiDtos.get(i).getIdAdditives()) {
                 additives.add(additiveRepository.findById(idAdditive).get());
             }
-
             orderItems.get(i).setAdditive(additives);
             orderItems.get(i).setProduct(productRepository.findById(oiDtos.get(i).getProductId()).get());
         }
-
         return orderItems;
     }
 
@@ -104,31 +100,16 @@ public class DtoServiceImpl implements DtoService {
     public Order orderDtoToOrder(OrderDto orderDto) {
         List<Additive> additivesOrderItem = new ArrayList<Additive>();
         Order order = orderMapper.toOrder(orderDto);
-
-        order.setOrderItems(orderItemDtoListToOrderItemList(orderDto.getOrderItemDto()));
-
+        order.setOrderItems(orderItemDtoListToOrderItemList(orderDto.getOrderItems()));
         for (OrderItem orderItem : order.getOrderItems()) {
             orderItem.setOrder(order);
         }
-
         return order;
     }
 
     @Override
     public Additive additiveDtoToAdditive(AdditiveDto additiveDto) {
-        List<Product> products = new ArrayList<Product>();
         Additive additive = additiveMapper.toAditive(additiveDto);
-
-        for (Long productId : additiveDto.getProductsId()) {
-            products.add(productRepository.findById(productId).get());
-        }
-
-
-//        for (int i = 0; i < additive.getProducts().size(); i++) {
-//            additive.getProducts().get(i).setAdditives();
-//        }
-        additive.setProducts(products);
-
         return additive;
     }
 

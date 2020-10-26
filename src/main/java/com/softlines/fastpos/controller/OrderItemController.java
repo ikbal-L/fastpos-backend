@@ -27,7 +27,7 @@ public class OrderItemController {
     OrderItemMapper orderItemMapper;
 
     @PostMapping(value = "/save", consumes = "application/json")
-    public ResponseEntity<OrderItemDto> addOrderItem(@RequestBody OrderItemDto orderItemDto) {
+    public ResponseEntity addOrderItem(@RequestBody OrderItemDto orderItemDto) {
         try {
             Optional<OrderItem> optionalOrderItem = orderItemRepository.findById(orderItemDto.getId());
             if (!optionalOrderItem.isPresent()) {
@@ -66,7 +66,6 @@ public class OrderItemController {
     @GetMapping("/get/{id}")
     public ResponseEntity<OrderItemDto> getOrderItem(@PathVariable long id) {
 
-
         try {
             Optional<OrderItem> optionalOrderItem = orderItemRepository.findById(id);
             if (optionalOrderItem.isPresent() && optionalOrderItem.get() != null)
@@ -78,6 +77,7 @@ public class OrderItemController {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, " Not Found", exception);
         }
+
     }
 
     @GetMapping("/getByname/{name}")
@@ -85,10 +85,12 @@ public class OrderItemController {
         try {
 
             List<OrderItem> orderItem = orderItemRepository.findByName(name);
-            if (orderItem == null) {
-                return ResponseEntity.notFound().build();
-            } else {
+            if (orderItem != null) {
+
                 return ResponseEntity.ok().body(orderItemMapper.toOrderItemDTOs(orderItem));
+
+            } else {
+                return ResponseEntity.notFound().build();
             }
 
         } catch (Exception exception) {
@@ -105,7 +107,7 @@ public class OrderItemController {
             if (existingOrderItem != null) {
                 existingOrderItem.setName(orderItemDto.getName());
 
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body(orderItemMapper.toOrderItemDto(orderItemRepository.save(existingOrderItem)));
+                return ResponseEntity.ok().body(orderItemMapper.toOrderItemDto(orderItemRepository.save(existingOrderItem)));
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(orderItemDto);
             }
@@ -117,7 +119,8 @@ public class OrderItemController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<OrderItemDto> deleteOrderItem(@PathVariable long id) {
+    public ResponseEntity deleteOrderItem(@PathVariable long id) {
+
         try {
             Optional<OrderItem> optionalOrderItem = orderItemRepository.findById(id);
 

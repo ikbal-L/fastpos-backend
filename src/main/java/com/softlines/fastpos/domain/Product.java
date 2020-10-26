@@ -29,7 +29,8 @@ public class Product {
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "additive_id"))
     List<Additive> additives;
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     Category category;
 
 }

@@ -17,6 +17,7 @@ public interface OrderItemMapper {
     OrderItemMapper INSTANCE = Mappers.getMapper(OrderItemMapper.class);
 
     OrderItem toOrderItem(OrderItemDto orderItemDto);
+
     List<OrderItem> toOrderItemList(List<OrderItemDto> orderItemDtos);
 
     @Mapping(source = "additive", target = "idAdditives", qualifiedByName = "AdditiveToId")
@@ -33,7 +34,7 @@ public interface OrderItemMapper {
 
     @Named("AdditiveToId")
     public static long AdditiveToId(Additive additives) {
-        return additives.getId();
+            return additives.getId();
     }
 
     @Named("ProductToId")

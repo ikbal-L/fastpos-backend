@@ -1,9 +1,7 @@
 package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Category;
-import com.softlines.fastpos.domain.Product;
 import com.softlines.fastpos.dto.CategoryDto;
-import com.softlines.fastpos.dto.ProductDto;
 import com.softlines.fastpos.dto.mapping.CategoryMapper;
 import com.softlines.fastpos.dto.service.DtoService;
 import com.softlines.fastpos.repository.CategoryRepository;
@@ -12,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -27,22 +26,20 @@ public class CategoryController {
     DtoService dtoService;
 
     @PostMapping("/save")
-    public ResponseEntity<CategoryDto> addCategory(@RequestBody CategoryDto categoryDto) {
+    public ResponseEntity addCategory(@RequestBody CategoryDto categoryDto) {
         try {
             Optional<Category> optionalCategory = categoryRepository.findById(categoryDto.getId());
 
             if (!optionalCategory.isPresent()) {
-                Category createdCategory = categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto));
+                Category createdCategory = categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto,false));
 
-                return ResponseEntity.status(HttpStatus.CREATED).body(categoryMapper.toCategoryDto( createdCategory));
+                return ResponseEntity.status(HttpStatus.CREATED).body(categoryMapper.toCategoryDto(createdCategory));
             } else {
                 return ResponseEntity.notFound().build();
 
             }
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
     }
 
@@ -51,33 +48,35 @@ public class CategoryController {
         try {
 
             List<Category> categories = categoryRepository.findAll();
-            if (categories == null) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            if (categories != null) {
+                return ResponseEntity.ok().body(categoryMapper.toCategoryDTOs(categories));
 
             } else {
-                return ResponseEntity.ok().body(categoryMapper.toCategoryDTOs(categories));
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
             }
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
 
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<CategoryDto> getCategory(@PathVariable long id) {
+
         try {
             Optional<Category> optionalCategory = categoryRepository.findById(id);
-            if (optionalCategory.isPresent()) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(categoryMapper.toCategoryDto(optionalCategory.get()));
-            } else {
+
+            if (optionalCategory.isPresent())
+                return ResponseEntity.ok().body(categoryMapper.toCategoryDto(optionalCategory.get()));
+            else
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-            }
+
+
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
+
     }
 
     @GetMapping("/getByName/{name}")
@@ -87,13 +86,12 @@ public class CategoryController {
             List<Category> categories = categoryRepository.findByName(name);
 
             if (categories != null)
-                return ResponseEntity.ok(categoryMapper.toCategoryDTOs(categories));
+                return ResponseEntity.ok().body(categoryMapper.toCategoryDTOs(categories));
             else
                 return ResponseEntity.notFound().build();
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
     }
 
@@ -104,13 +102,13 @@ public class CategoryController {
             Optional<Category> optionalCategory = categoryRepository.findById(id);
 
             if (optionalCategory.isPresent()) {
-                return ResponseEntity.ok().body(categoryMapper.toCategoryDto(categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto))));
+                return ResponseEntity.ok().body(categoryMapper.toCategoryDto(categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto,false))));
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
+
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
 
     }
@@ -119,7 +117,6 @@ public class CategoryController {
     public ResponseEntity deleteCategory(@PathVariable long id) {
         try {
             Category categoryToDel = categoryRepository.findById(id).get();
-
             if (categoryToDel != null) {
 
                 categoryRepository.delete(categoryToDel);
@@ -130,8 +127,7 @@ public class CategoryController {
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
     }
 }

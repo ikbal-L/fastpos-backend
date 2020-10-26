@@ -12,6 +12,5 @@ public class AdditiveDto {
     String description;
     String backgroundString;
     int rank;
-    List<Long> productsId;
 
 }

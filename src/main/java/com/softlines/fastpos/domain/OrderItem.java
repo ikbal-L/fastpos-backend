@@ -1,10 +1,8 @@
 package com.softlines.fastpos.domain;
 
 import lombok.*;
-
 import javax.persistence.*;
 import java.util.List;
-
 
 
 @Data
@@ -21,13 +19,15 @@ public class OrderItem {
     double discountAmount;
     double totalDiscountAmount;
     double discountPercentatge;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     Product product;
-    @ManyToMany
-    List<Additive> additive;
+    @ManyToMany( fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "orderItems_additives",
+            joinColumns = @JoinColumn(name = "orderItem_id"),
+            inverseJoinColumns = @JoinColumn(name = "additive_id")) List<Additive> additive;
     @ManyToOne
     @JoinColumn(name = "order_id")
     Order order;
-
 
 }

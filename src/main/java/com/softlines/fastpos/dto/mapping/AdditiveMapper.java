@@ -16,7 +16,7 @@ public interface AdditiveMapper {
 
     AdditiveMapper INSTANCE = Mappers.getMapper(AdditiveMapper.class);
 
-    @Mapping(source = "products", target = "productsId", qualifiedByName = "ProductToId")
+//    @Mapping(source = "products", target = "productsId", qualifiedByName = "ProductToId")
     AdditiveDto toAdditiveDto(Additive additive);
     List<AdditiveDto> toAdditiveDTOs(List<Additive> additives);
 

@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
-
 @Data
 @Entity
 @Table(name = "orders")
@@ -32,12 +31,8 @@ public class Order {
     boolean additivesVisibility;
     OrderState orderstate;
     OrderType type;
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<OrderItem> orderItems;
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
-    }
-
 
 }
 
