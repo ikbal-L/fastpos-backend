@@ -1,41 +1,45 @@
 package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Additive;
+import com.softlines.fastpos.dto.AdditiveDto;
+import com.softlines.fastpos.dto.mapping.AdditiveMapper;
+import com.softlines.fastpos.dto.service.DtoService;
 import com.softlines.fastpos.repository.AdditiveRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/additive")
 public class AdditiveController {
 
+    @Autowired
+    AdditiveMapper additiveMapper;
+    @Autowired
     private AdditiveRepository additiveRepository;
-
-
-    public AdditiveController(AdditiveRepository additiveRepository) {
-        this.additiveRepository = additiveRepository;
-    }
+    @Autowired
+    DtoService dtoService;
 
     @PostMapping("/save")
-    public ResponseEntity<Additive> addAdditive(@RequestBody Additive additive) {
+    public ResponseEntity addAdditive(@RequestBody Additive additive) {
         try {
 
+            Optional<Additive> optionalAdditive = additiveRepository.findById(additive.getId());
 
-            Additive existingAdditive = additiveRepository.findById(additive.getId()).get();
-            if (existingAdditive != null) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(existingAdditive);
-            }
-            Additive createdAdditive = additiveRepository.save(additive);
-            if (createdAdditive != null) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(additive);
+            if (!optionalAdditive.isPresent()) {
+
+//                Additive additive = dtoService.additiveDtoToAdditive(additiveDto);
+
+                return ResponseEntity.status(HttpStatus.CREATED).body(additiveRepository.save(additive));
             } else {
-                return ResponseEntity.status(HttpStatus.CREATED).body(createdAdditive);
+                return ResponseEntity.noContent().build();
 
             }
         } catch (Exception exception) {
@@ -45,49 +49,74 @@ public class AdditiveController {
     }
 
     @GetMapping("/getall")
-    public List<Additive> getAdditives() {
+    public ResponseEntity<List<AdditiveDto>> getAdditives() {
         try {
-            return additiveRepository.findAll();
+            List<Additive> additives = additiveRepository.findAll();
+            if (additives != null)
+                return ResponseEntity.ok().body(additiveMapper.toAdditiveDTOs(additives));
+            else
+                return ResponseEntity.notFound().build();
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
     }
 
     @GetMapping("/get/{id}")
-    public Optional<Additive> getAdditive(@PathVariable long id) {
+    public ResponseEntity<AdditiveDto> getAdditive(@PathVariable long id) {
+
         try {
-            return additiveRepository.findById(id);
+
+            Optional<Additive> optionalAdditive = additiveRepository.findById(id);
+            if (optionalAdditive.isPresent())
+                return ResponseEntity.ok().body(additiveMapper.toAdditiveDto(additiveRepository.findById(id).get()));
+            else
+                return ResponseEntity.notFound().build();
+
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
+
     }
 
     @PutMapping("/put/{id}")
-    public void editAdditive(@PathVariable long id, @RequestBody Additive additive) {
-        try {
-            Additive existingProduct = additiveRepository.findById(id).get();
-            Assert.notNull(existingProduct, "Additive not found");
-            existingProduct.setDescription(additive.getDescription());
-            existingProduct.setBackgroundString(additive.getBackgroundString());
-            existingProduct.setRank(additive.getRank());
+    public ResponseEntity editAdditive(@PathVariable long id, @RequestBody Additive additive) {
 
-            additiveRepository.save(existingProduct);
+        try {
+            Optional<Additive> optionalAdditive = additiveRepository.findById(id);
+
+            if (optionalAdditive.isPresent()) {
+
+//                Additive additive = dtoService.additiveDtoToAdditive(additiveDto);
+                return ResponseEntity.ok().body(additiveRepository.save(additive));
+
+            } else {
+//                ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+//                messageSource.setDefaultEncoding("UTF-8");
+//                messageSource.setBasenames("messages");
+//                return ResponseEntity.ok().body(messageSource.getMessage("notfound", null,lang!=null ? new Locale(lang):null));
+                return ResponseEntity.notFound().build();
+            }
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteAdditive(@PathVariable long id) {
+    public ResponseEntity deleteAdditive(@PathVariable long id) {
         try {
-            Additive productToDel = additiveRepository.findById(id).get();
-            additiveRepository.delete(productToDel);
+
+            Optional<Additive> additiveToDel = additiveRepository.findById(id);
+            if (additiveToDel.isPresent()) {
+
+                additiveRepository.delete(additiveToDel.get());
+                return ResponseEntity.ok().build();
+
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
     }
 }

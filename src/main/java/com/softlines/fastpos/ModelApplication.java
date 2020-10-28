@@ -6,18 +6,29 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import javax.annotation.security.RolesAllowed;
+import java.util.Locale;
 
 @SpringBootApplication(
-		exclude = { DataSourceAutoConfiguration.class,
-				HibernateJpaAutoConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class
-		})
+        exclude = {DataSourceAutoConfiguration.class,
+                HibernateJpaAutoConfiguration.class,
+                DataSourceTransactionManagerAutoConfiguration.class
+        })
 @EnableTransactionManagement
-public class ModelApplication {
+public class ModelApplication implements WebMvcConfigurer {
+    public static void main(String[] args) {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ModelApplication.class, args);
-	}
+        SpringApplication.run(ModelApplication.class, args);
+
+//        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+//        messageSource.setDefaultEncoding("UTF-8");
+//        messageSource.setBasenames("messages");
+//        System.out.println(messageSource.getMessage("login", null, new Locale("ar")));
+
+    }
 
 }

@@ -1,52 +1,69 @@
 package com.softlines.fastpos.controller;
 
-
 import com.softlines.fastpos.domain.Product;
 import com.softlines.fastpos.dto.ProductDto;
 import com.softlines.fastpos.dto.mapping.ProductMapper;
+import com.softlines.fastpos.dto.service.DtoServiceImpl;
 import com.softlines.fastpos.repository.ProductRepository;
+import com.softlines.fastpos.service.ProductService;
+import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/product")
 public class ProductController {
 
+    @Autowired
     private ProductRepository productRepository;
-    private  ProductMapper productMapper;
-
-    public ProductController(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
-
+    @Autowired
+    private DtoServiceImpl dtoService;
+    @Autowired
+    private ProductMapper productMapper;
+    @Autowired
+    private ProductService productService;
 
     @PostMapping(value = "/save", consumes = "application/json")
-    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
+    public ResponseEntity<ProductDto> addProduct(@RequestBody ProductDto productDto) {
+
         try {
-            Product existingProduct = productRepository.findById(product.getId()).get();
-            if (existingProduct != null) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(existingProduct);
-            }
-            Product createdProduct = productRepository.save(product);
-            if (createdProduct == null) {
-                return ResponseEntity.notFound().build();
+            Optional<Product> optionalProduct = productRepository.findById(productDto.getId());
+
+            if (!optionalProduct.isPresent()) {
+                Product product = dtoService.productDtoToProduct(productDto,false);
+                return ResponseEntity.status(HttpStatus.CREATED).body(productMapper.toProductDto(productRepository.save(product)));
             } else {
-                return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
+                return ResponseEntity.notFound().build();
             }
+
         } catch (Exception exception) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, " Not Found", exception);
         }
+
     }
 
     @GetMapping("/getall")
     public ResponseEntity<List<ProductDto>> getProducts() {
+
         try {
-            return ResponseEntity.ok().body(productMapper.INSTANCE.toProductDTOs( productRepository.findAll()));
+            Hibernate.initialize(productRepository.findAll());
+
+            List<Product> products = productRepository.findAll();
+            //products.forEach(p -> p.getAdditives());
+//            List<Product> products = productService.findAll();
+            if (products != null)
+                return ResponseEntity.ok().body(productMapper.toProductDTOs(products));
+            else
+                return ResponseEntity.notFound().build();
+
         } catch (Exception exception) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, " Not Found", exception);
@@ -56,24 +73,32 @@ public class ProductController {
 
     @GetMapping("/get/{id}")
     public ResponseEntity<ProductDto> getProduct(@PathVariable long id) {
+
         try {
-            return ResponseEntity.ok().body(productMapper.toDto(productRepository.findById(id).get()));
+            Optional<Product> optionalProduct = productRepository.findById(id);
+            if (optionalProduct.isPresent())
+                return ResponseEntity.ok().body(productMapper.toProductDto(optionalProduct.get()));
+            else
+                return ResponseEntity.notFound().build();
+
         } catch (Exception exception) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, " Not Found", exception);
         }
+
     }
 
-    @GetMapping("/getByname/{name}")
-    public ResponseEntity<List<Product>> getProductByName(@PathVariable String name) {
+    @GetMapping("/getByName/{name}")
+    public ResponseEntity<List<ProductDto>> getProductByName(@PathVariable String name) {
         try {
 
             List<Product> products = productRepository.findByName(name);
-            if (products == null) {
+
+            if (products != null)
+                return ResponseEntity.ok(productMapper.toProductDTOs(products));
+            else
                 return ResponseEntity.notFound().build();
-            } else {
-                return ResponseEntity.ok(products);
-            }
+
         } catch (Exception exception) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, " Not Found", exception);
@@ -81,50 +106,40 @@ public class ProductController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<Product> editProduct(@PathVariable long id, @RequestBody Product product) {
+    public ResponseEntity<ProductDto> editProduct(@PathVariable long id, @RequestBody ProductDto productDto) {
         try {
-            Product existingProduct = productRepository.findById(id).get();
-            Assert.notNull(existingProduct, "Product not found");
+            Optional<Product> optionalProduct = productRepository.findById(id);
 
-            if (existingProduct != null) {
-                existingProduct.setName(product.getName());
-                existingProduct.setDescription(product.getDescription());
-                existingProduct.setPrice(product.getPrice());
-                existingProduct.setAvailableStock(product.getAvailableStock());
-                existingProduct.setBackgroundString(product.getBackgroundString());
-                existingProduct.setCategorieId(product.getCategorieId());
-                existingProduct.setMuchInDemand(product.isMuchInDemand());
-                existingProduct.setPlatter(product.isPlatter());
-                existingProduct.setColor(product.getColor());
-                existingProduct.setRank(product.getRank());
-                existingProduct.setUnit(product.getUnit());
-                existingProduct.setType(product.getType());
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body(productRepository.save(existingProduct));
+            if (optionalProduct.isPresent()) {
+
+                Product product = dtoService.productDtoToProduct(productDto,false);
+                return ResponseEntity.status(HttpStatus.OK).body(productMapper.toProductDto(productRepository.save(product)));
+
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(product);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(productDto);
             }
+
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
 
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Product> deleteProduct(@PathVariable long id) {
+    public ResponseEntity deleteProduct(@PathVariable long id) {
+
         try {
-            Product productToDel = productRepository.findById(id).get();
-            if (productToDel != null) {
-                productRepository.delete(productToDel);
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body(productToDel);
+            Optional<Product> optionalProduct = productRepository.findById(id);
 
+            if (optionalProduct.isPresent()) {
+                productRepository.delete(optionalProduct.get());
+                return ResponseEntity.ok().build();
             } else {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(productToDel);
-
+                return ResponseEntity.notFound().build();
             }
+
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
     }
 }

@@ -1,16 +1,16 @@
 package com.softlines.fastpos.domain;
 
-import javax.persistence.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
+import javax.persistence.*;
+import java.util.List;
+
 @Data
-
-// still work
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler","products"})
 public class Category {
-
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,47 +18,9 @@ public class Category {
     String name;
     String backgroundString;
     int rank;
-
-    public Category(long id, String name, String backgroundString, int rank) {
-        this.id = id;
-        this.name = name;
-        this.backgroundString = backgroundString;
-        this.rank = rank;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getBackgroundString() {
-        return backgroundString;
-    }
-
-    public void setBackgroundString(String backgroundString) {
-        this.backgroundString = backgroundString;
-    }
-
-    public int getRank() {
-        return rank;
-    }
-
-    public void setRank(int rank) {
-        this.rank = rank;
-    }
-
-
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id")
+    List<Product> products;
 
 
 }
