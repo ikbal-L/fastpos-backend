@@ -5,11 +5,13 @@ import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
 import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ public class ApiSecurity {
         return grantedAuthorities.contains(new SimpleGrantedAuthority(privilege));
     }
 
+    @Transactional("authTransactionManager")
     public boolean checkRoles(Authentication auth, String role) {
 
         Assert.notNull(auth, "Authentication is null");
@@ -52,9 +55,9 @@ public class ApiSecurity {
 
         roles = new ArrayList<>();
         JWTuser jwTuser = jwTuserRepository.findByUsername(auth.getName());
-
-        for (Role userRole:
-                jwTuser.getRoles()) {
+        //Hibernate.initialize(jwTuser.getRoles());
+        int i=0;
+        for (Role userRole : jwTuser.getRoles()) {
             roles.add(userRole.getName());
         }
         return roles.contains(role);

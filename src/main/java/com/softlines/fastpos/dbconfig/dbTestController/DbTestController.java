@@ -1,19 +1,13 @@
 package com.softlines.fastpos.dbconfig.dbTestController;
 
-import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
-import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
 import com.softlines.fastpos.jwtsecurity.securityrepository.PrivilegeRepository;
 import com.softlines.fastpos.jwtsecurity.securityrepository.RoleRepository;
 import com.softlines.fastpos.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/dbtest")

@@ -1,6 +1,6 @@
 package com.softlines.fastpos.jwtsecurity.jwtcontroller;
 
-import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
+import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
 import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.RoleDTO;
 import com.softlines.fastpos.jwtsecurity.securitydomain.securitymapper.RoleMapper;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/role")
@@ -28,24 +29,24 @@ public class RoleController {
     @Autowired
     PrivilegeRepository privilegeRepository;
 
+    @Autowired
+    ExceptionManagement exceptionManagement;
+
+
     @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
     @PostMapping(value = "/save", consumes = "application/json")
-    public ResponseEntity<RoleDTO> addRole(@RequestBody Role role){
+    public ResponseEntity<RoleDTO> addRole(@RequestBody RoleDTO roleDTO){
 
-        String roleName = role.getName().toUpperCase();
+        String roleName = roleDTO.getName().toUpperCase();
         if(!roleName.matches("^ROLE_")) roleName = "ROLE_" + roleName;
-        role.setName(roleName);
+        roleDTO.setName(roleName);
         try {
-            Role existingRole = roleRepository.findByName(roleName);
-            if (existingRole != null) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(roleMapper.toRoleDto(existingRole));
+            Optional<Role> existingRole = roleRepository.findById(roleDTO.getId());
+            if (existingRole.isPresent()) {
+                return ResponseEntity.noContent().build();
             }
-            Role createdRole = roleRepository.save(role);
-            if (createdRole == null) {
-                return ResponseEntity.notFound().build();
-            } else {
-                return ResponseEntity.status(HttpStatus.CREATED).body(roleMapper.toRoleDto(createdRole));
-            }
+            Role createdRole = roleRepository.save(roleMapper.toRole(roleDTO));
+            return ResponseEntity.status(HttpStatus.CREATED).body(roleMapper.toRoleDto(createdRole));
         } catch (Exception exception) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, " Not Found", exception);
@@ -53,130 +54,129 @@ public class RoleController {
     }
 
     @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
-    @DeleteMapping(value = "/deletebyid/{roleId}", consumes = "application/json")
-    public ResponseEntity<RoleDTO> deleteRoleById(@PathVariable long roleId){
+    @DeleteMapping(value = "/delete", consumes = "application/json")
+    public ResponseEntity<RoleDTO> deleteRoleById(@RequestBody RoleDTO roleDTO){
         try {
-            Role roleToDelete = roleRepository.findById(roleId).get();
-            if (roleToDelete != null) {
-                roleRepository.removeUserConstraint(roleToDelete.getId());
-                roleRepository.removePrivilegeConstraint(roleToDelete.getId());
-                roleRepository.delete(roleToDelete);
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body(roleMapper.toRoleDto(roleToDelete));
+            Optional<Role> roleToDelete = roleRepository.findById(roleDTO.getId());
+            if (roleToDelete.isPresent()) {
+                Role role= roleToDelete.get();
+                roleRepository.delete(role);
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(roleMapper.toRoleDto(role));
             }else {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(roleMapper.toRoleDto(roleToDelete));
+                return ResponseEntity.noContent().build();
             }
         } catch (Exception exception) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, " Not Found", exception);
         }
     }
+//
+//    @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
+//    @DeleteMapping("/deletebyname/{roleName}")
+//    public ResponseEntity<RoleDTO> deleteRoleByName(@PathVariable String roleName){
+//        roleName = roleName.toUpperCase();
+//        if(!roleName.matches("^ROLE_")) roleName = "ROLE_" + roleName;
+//        try {
+//            Role roleToDelete = roleRepository.findByName(roleName);
+//            if (roleToDelete != null) {
+//                roleRepository.removeUserConstraint(roleToDelete.getId());
+//                roleRepository.removePrivilegeConstraint(roleToDelete.getId());
+//                roleRepository.delete(roleToDelete);
+//                return ResponseEntity.status(HttpStatus.ACCEPTED).body(roleMapper.toRoleDto(roleToDelete));
+//            }else {
+//                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(roleMapper.toRoleDto(roleToDelete));
+//            }
+//        } catch (Exception exception) {
+//            throw new ResponseStatusException(
+//                    HttpStatus.NOT_FOUND, " Not Found", exception);
+//        }
+//    }
+
+//    @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
+//    @PutMapping("/addprivilege/{roleId}")
+//    public ResponseEntity<RoleDTO> addPrivilegeToRole(@PathVariable("roleId") long roleId, @RequestBody Privilege privilege){
+//        String privilegeName = privilege.getName().toUpperCase();
+//        if(!privilegeName.matches("_PRIVILEGE$")) privilegeName = privilegeName + "_PRIVILEGE";
+//        privilege.setName(privilegeName);
+//        try {
+//            Role role = roleRepository.findById(roleId).get();
+//            Privilege privilegeToAdd = privilegeRepository.findByName(privilegeName);
+//
+//            if (role != null && privilegeToAdd != null && !(roleMapper.toRoleDto(role).getPrivilegeIds().contains(privilegeToAdd.getId()))) {
+//                roleRepository.addPrivilege(roleId, privilegeToAdd.getId());
+//                return ResponseEntity.status(HttpStatus.ACCEPTED).body(roleMapper.toRoleDto(roleRepository.findById(roleId).get()));
+//            }else {
+//                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(roleMapper.toRoleDto(role));
+//            }
+//        } catch (Exception exception) {
+//            throw new ResponseStatusException(
+//                    HttpStatus.NOT_FOUND, " Not Found", exception);
+//        }
+//    }
+//
+//    @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
+//    @DeleteMapping("/removeprivilege/{roleId}")
+//    public ResponseEntity<RoleDTO> removePrivilegeFromRole(@PathVariable("roleId") long roleId, @RequestBody Privilege privilege){
+//        String privilegeName = privilege.getName().toUpperCase();
+//        if(!privilegeName.matches("_PRIVILEGE$")) privilegeName = privilegeName + "_PRIVILEGE";
+//        privilege.setName(privilegeName);
+//        try {
+//            Role role = roleRepository.findById(roleId).get();
+//            Privilege privilegeToRemove = privilegeRepository.findByName(privilegeName);
+//
+//            if (role != null && privilegeToRemove != null && (roleMapper.toRoleDto(role).getPrivilegeIds().contains(privilegeToRemove.getId()))) {
+//                roleRepository.removePrivilege(roleId, privilegeToRemove.getId());
+//                return ResponseEntity.status(HttpStatus.ACCEPTED).body(roleMapper.toRoleDto(roleRepository.findById(roleId).get()));
+//            }else {
+//                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(roleMapper.toRoleDto(role));
+//            }
+//        } catch (Exception exception) {
+//            throw new ResponseStatusException(
+//                    HttpStatus.NOT_FOUND, " Not Found", exception);
+//        }
+//    }
 
     @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
-    @DeleteMapping("/deletebyname/{roleName}")
-    public ResponseEntity<RoleDTO> deleteRoleByName(@PathVariable String roleName){
-        roleName = roleName.toUpperCase();
+    @PutMapping("/put")
+    public ResponseEntity<RoleDTO> editRoleById(@RequestBody RoleDTO roleDTO) {
+        String roleName = roleDTO.getName().toUpperCase();
         if(!roleName.matches("^ROLE_")) roleName = "ROLE_" + roleName;
+        roleDTO.setName(roleName);
         try {
-            Role roleToDelete = roleRepository.findByName(roleName);
-            if (roleToDelete != null) {
-                roleRepository.removeUserConstraint(roleToDelete.getId());
-                roleRepository.removePrivilegeConstraint(roleToDelete.getId());
-                roleRepository.delete(roleToDelete);
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body(roleMapper.toRoleDto(roleToDelete));
+            Optional<Role> existingRole = roleRepository.findById(roleDTO.getId());
+            if(existingRole.isPresent()){
+                Role role=roleMapper.toRole(roleDTO);
+                return ResponseEntity.ok().body(roleMapper.toRoleDto(roleRepository.save(role)));
             }else {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(roleMapper.toRoleDto(roleToDelete));
-            }
-        } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
-        }
-    }
-
-    @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
-    @PutMapping("/addprivilege/{roleId}")
-    public ResponseEntity<RoleDTO> addPrivilegeToRole(@PathVariable("roleId") long roleId, @RequestBody Privilege privilege){
-        String privilegeName = privilege.getName().toUpperCase();
-        if(!privilegeName.matches("_PRIVILEGE$")) privilegeName = privilegeName + "_PRIVILEGE";
-        privilege.setName(privilegeName);
-        try {
-            Role role = roleRepository.findById(roleId).get();
-            Privilege privilegeToAdd = privilegeRepository.findByName(privilegeName);
-
-            if (role != null && privilegeToAdd != null && !(roleMapper.toRoleDto(role).getPrivilegeIds().contains(privilegeToAdd.getId()))) {
-                roleRepository.addPrivilege(roleId, privilegeToAdd.getId());
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body(roleMapper.toRoleDto(roleRepository.findById(roleId).get()));
-            }else {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(roleMapper.toRoleDto(role));
-            }
-        } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
-        }
-    }
-
-    @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
-    @DeleteMapping("/removeprivilege/{roleId}")
-    public ResponseEntity<RoleDTO> removePrivilegeFromRole(@PathVariable("roleId") long roleId, @RequestBody Privilege privilege){
-        String privilegeName = privilege.getName().toUpperCase();
-        if(!privilegeName.matches("_PRIVILEGE$")) privilegeName = privilegeName + "_PRIVILEGE";
-        privilege.setName(privilegeName);
-        try {
-            Role role = roleRepository.findById(roleId).get();
-            Privilege privilegeToRemove = privilegeRepository.findByName(privilegeName);
-
-            if (role != null && privilegeToRemove != null && (roleMapper.toRoleDto(role).getPrivilegeIds().contains(privilegeToRemove.getId()))) {
-                roleRepository.removePrivilege(roleId, privilegeToRemove.getId());
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body(roleMapper.toRoleDto(roleRepository.findById(roleId).get()));
-            }else {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(roleMapper.toRoleDto(role));
-            }
-        } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
-        }
-    }
-
-    @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
-    @PutMapping("/edit/{roleId}")
-    public ResponseEntity<RoleDTO> editRoleById(@PathVariable("roleId") long roleId, @RequestBody Role role) {
-        String roleName = role.getName().toUpperCase();
-        if(!roleName.matches("^ROLE_")) roleName = "ROLE_" + roleName;
-        role.setName(roleName);
-        try {
-            Role existngRole = roleRepository.findById(roleId).get();
-            if(existngRole != null){
-                roleRepository.updateRoleName(role.getName(), roleId);
-                return ResponseEntity.ok().body(roleMapper.toRoleDto(roleRepository.findById(roleId).get()));
-            }else {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(roleMapper.toRoleDto(role));
+                return ResponseEntity.noContent().build();
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
     }
 
-    @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
+    //@PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
     @GetMapping("/getall")
     public ResponseEntity<List<RoleDTO>> getRoles() {
         try {
-            return ResponseEntity.ok().body(roleMapper.toRoleDTOs( roleRepository.findAll()));
+            List<Role> roles = roleRepository.findAllPrivileges();
+            return ResponseEntity.ok().body(roleMapper.toRoleDTOs(roles));
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
 
     @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
-    @GetMapping("/getById/{roleId}")
-    public ResponseEntity<RoleDTO> getRoleById(@PathVariable long roleId) {
+    @GetMapping("/getbyname/{roleName}")
+    public ResponseEntity<RoleDTO> getRoleById(@PathVariable String roleName) {
+        if(!roleName.matches("^ROLE_")) roleName = "ROLE_" + roleName;
         try {
-            Role role = roleRepository.findById(roleId).get();
+            Role role = roleRepository.findByName(roleName);
             if(role != null){
                 return ResponseEntity.ok().body(roleMapper.toRoleDto(role));
             }else {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(roleMapper.toRoleDto(role));
+                return ResponseEntity.noContent().build();
             }
         } catch (Exception exception) {
             throw new ResponseStatusException(

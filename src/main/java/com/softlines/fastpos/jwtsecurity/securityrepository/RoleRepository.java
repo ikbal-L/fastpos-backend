@@ -1,5 +1,7 @@
 package com.softlines.fastpos.jwtsecurity.securityrepository;
 
+import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,6 +13,14 @@ import java.util.List;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
+
+    @Query(value= "SELECT distinct r FROM Role r  JOIN FETCH r.privileges where r=?1")
+    List<Role> finRole(Role r);
+
+    @Query(value = "SELECT p FROM Role p JOIN FETCH p.privileges")
+    List<Role> findAllPrivileges();
+
+
     @Query(value= "SELECT * FROM Role WHERE Role.name= ?1", nativeQuery = true)
     Role findByName(String role);
 

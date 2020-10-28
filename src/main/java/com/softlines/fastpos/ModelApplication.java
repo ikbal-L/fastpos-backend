@@ -1,5 +1,6 @@
 package com.softlines.fastpos;
 
+import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;

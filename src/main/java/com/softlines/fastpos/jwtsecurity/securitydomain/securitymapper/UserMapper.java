@@ -13,6 +13,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
+
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
     @Mapping(source = "roles", target = "roleIds", qualifiedByName = "rolessToIds")
@@ -21,11 +22,18 @@ public interface UserMapper {
 
     List<UserDTO> toUserDTOs(List<JWTuser> jwTusers);
 
+    @Mapping(source = "roleIds", target = "roles", qualifiedByName = "idsToRoles")
     JWTuser toJWTuser(UserDTO userDTO);
 
     @Named("rolessToIds")
     static long rolessToIds(Role role) {
         return role.getId();
+    }
+    @Named("idsToRoles")
+    static Role idsToRoles(long roleId) {
+        Role role = new Role();
+        role.setId(roleId);
+        return role;
     }
     @Named("dbInfoToId")
     static Long dbInfoToId(DbInfo dbInfo){

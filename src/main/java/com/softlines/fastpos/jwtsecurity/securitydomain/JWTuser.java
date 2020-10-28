@@ -41,7 +41,7 @@ public class JWTuser {
     @Column(name = "token_expired")
     private boolean tokenExpired;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(

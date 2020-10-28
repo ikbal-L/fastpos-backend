@@ -20,10 +20,18 @@ public interface RoleMapper {
 
     List<RoleDTO> toRoleDTOs(List<Role> roles);
 
+    @Mapping(source = "privilegeIds", target = "privileges", qualifiedByName = "idsToPrivileges")
     Role toRole(RoleDTO roleDTO);
 
     @Named("privilegesToIds")
     static long privilegesToIds(Privilege privilege) {
         return privilege.getId();
+    }
+
+    @Named("idsToPrivileges")
+    static Privilege idsToPrivileges(long idprivilege) {
+        Privilege privilege =new Privilege();
+        privilege.setId(idprivilege);
+        return privilege;
     }
 }

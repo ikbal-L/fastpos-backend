@@ -1,18 +1,17 @@
 package com.softlines.fastpos.dbconfig.configuration;
 
+import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.jwtsecurity.securitydomain.DbInfo;
+import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
 import com.softlines.fastpos.jwtsecurity.securityrepository.DbInfoRepository;
-import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
 import com.softlines.fastpos.jwtsecurity.securityrepository.PrivilegeRepository;
 import com.softlines.fastpos.jwtsecurity.securityrepository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -25,6 +24,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.persistence.EntityManagerFactory;
 import java.util.*;
+
 
 @Configuration
 @EnableJpaRepositories(
@@ -53,7 +53,6 @@ public class DbConfig {
         }
     }
 
-    //@Bean
     public DriverManagerDataSource createDataSources(DbInfo dbInfo){
         DriverManagerDataSource dataSource= new DriverManagerDataSource();
         dataSource.setUsername(dbInfo.getUsername());
@@ -100,32 +99,32 @@ public class DbConfig {
         return factory;
     }
 
-    /*@Autowired
+    @Autowired
     private RoleRepository roleRepository;
 
     @Autowired
     private PrivilegeRepository privilegeRepository;
 
-    public void initiateDB() {
+    public void initiateDB(){
         PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
         DbInfo dbInfo = new DbInfo();
         dbInfo.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dbInfo.setUrl("jdbc:mysql://localhost:3306/jwtauthsoftlines");
+        dbInfo.setUrl("jdbc:mysql://localhost:3306/jwtauthsoftlines?createDatabaseIfNotExist=true");
         dbInfo.setName("defaultDB");
         dbInfo.setUsername("root");
         dbInfo.setPassword("");
 
         DbInfo dbInfo2 = new DbInfo();
         dbInfo2.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dbInfo2.setUrl("jdbc:mysql://localhost:3306/jwtauthsoftlines2");
+        dbInfo2.setUrl("jdbc:mysql://localhost:3306/jwtauthsoftlines2?createDatabaseIfNotExist=true");
         dbInfo2.setName("firstDB");
         dbInfo2.setUsername("root");
         dbInfo2.setPassword("");
 
         DbInfo dbInfo3 = new DbInfo();
         dbInfo3.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dbInfo3.setUrl("jdbc:mysql://localhost:3306/jwtauthsoftlines3");
+        dbInfo3.setUrl("jdbc:mysql://localhost:3306/jwtauthsoftlines3?createDatabaseIfNotExist=true");
         dbInfo3.setName("secondDB");
         dbInfo3.setUsername("root");
         dbInfo3.setPassword("");
@@ -172,24 +171,23 @@ public class DbConfig {
         jwTuserRepository.save(user);
     }
 
-    //@Transactional
     Privilege createPrivilegeIfNotFound(String name) {
 
         Privilege privilege = privilegeRepository.findByName(name);
         if (privilege == null) {
-            privilege = new Privilege(name);
+            privilege = new Privilege();
+            privilege.setName(name);
             privilegeRepository.save(privilege);
         }
         return privilege;
     }
 
-    //@Transactional
-    Role createRoleIfNotFound(
-            String name, Collection<Privilege> privileges) {
+    Role createRoleIfNotFound(String name, Collection<Privilege> privileges) {
 
         Role role = roleRepository.findByName(name);
         if (role == null) {
-            role = new Role(name);
+            role = new Role();
+            role.setName(name);
             role.setPrivileges(privileges);
             roleRepository.save(role);
         }
@@ -202,7 +200,6 @@ public class DbConfig {
             return dbInfo;
         }
         return null;
-    }*/
-
+    }
 
 }

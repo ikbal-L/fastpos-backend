@@ -33,7 +33,11 @@ public class UserDbConfig {
     @Bean
     @ConfigurationProperties(prefix = "com.softlines.fastpos.jwtsecurity")
     public DataSourceProperties authDataSourceProperties() {
-        return new DataSourceProperties();
+        try {
+            return new DataSourceProperties();
+        }catch (Exception e){
+            throw e;
+        }
     }
 
     @Bean
@@ -47,23 +51,27 @@ public class UserDbConfig {
     }
 
     @Bean
-    public PlatformTransactionManager authTransactionManager() {
+    public PlatformTransactionManager authTransactionManager() throws Exception {
         EntityManagerFactory factory = authEntityManagerFactory().getObject();
         return new JpaTransactionManager(factory);
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean authEntityManagerFactory() {
-        LocalContainerEntityManagerFactoryBean factory =
-                new LocalContainerEntityManagerFactoryBean();
-        factory.setDataSource(authDataSource());
-        factory.setPackagesToScan("com.softlines.fastpos.jwtsecurity.securitydomain");
-        factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        Properties jpaProperties = new Properties();
-        jpaProperties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
-        jpaProperties.put("hibernate.show-sql", env.getProperty("hibernate.show-sql"));
-        factory.setJpaProperties(jpaProperties);
-        return factory;
+    public LocalContainerEntityManagerFactoryBean authEntityManagerFactory() throws Exception {
+        try {
+            LocalContainerEntityManagerFactoryBean factory =
+                    new LocalContainerEntityManagerFactoryBean();
+            factory.setDataSource(authDataSource());
+            factory.setPackagesToScan("com.softlines.fastpos.jwtsecurity.securitydomain");
+            factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+            Properties jpaProperties = new Properties();
+            jpaProperties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+            jpaProperties.put("hibernate.show-sql", env.getProperty("hibernate.show-sql"));
+            factory.setJpaProperties(jpaProperties);
+            return factory;
+        }catch (Exception e){
+            throw new Exception("DB not found ex:" + e);
+        }
     }
 
 }

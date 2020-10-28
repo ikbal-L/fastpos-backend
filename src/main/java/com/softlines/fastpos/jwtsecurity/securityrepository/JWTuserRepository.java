@@ -6,8 +6,14 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface JWTuserRepository extends JpaRepository<JWTuser, Long> {
     JWTuser findByUsername(String username);
+
+    //@Transactional
+    @Query(value= "SELECT u FROM JWTuser u JOIN FETCH u.roles")
+    List<JWTuser> findAllUsers();
 
     @Modifying
     @Transactional

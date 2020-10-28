@@ -46,7 +46,7 @@ public class PrivilegeController {
     }
 
     @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
-    @DeleteMapping("/delete/{privilegeId}")
+    @DeleteMapping("/deletebyid/{privilegeId}")
     public ResponseEntity<Privilege> deletePrivilegeById(@PathVariable long privilegeId){
         try {
             Privilege privilegeToDelete = privilegeRepository.findById(privilegeId).get();
@@ -64,7 +64,7 @@ public class PrivilegeController {
     }
 
     @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
-    @DeleteMapping("/delete/{privilegeName}")
+    @DeleteMapping("/deletebyname/{privilegeName}")
     public ResponseEntity<Privilege> deletePrivilegeByName(@PathVariable String privilegeName){
         privilegeName = privilegeName.toUpperCase();
         if(!privilegeName.matches("_PRIVILEGE$")) privilegeName = privilegeName + "_PRIVILEGE";
