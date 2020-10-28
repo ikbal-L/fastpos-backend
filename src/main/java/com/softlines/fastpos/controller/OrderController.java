@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -30,12 +29,14 @@ public class OrderController {
 
         try {
             Optional<Order> optionalOrder = orderRepository.findById(orderDto.getId());
+
             if (!optionalOrder.isPresent()) {
                 Order order = dtoService.orderDtoToOrder(orderDto);
                 return ResponseEntity.status(HttpStatus.CREATED).body(orderMapper.toOrderDto(orderRepository.save(order)));
             } else {
                 return ResponseEntity.notFound().build();
             }
+
         } catch (Exception exception) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
@@ -54,9 +55,7 @@ public class OrderController {
                 return ResponseEntity.notFound().build();
 
         } catch (Exception exception) {
-
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
-
         }
 
     }

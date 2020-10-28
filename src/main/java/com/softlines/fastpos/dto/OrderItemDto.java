@@ -18,6 +18,4 @@ public class OrderItemDto {
     long productId;
     List<Long> idAdditives;
 
-
-
 }

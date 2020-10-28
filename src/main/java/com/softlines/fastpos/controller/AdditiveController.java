@@ -6,11 +6,14 @@ import com.softlines.fastpos.dto.mapping.AdditiveMapper;
 import com.softlines.fastpos.dto.service.DtoService;
 import com.softlines.fastpos.repository.AdditiveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @RestController
@@ -25,16 +28,16 @@ public class AdditiveController {
     DtoService dtoService;
 
     @PostMapping("/save")
-    public ResponseEntity addAdditive(@RequestBody AdditiveDto additiveDto) {
+    public ResponseEntity addAdditive(@RequestBody Additive additive) {
         try {
 
-            Optional<Additive> optionalAdditive = additiveRepository.findById(additiveDto.getId());
+            Optional<Additive> optionalAdditive = additiveRepository.findById(additive.getId());
 
             if (!optionalAdditive.isPresent()) {
 
-                Additive additive = dtoService.additiveDtoToAdditive(additiveDto);
+//                Additive additive = dtoService.additiveDtoToAdditive(additiveDto);
 
-                return ResponseEntity.status(HttpStatus.CREATED).body(additiveMapper.toAdditiveDto(additiveRepository.save(additive)));
+                return ResponseEntity.status(HttpStatus.CREATED).body(additiveRepository.save(additive));
             } else {
                 return ResponseEntity.noContent().build();
 
@@ -62,8 +65,8 @@ public class AdditiveController {
     public ResponseEntity<AdditiveDto> getAdditive(@PathVariable long id) {
 
         try {
-            Optional<Additive> optionalAdditive = additiveRepository.findById(id);
 
+            Optional<Additive> optionalAdditive = additiveRepository.findById(id);
             if (optionalAdditive.isPresent())
                 return ResponseEntity.ok().body(additiveMapper.toAdditiveDto(additiveRepository.findById(id).get()));
             else
@@ -72,20 +75,26 @@ public class AdditiveController {
         } catch (Exception exception) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
+
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<AdditiveDto> editAdditive(@PathVariable long id, @RequestBody AdditiveDto additiveDto) {
+    public ResponseEntity editAdditive(@PathVariable long id, @RequestBody Additive additive) {
+
         try {
             Optional<Additive> optionalAdditive = additiveRepository.findById(id);
 
             if (optionalAdditive.isPresent()) {
 
-                Additive additive = dtoService.additiveDtoToAdditive(additiveDto);
-                return ResponseEntity.ok().body(additiveMapper.toAdditiveDto(additiveRepository.save(additive)));
+//                Additive additive = dtoService.additiveDtoToAdditive(additiveDto);
+                return ResponseEntity.ok().body(additiveRepository.save(additive));
 
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//                ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+//                messageSource.setDefaultEncoding("UTF-8");
+//                messageSource.setBasenames("messages");
+//                return ResponseEntity.ok().body(messageSource.getMessage("notfound", null,lang!=null ? new Locale(lang):null));
+                return ResponseEntity.notFound().build();
             }
         } catch (Exception exception) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
@@ -95,6 +104,7 @@ public class AdditiveController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity deleteAdditive(@PathVariable long id) {
         try {
+
             Optional<Additive> additiveToDel = additiveRepository.findById(id);
             if (additiveToDel.isPresent()) {
 

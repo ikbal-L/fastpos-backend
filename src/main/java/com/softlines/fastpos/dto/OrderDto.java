@@ -29,6 +29,7 @@ public class OrderDto {
     OrderState orderstate;
     OrderType type;
     List<OrderItemDto> orderItems;
+    long tableId;
 
 //    Session session;
 //    Customer customer;

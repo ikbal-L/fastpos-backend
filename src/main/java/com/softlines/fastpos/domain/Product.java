@@ -1,6 +1,5 @@
 package com.softlines.fastpos.domain;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -8,7 +7,6 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "Product")
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +27,6 @@ public class Product {
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "additive_id"))
     List<Additive> additives;
-
     @ManyToOne(fetch = FetchType.LAZY)
     Category category;
 

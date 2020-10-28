@@ -54,6 +54,7 @@ public class DtoServiceImpl implements DtoService {
     public Category categoryDtoToCategory(CategoryDto categoryDto, boolean getDataFromRepository) {
         List<Product> products = new ArrayList<Product>();
         Category category = categoryMapper.toCategory(categoryDto);
+
         if (getDataFromRepository) {
             for (Long idProduct : categoryDto.getIdProducts()) {
                 products.add(productRepository.findById(idProduct).get());
@@ -67,40 +68,41 @@ public class DtoServiceImpl implements DtoService {
 
 
     @Override
-    public OrderItem orderItemDtoToOrderItem(OrderItemDto oiDto) {
+    public OrderItem orderItemDtoToOrderItem(OrderItemDto oiDto, boolean getDataFromRepository) {
         List<Additive> additives = new ArrayList<Additive>();
         OrderItem orderItem = orderItemMapper.toOrderItem(oiDto);
-        for (Long idAdditive : oiDto.getIdAdditives()) {
-            additives.add(additiveRepository.findById(idAdditive).get());
-        }
-        orderItem.setAdditive(additives);
-        orderItem.setProduct(productRepository.findById(oiDto.getProductId()).get());
-
-//        orderItem.setOrder();
+       if (getDataFromRepository) {
+           for (Long idAdditive : oiDto.getIdAdditives()) {
+               additives.add(additiveRepository.findById(idAdditive).get());
+           }
+           orderItem.setAdditive(additives);
+           orderItem.setProduct(productRepository.findById(oiDto.getProductId()).get());
+       }
         return orderItem;
     }
 
     @Override
-    public List<OrderItem> orderItemDtoListToOrderItemList(List<OrderItemDto> oiDtos) {
+    public List<OrderItem> orderItemDtoListToOrderItemList(List<OrderItemDto> orderItemDtos,boolean getDataFromRepository) {
         List<Additive> additives = new ArrayList<Additive>();
-        List<OrderItem> orderItems = orderItemMapper.toOrderItemList(oiDtos);
-        for (int i = 0; i < oiDtos.size(); i++) {
-            additives.clear();
-            for (Long idAdditive : oiDtos.get(i).getIdAdditives()) {
-                additives.add(additiveRepository.findById(idAdditive).get());
-            }
-            orderItems.get(i).setAdditive(additives);
-            orderItems.get(i).setProduct(productRepository.findById(oiDtos.get(i).getProductId()).get());
-        }
+        List<OrderItem> orderItems = orderItemMapper.toOrderItemList(orderItemDtos);
+      if (getDataFromRepository) {
+          for (int i = 0; i < orderItemDtos.size(); i++) {
+              additives.clear();
+              for (Long idAdditive : orderItemDtos.get(i).getIdAdditives()) {
+                  additives.add(additiveRepository.findById(idAdditive).get());
+              }
+              orderItems.get(i).setAdditive(additives);
+              orderItems.get(i).setProduct(productRepository.findById(orderItemDtos.get(i).getProductId()).get());
+          }
+      }
         return orderItems;
     }
 
 
     @Override
     public Order orderDtoToOrder(OrderDto orderDto) {
-        List<Additive> additivesOrderItem = new ArrayList<Additive>();
         Order order = orderMapper.toOrder(orderDto);
-        order.setOrderItems(orderItemDtoListToOrderItemList(orderDto.getOrderItems()));
+        order.setOrderItems(orderItemDtoListToOrderItemList(orderDto.getOrderItems(),false));
         for (OrderItem orderItem : order.getOrderItems()) {
             orderItem.setOrder(order);
         }

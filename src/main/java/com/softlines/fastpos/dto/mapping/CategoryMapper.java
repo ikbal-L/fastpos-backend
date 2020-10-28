@@ -12,6 +12,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
+
     CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
 
     @Mapping(source = "products", target = "idProducts", qualifiedByName = "ProductToId")
@@ -21,9 +22,9 @@ public interface CategoryMapper {
 
     Category toCategory(CategoryDto categoryDTO);
 
-
     @Named("ProductToId")
     public static long ProductToId(Product products) {
         return products.getId();
     }
+
 }

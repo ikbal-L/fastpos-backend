@@ -6,6 +6,7 @@ import com.softlines.fastpos.dto.mapping.ProductMapper;
 import com.softlines.fastpos.dto.service.DtoServiceImpl;
 import com.softlines.fastpos.repository.ProductRepository;
 import com.softlines.fastpos.service.ProductService;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +54,8 @@ public class ProductController {
     public ResponseEntity<List<ProductDto>> getProducts() {
 
         try {
+            Hibernate.initialize(productRepository.findAll());
+
             List<Product> products = productRepository.findAll();
             //products.forEach(p -> p.getAdditives());
 //            List<Product> products = productService.findAll();
@@ -117,29 +120,26 @@ public class ProductController {
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
 
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity deleteProduct(@PathVariable long id) {
+
         try {
             Optional<Product> optionalProduct = productRepository.findById(id);
-            if (optionalProduct.isPresent()) {
 
+            if (optionalProduct.isPresent()) {
                 productRepository.delete(optionalProduct.get());
                 return ResponseEntity.ok().build();
-
             } else {
-
                 return ResponseEntity.notFound().build();
-
             }
+
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
     }
 }

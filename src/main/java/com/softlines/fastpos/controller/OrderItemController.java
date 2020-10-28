@@ -29,10 +29,11 @@ public class OrderItemController {
     @PostMapping(value = "/save", consumes = "application/json")
     public ResponseEntity addOrderItem(@RequestBody OrderItemDto orderItemDto) {
         try {
+
             Optional<OrderItem> optionalOrderItem = orderItemRepository.findById(orderItemDto.getId());
             if (!optionalOrderItem.isPresent()) {
 
-                OrderItem orderItem = dtoService.orderItemDtoToOrderItem(orderItemDto);
+                OrderItem orderItem = dtoService.orderItemDtoToOrderItem(orderItemDto,false);
                 return ResponseEntity.status(HttpStatus.CREATED).body(orderItemMapper.toOrderItemDto(orderItemRepository.save(orderItem)));
 
             } else {
@@ -42,8 +43,7 @@ public class OrderItemController {
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
     }
 
@@ -57,8 +57,7 @@ public class OrderItemController {
                 return ResponseEntity.notFound().build();
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
     }
 
@@ -74,8 +73,7 @@ public class OrderItemController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
 
     }
@@ -94,8 +92,7 @@ public class OrderItemController {
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
     }
 
@@ -112,8 +109,7 @@ public class OrderItemController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(orderItemDto);
             }
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
 
     }
@@ -132,8 +128,7 @@ public class OrderItemController {
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
     }
 }

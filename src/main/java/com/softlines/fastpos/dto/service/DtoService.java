@@ -8,8 +8,8 @@ import java.util.List;
 public interface DtoService {
     Product productDtoToProduct(ProductDto pDto,boolean getDataFromRepository);
     Category categoryDtoToCategory(CategoryDto categoryDto, boolean getDataFromRepository);
-    OrderItem orderItemDtoToOrderItem(OrderItemDto pDto);
+    OrderItem orderItemDtoToOrderItem(OrderItemDto pDto, boolean getDataFromRepository);
     Order orderDtoToOrder(OrderDto orderDto);
-    List<OrderItem> orderItemDtoListToOrderItemList(List<OrderItemDto> oiDtos);
+    List<OrderItem> orderItemDtoListToOrderItemList(List<OrderItemDto> oiDtos,boolean getDataFromRepository);
     Additive additiveDtoToAdditive(AdditiveDto additiveDto);
 }

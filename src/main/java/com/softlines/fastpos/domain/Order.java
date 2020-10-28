@@ -12,6 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "orders")
 public class Order {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
@@ -33,6 +34,9 @@ public class Order {
     OrderType type;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<OrderItem> orderItems;
+    @ManyToOne
+    @JoinColumn(name = "tables_id")
+    Tables table;
 
 }
 
