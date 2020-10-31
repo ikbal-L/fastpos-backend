@@ -11,6 +11,8 @@ import java.util.List;
 @Table(name = "Additive")
 public class Additive {
 
+// TODO Add Ingrediants to additive entity
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;

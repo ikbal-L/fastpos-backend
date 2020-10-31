@@ -17,4 +17,5 @@ public class Annex {
     String name;
     String address;
     String serverLicenceKey;
+    
 }

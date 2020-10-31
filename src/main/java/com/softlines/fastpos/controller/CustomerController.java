@@ -7,14 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
-
 
     @Autowired
     private CustomerRepository customerRepository ;
@@ -26,14 +24,13 @@ public class CustomerController {
             Optional<Customer> optionalCustomer = customerRepository.findById(Customer.getId());
 
             if (!optionalCustomer.isPresent()) {
-
-//                Customer Customer = dtoService.CustomerDtoToCustomer(CustomerDto);
+//                Customer customer = dtoService.CustomerDtoToCustomer(CustomerDto);
 
                 return ResponseEntity.status(HttpStatus.CREATED).body(customerRepository.save(Customer));
             } else {
                 return ResponseEntity.noContent().build();
-
             }
+
         } catch (Exception exception) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, " Not Found", exception);
@@ -69,6 +66,7 @@ public class CustomerController {
         } catch (Exception exception) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
+
     }
 
     @PutMapping("/put/{id}")

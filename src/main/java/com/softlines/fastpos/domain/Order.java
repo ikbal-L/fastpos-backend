@@ -1,12 +1,10 @@
 package com.softlines.fastpos.domain;
 
 import lombok.*;
-
 import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-
 
 @Data
 @Entity

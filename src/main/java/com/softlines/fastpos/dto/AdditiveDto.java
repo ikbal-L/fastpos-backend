@@ -3,6 +3,7 @@ package com.softlines.fastpos.dto;
 import lombok.*;
 
 import java.util.List;
+// TODO Remove additiveDto
 
 @Data
 public class AdditiveDto {

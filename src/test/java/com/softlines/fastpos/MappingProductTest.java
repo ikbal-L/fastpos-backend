@@ -2,6 +2,9 @@ package com.softlines.fastpos;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softlines.fastpos.dto.ProductDto;
+import com.softlines.fastpos.dto.mapping.ProductMapper;
+import com.softlines.fastpos.repository.ProductRepository;
+import org.assertj.core.util.Lists;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.jupiter.api.Order;
@@ -15,10 +18,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
+
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -35,29 +42,38 @@ public class MappingProductTest {
     @MockBean
     HttpServletResponse response;
 
+    @Autowired
+    ProductRepository productRepository;
+    @Autowired
+    ProductMapper productMapper;
+
+
+    ProductDto product = new ProductDto();
+    List<Long> listAdditives = new ArrayList();
+
     @Test
     public void getProducts() throws Exception {
 
+        var products = productRepository.findAll();
         mvc.perform(get("/product/getall")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(jsonPath("$[0].idAdditives").value(1))
+                .andExpect(jsonPath("$[1].idAdditives[0]").value(productMapper.toProductDTOs(products).get(1).getIdAdditives().get(0)))
                 .andExpect(status().isOk());
 
     }
 
     @Test
     public void getProduct() throws Exception {
-
-        mvc.perform(get("/product/get/{id}",2)
+       var product= productRepository.findById((long) 1).get();
+        mvc.perform(get("/product/get/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(jsonPath("idAdditives").value(Matchers.containsInAnyOrder(1,2)))
+                .andExpect(jsonPath("name").value(productMapper.toProductDto(product).getName()))
                 .andExpect(status().isOk());
 
     }
-    ProductDto product = new ProductDto();
-    List<Long> listAdditives = new ArrayList();
+
 
 
     @Test
@@ -67,8 +83,9 @@ public class MappingProductTest {
         product.setBackgroundString("red");
         product.setDescription("desc");
         product.setMuchInDemand(true);
-        product.setName("From Test");
+        product.setName("pro");
         product.setRank(4);
+        product.setType("type");
         product.setPlatter(true);
         product.setPrice(30);
         product.setType("sad");
@@ -82,11 +99,18 @@ public class MappingProductTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(product)))
                 .andDo(print())
-                .andExpect(jsonPath("name", is("From Test")))
+                .andExpect(jsonPath("name", is("pro")))
                 .andExpect(status().isCreated());
 
     }
 
+    @Test
+    public void getProductWithIdNotExist() throws Exception {
+        mvc.perform(get("/product/get/{id}", 10)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
 
     @Test
     public void putProducts() throws Exception {
@@ -96,7 +120,7 @@ public class MappingProductTest {
         product.setBackgroundString("red");
         product.setDescription("desc");
         product.setMuchInDemand(true);
-        product.setName("From Test");
+        product.setName("pro put");
         product.setRank(4);
         product.setPlatter(true);
         product.setPrice(30);
@@ -111,7 +135,7 @@ public class MappingProductTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(product)))
                 .andDo(print())
-                .andExpect(jsonPath("name", is("From Test")))
+                .andExpect(jsonPath("name", is("pro put")))
                 .andExpect(status().isOk());
 
     }
@@ -119,7 +143,7 @@ public class MappingProductTest {
     @Test
     public void deleteProducts() throws Exception {
 
-        mvc.perform(delete("/product/delete/{id}", "7")
+        mvc.perform(delete("/product/delete/{id}", "19")
                 .contentType(MediaType.APPLICATION_JSON)
         )
                 .andDo(print())

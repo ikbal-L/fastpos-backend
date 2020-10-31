@@ -18,13 +18,13 @@ public interface OrderMapper {
 
 
     @Mapping(source = "orderItems", target = "orderItems", qualifiedByName = "orderItemsToOrderItemsDto")
-    @Mapping(source = "table", target = "tableId", qualifiedByName = "tableToTableDto")
+//    @Mapping(source = "table", target = "tableId", qualifiedByName = "tableToTableDto")
     OrderDto toOrderDto(Order order);
 
     Order toOrder(OrderDto orderDto);
 
 
-    List<OrderDto> toOrderItemDTOs(List<Order> order);
+    List<OrderDto> toOrderDTOs(List<Order> order);
 
     @Named("OrderItemToId")
     public static long OrderToId(Order order) {

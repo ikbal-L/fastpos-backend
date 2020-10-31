@@ -75,6 +75,7 @@ public class ProductController {
     public ResponseEntity<ProductDto> getProduct(@PathVariable long id) {
 
         try {
+
             Optional<Product> optionalProduct = productRepository.findById(id);
             if (optionalProduct.isPresent())
                 return ResponseEntity.ok().body(productMapper.toProductDto(optionalProduct.get()));

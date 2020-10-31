@@ -11,10 +11,8 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
-
 
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
@@ -52,5 +50,6 @@ public interface ProductMapper {
         category.setId(categoryId);
         return category;
     }
+
 
 }

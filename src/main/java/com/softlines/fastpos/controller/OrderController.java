@@ -47,10 +47,11 @@ public class OrderController {
     public ResponseEntity<List<OrderDto>> getOrders() {
 
         try {
+
             List<Order> orders = orderRepository.findAll();
 
             if (orders != null)
-                return ResponseEntity.ok().body(orderMapper.toOrderItemDTOs(orders));
+                return ResponseEntity.ok().body(orderMapper.toOrderDTOs(orders));
             else
                 return ResponseEntity.notFound().build();
 

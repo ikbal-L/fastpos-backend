@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ModelApplication.class)
 @AutoConfigureMockMvc
 @EnableAutoConfiguration(exclude = SecurityAutoConfiguration.class)
-public class MappingAdditiveTest {
+public class AdditiveControllerTest {
 
     @Autowired
     private MockMvc mvc;
@@ -43,18 +44,18 @@ public class MappingAdditiveTest {
     @Autowired
     AdditiveRepository additiveRepository;
 
+    AdditiveDto Additive = new AdditiveDto();
+
     @Test
     public void getAdditives() throws Exception {
 
-       var additives= additiveRepository.findAll();
+        var additives = additiveRepository.findAll();
 
         mvc.perform(get("/additive/getall")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$", hasSize(equalTo(additives.size()))))
                 .andExpect(jsonPath("$[0].description").value(additives.get(0).getDescription()))
-//                .andExpect(jsonPath("$[1].description").value("mayonnaise"))
-//                .andExpect(jsonPath("$[2].rank").value("1"))
                 .andExpect(status().isOk());
 
     }
@@ -62,15 +63,24 @@ public class MappingAdditiveTest {
     @Test
     public void getAdditive() throws Exception {
 
-        mvc.perform(get("/additive/get/{id}",1)
+        var additive = additiveRepository.findById((long) 1);
+
+        mvc.perform(get("/additive/get/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(jsonPath("description").value("harrisa"))
+                .andExpect(jsonPath("description").value(additive.get().getDescription()))
                 .andExpect(status().isOk());
 
     }
-    AdditiveDto Additive = new AdditiveDto();
 
+    @Test
+    public void getAdditiveWithIdNotExist() throws Exception {
+        var additive = additiveRepository.findById((long) 1);
+        mvc.perform(get("/additive/get/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
 
     @Test
     public void addAdditives() throws Exception {
@@ -78,7 +88,6 @@ public class MappingAdditiveTest {
         Additive.setBackgroundString("red");
         Additive.setRank(4);
         Additive.setDescription("harrisa+++");
-
 
         mvc.perform(post("/additive/save")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -93,13 +102,13 @@ public class MappingAdditiveTest {
     @Test
     public void putAdditives() throws Exception {
 
-        Additive.setId(2);
+        Additive.setId(1);
         Additive.setBackgroundString("red");
         Additive.setDescription("desc");
         Additive.setRank(4);
 
 
-        mvc.perform(put("/additive/put/{id}", "2")
+        mvc.perform(put("/additive/put/{id}", "1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(Additive)))
                 .andDo(print())
@@ -111,7 +120,7 @@ public class MappingAdditiveTest {
     @Test
     public void deleteAdditives() throws Exception {
 
-        mvc.perform(delete("/additive/delete/{id}", "2")
+        mvc.perform(delete("/additive/delete/{id}", "1")
                 .contentType(MediaType.APPLICATION_JSON)
         )
                 .andDo(print())

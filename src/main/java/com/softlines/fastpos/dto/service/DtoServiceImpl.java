@@ -35,6 +35,9 @@ public class DtoServiceImpl implements DtoService {
     @Autowired
     OrderItemMapper orderItemMapper;
 
+
+    // TODO Remove repository in services
+
     @Override
     public Product productDtoToProduct(ProductDto pDto, boolean getDataFromRepository) {
         List<Additive> additives = new ArrayList<Additive>();
