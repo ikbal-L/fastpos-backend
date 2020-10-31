@@ -50,7 +50,7 @@ public class JWTuser {
                     name = "role_id", referencedColumnName = "id"))
     private Collection<Role> roles;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_dbinfo",
             joinColumns = @JoinColumn(
@@ -59,11 +59,4 @@ public class JWTuser {
                     name = "dbinfo_id", referencedColumnName = "id"))
     private DbInfo dbInfo;
 
-    public void addRole(Role role){
-        roles.add(role);
-    }
-
-    public void removeRole(Role role){
-        roles.remove(role);
-    }
 }

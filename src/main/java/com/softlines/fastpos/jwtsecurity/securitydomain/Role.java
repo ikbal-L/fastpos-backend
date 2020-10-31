@@ -31,11 +31,4 @@ public class Role {
                     name = "privilege_id", referencedColumnName = "id"))
     private Collection<Privilege> privileges;
 
-    public void addPrivilege(Privilege privilege){
-        privileges.add(privilege);
-    }
-
-    public void removePrivilege(Privilege privilege){
-        privileges.remove(privilege);
-    }
 }

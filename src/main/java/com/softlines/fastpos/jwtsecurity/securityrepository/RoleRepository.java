@@ -18,34 +18,9 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     List<Role> finRole(Role r);
 
     @Query(value = "SELECT p FROM Role p JOIN FETCH p.privileges")
-    List<Role> findAllPrivileges();
+    List<Role> findAllRolesWithPrivileges();
 
 
-    @Query(value= "SELECT * FROM Role WHERE Role.name= ?1", nativeQuery = true)
+    @Query(value= "SELECT p FROM Role p JOIN FETCH p.privileges WHERE p.name= ?1")
     Role findByName(String role);
-
-    @Modifying
-    @Transactional
-    @Query(value= "INSERT INTO Roles_privileges (role_id, privilege_id) VALUES (?1, ?2)", nativeQuery = true)
-    void addPrivilege(long roleId, long privilegeId);
-
-    @Modifying
-    @Transactional
-    @Query(value= "DELETE FROM Roles_privileges WHERE role_id = ?1 AND privilege_id = ?2", nativeQuery = true)
-    void removePrivilege(long roleId, long privilegeId);
-
-    @Modifying
-    @Transactional
-    @Query(value= "DELETE FROM Roles_privileges WHERE role_id = ?1", nativeQuery = true)
-    void removePrivilegeConstraint(Long roleId);
-
-    @Modifying
-    @Transactional
-    @Query(value= "DELETE FROM Users_roles WHERE role_id = ?1", nativeQuery = true)
-    void removeUserConstraint(Long roleId);
-
-    @Modifying
-    @Transactional
-    @Query(value= "UPDATE Role SET name = ?1 WHERE id = ?2", nativeQuery = true)
-    void updateRoleName(String newName, long roleId);
 }

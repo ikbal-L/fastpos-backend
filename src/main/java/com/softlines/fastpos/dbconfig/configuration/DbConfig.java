@@ -1,6 +1,5 @@
 package com.softlines.fastpos.dbconfig.configuration;
 
-import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.jwtsecurity.securitydomain.DbInfo;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
@@ -45,58 +44,76 @@ public class DbConfig {
 
     private List<DbInfo> dbInfo = new ArrayList<>();
 
-    public DbConfig(JWTuserRepository jwTuserRepository) {
-        this.jwTuserRepository = jwTuserRepository;
-        for (JWTuser jwTuser:
-                this.jwTuserRepository.findAll()) {
-            dbInfo.add(jwTuser.getDbInfo());
+    public DbConfig(JWTuserRepository jwTuserRepository) throws Exception {
+        try{
+            this.jwTuserRepository = jwTuserRepository;
+            for (JWTuser jwTuser :
+                    this.jwTuserRepository.findAll()) {
+                dbInfo.add(jwTuser.getDbInfo());
+            }
+        }catch (Exception e){
+            throw new Exception("DB not Found Exception: "+ e);
         }
     }
 
-    public DriverManagerDataSource createDataSources(DbInfo dbInfo){
-        DriverManagerDataSource dataSource= new DriverManagerDataSource();
-        dataSource.setUsername(dbInfo.getUsername());
-        dataSource.setPassword(dbInfo.getPassword());
-        dataSource.setUrl(dbInfo.getUrl());
-        return dataSource;
+    public DriverManagerDataSource createDataSources(DbInfo dbInfo) throws Exception {
+        try{
+            DriverManagerDataSource dataSource = new DriverManagerDataSource();
+            dataSource.setUsername(dbInfo.getUsername());
+            dataSource.setPassword(dbInfo.getPassword());
+            dataSource.setUrl(dbInfo.getUrl());
+            return dataSource;
+        }catch (Exception e){
+            throw new Exception("DB not Found Exception: "+ e);
+        }
     }
 
 
     @Bean
-    public CustomRoutingDataSource customRoutingDataSource(){
+    public CustomRoutingDataSource customRoutingDataSource() throws Exception {
         //initiateDB();
-        List<DbInfo> dbInfos = dbInfoRepository.findAll();
-        Map<Object, Object> map=new HashMap<>();
-        for (DbInfo dbInfo1 :
-                dbInfos) {
-            map.put(dbInfo1.getId(), createDataSources(dbInfo1));
+        try{
+            List<DbInfo> dbInfos = dbInfoRepository.findAll();
+            Map<Object, Object> map = new HashMap<>();
+            for (DbInfo dbInfo1 :
+                    dbInfos) {
+                map.put(dbInfo1.getId(), createDataSources(dbInfo1));
+            }
+            CustomRoutingDataSource customRoutingDataSource = new CustomRoutingDataSource();
+            customRoutingDataSource.setTargetDataSources(map);
+            customRoutingDataSource.setDefaultTargetDataSource(createDataSources(dbInfos.get(0)));
+            return customRoutingDataSource;
+        }catch (Exception e){
+            throw new Exception("DB not Found Exception: "+ e);
         }
-        CustomRoutingDataSource customRoutingDataSource=new CustomRoutingDataSource();
-        customRoutingDataSource.setTargetDataSources(map);
-        customRoutingDataSource.setDefaultTargetDataSource(createDataSources(dbInfos.get(0)));
-        return customRoutingDataSource;
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager()
-    {
-        EntityManagerFactory factory = entityManagerFactory().getObject();
-        return new JpaTransactionManager(factory);
+    public PlatformTransactionManager transactionManager() throws Exception {
+        try{
+            EntityManagerFactory factory = entityManagerFactory().getObject();
+            return new JpaTransactionManager(factory);
+        }catch (Exception e){
+            throw new Exception("DB not Found Exception: "+ e);
+        }
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory()
-    {
-        LocalContainerEntityManagerFactoryBean factory =
-                new LocalContainerEntityManagerFactoryBean();
-        factory.setDataSource(customRoutingDataSource());
-        factory.setPackagesToScan("com.softlines.fastpos.domain");
-        factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        Properties jpaProperties = new Properties();
-        jpaProperties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
-        jpaProperties.put("hibernate.show-sql", env.getProperty("hibernate.show-sql"));
-        factory.setJpaProperties(jpaProperties);
-        return factory;
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws Exception {
+        try{
+            LocalContainerEntityManagerFactoryBean factory =
+                    new LocalContainerEntityManagerFactoryBean();
+            factory.setDataSource(customRoutingDataSource());
+            factory.setPackagesToScan("com.softlines.fastpos.domain");
+            factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+            Properties jpaProperties = new Properties();
+            jpaProperties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+            jpaProperties.put("hibernate.show-sql", env.getProperty("hibernate.show-sql"));
+            factory.setJpaProperties(jpaProperties);
+            return factory;
+        }catch (Exception e){
+            throw new Exception("DB not Found Exception: "+ e);
+        }
     }
 
     @Autowired

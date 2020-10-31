@@ -16,7 +16,7 @@ public interface UserMapper {
 
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    @Mapping(source = "roles", target = "roleIds", qualifiedByName = "rolessToIds")
+    @Mapping(source = "roles", target = "roleIds", qualifiedByName = "rolesToIds")
     @Mapping(source = "dbInfo", target = "dbInfoId", qualifiedByName = "dbInfoToId")
     UserDTO toUserDto(JWTuser jwTuser);
 
@@ -25,8 +25,8 @@ public interface UserMapper {
     @Mapping(source = "roleIds", target = "roles", qualifiedByName = "idsToRoles")
     JWTuser toJWTuser(UserDTO userDTO);
 
-    @Named("rolessToIds")
-    static long rolessToIds(Role role) {
+    @Named("rolesToIds")
+    static long rolesToIds(Role role) {
         return role.getId();
     }
     @Named("idsToRoles")
@@ -35,6 +35,7 @@ public interface UserMapper {
         role.setId(roleId);
         return role;
     }
+
     @Named("dbInfoToId")
     static Long dbInfoToId(DbInfo dbInfo){
         if(dbInfo != null) return dbInfo.getId();
