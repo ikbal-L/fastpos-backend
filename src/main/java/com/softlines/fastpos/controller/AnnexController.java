@@ -23,13 +23,14 @@ public class AnnexController {
     public ResponseEntity addAnnex(@RequestBody Annex annex) {
         try {
 
+            //you didn't take into consideration the case where annex is null
             Optional<Annex> optionalAnnex = annexRepository.findById(annex.getId());
 
             if (!optionalAnnex.isPresent()) {
 //                Annex Annex = dtoService.AnnexDtoToAnnex(AnnexDto);
                 return ResponseEntity.status(HttpStatus.CREATED).body(annexRepository.save(annex));
             } else {
-                return ResponseEntity.noContent().build();
+                return ResponseEntity.status(HttpStatus.FOUND).build();
 
             }
         } catch (Exception exception) {
