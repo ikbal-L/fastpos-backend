@@ -199,7 +199,7 @@ public class DbConfig {
         return privilege;
     }
 
-    Role createRoleIfNotFound(String name, Collection<Privilege> privileges) {
+    Role createRoleIfNotFound(String name, List<Privilege> privileges) {
 
         Role role = roleRepository.findByName(name);
         if (role == null) {

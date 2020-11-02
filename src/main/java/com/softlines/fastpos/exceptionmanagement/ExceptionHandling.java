@@ -16,6 +16,7 @@ public class ExceptionHandling {
     public ExceptionHandling() {
         exceptionMap = new HashMap<>();
         exceptionMap.put(DataAccessResourceFailureException.class, ResponseEntity.status(HttpStatus.BAD_GATEWAY).build());
+        exceptionMap.put(NullPointerException.class, ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }
 
     public ResponseEntity getResponseEntityAccordingToException(Exception exception){

@@ -29,9 +29,9 @@ public interface RoleMapper {
     }
 
     @Named("idsToPrivileges")
-    static Privilege idsToPrivileges(long idprivilege) {
+    static Privilege idsToPrivileges(long idPrivilege) {
         Privilege privilege =new Privilege();
-        privilege.setId(idprivilege);
+        privilege.setId(idPrivilege);
         return privilege;
     }
 }
