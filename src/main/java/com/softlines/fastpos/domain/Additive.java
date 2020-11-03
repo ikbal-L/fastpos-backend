@@ -8,6 +8,9 @@ import java.util.List;
 
 @Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "Additive")
 public class Additive {
 
@@ -19,6 +22,7 @@ public class Additive {
     String description;
     String backgroundString;
     int rank;
+
 //     List<Ingredient> Ingrediants ;
 
 }

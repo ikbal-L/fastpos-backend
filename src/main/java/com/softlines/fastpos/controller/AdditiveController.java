@@ -1,9 +1,11 @@
 package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Additive;
+import com.softlines.fastpos.domain.Category;
 import com.softlines.fastpos.dto.AdditiveDto;
 import com.softlines.fastpos.dto.mapping.AdditiveMapper;
 import com.softlines.fastpos.dto.service.DtoService;
+import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.AdditiveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -27,6 +29,7 @@ public class AdditiveController {
     @Autowired
     DtoService dtoService;
 
+    ExceptionManagement exceptionManagement=new ExceptionManagement();
     @PostMapping("/save")
     public ResponseEntity addAdditive(@RequestBody Additive additive) {
         try {
@@ -49,15 +52,17 @@ public class AdditiveController {
     }
 
     @GetMapping("/getall")
-    public ResponseEntity<List<AdditiveDto>> getAdditives() {
+    public ResponseEntity<List<Additive>> getAdditives() {
         try {
             List<Additive> additives = additiveRepository.findAll();
-            if (additives != null)
-                return ResponseEntity.ok().body(additiveMapper.toAdditiveDTOs(additives));
+
+            if (additives == null || additives.isEmpty())
+                return ResponseEntity.noContent().build();
             else
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.ok().body(additives);
+
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
 

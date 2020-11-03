@@ -4,6 +4,7 @@ import com.softlines.fastpos.domain.Category;
 import com.softlines.fastpos.dto.CategoryDto;
 import com.softlines.fastpos.dto.mapping.CategoryMapper;
 import com.softlines.fastpos.dto.service.DtoService;
+import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,8 @@ public class CategoryController {
     CategoryMapper categoryMapper;
     @Autowired
     DtoService dtoService;
+
+    ExceptionManagement exceptionManagement=new ExceptionManagement();
 
     @PostMapping("/save")
     public ResponseEntity addCategory(@RequestBody CategoryDto categoryDto) {
@@ -48,15 +51,15 @@ public class CategoryController {
         try {
 
             List<Category> categories = categoryRepository.findAll();
-            if (categories != null) {
-                return ResponseEntity.ok().body(categoryMapper.toCategoryDTOs(categories));
+            if (categories == null || categories.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
             } else {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+                return ResponseEntity.ok().body(categoryMapper.toCategoryDTOs(categories));
 
             }
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }

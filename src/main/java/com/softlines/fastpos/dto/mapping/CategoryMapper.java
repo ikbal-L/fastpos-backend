@@ -20,11 +20,19 @@ public interface CategoryMapper {
 
     List<CategoryDto> toCategoryDTOs(List<Category> category);
 
+    @Mapping(source = "idProducts", target = "products", qualifiedByName = "ProductToId")
     Category toCategory(CategoryDto categoryDTO);
 
     @Named("ProductToId")
     public static long ProductToId(Product products) {
         return products.getId();
+    }
+
+    @Named("IdToProduct")
+    public static Product ProductToId(long productId) {
+        Product product = new Product();
+        product.setId(productId);
+        return product;
     }
 
 }

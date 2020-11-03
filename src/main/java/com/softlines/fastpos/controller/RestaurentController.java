@@ -28,11 +28,11 @@ public class RestaurentController {
 
         try {
 
-            Optional<Restaurent> optionalrestaurent = restaurentRepository.findById(restaurentDto.getId());
+            Optional<Restaurent> optionalRestaurent = restaurentRepository.findById(restaurentDto.getId());
 
-            if (!optionalrestaurent.isPresent()) {
+            if (!optionalRestaurent.isPresent()) {
                Restaurent restaurent= restaurentRepository.save(restaurentMapper.toRestaurent(restaurentDto) );
-                return ResponseEntity.status(HttpStatus.CREATED).body(restaurentMapper.toRestaurentDto(restaurent));
+                return ResponseEntity.status(HttpStatus.CREATED).build();
             } else {
                 return ResponseEntity.noContent().build();
             }
@@ -44,31 +44,36 @@ public class RestaurentController {
 
     @GetMapping("/getall")
     public ResponseEntity<List<RestaurentDto>> getRestaurents() {
+
         try {
             List<Restaurent> restaurentes = restaurentRepository.findAll();
+
             if (restaurentes != null)
                 return ResponseEntity.ok().body(restaurentMapper.toRestaurentDTOs(restaurentes));
             else
                 return ResponseEntity.notFound().build();
+
         } catch (Exception exception) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
+
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<RestaurentDto> getRestaurent(@PathVariable long id) {
 
         try {
-            Optional<Restaurent> optionalrestaurent = restaurentRepository.findById(id);
+            Optional<Restaurent> optionalRestaurent = restaurentRepository.findById(id);
 
-            if (optionalrestaurent.isPresent())
-                return ResponseEntity.ok().body(restaurentMapper.toRestaurentDto(optionalrestaurent.get()));
+            if (optionalRestaurent.isPresent())
+                return ResponseEntity.ok().body(restaurentMapper.toRestaurentDto(optionalRestaurent.get()));
             else
                 return ResponseEntity.notFound().build();
 
         } catch (Exception exception) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
+
     }
 
     @PutMapping("/put/{id}")
@@ -79,7 +84,7 @@ public class RestaurentController {
 
             if (optionalRestaurent.isPresent()) {
                 Restaurent restaurent = restaurentMapper.toRestaurent(restaurentDto);
-                return ResponseEntity.ok().body(restaurentMapper.toRestaurentDto(restaurentRepository.save(restaurent)));
+                return ResponseEntity.ok().build();
             } else {
                 return ResponseEntity.notFound().build();
             }
@@ -91,16 +96,15 @@ public class RestaurentController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleterestaurent(@PathVariable long id) {
+    public ResponseEntity deleteRestaurent(@PathVariable long id) {
 
         try {
 
-            Optional<Restaurent> optionalrestaurent = restaurentRepository.findById(id);
-            if (optionalrestaurent.isPresent()) {
+            Optional<Restaurent> optionalRestaurent = restaurentRepository.findById(id);
 
-                restaurentRepository.delete(optionalrestaurent.get());
+            if (optionalRestaurent.isPresent()) {
+                restaurentRepository.delete(optionalRestaurent.get());
                 return ResponseEntity.ok().build();
-
             } else {
                 return ResponseEntity.notFound().build();
             }
@@ -108,5 +112,8 @@ public class RestaurentController {
         } catch (Exception exception) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
         }
+
     }
+
+
 }

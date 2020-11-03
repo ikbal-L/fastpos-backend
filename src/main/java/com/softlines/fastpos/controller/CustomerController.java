@@ -47,7 +47,7 @@ public class CustomerController {
             else
                 return ResponseEntity.notFound().build();
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not Found", exception);
         }
 
     }

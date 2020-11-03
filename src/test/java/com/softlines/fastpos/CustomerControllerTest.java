@@ -55,9 +55,9 @@ public class CustomerControllerTest {
     @Test
     public void getCustomer() throws Exception {
 
-        var customer = customerRepository.findById((long) 1);
+        var customer = customerRepository.findById((long)2);
 
-        mvc.perform(get("/customer/get/{id}", 1)
+        mvc.perform(get("/customer/get/{id}", 2)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("name").value(customer.get().getName()))
@@ -67,8 +67,8 @@ public class CustomerControllerTest {
 
     @Test
     public void getCustomerWithIdNotExist() throws Exception {
-        var customer = customerRepository.findById((long) 1);
-        mvc.perform(get("/customer/get/{id}", 1)
+        var customer = customerRepository.findById((long) 100);
+        mvc.perform(get("/customer/get/{id}", 100)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound());
