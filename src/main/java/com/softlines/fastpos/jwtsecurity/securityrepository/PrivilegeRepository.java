@@ -9,16 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface PrivilegeRepository extends JpaRepository<Privilege, Long> {
-    @Query(value= "SELECT * FROM Privilege WHERE Privilege.name= ?1", nativeQuery = true)
+    @Query(value= "SELECT p FROM Privilege p WHERE p.name= ?1")
     Privilege findByName(String name);
-
-    @Modifying
-    @Transactional
-    @Query(value= "DELETE FROM Roles_privileges WHERE privilege_id = ?1", nativeQuery = true)
-    void removeConstraint(Long privilegeId);
-
-    @Modifying
-    @Transactional
-    @Query(value= "UPDATE Privilege SET name = ?1 WHERE id = ?2", nativeQuery = true)
-    void updatePrivilegeName(String newName, long privilegeId);
 }

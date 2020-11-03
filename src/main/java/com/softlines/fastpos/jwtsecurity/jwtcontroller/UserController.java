@@ -1,6 +1,7 @@
 package com.softlines.fastpos.jwtsecurity.jwtcontroller;
 
 
+import com.softlines.fastpos.exceptionmanagement.ExceptionHandling;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
 import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.RoleDTO;
@@ -39,6 +40,8 @@ public class UserController {
     UserMapper userMapper;
     @Autowired
     RoleMapper roleMapper;
+    @Autowired
+    ExceptionHandling exceptionHandling;
 
     PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
@@ -46,18 +49,17 @@ public class UserController {
     @PostMapping("/save")
     public ResponseEntity<UserDTO> addUser(@RequestBody UserDTO userDTO){
         try {
-            JWTuser existingUser = jwTuserRepository.findByUsername(userDTO.getUsername());
-            if(existingUser != null){
+            Optional<JWTuser> existingUser = jwTuserRepository.findById(userDTO.getId());
+            if(existingUser.isPresent()){
                 return ResponseEntity.noContent().build();
             }
 
             userDTO.setPassword(encoder.encode(userDTO.getPassword()));
             JWTuser createdUser = jwTuserRepository.save(userMapper.toJWTuser(userDTO));
-            userDTO.setId(createdUser.getId());
+            userDTO = userMapper.toUserDto(createdUser);
             return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
         }catch (Exception e){
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", e);
+            return exceptionHandling.getResponseEntityAccordingToException(e);
         }
     }
 
@@ -68,20 +70,22 @@ public class UserController {
             List<JWTuser> allUsers = jwTuserRepository.findAllUsers();
             return ResponseEntity.ok().body(userMapper.toUserDTOs(allUsers));
         }catch (Exception e){
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", e);
+            return exceptionHandling.getResponseEntityAccordingToException(e);
         }
     }
 
     //@PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
     @GetMapping("/get/{username}")
-    public ResponseEntity<UserDTO> getUserByUserame(@PathVariable String username){
+    public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username){
         try {
-
-            return ResponseEntity.ok().body(userMapper.toUserDto(jwTuserRepository.findByUsername(username)));
+            JWTuser jwTuser = jwTuserRepository.findByUsername(username);
+            if(jwTuser != null) {
+                var userDTO = userMapper.toUserDto(jwTuser);
+                return ResponseEntity.ok().body(userDTO);
+            }
+            return ResponseEntity.noContent().build();
         }catch (Exception e){
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", e);
+            return exceptionHandling.getResponseEntityAccordingToException(e);
         }
     }
 
@@ -96,8 +100,7 @@ public class UserController {
             }
             return ResponseEntity.noContent().build();
         }catch (Exception e){
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", e);
+            return exceptionHandling.getResponseEntityAccordingToException(e);
         }
     }
 
@@ -118,8 +121,7 @@ public class UserController {
             }
             return ResponseEntity.noContent().build();
         }catch (Exception e){
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", e);
+            return exceptionHandling.getResponseEntityAccordingToException(e);
         }
     }
 
@@ -134,8 +136,7 @@ public class UserController {
             }
             return ResponseEntity.noContent().build();
         }catch (Exception e){
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", e);
+            return exceptionHandling.getResponseEntityAccordingToException(e);
         }
     }
 
@@ -156,8 +157,7 @@ public class UserController {
             }
             return ResponseEntity.noContent().build();
         }catch (Exception e){
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", e);
+            return exceptionHandling.getResponseEntityAccordingToException(e);
         }
     }
 

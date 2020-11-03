@@ -39,8 +39,8 @@ public class RoleController {
             String roleName = roleDTO.getName().toUpperCase();
             if (!roleName.matches("^ROLE_")) roleName = "ROLE_" + roleName;
             roleDTO.setName(roleName);
-            Role existingRole = roleRepository.findByName(roleName);
-            if (existingRole != null) {
+            Optional<Role> existingRole = roleRepository.findById(roleDTO.getId());
+            if (existingRole.isPresent()) {
                 return ResponseEntity.noContent().build();
             }
             Role createdRole = roleRepository.save(roleMapper.toRole(roleDTO));
@@ -63,8 +63,7 @@ public class RoleController {
                 return ResponseEntity.noContent().build();
             }
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionHandling.getResponseEntityAccordingToException(exception);
         }
     }
 
@@ -81,7 +80,7 @@ public class RoleController {
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionHandling.getResponseEntityAccordingToException(exception);
         }
     }
 
@@ -109,7 +108,7 @@ public class RoleController {
                 return ResponseEntity.ok().body(roleMapper.toRoleDto(role));
             return ResponseEntity.noContent().build();
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionHandling.getResponseEntityAccordingToException(exception);
         }
     }
 }
