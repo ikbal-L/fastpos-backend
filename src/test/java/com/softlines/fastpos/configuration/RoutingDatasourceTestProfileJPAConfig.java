@@ -16,20 +16,21 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@EnableJpaRepositories(basePackages = {
-        "com.softlines.fastpos.repository.",
-        "com.softlines.fastpos.jwtsecurity.repository"
-})
+@EnableJpaRepositories(
+        basePackages = "com.softlines.fastpos.repository",
+        entityManagerFactoryRef = "entityManagerFactory",
+        transactionManagerRef = "transactionManager"
+)
 @EnableTransactionManagement
-public class H2TestProfileJPAConfig {
+public class RoutingDatasourceTestProfileJPAConfig {
     @Bean
     @Profile("test")
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:h2:mem:db;DB_CLOSE_DELAY=-1");
-        dataSource.setUsername("sa");
-        dataSource.setPassword("sa");
+        //dataSource.setDriverClassName("org.h2.Driver");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/dbtesting");
+        dataSource.setUsername("root");
+        dataSource.setPassword("root");
 
         return dataSource;
     }
@@ -48,7 +49,7 @@ public class H2TestProfileJPAConfig {
         LocalContainerEntityManagerFactoryBean factory =
                 new LocalContainerEntityManagerFactoryBean();
         factory.setDataSource(dataSource());
-        factory.setPackagesToScan("com.softlines.fastpos.domain");
+        factory.setPackagesToScan(new String[]{"com.softlines.fastpos.domain"});
         factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         Properties jpaProperties = new Properties();
         jpaProperties.put("hibernate.hbm2ddl.auto", "create-drop");

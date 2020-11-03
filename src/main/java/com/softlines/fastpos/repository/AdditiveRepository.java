@@ -10,5 +10,4 @@ import java.util.List;
 @Repository
 public interface AdditiveRepository extends JpaRepository<Additive, Long> {
     List<Additive> findByDescription(String description);
-
 }

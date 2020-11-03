@@ -47,7 +47,7 @@ public class UserController {
 
     PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-    @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
+    //@PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
     @PostMapping("/save")
     public ResponseEntity<UserDTO> addUser(@RequestBody UserDTO userDTO){
         try {

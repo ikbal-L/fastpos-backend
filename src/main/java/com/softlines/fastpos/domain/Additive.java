@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "Additive")
+@Table(name = "additive")
 public class Additive {
 
 // TODO Add Ingrediants to additive entity

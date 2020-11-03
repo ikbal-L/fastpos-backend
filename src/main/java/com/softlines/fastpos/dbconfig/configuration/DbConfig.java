@@ -29,6 +29,7 @@ import java.util.*;
 
 
 @Configuration
+@Profile("prod")
 @EnableJpaRepositories(
         basePackages = "com.softlines.fastpos.repository",
         entityManagerFactoryRef = "entityManagerFactory",

@@ -1,10 +1,7 @@
 package com.softlines.fastpos.jwtsecurity.securitydomain;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -12,6 +9,7 @@ import java.util.Collection;
 @Entity
 @Table(name = "users")
 @Setter @Getter @AllArgsConstructor @NoArgsConstructor
+@Builder
 public class JWTuser {
 
     @Id
@@ -41,7 +39,7 @@ public class JWTuser {
     @Column(name = "token_expired")
     private boolean tokenExpired;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(

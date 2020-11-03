@@ -40,7 +40,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
-                .anyRequest().permitAll()//.authenticated()
+                .antMatchers(HttpMethod.POST, "/user/save").permitAll()
+                .antMatchers(HttpMethod.POST, "/login").permitAll()
+                .anyRequest()/*.permitAll()/*/.authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager()))
