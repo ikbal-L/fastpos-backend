@@ -45,11 +45,8 @@ public class DbConfig {
     @Autowired
     private DbInfoRepository dbInfoRepository;
 
-    private List<DbInfo> dbInfo;
-
     public DbConfig(JWTuserRepository jwTuserRepository) {
         this.jwTuserRepository = jwTuserRepository;
-        this.dbInfo = dbInfoRepository.findAll();
     }
 
     public DriverManagerDataSource createDataSources(DbInfo dbInfo){
@@ -62,8 +59,9 @@ public class DbConfig {
 
 
     @Bean
+    @Profile("prod")
     public CustomRoutingDataSource customRoutingDataSource(){
-        initiateDB();
+        //initiateDB();
         List<DbInfo> dbInfos = dbInfoRepository.findAll();
         Map<Object, Object> map=new HashMap<>();
         for (DbInfo dbInfo1 :
@@ -77,6 +75,7 @@ public class DbConfig {
     }
 
     @Bean
+    @Profile("prod")
     public PlatformTransactionManager transactionManager()
     {
         EntityManagerFactory factory = entityManagerFactory().getObject();
@@ -84,6 +83,7 @@ public class DbConfig {
     }
 
     @Bean
+    @Profile("prod")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory()
     {
         LocalContainerEntityManagerFactoryBean factory =

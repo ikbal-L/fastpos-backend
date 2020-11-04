@@ -26,7 +26,7 @@ public class DbInfo {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "driver_class_name", nullable = false)
+    @Column(name = "driver_class_name")
     private String driverClassName;
 
     @OneToMany(fetch = FetchType.LAZY)

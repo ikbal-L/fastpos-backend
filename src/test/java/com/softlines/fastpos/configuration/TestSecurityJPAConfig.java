@@ -2,6 +2,7 @@ package com.softlines.fastpos.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -21,16 +22,16 @@ import java.util.Properties;
         transactionManagerRef = "authTransactionManager"
 )
 @EnableTransactionManagement
-
 public class TestSecurityJPAConfig {
     @Bean
+    @Primary
     @Profile("test")
     public DataSource authDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        //dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/dbsecuritytesting");
+
+        dataSource.setUrl("jdbc:mysql://localhost:3306/dbsecuritytesting?createDatabaseIfNotExist=true");
         dataSource.setUsername("root");
-        dataSource.setPassword("root");
+        dataSource.setPassword("");
 
         return dataSource;
     }
@@ -53,6 +54,7 @@ public class TestSecurityJPAConfig {
         factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         Properties jpaProperties = new Properties();
         jpaProperties.put("hibernate.hbm2ddl.auto", "create-drop");
+        jpaProperties.put("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.MySQL57InnoDBDialect");
         jpaProperties.put("hibernate.show-sql", true);
         factory.setJpaProperties(jpaProperties);
         return factory;

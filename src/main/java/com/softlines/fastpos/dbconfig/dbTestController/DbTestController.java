@@ -1,5 +1,6 @@
 package com.softlines.fastpos.dbconfig.dbTestController;
 
+import com.softlines.fastpos.dbconfig.configuration.CustomContextHolder;
 import com.softlines.fastpos.jwtsecurity.securityrepository.PrivilegeRepository;
 import com.softlines.fastpos.jwtsecurity.securityrepository.RoleRepository;
 import com.softlines.fastpos.repository.ProductRepository;
@@ -24,8 +25,8 @@ public class DbTestController {
     @PreAuthorize("@apiAuth.checkGrants(authentication, 'READ_PRIVILEGE')")
     @GetMapping(value = "/", produces = "application/json")
     public String testDbRerouting(){
-        String name = productRepository.findAll().get(0).getName();
-        return name;
+
+        return productRepository.findAll().get(0).getName();
     }
 
 }

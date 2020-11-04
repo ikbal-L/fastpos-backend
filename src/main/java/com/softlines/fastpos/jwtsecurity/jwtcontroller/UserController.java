@@ -56,8 +56,10 @@ public class UserController {
                 return ResponseEntity.noContent().build();
             }
 
-            userDTO.setPassword(encoder.encode(userDTO.getPassword()));
-            JWTuser createdUser = jwTuserRepository.save(userMapper.toJWTuser(userDTO));
+
+            JWTuser jwTuser = userMapper.toJWTuser(userDTO);
+            jwTuser.setPassword(encoder.encode(jwTuser.getPassword()));
+            JWTuser createdUser = jwTuserRepository.save(jwTuser);
             userDTO.setId(createdUser.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
         }catch (Exception e){
