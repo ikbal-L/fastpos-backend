@@ -3,7 +3,6 @@ package com.softlines.fastpos.jwtsecurity.securityconfiguration;
 import com.softlines.fastpos.jwtsecurity.securityfilters.JWTAuthenticationFilter;
 import com.softlines.fastpos.jwtsecurity.securityfilters.JWTAuthorizationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

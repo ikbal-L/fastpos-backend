@@ -24,7 +24,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
 import java.util.*;
 
 
@@ -46,14 +45,11 @@ public class DbConfig {
     @Autowired
     private DbInfoRepository dbInfoRepository;
 
-    private List<DbInfo> dbInfo = new ArrayList<>();
+    private List<DbInfo> dbInfo;
 
     public DbConfig(JWTuserRepository jwTuserRepository) {
         this.jwTuserRepository = jwTuserRepository;
-        for (JWTuser jwTuser:
-                this.jwTuserRepository.findAll()) {
-            dbInfo.add(jwTuser.getDbInfo());
-        }
+        this.dbInfo = dbInfoRepository.findAll();
     }
 
     public DriverManagerDataSource createDataSources(DbInfo dbInfo){
@@ -67,7 +63,7 @@ public class DbConfig {
 
     @Bean
     public CustomRoutingDataSource customRoutingDataSource(){
-        //initiateDB();
+        initiateDB();
         List<DbInfo> dbInfos = dbInfoRepository.findAll();
         Map<Object, Object> map=new HashMap<>();
         for (DbInfo dbInfo1 :
@@ -157,7 +153,7 @@ public class DbConfig {
         admin.setEnabled(true);
 
         dbInfo = dbInfoRepository.findByName("defaultDB");
-        admin.setDbInfo(dbInfo);
+        admin.setDbId(dbInfo.getId());
         jwTuserRepository.save(admin);
 
         Role userRole = roleRepository.findByName("ROLE_USER");
@@ -170,7 +166,7 @@ public class DbConfig {
         user.setRoles(Arrays.asList(userRole));
         user.setEnabled(true);
         dbInfo2 = dbInfoRepository.findByName("firstDB");
-        user.setDbInfo(dbInfo2);
+        user.setDbId(dbInfo2.getId());
         jwTuserRepository.save(user);
     }
 

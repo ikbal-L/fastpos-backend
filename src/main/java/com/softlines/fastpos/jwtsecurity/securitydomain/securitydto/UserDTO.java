@@ -18,5 +18,5 @@ public class UserDTO {
     private boolean enabled;
     private boolean tokenExpired;
     private List<Long> roleIds;
-    private long dbInfoId;
+    private long dbId;
 }

@@ -63,7 +63,7 @@ public class CustomJWTuserDetails implements UserDetails {
         return jwTuser.isEnabled();
     }
 
-    public DbInfo getDbInfo() {
-        return jwTuser.getDbInfo();
+    public Long getDbId() {
+        return jwTuser.getDbId();
     }
 }

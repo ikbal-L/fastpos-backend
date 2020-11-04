@@ -59,10 +59,10 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             HttpServletResponse res,
                                             FilterChain chain,
                                             Authentication auth) {
-        //TODO when changing dbInfo by dbId, you should change this instruction
-        var dbID = ((CustomJWTuserDetails) auth.getPrincipal()).getDbInfo() == null ? 0
-                : ((CustomJWTuserDetails) auth.getPrincipal()).getDbInfo().getId();
-        String token = createToken(auth.getName(), dbID);
+        //TODO when changing dbInfo by dbId, you should change this instruction : DONE!
+        var dbId = ((CustomJWTuserDetails) auth.getPrincipal()).getDbId() == null ? 0
+                : ((CustomJWTuserDetails) auth.getPrincipal()).getDbId();
+        String token = createToken(auth.getName(), dbId);
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
     }
 
