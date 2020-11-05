@@ -23,13 +23,14 @@ public class CustomJWTuserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         ArrayList<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        for (Role role:
-             jwTuser.getRoles()) {
-            for (Privilege privilege:
-                 role.getPrivileges()) {
-                grantedAuthorities.add(new SimpleGrantedAuthority(privilege.getName()));
-            }
-        }
+        //TODO: deal with roles and privileges fetch type
+//        for (Role role:
+//             jwTuser.getRoles()) {
+//            for (Privilege privilege:
+//                 role.getPrivileges()) {
+//                grantedAuthorities.add(new SimpleGrantedAuthority(privilege.getName()));
+//            }
+//        }
         return grantedAuthorities;
     }
 
@@ -63,7 +64,7 @@ public class CustomJWTuserDetails implements UserDetails {
         return jwTuser.isEnabled();
     }
 
-    public DbInfo getDbInfo() {
-        return jwTuser.getDbInfo();
+    public Long getDbId() {
+        return jwTuser.getDbId();
     }
 }

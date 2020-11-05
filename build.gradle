@@ -38,6 +38,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testCompile group: 'org.springframework', name: 'spring-test', version: '5.2.9.RELEASE'
 	testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.3.4.RELEASE'
+	testCompile group: 'com.h2database', name: 'h2', version: '1.4.198'
 
 }
 

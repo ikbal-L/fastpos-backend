@@ -3,7 +3,6 @@ package com.softlines.fastpos.jwtsecurity.securityconfiguration;
 import com.softlines.fastpos.jwtsecurity.securityfilters.JWTAuthenticationFilter;
 import com.softlines.fastpos.jwtsecurity.securityfilters.JWTAuthorizationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -40,7 +39,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
-                .anyRequest().permitAll()//.authenticated()
+                //.antMatchers(HttpMethod.POST, "/user/save").permitAll()
+                //.antMatchers(HttpMethod.POST, "/login").permitAll()
+                .anyRequest()/*.permitAll()/*/.authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager()))

@@ -1,10 +1,12 @@
 package com.softlines.fastpos.jwtsecurity.securitydomain.securitydto;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
+@Builder
 public class UserDTO {
     long id;
     private String username;
@@ -16,5 +18,5 @@ public class UserDTO {
     private boolean enabled;
     private boolean tokenExpired;
     private List<Long> roleIds;
-    private long dbInfoId;
+    private long dbId;
 }

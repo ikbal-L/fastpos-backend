@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Additive")
+@Table(name = "additive")
 public class Additive {
 
 // TODO Add Ingrediants to additive entity

@@ -1,6 +1,7 @@
 package com.softlines.fastpos.jwtsecurity.jwtcontroller;
 
 
+import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.jwtsecurity.securitydomain.DbInfo;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
@@ -44,10 +45,12 @@ public class UserController {
     UserMapper userMapper;
     @Autowired
     RoleMapper roleMapper;
+    @Autowired
+    ExceptionManagement exceptionManagement;
 
     PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-    @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
+    //@PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
     @PostMapping("/save")
     public ResponseEntity<UserDTO> addUser(@RequestBody UserDTO userDTO){
         try {
@@ -56,13 +59,13 @@ public class UserController {
                 return ResponseEntity.noContent().build();
             }
 
-            userDTO.setPassword(encoder.encode(userDTO.getPassword()));
-            JWTuser createdUser = jwTuserRepository.save(userMapper.toJWTuser(userDTO));
+            JWTuser jwTuser = userMapper.toJWTuser(userDTO);
+            jwTuser.setPassword(encoder.encode(jwTuser.getPassword()));
+            JWTuser createdUser = jwTuserRepository.save(jwTuser);
             userDTO.setId(createdUser.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
         }catch (Exception e){
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", e);
+            return exceptionManagement.getResponseEntityAccordingToException(e);
         }
     }
 

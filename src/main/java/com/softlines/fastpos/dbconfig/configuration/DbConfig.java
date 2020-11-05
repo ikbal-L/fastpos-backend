@@ -12,6 +12,7 @@ import com.softlines.fastpos.jwtsecurity.securityrepository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -27,6 +28,7 @@ import java.util.*;
 
 
 @Configuration
+@Profile("prod")
 @EnableJpaRepositories(
         basePackages = "com.softlines.fastpos.repository",
         entityManagerFactoryRef = "entityManagerFactory",
@@ -43,14 +45,14 @@ public class DbConfig {
     @Autowired
     private DbInfoRepository dbInfoRepository;
 
-    private List<DbInfo> dbInfo = new ArrayList<>();
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private PrivilegeRepository privilegeRepository;
 
     public DbConfig(JWTuserRepository jwTuserRepository) {
         this.jwTuserRepository = jwTuserRepository;
-        for (JWTuser jwTuser:
-                this.jwTuserRepository.findAll()) {
-            dbInfo.add(jwTuser.getDbInfo());
-        }
     }
 
     public DriverManagerDataSource createDataSources(DbInfo dbInfo){
@@ -63,6 +65,7 @@ public class DbConfig {
 
 
     @Bean
+    @Profile("prod")
     public CustomRoutingDataSource customRoutingDataSource(){
         //initiateDB();
         List<DbInfo> dbInfos = dbInfoRepository.findAll();
@@ -78,6 +81,7 @@ public class DbConfig {
     }
 
     @Bean
+    @Profile("prod")
     public PlatformTransactionManager transactionManager()
     {
         EntityManagerFactory factory = entityManagerFactory().getObject();
@@ -85,6 +89,7 @@ public class DbConfig {
     }
 
     @Bean
+    @Profile("prod")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory()
     {
         LocalContainerEntityManagerFactoryBean factory =
@@ -95,15 +100,11 @@ public class DbConfig {
         Properties jpaProperties = new Properties();
         jpaProperties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
         jpaProperties.put("hibernate.show-sql", env.getProperty("hibernate.show-sql"));
+        jpaProperties.put("spring.jpa.database-platform", "org.hibernate.dialect.MySQL8InnoDBDialect");
+        jpaProperties.put("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.MySQL8InnoDBDialect");
         factory.setJpaProperties(jpaProperties);
         return factory;
     }
-
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private PrivilegeRepository privilegeRepository;
 
     public void initiateDB(){
         PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -154,7 +155,7 @@ public class DbConfig {
         admin.setEnabled(true);
 
         dbInfo = dbInfoRepository.findByName("defaultDB");
-        admin.setDbInfo(dbInfo);
+        admin.setDbId(dbInfo.getId());
         jwTuserRepository.save(admin);
 
         Role userRole = roleRepository.findByName("ROLE_USER");
@@ -167,7 +168,7 @@ public class DbConfig {
         user.setRoles(Arrays.asList(userRole));
         user.setEnabled(true);
         dbInfo2 = dbInfoRepository.findByName("firstDB");
-        user.setDbInfo(dbInfo2);
+        user.setDbId(dbInfo2.getId());
         jwTuserRepository.save(user);
     }
 
@@ -201,5 +202,7 @@ public class DbConfig {
         }
         return null;
     }
+
+
 
 }
