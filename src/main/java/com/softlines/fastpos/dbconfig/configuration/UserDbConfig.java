@@ -26,6 +26,7 @@ import java.util.Properties;
         transactionManagerRef = "authTransactionManager"
 )
 public class UserDbConfig {
+
     @Autowired
     private Environment env;
 
@@ -33,27 +34,31 @@ public class UserDbConfig {
     @Bean
     @ConfigurationProperties(prefix = "com.softlines.fastpos.jwtsecurity")
     public DataSourceProperties authDataSourceProperties() {
-        try {
-            return new DataSourceProperties();
+        return new DataSourceProperties();
+    }
+
+    @Bean
+    public DataSource authDataSource() throws Exception {
+        try{
+            DataSourceProperties authDataSourceProperties = authDataSourceProperties();
+            return DataSourceBuilder.create()
+                    .url(authDataSourceProperties.getUrl())
+                    .username(authDataSourceProperties.getUsername())
+                    .password(authDataSourceProperties.getPassword())
+                    .build();
         }catch (Exception e){
-            throw e;
+            throw new Exception("DB not Found Exception: "+ e);
         }
     }
 
     @Bean
-    public DataSource authDataSource() {
-        DataSourceProperties authDataSourceProperties = authDataSourceProperties();
-        return DataSourceBuilder.create()
-                .url(authDataSourceProperties.getUrl())
-                .username(authDataSourceProperties.getUsername())
-                .password(authDataSourceProperties.getPassword())
-                .build();
-    }
-
-    @Bean
     public PlatformTransactionManager authTransactionManager() throws Exception {
-        EntityManagerFactory factory = authEntityManagerFactory().getObject();
-        return new JpaTransactionManager(factory);
+        try{
+            EntityManagerFactory factory = authEntityManagerFactory().getObject();
+            return new JpaTransactionManager(factory);
+        }catch (Exception e){
+            throw new Exception("DB not Found Exception: "+ e);
+        }
     }
 
     @Bean
@@ -70,7 +75,7 @@ public class UserDbConfig {
             factory.setJpaProperties(jpaProperties);
             return factory;
         }catch (Exception e){
-            throw new Exception("DB not found ex:" + e);
+            throw new Exception("DB not Found Exception: "+ e);
         }
     }
 

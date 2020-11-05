@@ -24,8 +24,8 @@ public interface UserMapper {
     @Mapping(source = "roleIds", target = "roles", qualifiedByName = "idsToRoles")
     JWTuser toJWTuser(UserDTO userDTO);
 
-    @Named("rolessToIds")
-    static long rolessToIds(Role role) {
+    @Named("rolesToIds")
+    static long rolesToIds(Role role) {
         return role.getId();
     }
     @Named("idsToRoles")
