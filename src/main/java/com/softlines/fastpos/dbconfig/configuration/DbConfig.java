@@ -61,7 +61,7 @@ public class DbConfig {
     @Bean
     @Profile("prod")
     public CustomRoutingDataSource customRoutingDataSource(){
-        //initiateDB();
+        initiateDB();
         List<DbInfo> dbInfos = dbInfoRepository.findAll();
         Map<Object, Object> map=new HashMap<>();
         for (DbInfo dbInfo1 :
@@ -94,6 +94,8 @@ public class DbConfig {
         Properties jpaProperties = new Properties();
         jpaProperties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
         jpaProperties.put("hibernate.show-sql", env.getProperty("hibernate.show-sql"));
+        jpaProperties.put("spring.jpa.database-platform", "org.hibernate.dialect.MySQL8InnoDBDialect");
+        jpaProperties.put("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.MySQL8InnoDBDialect");
         factory.setJpaProperties(jpaProperties);
         return factory;
     }

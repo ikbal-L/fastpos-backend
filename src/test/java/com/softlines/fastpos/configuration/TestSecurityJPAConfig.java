@@ -54,7 +54,8 @@ public class TestSecurityJPAConfig {
         factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         Properties jpaProperties = new Properties();
         jpaProperties.put("hibernate.hbm2ddl.auto", "create-drop");
-        jpaProperties.put("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.MySQL57InnoDBDialect");
+        jpaProperties.put("spring.jpa.database-platform", "org.hibernate.dialect.MySQL8InnoDBDialect");
+        jpaProperties.put("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.MySQL8InnoDBDialect");
         jpaProperties.put("hibernate.show-sql", true);
         factory.setJpaProperties(jpaProperties);
         return factory;

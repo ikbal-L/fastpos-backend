@@ -33,25 +33,6 @@ public class RoutingDatasourceTestProfileJPAConfig {
     @Autowired
     private DbInfoRepository dbInfoRepository;
 
-
-    //    @Bean
-//    @Profile("test")
-//    public void dataSources() {
-//        DbInfo dbInfo = new DbInfo();
-//        dbInfo.setId(1l);
-//        dbInfo.setName("firstTestDB");
-//        dbInfo.setUrl("jdbc:mysql://localhost:3306/dbtesting1?createDatabaseIfNotExist=true");
-//        dbInfo.setUsername("root");
-//        dbInfo.setPassword("");
-//        dbInfoRepository.save(dbInfo);
-//        dbInfo.setId(2l);
-//        dbInfo.setName("secondTestDB");
-//        dbInfo.setUrl("jdbc:mysql://localhost:3306/dbtesting2?createDatabaseIfNotExist=true");
-//        dbInfo.setUsername("root");
-//        dbInfo.setPassword("");
-//        dbInfoRepository.save(dbInfo);
-//    }
-
     @Bean
     @Profile("test")
     public CustomRoutingDataSource testingCustomRoutingDataSource(){
@@ -113,6 +94,8 @@ public class RoutingDatasourceTestProfileJPAConfig {
         Properties jpaProperties = new Properties();
         jpaProperties.put("hibernate.hbm2ddl.auto", "create-drop");
         jpaProperties.put("hibernate.show-sql", true);
+        jpaProperties.put("spring.jpa.database-platform", "org.hibernate.dialect.MySQL8InnoDBDialect");
+        jpaProperties.put("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.MySQL8InnoDBDialect");
         factory.setJpaProperties(jpaProperties);
         return factory;
     }
