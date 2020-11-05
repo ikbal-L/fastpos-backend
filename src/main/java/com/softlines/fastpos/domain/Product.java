@@ -1,7 +1,6 @@
 package com.softlines.fastpos.domain;
 
 import lombok.*;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -14,15 +13,16 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
-    String name;
+    @Column(nullable = false,unique = true)
+                String name;
     double price;
     String unit;
-    boolean isMuchInDemand;
+    boolean isMuchInDemand ;
     String type;
     int availableStock;
     String description;
     String backgroundString;
-    boolean isPlatter = false;
+    boolean isPlatter ;
     int rank;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

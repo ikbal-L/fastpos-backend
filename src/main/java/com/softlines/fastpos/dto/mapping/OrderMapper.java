@@ -3,6 +3,7 @@ package com.softlines.fastpos.dto.mapping;
 import com.softlines.fastpos.domain.*;
 import com.softlines.fastpos.dto.OrderDto;
 import com.softlines.fastpos.dto.OrderItemDto;
+import com.softlines.fastpos.dto.TableDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -18,9 +19,10 @@ public interface OrderMapper {
 
 
     @Mapping(source = "orderItems", target = "orderItems", qualifiedByName = "orderItemsToOrderItemsDto")
-//    @Mapping(source = "table", target = "tableId", qualifiedByName = "tableToTableDto")
+    @Mapping(source = "table", target = "tableId", qualifiedByName = "TableToId")
     OrderDto toOrderDto(Order order);
 
+    @Mapping(source = "tableId", target = "table", qualifiedByName = "TableIdToTable")
     Order toOrder(OrderDto orderDto);
 
 
@@ -41,9 +43,16 @@ public interface OrderMapper {
         return orderItem.getId();
     }
 
-    @Named("tableToTableDto")
-    public static long TableToTableDto(Tables tables) {
+    @Named("TableToId")
+    public static long TableToId(Tables tables) {
         return tables.getId();
+    }
+
+    @Named("TableIdToTable")
+    public static Tables TableIdToTable(long id ) {
+        Tables tables = new Tables();
+        tables.setId(id);
+        return tables;
     }
 
     @Named("orderItemsToOrderItemsDto")

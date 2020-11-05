@@ -29,31 +29,38 @@ public class AdditiveController {
     @Autowired
     DtoService dtoService;
 
-    ExceptionManagement exceptionManagement=new ExceptionManagement();
+    ExceptionManagement exceptionManagement = new ExceptionManagement();
+
     @PostMapping("/save")
-    public ResponseEntity addAdditive(@RequestBody Additive additive) {
+    public ResponseEntity<Additive> addAdditive(@RequestBody Additive additive) {
+
         try {
 
             Optional<Additive> optionalAdditive = additiveRepository.findById(additive.getId());
 
-            if (!optionalAdditive.isPresent()) {
 
-//                Additive additive = dtoService.additiveDtoToAdditive(additiveDto);
+            if (!(optionalAdditive.isPresent())) {
+                if (additive.getDescription() != null &&
+                        !additive.getDescription().isEmpty())
+                    return ResponseEntity.status(HttpStatus.CREATED).body(additiveRepository.save(additive));
+                else
+                    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
-                return ResponseEntity.status(HttpStatus.CREATED).body(additiveRepository.save(additive));
             } else {
-                return ResponseEntity.noContent().build();
-
+                return ResponseEntity.status(HttpStatus.FOUND).build();
             }
+
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
+
     }
 
     @GetMapping("/getall")
     public ResponseEntity<List<Additive>> getAdditives() {
+
         try {
+
             List<Additive> additives = additiveRepository.findAll();
 
             if (additives == null || additives.isEmpty())
@@ -64,6 +71,7 @@ public class AdditiveController {
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
+
     }
 
     @GetMapping("/get/{id}")
@@ -72,26 +80,26 @@ public class AdditiveController {
         try {
 
             Optional<Additive> optionalAdditive = additiveRepository.findById(id);
-            if (optionalAdditive.isPresent())
+
+            if (optionalAdditive.isPresent() && id != 0)
                 return ResponseEntity.ok().body(additiveMapper.toAdditiveDto(additiveRepository.findById(id).get()));
             else
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.noContent().build();
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity editAdditive(@PathVariable long id, @RequestBody Additive additive) {
+    public ResponseEntity<Additive> editAdditive(@PathVariable long id, @RequestBody Additive additive) {
 
         try {
             Optional<Additive> optionalAdditive = additiveRepository.findById(id);
 
-            if (optionalAdditive.isPresent()) {
+            if (optionalAdditive.isPresent() && additive.getDescription()!=null) {
 
-//                Additive additive = dtoService.additiveDtoToAdditive(additiveDto);
                 return ResponseEntity.ok().body(additiveRepository.save(additive));
 
             } else {
@@ -99,11 +107,13 @@ public class AdditiveController {
 //                messageSource.setDefaultEncoding("UTF-8");
 //                messageSource.setBasenames("messages");
 //                return ResponseEntity.ok().body(messageSource.getMessage("notfound", null,lang!=null ? new Locale(lang):null));
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.noContent().build();
             }
+
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
+
     }
 
     @DeleteMapping("/delete/{id}")
@@ -117,11 +127,11 @@ public class AdditiveController {
                 return ResponseEntity.ok().build();
 
             } else {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.noContent().build();
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
 }

@@ -20,7 +20,7 @@ public class AnnexController {
     private AnnexRepository annexRepository;
 
     @PostMapping("/save")
-    public ResponseEntity addAnnex(@RequestBody Annex annex) {
+    public ResponseEntity<Annex> addAnnex(@RequestBody Annex annex) {
         try {
 
             Optional<Annex> optionalAnnex = annexRepository.findById(annex.getId());
@@ -29,7 +29,7 @@ public class AnnexController {
 //                Annex Annex = dtoService.AnnexDtoToAnnex(AnnexDto);
                 return ResponseEntity.status(HttpStatus.CREATED).body(annexRepository.save(annex));
             } else {
-                return ResponseEntity.noContent().build();
+                return ResponseEntity.status(HttpStatus.FOUND).build();
 
             }
         } catch (Exception exception) {

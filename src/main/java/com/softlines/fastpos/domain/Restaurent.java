@@ -13,6 +13,8 @@ public class Restaurent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
+    @Column(nullable = false)
+
     String name;
     String address;
     String serverLicenceKey;

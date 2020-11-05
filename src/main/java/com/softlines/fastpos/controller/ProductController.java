@@ -31,7 +31,7 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    ExceptionManagement exceptionManagement=new ExceptionManagement();
+    ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping(value = "/save", consumes = "application/json")
     public ResponseEntity<ProductDto> addProduct(@RequestBody ProductDto productDto) {
@@ -40,15 +40,21 @@ public class ProductController {
             Optional<Product> optionalProduct = productRepository.findById(productDto.getId());
 
             if (!optionalProduct.isPresent()) {
-                Product product = dtoService.productDtoToProduct(productDto, false);
-                return ResponseEntity.status(HttpStatus.CREATED).body(productMapper.toProductDto(productRepository.save(product)));
+
+                if (productDto.getName() != null && !productDto.getName().isEmpty()) {
+                    Product product = dtoService.productDtoToProduct(productDto, false);
+                    return ResponseEntity.status(HttpStatus.CREATED).body(productMapper.toProductDto(productRepository.save(product)));
+                } else {
+                    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+                }
+
             } else {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.status(HttpStatus.FOUND).build();
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+
         }
 
     }
@@ -77,14 +83,14 @@ public class ProductController {
         try {
 
             Optional<Product> optionalProduct = productRepository.findById(id);
-            if (optionalProduct.isPresent())
+
+            if (optionalProduct.isPresent() && id != 0)
                 return ResponseEntity.ok().body(productMapper.toProductDto(optionalProduct.get()));
             else
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.noContent().build();
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }
@@ -98,11 +104,11 @@ public class ProductController {
             if (products != null)
                 return ResponseEntity.ok(productMapper.toProductDTOs(products));
             else
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.noContent().build();
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+
         }
     }
 
@@ -117,11 +123,11 @@ public class ProductController {
                 return ResponseEntity.status(HttpStatus.OK).body(productMapper.toProductDto(productRepository.save(product)));
 
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(productDto);
+                return ResponseEntity.noContent().build();
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }
@@ -140,7 +146,7 @@ public class ProductController {
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
 }

@@ -37,9 +37,7 @@ public class OrderItemController {
                 return ResponseEntity.status(HttpStatus.CREATED).body(orderItemMapper.toOrderItemDto(orderItemRepository.save(orderItem)));
 
             } else {
-
-                return ResponseEntity.notFound().build();
-
+                return ResponseEntity.status(HttpStatus.FOUND).build();
             }
 
         } catch (Exception exception) {

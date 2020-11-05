@@ -17,15 +17,23 @@ import java.util.List;
 public interface TableMapper {
     TableMapper INSTANCE = Mappers.getMapper(TableMapper.class);
 
-    @Mapping(source = "tableOrders", target = "tableOrdersId", qualifiedByName = "OrderToId")
+    @Mapping(source = "tableOrders", target = "tableOrdersId", qualifiedByName = "OrdersToId")
     TableDto toTableDto(Tables tables);
 
     List<TableDto> toTableDTOs(List<Tables> tables);
 
+    @Mapping(source = "tableOrdersId", target = "tableOrders", qualifiedByName = "idsToOrders")
     Tables toTable(TableDto tableDto);
 
-    @Named("OrderToId")
-    public static long OrderToId(Order order) {
+    @Named("OrdersToId")
+    public static long OrdersToId(Order order) {
         return order.getId();
+    }
+
+    @Named("idsToOrders")
+    public static Order idsToOrders(long id) {
+        Order order = new Order();
+        order.setId(id);
+        return order;
     }
 }

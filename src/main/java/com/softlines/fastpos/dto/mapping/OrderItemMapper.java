@@ -1,6 +1,7 @@
 package com.softlines.fastpos.dto.mapping;
 
 import com.softlines.fastpos.domain.Additive;
+import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderItem;
 import com.softlines.fastpos.domain.Product;
 import com.softlines.fastpos.dto.OrderItemDto;
@@ -17,12 +18,14 @@ public interface OrderItemMapper {
 
     @Mapping(source = "productId", target = "product", qualifiedByName = "IdToProduct")
     @Mapping(source = "idAdditives", target = "additive", qualifiedByName = "IdToAdditive")
+    @Mapping(source = "orderId", target = "order", qualifiedByName = "IdToOrder")
     OrderItem toOrderItem(OrderItemDto orderItemDto);
 
     List<OrderItem> toOrderItemList(List<OrderItemDto> orderItemDtos);
 
     @Mapping(source = "additive", target = "idAdditives", qualifiedByName = "AdditiveToId")
     @Mapping(source = "product", target = "productId", qualifiedByName = "ProductToId")
+    @Mapping(source = "order", target = "orderId", qualifiedByName = "OrderToId")
     OrderItemDto toOrderItemDto(OrderItem OrderItem);
 
     List<OrderItemDto> toOrderItemDTOs(List<OrderItem> orderItem);
@@ -43,6 +46,11 @@ public interface OrderItemMapper {
         return product.getId();
     }
 
+    @Named("OrderToId")
+    public static long OrderToId(Order order ) {
+        return order.getId();
+    }
+
 
     @Named("IdToProduct")
     public static Product IdToProduct(long productId) {
@@ -57,4 +65,12 @@ public interface OrderItemMapper {
         additive.setId(additiveId);
         return additive;
     }
+
+    @Named("IdToOrder")
+    public static Order IdToOrder(long orderId) {
+        Order order = new Order();
+        order.setId(orderId);
+        return order;
+    }
+
 }

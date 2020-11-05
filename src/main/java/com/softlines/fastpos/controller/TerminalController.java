@@ -34,7 +34,7 @@ public class TerminalController {
                Terminal terminal= terminalRepository.save(terminalMapper.toTerminal(terminalDto) );
                 return ResponseEntity.status(HttpStatus.CREATED).body(terminalMapper.toTerminalDto(terminal));
             } else {
-                return ResponseEntity.noContent().build();
+                return ResponseEntity.status(HttpStatus.FOUND).build();
             }
 
         } catch (Exception exception) {
