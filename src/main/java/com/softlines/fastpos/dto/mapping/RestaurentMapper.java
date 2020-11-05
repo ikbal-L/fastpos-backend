@@ -20,11 +20,19 @@ public interface RestaurentMapper {
 
     List<RestaurentDto> toRestaurentDTOs(List<Restaurent> Restaurent);
 
+    @Mapping(source = "annexesId", target = "annexes", qualifiedByName = "IdToAnnex")
     Restaurent toRestaurent(RestaurentDto RestaurentDTO);
 
     @Named("annexToId")
     public static long annexToId(Annex annex) {
         return annex.getId();
+    }
+
+    @Named("IdToAnnex")
+    public static Annex IdToAnnex(long id) {
+        Annex annex = new Annex();
+        annex.setId(id);
+        return annex;
     }
 
 }

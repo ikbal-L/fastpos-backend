@@ -3,8 +3,7 @@ package com.softlines.fastpos.domain;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+
 
 @Data
 @Entity
@@ -19,7 +18,8 @@ public class Additive {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
-    String description;
+    @Column(name = "description",nullable = false,unique = true)
+    String description ;
     String backgroundString;
     int rank;
 

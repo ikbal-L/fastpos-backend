@@ -17,5 +17,5 @@ public class OrderItemDto {
     double discountPercentatge;
     long productId;
     List<Long> idAdditives;
-
+    long orderId;
 }

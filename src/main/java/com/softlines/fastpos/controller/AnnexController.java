@@ -20,7 +20,7 @@ public class AnnexController {
     private AnnexRepository annexRepository;
 
     @PostMapping("/save")
-    public ResponseEntity addAnnex(@RequestBody Annex annex) {
+    public ResponseEntity<Annex> addAnnex(@RequestBody Annex annex) {
         try {
 
             //you didn't take into consideration the case where annex is null

@@ -18,7 +18,7 @@ public class ProductDto {
     int availableStock;
     String description;
     String backgroundString;
-    boolean isPlatter = false;
+    boolean isPlatter ;
     int rank;
     long categoryId;
     List<Long> idAdditives;

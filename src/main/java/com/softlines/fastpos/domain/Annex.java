@@ -11,10 +11,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Data
-@Entity
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Entity
 public class Annex {
 
     @Id

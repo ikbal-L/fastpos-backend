@@ -1,39 +1,46 @@
 package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Customer;
+import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
+    ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @Autowired
-    private CustomerRepository customerRepository ;
+    private CustomerRepository customerRepository;
 
     @PostMapping("/save")
-    public ResponseEntity addCustomer(@RequestBody Customer Customer) {
+    public ResponseEntity addCustomer(@RequestBody Customer customer) {
         try {
 
-            Optional<Customer> optionalCustomer = customerRepository.findById(Customer.getId());
+            Optional<Customer> optionalCustomer = customerRepository.findById(customer.getId());
 
-            if (!optionalCustomer.isPresent()) {
-//                Customer customer = dtoService.CustomerDtoToCustomer(CustomerDto);
+            if (!optionalCustomer.isPresent() ) {
+                if (customer.getName() != null &&
+                        !customer.getName().isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.CREATED).body(customerRepository.save(customer));
+                }else{
+                    return ResponseEntity.noContent().build();
 
-                return ResponseEntity.status(HttpStatus.CREATED).body(customerRepository.save(Customer));
+                }
             } else {
-                return ResponseEntity.noContent().build();
+                return ResponseEntity.status(HttpStatus.FOUND).build();
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+
         }
     }
 
@@ -41,13 +48,15 @@ public class CustomerController {
     public ResponseEntity<List<Customer>> getCustomers() {
 
         try {
-            List<Customer> Customeres = customerRepository.findAll();
-            if (Customeres != null)
-                return ResponseEntity.ok().body(Customeres);
+            List<Customer> customers = customerRepository.findAll();
+
+            if (customers == null || customers.isEmpty())
+                return ResponseEntity.noContent().build();
             else
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.ok().body(customers);
+
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }
@@ -58,13 +67,13 @@ public class CustomerController {
         try {
             Optional<Customer> optionalCustomer = customerRepository.findById(id);
 
-            if (optionalCustomer.isPresent())
+            if (optionalCustomer.isPresent() && id!=0)
                 return ResponseEntity.ok().body(optionalCustomer.get());
             else
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.noContent().build();
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }
@@ -78,10 +87,10 @@ public class CustomerController {
             if (optionalCustomer.isPresent()) {
                 return ResponseEntity.ok().body(customerRepository.save(Customer));
             } else {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.noContent().build();
             }
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
 
@@ -96,11 +105,11 @@ public class CustomerController {
                 return ResponseEntity.ok().build();
 
             } else {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.noContent().build();
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
 }

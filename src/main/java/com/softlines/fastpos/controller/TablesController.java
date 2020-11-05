@@ -31,7 +31,7 @@ public class TablesController {
             if (!optionalTable.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CREATED).body(tableRepository.save(table));
             } else {
-                return ResponseEntity.noContent().build();
+                return ResponseEntity.status(HttpStatus.FOUND).build();
 
             }
         } catch (Exception exception) {

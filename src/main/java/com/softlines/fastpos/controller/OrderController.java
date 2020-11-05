@@ -34,7 +34,7 @@ public class OrderController {
                 Order order = dtoService.orderDtoToOrder(orderDto);
                 return ResponseEntity.status(HttpStatus.CREATED).body(orderMapper.toOrderDto(orderRepository.save(order)));
             } else {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.status(HttpStatus.FOUND).build();
             }
 
         } catch (Exception exception) {

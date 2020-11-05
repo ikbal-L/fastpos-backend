@@ -1,5 +1,6 @@
 package com.softlines.fastpos.exceptionmanagement;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,8 @@ public class ExceptionManagement {
 
         //no DB connection
         exceptionMap.put(DataAccessResourceFailureException.class, ResponseEntity.status(HttpStatus.BAD_GATEWAY).build());
+        exceptionMap.put(NullPointerException.class, ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+        exceptionMap.put(ConstraintViolationException.class, ResponseEntity.status(HttpStatus.FOUND).build());
 
         //null foreign key
         exceptionMap.put(DataIntegrityViolationException.class, ResponseEntity.status(HttpStatus.BAD_REQUEST).build());

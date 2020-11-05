@@ -34,7 +34,7 @@ public class RestaurentController {
                Restaurent restaurent= restaurentRepository.save(restaurentMapper.toRestaurent(restaurentDto) );
                 return ResponseEntity.status(HttpStatus.CREATED).build();
             } else {
-                return ResponseEntity.noContent().build();
+                return ResponseEntity.status(HttpStatus.FOUND).build();
             }
 
         } catch (Exception exception) {

@@ -26,23 +26,27 @@ public class CategoryController {
     @Autowired
     DtoService dtoService;
 
-    ExceptionManagement exceptionManagement=new ExceptionManagement();
+    ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping("/save")
     public ResponseEntity addCategory(@RequestBody CategoryDto categoryDto) {
         try {
+
             Optional<Category> optionalCategory = categoryRepository.findById(categoryDto.getId());
 
-            if (!optionalCategory.isPresent()) {
-                Category createdCategory = categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto,false));
+            if (!optionalCategory.isPresent() && !categoryDto.getName().isEmpty()) {
 
+                Category createdCategory = categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto, false));
                 return ResponseEntity.status(HttpStatus.CREATED).body(categoryMapper.toCategoryDto(createdCategory));
+
             } else {
-                return ResponseEntity.notFound().build();
+
+                return ResponseEntity.status(HttpStatus.FOUND).build();
 
             }
+
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
 
@@ -51,13 +55,14 @@ public class CategoryController {
         try {
 
             List<Category> categories = categoryRepository.findAll();
+
             if (categories == null || categories.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+                return ResponseEntity.noContent().build();
 
             } else {
                 return ResponseEntity.ok().body(categoryMapper.toCategoryDTOs(categories));
-
             }
+
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
@@ -68,16 +73,17 @@ public class CategoryController {
     public ResponseEntity<CategoryDto> getCategory(@PathVariable long id) {
 
         try {
+
             Optional<Category> optionalCategory = categoryRepository.findById(id);
 
-            if (optionalCategory.isPresent())
+            if (optionalCategory.isPresent() && id != 0)
                 return ResponseEntity.ok().body(categoryMapper.toCategoryDto(optionalCategory.get()));
             else
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+                return ResponseEntity.noContent().build();
 
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }
@@ -91,10 +97,10 @@ public class CategoryController {
             if (categories != null)
                 return ResponseEntity.ok().body(categoryMapper.toCategoryDTOs(categories));
             else
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.noContent().build();
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
 
@@ -105,13 +111,13 @@ public class CategoryController {
             Optional<Category> optionalCategory = categoryRepository.findById(id);
 
             if (optionalCategory.isPresent()) {
-                return ResponseEntity.ok().body(categoryMapper.toCategoryDto(categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto,false))));
+                return ResponseEntity.ok().body(categoryMapper.toCategoryDto(categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto, false))));
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                return ResponseEntity.noContent().build();
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }
@@ -126,11 +132,11 @@ public class CategoryController {
                 return ResponseEntity.ok().build();
 
             } else {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.noContent().build();
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
 }
