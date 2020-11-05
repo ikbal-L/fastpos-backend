@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //@DataJpaTest
 //@EnableAutoConfiguration(exclude = SecurityAutoConfiguration.class)
 @ActiveProfiles("test")
-public class AnnexControllerTest {
+public class AnnexControllerTestExample {
 
     @Autowired
     private MockMvc mvc;
