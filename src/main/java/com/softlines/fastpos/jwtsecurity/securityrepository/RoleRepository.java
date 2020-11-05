@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
@@ -19,4 +20,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 
     @Query(value= "SELECT p FROM Role p JOIN FETCH p.privileges WHERE p.name= ?1")
     Role findByName(String role);
+
+    @Query(value= "SELECT p FROM Role p JOIN FETCH p.privileges WHERE p.id= ?1")
+    Optional<Role> findById(long id);
 }

@@ -104,7 +104,7 @@ public class RoleControllerUnitTesting {
                                         .build()))
                                 .build();
         var roleDTO = roleMapper.toRoleDto(role);
-        Mockito.when(roleRepository.findByName("ROLE_HR")).thenReturn(role);
+        Mockito.when(roleRepository.findById(role.getId())).thenReturn(Optional.of(role));
 
         var res = roleController.saveRole(roleDTO);
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
@@ -118,7 +118,7 @@ public class RoleControllerUnitTesting {
                                         .build()))
                                 .build();
         var roleDTO = roleMapper.toRoleDto(role);
-        Mockito.when(roleRepository.findByName("ROLE_HR")).thenThrow(DataAccessResourceFailureException.class);
+        Mockito.when(roleRepository.findById(role.getId())).thenThrow(DataAccessResourceFailureException.class);
 
         var res = roleController.saveRole(roleDTO);
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);

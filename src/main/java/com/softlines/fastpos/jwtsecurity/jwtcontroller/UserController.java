@@ -113,6 +113,7 @@ public class UserController {
 
                 String newPassword = userDTO.getPassword();
                 String oldPassword = existingUser.get().getPassword();
+
                 if(!newPassword.equals(oldPassword))
                 userDTO.setPassword(encoder.encode(newPassword));
 
@@ -132,7 +133,7 @@ public class UserController {
             Optional<JWTuser> jwTuser = jwTuserRepository.findById(userId);
             if(jwTuser.isPresent()){
                 List<Long> roleIds = userMapper.toUserDto(jwTuser.get()).getRoleIds();
-                return  ResponseEntity.status(HttpStatus.ACCEPTED).body(roleMapper.toRoleDTOs(roleRepository.findAllById(roleIds)));
+                return  ResponseEntity.status(HttpStatus.OK).body(roleMapper.toRoleDTOs(roleRepository.findAllById(roleIds)));
             }
             return ResponseEntity.noContent().build();
         }catch (Exception e){

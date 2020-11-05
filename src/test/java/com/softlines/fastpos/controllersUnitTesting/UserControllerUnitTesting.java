@@ -206,4 +206,115 @@ public class UserControllerUnitTesting {
         assertEquals(HttpStatus.BAD_GATEWAY, response.getStatusCode());
     }
 
+    @Test
+    public void userController_putUser_nonExistingUser(){
+        var user = JWTuser.builder()
+                .username("aaa")
+                .password("password")
+                .roles(Arrays.asList(Role.builder().id(1l).name("ROLE_ADMIN").build()))
+                .id(1l).build();
+        Mockito.when(jwTuserRepository.findById(1l)).thenReturn(Optional.empty());
+        var userDTO = userMapper.toUserDto(user);
+        var response = userController.editUserById(1l, userDTO);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
+    @Test
+    public void userController_putUser_ExistingUser(){
+        var user = JWTuser.builder()
+                .username("bbb")
+                .password("password")
+                .roles(Arrays.asList(Role.builder().id(1l).name("ROLE_ADMIN").build()))
+                .id(1l).build();
+        var userToEdit = JWTuser.builder()
+                .username("aaa")
+                .password(encoder.encode("password"))
+                .roles(Arrays.asList(Role.builder().id(1l).name("ROLE_ADMIN").build()))
+                .id(1l).build();
+        Mockito.when(jwTuserRepository.findById(1l)).thenReturn(Optional.ofNullable(userToEdit));
+        var userDTO = userMapper.toUserDto(user);
+        var response = userController.editUserById(1l, userDTO);
+        assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
+        assertEquals(1l, response.getBody().getId());
+        assertEquals("bbb", response.getBody().getUsername());
+    }
+    @Test
+    public void userController_putUser_noConnection(){
+        var user = JWTuser.builder()
+                .username("aaa")
+                .password("password")
+                .roles(Arrays.asList(Role.builder().id(1l).name("ROLE_ADMIN").build()))
+                .id(1l).build();
+        Mockito.when(jwTuserRepository.findById(1l)).thenThrow(DataAccessResourceFailureException.class);
+        var userDTO = userMapper.toUserDto(user);
+        var response = userController.editUserById(1l, userDTO);
+        assertEquals(HttpStatus.BAD_GATEWAY, response.getStatusCode());
+    }
+
+    @Test
+    public void userController_getRoles_nonExistingUser(){
+        Mockito.when(jwTuserRepository.findById(1l)).thenReturn(Optional.empty());
+        var response = userController.getUserRoles(1l);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
+    @Test
+    public void userController_getRoles_ExistingUser(){
+        var user = JWTuser.builder()
+                .username("aaa")
+                .password("password")
+                .roles(Arrays.asList(
+                        Role.builder().id(1l).name("ROLE_ADMIN").build(),
+                        Role.builder().id(1l).name("ROLE_USER").build()))
+                .id(1l).build();
+        Mockito.when(jwTuserRepository.findById(1l)).thenReturn(Optional.ofNullable(user));
+        var response = userController.getUserRoles(1l);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        //assertEquals(2, response.getBody().size());
+    }
+    @Test
+    public void userController_getRoles_noConnection(){
+        var user = JWTuser.builder()
+                .username("aaa")
+                .password("password")
+                .roles(Arrays.asList(
+                        Role.builder().id(1l).name("ROLE_ADMIN").build(),
+                        Role.builder().id(1l).name("ROLE_USER").build()))
+                .id(1l).build();
+        Mockito.when(jwTuserRepository.findById(1l)).thenThrow(DataAccessResourceFailureException.class);
+        var response = userController.getUserRoles(1l);
+        assertEquals(HttpStatus.BAD_GATEWAY, response.getStatusCode());
+    }
+
+    @Test
+    public void userController_getPrivileges_nonExistingUser(){
+        Mockito.when(jwTuserRepository.findById(1l)).thenReturn(Optional.empty());
+        var response = userController.getUserPrivileges(1l);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
+    @Test
+    public void userController_getPrivileges_ExistingUser(){
+        var privilege1 = Privilege.builder()
+                .id(1l)
+                .name("READ_PRIVILEGE").build();
+        var privilege2 = Privilege.builder()
+                .id(2l)
+                .name("WRITE_PRIVILEGE").build();
+        var user = JWTuser.builder()
+                .username("aaa")
+                .password("password")
+                .roles(Arrays.asList(
+                        Role.builder().id(1l).name("ROLE_ADMIN").privileges(Arrays.asList(privilege1, privilege2)).build(),
+                        Role.builder().id(1l).name("ROLE_USER").build()))
+                .id(1l).build();
+        Mockito.when(jwTuserRepository.findById(1l)).thenReturn(Optional.ofNullable(user));
+        var response = userController.getUserPrivileges(1l);
+        assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
+        //assertEquals(2, response.getBody().size());
+    }
+    @Test
+    public void userController_getPrivileges_noConnection(){
+        Mockito.when(jwTuserRepository.findById(1l)).thenThrow(DataAccessResourceFailureException.class);
+        var response = userController.getUserRoles(1l);
+        assertEquals(HttpStatus.BAD_GATEWAY, response.getStatusCode());
+    }
+
 }
