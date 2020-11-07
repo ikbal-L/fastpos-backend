@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 
 
+
 @Data
 @Entity
 @Builder
@@ -12,9 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Table(name = "additive")
 public class Additive {
-
-// TODO Add Ingrediants to additive entity
-
+    // TODO Add Ingrediants to additive entity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
@@ -22,7 +21,4 @@ public class Additive {
     String description ;
     String backgroundString;
     int rank;
-
-//     List<Ingredient> Ingrediants ;
-
 }

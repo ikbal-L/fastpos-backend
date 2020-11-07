@@ -8,7 +8,6 @@ import java.util.List;
 
 @Data
 public class ProductDto {
-
     long id;
     String name;
     double price;
@@ -22,7 +21,4 @@ public class ProductDto {
     int rank;
     long categoryId;
     List<Long> idAdditives;
-
-
-
 }

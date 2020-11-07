@@ -41,38 +41,38 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = {ModelApplication.class, RoutingDatasourceTestProfileJPAConfig.class, TestSecurityJPAConfig.class})
 @AutoConfigureMockMvc
-//@DataJpaTest
-//@EnableAutoConfiguration(exclude = SecurityAutoConfiguration.class)
 @ActiveProfiles("test")
 public class AnnexControllerTestExample {
 
     @Autowired
     private MockMvc mvc;
+
     @MockBean
     HttpServletResponse response;
+
     @Autowired
     AnnexRepository mockedAnnexRepository;
 
     @Autowired
     AnnexRepository annexRepository;
+
     @Autowired
     JWTuserRepository userRepository;
 
     @Autowired
     AnnexController annexController;
+
     @Autowired
     UserController userController;
 
     @LocalServerPort
     private int port;
 
-    //Annex annex = new Annex();
-    //you should never use a class variable
     private String createURLWithPort(String uri) {
         return "http://localhost:" + port + uri;
     }
 
-    @Test
+    @Test //this is an integration test
     public void getAllAnnexes_AnnexesListNotEmpty_NotMocked_usingTestRestTemplate() throws Exception {
         var user = UserDTO.builder()
                 .username("admin")

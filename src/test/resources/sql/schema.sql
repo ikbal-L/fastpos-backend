@@ -1,4 +1,4 @@
-create DATABASE dbtesting2;
+CREATE DATABASE dbtesting2;
 use  dbtesting2;
 
 create or replace table additive
