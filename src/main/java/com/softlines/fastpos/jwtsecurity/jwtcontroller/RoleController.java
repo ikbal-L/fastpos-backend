@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +38,7 @@ public class RoleController {
             String roleName = roleDTO.getName().toUpperCase();
             if (!roleName.matches("^ROLE_")) roleName = "ROLE_" + roleName;
             roleDTO.setName(roleName);
-            Optional<Role> existingRole = roleRepository.findById(roleDTO.getId());
+            Optional<Role> existingRole = roleRepository.findRoleById(roleDTO.getId());
             if (existingRole.isPresent()) {
                 return ResponseEntity.noContent().build();
             }
@@ -54,7 +53,7 @@ public class RoleController {
     @DeleteMapping(value = "/delete", consumes = "application/json")
     public ResponseEntity<RoleDTO> deleteRole(@RequestBody RoleDTO roleDTO) {
         try {
-            Optional<Role> roleToDelete = roleRepository.findById(roleDTO.getId());
+            Optional<Role> roleToDelete = roleRepository.findRoleById(roleDTO.getId());
             if (roleToDelete.isPresent()) {
                 Role role = roleToDelete.get();
                 roleRepository.delete(role);
@@ -71,7 +70,7 @@ public class RoleController {
     @PutMapping("/put")
     public ResponseEntity<RoleDTO> editRole(@RequestBody RoleDTO roleDTO) {
         try {
-            Optional<Role> existingRole = roleRepository.findById(roleDTO.getId());
+            Optional<Role> existingRole = roleRepository.findRoleById(roleDTO.getId());
             if (existingRole.isPresent()) {
                 Role role = roleMapper.toRole(roleDTO);
                 return ResponseEntity.ok().body(roleMapper.toRoleDto(roleRepository.save(role)));

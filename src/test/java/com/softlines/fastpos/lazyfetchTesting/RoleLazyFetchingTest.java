@@ -83,7 +83,7 @@ public class RoleLazyFetchingTest {
 
     @Test
     public void roleRepository_findRoleById_fetchPrivileges(){
-        Role role1 = roleRepository.findById(role.getId()).get();
+        Role role1 = roleRepository.findRoleById(role.getId()).get();
         assertEquals(2, role1.getPrivileges().size());
         assertEquals("UPDATE_PRIVILEGE", role1.getPrivileges().get(0).getName());
         assertEquals("EDIT_PRIVILEGE", role1.getPrivileges().get(1).getName());
