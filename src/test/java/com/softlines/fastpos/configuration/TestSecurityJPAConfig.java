@@ -31,7 +31,7 @@ public class TestSecurityJPAConfig {
 
         dataSource.setUrl("jdbc:mysql://localhost:3306/dbsecuritytesting?createDatabaseIfNotExist=true");
         dataSource.setUsername("root");
-        dataSource.setPassword("");
+        dataSource.setPassword("root");
 
         return dataSource;
     }
@@ -54,8 +54,8 @@ public class TestSecurityJPAConfig {
         factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         Properties jpaProperties = new Properties();
         jpaProperties.put("hibernate.hbm2ddl.auto", "create-drop");
-        jpaProperties.put("spring.jpa.database-platform", "org.hibernate.dialect.MySQL8InnoDBDialect");
-        jpaProperties.put("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.MySQL8InnoDBDialect");
+        jpaProperties.put("spring.jpa.database-platform", "org.hibernate.dialect.MySQL5Dialect");
+        jpaProperties.put("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
         jpaProperties.put("hibernate.show-sql", true);
         factory.setJpaProperties(jpaProperties);
         return factory;

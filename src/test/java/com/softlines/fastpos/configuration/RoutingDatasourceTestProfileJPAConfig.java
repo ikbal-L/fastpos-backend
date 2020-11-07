@@ -56,13 +56,13 @@ public class RoutingDatasourceTestProfileJPAConfig {
         dbInfo.setName("firstTestDB");
         dbInfo.setUrl("jdbc:mysql://localhost:3306/dbtesting1?createDatabaseIfNotExist=true");
         dbInfo.setUsername("root");
-        dbInfo.setPassword("");
+        dbInfo.setPassword("root");
         dbInfoRepository.save(dbInfo);
         dbInfo.setId(2l);
         dbInfo.setName("secondTestDB");
         dbInfo.setUrl("jdbc:mysql://localhost:3306/dbtesting2?createDatabaseIfNotExist=true");
         dbInfo.setUsername("root");
-        dbInfo.setPassword("");
+        dbInfo.setPassword("root");
         dbInfoRepository.save(dbInfo);
     }
 
@@ -94,8 +94,8 @@ public class RoutingDatasourceTestProfileJPAConfig {
         Properties jpaProperties = new Properties();
         jpaProperties.put("hibernate.hbm2ddl.auto", "create-drop");
         jpaProperties.put("hibernate.show-sql", true);
-        jpaProperties.put("spring.jpa.database-platform", "org.hibernate.dialect.MySQL8InnoDBDialect");
-        jpaProperties.put("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.MySQL8InnoDBDialect");
+        jpaProperties.put("spring.jpa.database-platform", "org.hibernate.dialect.MySQL5Dialect");
+        jpaProperties.put("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
         factory.setJpaProperties(jpaProperties);
         return factory;
     }
