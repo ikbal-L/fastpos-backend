@@ -35,7 +35,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = {ModelApplication.class, RoutingDatasourceTestProfileJPAConfig.class, TestSecurityJPAConfig.class})
 @AutoConfigureMockMvc
@@ -142,21 +141,6 @@ public class RoutingDatabaseTest {
 //        CustomContextHolder.clear();
 //        CustomContextHolder.setId(admin.getDbId());
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    }
-
-    @Test
-    public void obtainAccessTokenTest() throws Exception {
-        var user = UserDTO.builder()
-                //.dbId(2l)
-                .id(2l)
-                .enabled(true)
-                .username("user")
-                .password("user").build();
-
-        var user1 = userController.addUser(user);
-
-        String adminToken = obtainAccessToken(user.getUsername(), user.getPassword());
-
     }
 
     private String obtainAccessToken(String username, String password) throws Exception {
