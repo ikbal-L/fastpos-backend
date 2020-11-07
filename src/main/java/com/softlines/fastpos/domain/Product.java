@@ -13,8 +13,8 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
-    @Column(nullable = false,unique = true)
-                String name;
+    @Column(nullable = false, unique = true)
+    String name;
     double price;
     String unit;
     boolean isMuchInDemand ;

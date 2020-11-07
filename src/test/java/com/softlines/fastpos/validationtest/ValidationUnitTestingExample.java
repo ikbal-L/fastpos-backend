@@ -38,7 +38,7 @@ public class ValidationUnitTestingExample {
         AdditiveDto additive = new AdditiveDto();
         Set<ConstraintViolation<AdditiveDto>> violations = validator.validate(additive);
         assertFalse(violations.isEmpty());
-        assertThat(violations.size(), equalTo(1));
-        assertThat(violations.size(), is(1));
+        assertThat(violations.size(), equalTo(2));
+        assertThat(violations.size(), is(2));
     }
 }
