@@ -1,42 +1,23 @@
 package com.softlines.fastpos.lazyfetchTesting;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softlines.fastpos.ModelApplication;
-import com.softlines.fastpos.jwtsecurity.jwtcontroller.RoleController;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
-import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.RoleDTO;
-import com.softlines.fastpos.jwtsecurity.securitydomain.securitymapper.RoleMapper;
 import com.softlines.fastpos.jwtsecurity.securityrepository.PrivilegeRepository;
 import com.softlines.fastpos.jwtsecurity.securityrepository.RoleRepository;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-//import org.junit.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.server.ResponseStatusException;
 
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ModelApplication.class)
 @AutoConfigureMockMvc
-@TestMethodOrder(OrderAnnotation.class)
 public class RoleLazyFetchingTest {
 
     @Autowired
