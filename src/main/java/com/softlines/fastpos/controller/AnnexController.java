@@ -1,13 +1,14 @@
 package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Annex;
-import com.softlines.fastpos.dto.service.DtoService;
+import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.AnnexRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ import java.util.Optional;
 @RequestMapping("/annex")
 public class AnnexController {
 
+    ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @Autowired
     private AnnexRepository annexRepository;
@@ -27,27 +29,32 @@ public class AnnexController {
             Optional<Annex> optionalAnnex = annexRepository.findById(annex.getId());
 
             if (!optionalAnnex.isPresent()) {
-//                Annex Annex = dtoService.AnnexDtoToAnnex(AnnexDto);
-                return ResponseEntity.status(HttpStatus.CREATED).body(annexRepository.save(annex));
+                if (annex.getName() != null &&
+                        !annex.getName().isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.CREATED).body(annexRepository.save(annex));
+                } else {
+                    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+                }
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();
 
             }
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
 
     @GetMapping("/getall")
-    public ResponseEntity<List<Annex>> getAnnexs() {
+    public ResponseEntity<List<Annex>> getAnnexes() {
         try {
             List<Annex> annexes = annexRepository.findAll();
-            if (annexes != null)
-                return ResponseEntity.ok().body(annexes);
+            if (annexes == null || annexes.isEmpty())
+                return ResponseEntity.noContent().build();
             else
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.ok().body(annexes);
+
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
 
@@ -57,13 +64,13 @@ public class AnnexController {
         try {
             Optional<Annex> optionalAnnex = annexRepository.findById(id);
 
-            if (optionalAnnex.isPresent())
+            if (optionalAnnex.isPresent() && id != 0)
                 return ResponseEntity.ok().body(optionalAnnex.get());
             else
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.noContent().build();
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
 
@@ -73,13 +80,13 @@ public class AnnexController {
         try {
             Optional<Annex> optionalAnnex = annexRepository.findById(id);
 
-            if (optionalAnnex.isPresent()) {
+            if (optionalAnnex.isPresent() && Annex.getName() != null) {
                 return ResponseEntity.ok().body(annexRepository.save(Annex));
             } else {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.noContent().build();
             }
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }
@@ -100,7 +107,7 @@ public class AnnexController {
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
 }

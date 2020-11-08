@@ -3,8 +3,9 @@ package com.softlines.fastpos.unitcontrollertest;
 import com.softlines.fastpos.ModelApplication;
 import com.softlines.fastpos.controller.CategoryController;
 import com.softlines.fastpos.domain.Category;
-import com.softlines.fastpos.domain.Category;
+
 import com.softlines.fastpos.domain.Product;
+import com.softlines.fastpos.dto.CategoryDto;
 import com.softlines.fastpos.dto.mapping.CategoryMapper;
 import com.softlines.fastpos.repository.CategoryRepository;
 import org.junit.Test;
@@ -18,14 +19,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 
 @RunWith(SpringRunner.class)
@@ -225,5 +228,117 @@ public class CategoryControllerUnitTest {
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
 
     }
+
+
+
+    /**
+     * ------------------>  Delete Category Unit Test  <------------------------
+     */
+
+    @Test
+    public void categoryController_Delete_WithCategoryId() {
+
+        var category =
+                Category.builder()
+                        .id(1l)
+                        .name("name")
+                        .build();
+
+        when(categoryRepository.findById(1l)).thenReturn(Optional.ofNullable(category));
+        categoryController.deleteCategory(1);
+
+        verify(categoryRepository, times(1)).delete(category);
+
+
+    }
+
+    @Test
+    public void categoryController_Delete_WithNotExistCategoryId() {
+
+        when(categoryRepository.findById(1l)).thenReturn(null);
+
+        categoryController.deleteCategory(1);
+
+        verify(categoryRepository, times(1)).findById(1l);
+        verifyNoMoreInteractions(categoryRepository);
+
+    }
+
+    @Test
+    @Order(12)
+    public void categoryController_Delete_getCategoriesWithNoDBConnection() {
+
+        when(categoryRepository.findById(5l))
+                .thenThrow(DataAccessResourceFailureException.class);
+
+        var res = categoryController.getCategory(5);
+
+        assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
+
+    }
+
+
+    /**
+     * ------------------>  Put Category Unit Test  <------------------------
+     */
+
+    @Test
+    public void categoryController_Put_WithData() {
+
+        var category = Category.builder()
+                .id(1l)
+                .name("harrisa")
+                .build();
+
+        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
+        ResponseEntity<CategoryDto> returned = categoryController.editCategory(1,categoryMapper.toCategoryDto( category));
+
+        verify(categoryRepository, times(1)).findById(category.getId());
+        assertEquals(returned.getStatusCode(), HttpStatus.OK);
+
+    }
+
+    @Test
+    public void categoryController_Put_WithIdNotExist() {
+
+        var category = Category.builder()
+                .id(10l)
+                .name("harrisa")
+                .build();
+
+        when(categoryRepository.findById(category.getId())).thenReturn(Optional.empty());
+        ResponseEntity<CategoryDto> returned = categoryController.editCategory(10, categoryMapper.toCategoryDto( category));
+
+        verify(categoryRepository, times(1)).findById(category.getId());
+        assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
+
+    }
+
+    @Test
+    public void categoryController_Put_WithNullData() {
+
+        var category = Category.builder().id(1).build();
+
+        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
+        var returned = categoryController.editCategory(1,categoryMapper.toCategoryDto(category) );
+
+        verify(categoryRepository, times(1)).findById(category.getId());
+        assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
+
+    }
+
+    @Test
+    @Order(12)
+    public void categoryController_Put_getCategoryesWithNoDBConnection() {
+
+        when(categoryRepository.findById(5l))
+                .thenThrow(DataAccessResourceFailureException.class);
+
+        var res = categoryController.getCategory(5);
+
+        assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
+
+    }
+
 
 }

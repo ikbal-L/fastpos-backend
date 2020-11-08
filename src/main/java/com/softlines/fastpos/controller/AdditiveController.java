@@ -98,16 +98,10 @@ public class AdditiveController {
         try {
             Optional<Additive> optionalAdditive = additiveRepository.findById(id);
 
-            if (optionalAdditive.isPresent() && additive.getDescription()!=null) {
-
+            if (optionalAdditive.isPresent() && id != 0 && additive.getDescription() != null) {
                 return ResponseEntity.ok().body(additiveRepository.save(additive));
-
             } else {
-//                ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-//                messageSource.setDefaultEncoding("UTF-8");
-//                messageSource.setBasenames("messages");
-//                return ResponseEntity.ok().body(messageSource.getMessage("notfound", null,lang!=null ? new Locale(lang):null));
-                return ResponseEntity.noContent().build();
+              return ResponseEntity.noContent().build();
             }
 
         } catch (Exception exception) {
@@ -121,6 +115,7 @@ public class AdditiveController {
         try {
 
             Optional<Additive> additiveToDel = additiveRepository.findById(id);
+
             if (additiveToDel.isPresent()) {
 
                 additiveRepository.delete(additiveToDel.get());

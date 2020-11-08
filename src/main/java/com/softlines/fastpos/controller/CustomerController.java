@@ -79,13 +79,13 @@ public class CustomerController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity editCustomer(@PathVariable long id, @RequestBody Customer Customer) {
+    public ResponseEntity editCustomer(@PathVariable long id, @RequestBody Customer customer) {
 
         try {
             Optional<Customer> optionalCustomer = customerRepository.findById(id);
 
-            if (optionalCustomer.isPresent()) {
-                return ResponseEntity.ok().body(customerRepository.save(Customer));
+            if (optionalCustomer.isPresent() && customer.getName()!=null) {
+                return ResponseEntity.ok().body(customerRepository.save(customer));
             } else {
                 return ResponseEntity.noContent().build();
             }

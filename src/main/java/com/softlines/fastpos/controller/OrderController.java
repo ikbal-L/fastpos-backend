@@ -4,6 +4,7 @@ import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.dto.OrderDto;
 import com.softlines.fastpos.dto.mapping.OrderMapper;
 import com.softlines.fastpos.dto.service.DtoServiceImpl;
+import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,8 @@ public class OrderController {
     @Autowired
     OrderMapper orderMapper;
 
+    ExceptionManagement exceptionManagement = new ExceptionManagement();
+
     @PostMapping(value = "/save", consumes = "application/json")
     public ResponseEntity<OrderDto> addOrder(@RequestBody OrderDto orderDto) {
 
@@ -38,7 +41,7 @@ public class OrderController {
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }
@@ -53,10 +56,10 @@ public class OrderController {
             if (orders != null)
                 return ResponseEntity.ok().body(orderMapper.toOrderDTOs(orders));
             else
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.noContent().build();
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }
@@ -72,7 +75,7 @@ public class OrderController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
         } catch (Exception exception) {
-            throw new ResponseStatusException (HttpStatus.NOT_FOUND, "Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }
@@ -98,7 +101,7 @@ public class OrderController {
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException (HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }
@@ -119,7 +122,7 @@ public class OrderController {
 
             }
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }

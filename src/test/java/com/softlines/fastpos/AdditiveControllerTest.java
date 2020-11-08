@@ -1,10 +1,8 @@
 package com.softlines.fastpos;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.softlines.fastpos.domain.Additive;
 import com.softlines.fastpos.dto.AdditiveDto;
 import com.softlines.fastpos.repository.AdditiveRepository;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +14,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -93,7 +85,7 @@ public class AdditiveControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(Additive)))
                 .andDo(print())
-                .andExpect(jsonPath("name", is("From Test")))
+                .andExpect(jsonPath("description", is("harrisa+++")))
                 .andExpect(status().isCreated());
 
     }
@@ -102,17 +94,17 @@ public class AdditiveControllerTest {
     @Test
     public void putAdditives() throws Exception {
 
-        Additive.setId(1);
+        Additive.setId(2);
         Additive.setBackgroundString("red");
-        Additive.setDescription("desc");
+        Additive.setDescription("may");
         Additive.setRank(4);
 
 
-        mvc.perform(put("/additive/put/{id}", "1")
+        mvc.perform(put("/additive/put/{id}", "2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(Additive)))
                 .andDo(print())
-                .andExpect(jsonPath("name", is("From Test")))
+                .andExpect(jsonPath("description", is("may")))
                 .andExpect(status().isOk());
 
     }
@@ -120,7 +112,7 @@ public class AdditiveControllerTest {
     @Test
     public void deleteAdditives() throws Exception {
 
-        mvc.perform(delete("/additive/delete/{id}", "1")
+        mvc.perform(delete("/additive/delete/{id}", "2")
                 .contentType(MediaType.APPLICATION_JSON)
         )
                 .andDo(print())

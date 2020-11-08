@@ -117,7 +117,7 @@ public class ProductController {
         try {
             Optional<Product> optionalProduct = productRepository.findById(id);
 
-            if (optionalProduct.isPresent()) {
+            if (optionalProduct.isPresent() && id != 0 && productDto.getName() != null) {
 
                 Product product = dtoService.productDtoToProduct(productDto, false);
                 return ResponseEntity.status(HttpStatus.OK).body(productMapper.toProductDto(productRepository.save(product)));

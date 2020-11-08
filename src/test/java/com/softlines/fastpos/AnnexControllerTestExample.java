@@ -24,15 +24,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -48,18 +47,22 @@ public class AnnexControllerTestExample {
 
     @Autowired
     private MockMvc mvc;
+
     @MockBean
     HttpServletResponse response;
+
     @Autowired
     AnnexRepository mockedAnnexRepository;
 
     @Autowired
     AnnexRepository annexRepository;
+
     @Autowired
     JWTuserRepository userRepository;
 
     @Autowired
     AnnexController annexController;
+
     @Autowired
     UserController userController;
 
@@ -133,11 +136,12 @@ public class AnnexControllerTestExample {
 
     }
 
+
     @Test
     public void getAllAnnexes_AnnexesListNotEmpty() throws Exception {
         List<Annex> annexesList = new ArrayList<>();
         annexesList.add(new Annex(1, "aaa", "adr", "key"));
-        Mockito.when(mockedAnnexRepository.findAll()).thenReturn(annexesList);
+        when(mockedAnnexRepository.findAll()).thenReturn(annexesList);
 
         var annexes = mockedAnnexRepository.findAll();
 
@@ -155,9 +159,9 @@ public class AnnexControllerTestExample {
     public void getAllAnnexes_AnnexesListNotEmpty_Unit() throws Exception {
         List<Annex> annexesList = new ArrayList<>();
         annexesList.add(new Annex(1, "aaa", "adr", "key"));
-        Mockito.when(annexRepository.findAll()).thenReturn(annexesList);
+        when(annexRepository.findAll()).thenReturn(annexesList);
 
-        var res = annexController.getAnnexs();
+        var res = annexController.getAnnexes();
 
         Assertions.assertEquals(res.getStatusCode(), HttpStatus.OK);
         Assertions.assertEquals(((List<Annex>) res.getBody()).get(0).getName(), "aaa");
@@ -165,7 +169,7 @@ public class AnnexControllerTestExample {
 
     @Test
     public void getAllAnnexes_AnnexesListIsEmpty() throws Exception {
-        Mockito.when(mockedAnnexRepository.findAll()).thenReturn(new ArrayList<>());
+        when(mockedAnnexRepository.findAll()).thenReturn(new ArrayList<>());
 
         var annexes = mockedAnnexRepository.findAll();
 
@@ -178,7 +182,7 @@ public class AnnexControllerTestExample {
 
     @Test
     public void getAnnex_ExistingOne() throws Exception {
-        Mockito.when(mockedAnnexRepository.findById((long) 1))
+        when(mockedAnnexRepository.findById((long) 1))
                 .thenReturn(Optional.of(new Annex(1, "aaa", "addr", "key123")));
         var optinalAnnex = mockedAnnexRepository.findById((long) 1);
         mvc.perform(get("/annex/get/{id}", 1)
@@ -190,7 +194,7 @@ public class AnnexControllerTestExample {
 
     @Test
     public void getAnnex_When_IdNotExist() throws Exception {
-        Mockito.when(mockedAnnexRepository.findById((long) 5))
+        when(mockedAnnexRepository.findById((long) 5))
                 .thenReturn(Optional.empty());
         var annex = mockedAnnexRepository.findById((long) 5);
         Assertions.assertEquals(false, annex.isPresent());
@@ -200,6 +204,7 @@ public class AnnexControllerTestExample {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
     private void createUser(String username, String password) throws Exception {
         String content = "{\"username\": \"" + username + "\", \"password\": \"" + password + "\", \"enabled\": true}";
         var result = mvc.perform(post("/user/save")

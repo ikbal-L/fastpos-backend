@@ -110,7 +110,7 @@ public class CategoryController {
 
             Optional<Category> optionalCategory = categoryRepository.findById(id);
 
-            if (optionalCategory.isPresent()) {
+            if (optionalCategory.isPresent() && id != 0 && categoryDto.getName() != null) {
                 return ResponseEntity.ok().body(categoryMapper.toCategoryDto(categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto, false))));
             } else {
                 return ResponseEntity.noContent().build();
@@ -124,6 +124,7 @@ public class CategoryController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity deleteCategory(@PathVariable long id) {
+
         try {
             Category categoryToDel = categoryRepository.findById(id).get();
             if (categoryToDel != null) {
@@ -138,5 +139,6 @@ public class CategoryController {
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
+
     }
 }
