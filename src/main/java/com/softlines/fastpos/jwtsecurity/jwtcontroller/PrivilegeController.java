@@ -28,7 +28,6 @@ public class PrivilegeController {
     @PostMapping("/save")
     public ResponseEntity<Privilege> addPrivilege(@RequestBody Privilege privilege){
         try {
-            if(privilege.getName().equalsIgnoreCase("")) privilege.setName(null);
             String privilegeName = privilege.getName().toUpperCase();
             if(!privilegeName.matches("_PRIVILEGE$")) privilegeName = privilegeName + "_PRIVILEGE";
             privilege.setName(privilegeName);
@@ -77,7 +76,7 @@ public class PrivilegeController {
             if(existingPrivilege.isPresent()){
                 return ResponseEntity.ok().body(privilegeRepository.save(privilege));
             }else {
-                return ResponseEntity.noContent().build();
+                return ResponseEntity.notFound().build();
             }
 
         } catch (Exception exception) {

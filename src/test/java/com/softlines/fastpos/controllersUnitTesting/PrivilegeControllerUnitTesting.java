@@ -45,7 +45,7 @@ public class PrivilegeControllerUnitTesting {
                 .build();
         Mockito.when(privilegeRepository.findByName("EDIT_PRIVILEGE")).thenReturn(privilege);
         var response = privilegeController.addPrivilege(privilege);
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertEquals(HttpStatus.FOUND, response.getStatusCode());
     }
     @Test
     public void privilegeController_savePrivilege_withNullPrivilegeName(){
@@ -75,7 +75,7 @@ public class PrivilegeControllerUnitTesting {
                 .build();
         Mockito.when(privilegeRepository.findById(privilege.getId())).thenReturn(Optional.empty());
         var response = privilegeController.deletePrivilege(privilege, 1l);
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
     @Test
     public void privilegeController_deletePrivilege_ExistingPrivilege(){
@@ -112,7 +112,7 @@ public class PrivilegeControllerUnitTesting {
                 .build();
         Mockito.when(privilegeRepository.findById(privilege.getId())).thenReturn(Optional.empty());
         var response = privilegeController.edit(1l, privilege);
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
     @Test
     public void privilegeController_putPrivilege_ExistingPrivilege(){

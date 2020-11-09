@@ -28,6 +28,7 @@ import java.util.Properties;
         transactionManagerRef = "transactionManager"
 )
 @EnableTransactionManagement
+@Profile("test")
 public class RoutingDatasourceTestProfileJPAConfig {
 
     @Autowired
