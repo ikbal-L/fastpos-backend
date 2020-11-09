@@ -29,8 +29,8 @@ public class DbInfo {
     @Column(name = "driver_class_name")
     private String driverClassName;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dbId")
-    private List<JWTuser> jwTusers;
+//    @OneToMany(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "dbId")
+//    private List<JWTuser> jwTusers;
 
 }

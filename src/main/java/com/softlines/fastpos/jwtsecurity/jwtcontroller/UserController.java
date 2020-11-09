@@ -1,6 +1,7 @@
 package com.softlines.fastpos.jwtsecurity.jwtcontroller;
 
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.jwtsecurity.securitydomain.DbInfo;
 import com.softlines.fastpos.exceptionmanagement.ExceptionHandling;
@@ -19,12 +20,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import javax.validation.Valid;
+import java.util.*;
 
 @RestController
 @RequestMapping("/user")
@@ -50,9 +53,29 @@ public class UserController {
 
     PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        for (ObjectError error : ex.getBindingResult().getAllErrors()) {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        }
+        return errors;
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(JsonParseException.class)
+    public String handleJsonParseException(
+            JsonParseException ex) {
+        return ex.getMessage();
+    }
+
     //@PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
     @PostMapping("/save")
-    public ResponseEntity<UserDTO> addUser(@RequestBody UserDTO userDTO){
+    public ResponseEntity<UserDTO> addUser(@Valid @RequestBody UserDTO userDTO){
         try {
             Optional<JWTuser> existingUser = jwTuserRepository.findById(userDTO.getId());
             if(existingUser.isPresent()){

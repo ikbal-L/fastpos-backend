@@ -8,15 +8,12 @@ import com.softlines.fastpos.domain.Additive;
 import com.softlines.fastpos.domain.Product;
 import com.softlines.fastpos.repository.AdditiveRepository;
 import com.softlines.fastpos.repository.ProductRepository;
-import org.junit.Assert;
 import org.junit.Test;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.validation.ConstraintViolation;
@@ -26,6 +23,7 @@ import java.util.Arrays;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -45,21 +43,53 @@ public class ValidationUnitTestingExampleIT {
 
     @Test
     public void NotValidAdditiveSavingTest(){
-
-        var savedAdditive1 = additiveRepository.save(Additive.builder().id(3l).description("something").build());
-
-        //ConstraintViolationException happens here
-        //var savedAdditive12 = additiveRepository.save(Additive.builder().id(4l).build());
-
         var ex = assertThrows(ConstraintViolationException.class, ()->additiveRepository.save(Additive.builder().id(4l).build()));
-        assertThat(ex.getConstraintViolations().size(), equalTo(1));
+        assertThat(ex.getConstraintViolations().size(), equalTo(2));
         assertThat(((ConstraintViolation)ex.getConstraintViolations().toArray()[0]).getMessage(),
+                equalTo("Additive background should have a value"));
+        assertThat(((ConstraintViolation)ex.getConstraintViolations().toArray()[1]).getMessage(),
                 equalTo("Additive description should have a value"));
     }
 
     @Test
-    public void savingProductWithAdditivesContainingOnlyIds(){
+    public void ValidAdditiveSavingTest(){
 
+        Additive additiveToSave = Additive.builder().description("something").backgroundString("#ffaa11").build();
+        var savedAdditive = additiveRepository.save(additiveToSave);
+        assertThat(savedAdditive).isNotNull();
+        assertThat(savedAdditive.getDescription()).isEqualTo(additiveToSave.getDescription());
+    }
+
+    @Test
+    public void savingProduct_WithInvalidAdditivesList(){
+
+        var additive01 = Additive.builder().backgroundString("abc").description("def").build();
+        var additive02 = Additive.builder().backgroundString("abc").description("def1").build();
+
+        additiveRepository.save(additive01);
+        additiveRepository.save(additive02);
+
+        var additive1 = additiveRepository.findById(1l);
+        var additive2 = additiveRepository.findById(2l);
+
+        assertThat(additive1.isPresent()).isTrue();
+        assertThat(additive2.isPresent()).isTrue();
+
+        var product = Product.builder()
+                .description("111")
+                .name("product 1")
+                .price(100)
+                .additives(Arrays.asList(Additive.builder().id(1l).build(), Additive.builder().id(2l).build()))
+                .build();
+        var savedProduct = productRepository.save(product);
+
+        assertThat(savedProduct.getAdditives().size(), is(2));
+    }
+
+    @Test
+    public void savingProduct_WithValidAdditivesList(){
+
+        //arrange
         var additive01 = Additive.builder().backgroundString("abc").description("def").build();
         var additive02 = Additive.builder().backgroundString("abc").description("def1").build();
 
@@ -69,7 +99,6 @@ public class ValidationUnitTestingExampleIT {
         //must be added manually in DB
         var additive1 = additiveRepository.findById(1l).get();
         var additive2 = additiveRepository.findById(2l).get();
-
 
         var product = Product.builder()
                 .description("111")
@@ -84,7 +113,8 @@ public class ValidationUnitTestingExampleIT {
                 .additives(Arrays.asList(additive2))
                 .build();
         var savedProduct2 = productRepository.save(product2);
-        var savedProduct= productRepository.save(product);
+        var savedProduct = productRepository.save(product);
+
         assertThat(savedProduct.getAdditives().size(), is(2));
         assertThat(savedProduct2.getAdditives().size(), is(1));
     }

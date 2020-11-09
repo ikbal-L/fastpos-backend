@@ -12,9 +12,9 @@ import java.util.List;
 public class AdditiveDto {
 
     long id;
-    @NotBlank(message = "description should not be empty")
+    @NotBlank(message = "validation.error.additive.description")
     private String description;
-    @NotBlank(message = "backgroundString should not be empty")
+    @NotBlank(message = "validation.error.additive.background")
     private String backgroundString;
     private int rank;
 

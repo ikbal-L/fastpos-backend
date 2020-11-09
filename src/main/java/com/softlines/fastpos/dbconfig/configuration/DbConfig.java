@@ -121,21 +121,21 @@ public class DbConfig {
         dbInfo.setUrl("jdbc:mysql://localhost:3306/jwtauthsoftlines?createDatabaseIfNotExist=true");
         dbInfo.setName("defaultDB");
         dbInfo.setUsername("root");
-        dbInfo.setPassword("");
+        dbInfo.setPassword("root");
 
         DbInfo dbInfo2 = new DbInfo();
         dbInfo2.setDriverClassName("com.mysql.cj.jdbc.Driver");
         dbInfo2.setUrl("jdbc:mysql://localhost:3306/jwtauthsoftlines2?createDatabaseIfNotExist=true");
         dbInfo2.setName("firstDB");
         dbInfo2.setUsername("root");
-        dbInfo2.setPassword("");
+        dbInfo2.setPassword("root");
 
         DbInfo dbInfo3 = new DbInfo();
         dbInfo3.setDriverClassName("com.mysql.cj.jdbc.Driver");
         dbInfo3.setUrl("jdbc:mysql://localhost:3306/jwtauthsoftlines3?createDatabaseIfNotExist=true");
         dbInfo3.setName("secondDB");
         dbInfo3.setUsername("root");
-        dbInfo3.setPassword("");
+        dbInfo3.setPassword("root");
 
         dbInfoRepository.save(createIfNotFound(dbInfo));
         dbInfoRepository.save(createIfNotFound(dbInfo2));

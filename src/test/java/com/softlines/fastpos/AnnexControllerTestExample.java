@@ -36,6 +36,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.assertj.core.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -73,6 +74,38 @@ public class AnnexControllerTestExample {
     }
 
     @Test //this is an integration test
+    public void getAllAnnexes_AnnexesListNotEmpty_NotMocked_usingMVcPerform() throws Exception {
+        var user = UserDTO.builder()
+                .username("admin")
+                .enabled(true)
+                .password("admin").build();
+
+        var resp = userController.addUser(user);
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+        var annex = Annex.builder()
+                .name("abc")
+                .address("adre123")
+                .serverLicenceKey("ket123")
+                .build();
+        var saved = annexRepository.save(new Annex(3, "annex1", "addr", "key123"));
+        var saved2 = annexRepository.save(annex);
+        var annexes = annexRepository.findAll();
+        TestRestTemplate testRestTemplate
+                = new TestRestTemplate(user.getUsername(), user.getPassword());
+        //createUser("admin", "admin");
+        var token = obtainAccessToken("admin", "admin");
+
+        mvc.perform(get("/annex/getall")
+                .header("Authorization", token)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(equalTo(annexes.size()))))
+                .andExpect(jsonPath("$[0].address").value(annexes.get(0).getAddress()));
+    }
+
+    @Test //this is an integration test
     public void getAllAnnexes_AnnexesListNotEmpty_NotMocked_usingTestRestTemplate() throws Exception {
         var user = UserDTO.builder()
                 .username("admin")
@@ -98,17 +131,44 @@ public class AnnexControllerTestExample {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", token);
 
-        ResponseEntity<String> annexResp =
+        var annexResp =
                 testRestTemplate.exchange(createURLWithPort("/annex/getall"),
-                        HttpMethod.GET, new HttpEntity<>(null, headers), String.class);// (Class<List<Annex>>)(Object)List.class);
+                        HttpMethod.GET, new HttpEntity<>(null, headers), List.class);// (Class<List<Annex>>)(Object)List.class);
 
-        mvc.perform(get("/annex/getall")
-                .header("Authorization", token)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(equalTo(annexes.size()))))
-                .andExpect(jsonPath("$[0].address").value(annexes.get(0).getAddress()));
+        assertThat(annexResp.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(annexResp.getBody().size()).isEqualTo(annexes.size());
+        assertThat(((Annex) annexResp.getBody().get(0)).getAddress()).isEqualTo(annexes.get(0).getAddress());
+    }
+
+    @Test
+    public void testingObtainToken() throws Exception {
+        var user = UserDTO.builder()
+                .username("admin")
+                .enabled(true)
+                .password("admin").build();
+        var user2 = UserDTO.builder()
+                .username("user")
+                .enabled(true)
+                .password("user").build();
+
+        var resp = userController.addUser(user);
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        var resp2 = userController.addUser(user2);
+        assertThat(resp2.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+        var token = obtainAccessToken(user.getUsername(), user.getPassword());
+
+    }
+
+    @Test
+    public void testingValidationInControllerUnitTesting() {
+        var userDto = UserDTO.builder()
+                //.username("admin")
+                //.enabled(true)
+                .password("admin").build();
+
+        userController.addUser(userDto);
+
     }
 
     @Test

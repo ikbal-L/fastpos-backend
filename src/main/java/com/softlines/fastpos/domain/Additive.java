@@ -18,8 +18,9 @@ public class Additive {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
     @Column(name = "description",nullable = false,unique = true)
-    @NotBlank(message = "Additive description should have a value")
+    @NotBlank(message = "validation.additive.error.description")
     String description ;
+    @NotBlank(message = "validation.additive.error.background")
     String backgroundString;
     int rank;
 }

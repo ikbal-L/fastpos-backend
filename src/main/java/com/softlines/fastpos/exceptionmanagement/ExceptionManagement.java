@@ -27,7 +27,6 @@ public class ExceptionManagement {
     }
 
     public ResponseEntity getResponseEntityAccordingToException(Exception exception) {
-
         return exceptionMap.get(exception.getClass());
     }
 }
