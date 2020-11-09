@@ -1,5 +1,6 @@
 package com.softlines.fastpos.domain;
 
+import com.softlines.fastpos.constants.MessageKeyConstants;
 import lombok.*;
 
 import javax.persistence.*;
@@ -18,9 +19,9 @@ public class Additive {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
     @Column(name = "description",nullable = false,unique = true)
-    @NotBlank(message = "validation.additive.error.description")
+    @NotBlank(message = MessageKeyConstants.ADDITIVE_DESCRIPTION_VALIDATION_ERROR)
     String description ;
-    @NotBlank(message = "validation.additive.error.background")
+    @NotBlank(message = MessageKeyConstants.ADDITIVE_BACKGROUND_VALIDATION_ERROR)
     String backgroundString;
     int rank;
 }

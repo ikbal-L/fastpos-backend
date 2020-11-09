@@ -2,9 +2,8 @@ package com.softlines.fastpos.jwtsecurity.jwtcontroller;
 
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
-import com.softlines.fastpos.jwtsecurity.securitydomain.DbInfo;
 import com.softlines.fastpos.exceptionmanagement.ExceptionHandling;
+import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
 import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.RoleDTO;
@@ -24,7 +23,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -53,28 +51,8 @@ public class UserController {
 
     PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(
-            MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        for (ObjectError error : ex.getBindingResult().getAllErrors()) {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        }
-        return errors;
-    }
-
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(JsonParseException.class)
-    public String handleJsonParseException(
-            JsonParseException ex) {
-        return ex.getMessage();
-    }
-
     //@PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
-    @PostMapping("/save")
+    @PostMapping(value = "/save", headers = "Content-Type=application/json")
     public ResponseEntity<UserDTO> addUser(@Valid @RequestBody UserDTO userDTO){
         try {
             Optional<JWTuser> existingUser = jwTuserRepository.findById(userDTO.getId());

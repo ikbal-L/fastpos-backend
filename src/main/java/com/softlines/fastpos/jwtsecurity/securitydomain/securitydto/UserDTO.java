@@ -1,5 +1,6 @@
 package com.softlines.fastpos.jwtsecurity.securitydomain.securitydto;
 
+import com.softlines.fastpos.constants.MessageKeyConstants;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,9 +12,9 @@ import java.util.List;
 @Builder
 public class UserDTO {
     long id;
-    @NotBlank(message = "validation.user.error.username")
+    @NotBlank(message = MessageKeyConstants.USER_USERNAME_VALIDATION_ERROR)
     private String username;
-    @NotBlank(message = "validation.user.error.password")
+    @NotBlank(message = MessageKeyConstants.USER_PASSWORD_VALIDATION_ERROR)
     private String password;
     private String pinCode;
     private String firstName;

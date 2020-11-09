@@ -31,7 +31,7 @@ public class TestSecurityJPAConfig {
 
         dataSource.setUrl("jdbc:mysql://localhost:3306/dbsecuritytesting?createDatabaseIfNotExist=true");
         dataSource.setUsername("root");
-        dataSource.setPassword("root");
+        dataSource.setPassword("");
 
         return dataSource;
     }

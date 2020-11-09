@@ -1,4 +1,4 @@
-package com.softlines.fastpos.validationTestExamples;
+package com.softlines.fastpos.springBootExceptionHandlingTestExample;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softlines.fastpos.ModelApplication;
@@ -26,55 +26,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         classes = {ModelApplication.class, RoutingDatasourceTestProfileJPAConfig.class, TestSecurityJPAConfig.class})
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class UserValidationTestExample {
+public class ExceptionHandlingTestExample {
     @Autowired
     private MockMvc mvc;
 
-    @Test
-    public void userController_saveUser_validationTest_invalidPassword() throws Exception {
-        var user = UserDTO.builder()
-                .id(1l)
-                .username("adminExample")
-                .enabled(true)
-                .build();
-
-        mvc.perform(post("/user/save")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(user)))
-                .andDo(print())
-                .andExpect(jsonPath("password", is("validation.user.error.password")))
-                .andExpect(status().isUnprocessableEntity()).andReturn();
-    }
-    @Test
-    public void userController_saveUser_validationTest_invalidUsername() throws Exception {
-        var user = UserDTO.builder()
-                .id(1l)
-                .password("passwordExample")
-                .enabled(true)
-                .build();
-
-        mvc.perform(post("/user/save")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(user)))
-                .andDo(print())
-                .andExpect(jsonPath("username", is("validation.user.error.username")))
-                .andExpect(status().isUnprocessableEntity()).andReturn();
-    }
-    @Test
-    public void userController_saveUser_validationTest_nullEnabled() throws Exception {
-        var user = UserDTO.builder()
-                .id(1l)
-                .password("passwordExample")
-                .username("userExample")
-                .build();
-
-        mvc.perform(post("/user/save")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(user)))
-                .andDo(print())
-                .andExpect(jsonPath("enabled", is("must not be null")))
-                .andExpect(status().isUnprocessableEntity()).andReturn();
-    }
     @Test
     public void userController_saveUser_validationTest_invalidUsernameInvalidPasswordNullEnabled() throws Exception {
         var user = UserDTO.builder()
@@ -88,6 +43,24 @@ public class UserValidationTestExample {
                 .andExpect(jsonPath("enabled", is("must not be null")))
                 .andExpect(jsonPath("username", is("validation.user.error.username")))
                 .andExpect(jsonPath("password", is("validation.user.error.password")))
+                .andExpect(status().isUnprocessableEntity()).andReturn();
+    }
+    @Test
+    public void fastposExceptionHandler_JsonParseException() throws Exception {
+
+        mvc.perform(post("/user/save"))
+                .andDo(print())
+                .andExpect(jsonPath("$", is("Media Type Not Supported: Must be Json")))
+                .andExpect(status().isUnsupportedMediaType()).andReturn();
+    }
+    @Test
+    public void fastposExceptionHandler_nullBody() throws Exception {
+
+        mvc.perform(post("/user/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(""))
+                .andDo(print())
+                .andExpect(jsonPath("$", is("Body must not be null")))
                 .andExpect(status().isUnprocessableEntity()).andReturn();
     }
 

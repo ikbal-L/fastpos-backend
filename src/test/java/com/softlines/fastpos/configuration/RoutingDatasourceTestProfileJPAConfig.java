@@ -56,13 +56,13 @@ public class RoutingDatasourceTestProfileJPAConfig {
         dbInfo.setName("firstTestDB");
         dbInfo.setUrl("jdbc:mysql://localhost:3306/dbtesting1?createDatabaseIfNotExist=true");
         dbInfo.setUsername("root");
-        dbInfo.setPassword("root");
+        dbInfo.setPassword("");
         dbInfoRepository.save(dbInfo);
         dbInfo.setId(2l);
         dbInfo.setName("secondTestDB");
         dbInfo.setUrl("jdbc:mysql://localhost:3306/dbtesting2?createDatabaseIfNotExist=true");
         dbInfo.setUsername("root");
-        dbInfo.setPassword("root");
+        dbInfo.setPassword("");
         dbInfoRepository.save(dbInfo);
     }
 
