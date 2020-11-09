@@ -30,4 +30,7 @@ public class Role {
                     name = "privilege_id", referencedColumnName = "id"))
     private List<Privilege> privileges;
 
+    @ManyToMany(mappedBy = "roles")
+    private List<JWTuser> users;
+
 }

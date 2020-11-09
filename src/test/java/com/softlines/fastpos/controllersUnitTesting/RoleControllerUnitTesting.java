@@ -38,7 +38,7 @@ public class RoleControllerUnitTesting {
     public void RoleController_getRoles_ReturnsNotEmptyRolesList() {
         var roles = Arrays.asList(
                 Role.builder().id(1l).name("ROLE_HR")
-                        .privileges(Arrays.asList(new Privilege(1l, "privilege01")))
+                        .privileges(Arrays.asList(Privilege.builder().id(1l).name("privilege01").build()))
                         .build());
         Mockito.when(roleRepository.findAllRolesWithPrivileges()).thenReturn(roles);
 

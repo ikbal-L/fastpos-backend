@@ -3,6 +3,7 @@ package com.softlines.fastpos.jwtsecurity.securitydomain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Setter
@@ -18,5 +19,7 @@ public class Privilege {
 
     @Column(name = "name")
     private String name;
+    @ManyToMany(mappedBy = "privileges")
+    private List<Role> roles;
 
 }

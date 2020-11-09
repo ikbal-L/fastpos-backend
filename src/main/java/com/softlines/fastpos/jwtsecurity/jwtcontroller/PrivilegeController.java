@@ -28,14 +28,13 @@ public class PrivilegeController {
     @PostMapping("/save")
     public ResponseEntity<Privilege> addPrivilege(@RequestBody Privilege privilege){
         try {
-
             String privilegeName = privilege.getName().toUpperCase();
             if(!privilegeName.matches("_PRIVILEGE$")) privilegeName = privilegeName + "_PRIVILEGE";
             privilege.setName(privilegeName);
 
             Privilege existingPrivilege = privilegeRepository.findByName(privilegeName);
             if (existingPrivilege != null) {
-                return ResponseEntity.noContent().build();
+                return ResponseEntity.status(HttpStatus.FOUND).build();
             }
             Privilege createdPrivilege = privilegeRepository.save(privilege);
             if (createdPrivilege == null) {

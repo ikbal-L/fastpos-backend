@@ -1,12 +1,9 @@
 package com.softlines.fastpos.jwtsecurity.securityrepository;
 
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
-import org.hibernate.annotations.FetchProfile;
-import org.hibernate.engine.FetchStyle;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import javax.persistence.FetchType;
 import java.util.List;
 
 public interface JWTuserRepository extends JpaRepository<JWTuser, Long> {
