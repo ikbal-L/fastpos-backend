@@ -24,7 +24,7 @@ public class ExceptionHandling {
         //
         //exceptionMap.put(InvalidDataAccessApiUsageException.class, ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
         //when password not provided
-        exceptionMap.put(IllegalArgumentException.class, ResponseEntity.status(HttpStatus.BAD_REQUEST).body("no password provided"));
+        exceptionMap.put(IllegalArgumentException.class, ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
         //when username not provided
         exceptionMap.put(DataIntegrityViolationException.class, ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }

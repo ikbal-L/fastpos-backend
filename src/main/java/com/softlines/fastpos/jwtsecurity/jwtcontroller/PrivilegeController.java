@@ -28,6 +28,7 @@ public class PrivilegeController {
     @PostMapping("/save")
     public ResponseEntity<Privilege> addPrivilege(@RequestBody Privilege privilege){
         try {
+            if(privilege.getName().equalsIgnoreCase("")) privilege.setName(null);
             String privilegeName = privilege.getName().toUpperCase();
             if(!privilegeName.matches("_PRIVILEGE$")) privilegeName = privilegeName + "_PRIVILEGE";
             privilege.setName(privilegeName);
@@ -55,9 +56,10 @@ public class PrivilegeController {
             if (privilegeToDelete.isPresent()) {
                 Privilege privilege1 = privilegeToDelete.get();
                 privilegeRepository.delete(privilege1);
+                privilege1.setRoles(null);
                 return ResponseEntity.status(HttpStatus.ACCEPTED).body(privilege1);
             }else {
-                return ResponseEntity.noContent().build();
+                return ResponseEntity.notFound().build();
             }
         } catch (Exception exception) {
             return exceptionHandling.getResponseEntityAccordingToException(exception);
