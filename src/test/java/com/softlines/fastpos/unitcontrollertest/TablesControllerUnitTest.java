@@ -198,7 +198,7 @@ public class TablesControllerUnitTest {
     }
 
     @Test
-    public void TablesController_getById_getTablesWithNoDBConnection() {
+    public void TablesController_getById_WithNoDBConnection() {
 
         when(tableRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);
@@ -244,7 +244,7 @@ public class TablesControllerUnitTest {
     }
 
     @Test
-    public void tablesController_Delete_getTablesWithNoDBConnection() {
+    public void tablesController_Delete_WithNoDBConnection() {
 
         when(tableRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);
@@ -306,7 +306,7 @@ public class TablesControllerUnitTest {
     }
 
     @Test
-    public void tablesController_Put_getTablesWithNoDBConnection() {
+    public void tablesController_Put_WithNoDBConnection() {
 
         when(tableRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);

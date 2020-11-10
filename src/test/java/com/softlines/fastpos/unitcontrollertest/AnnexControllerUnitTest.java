@@ -81,7 +81,7 @@ public class AnnexControllerUnitTest {
 
     @Test
     @Order(4)
-    public void annexController_getAll_getAnnexesWithNoDBConnection() {
+    public void annexController_getAll_WithNoDBConnection() {
         when(annexRepository.findAll())
                 .thenThrow(DataAccessResourceFailureException.class);
 
@@ -213,7 +213,7 @@ public class AnnexControllerUnitTest {
 
     @Test
     @Order(12)
-    public void annexController_getById_getAnnexesWithNoDBConnection() {
+    public void annexController_getById_WithNoDBConnection() {
 
         when(annexRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);
@@ -328,7 +328,7 @@ public class AnnexControllerUnitTest {
 
     @Test
     @Order(19)
-    public void annexController_Put_getAnnexesWithNoDBConnection() {
+    public void annexController_Put_WithNoDBConnection() {
 
         when(annexRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);

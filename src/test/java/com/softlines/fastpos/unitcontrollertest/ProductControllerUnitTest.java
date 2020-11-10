@@ -209,7 +209,7 @@ public class ProductControllerUnitTest {
     }
 
     @Test
-    public void additiveController_getById_getAdditivesWithNoDBConnection() {
+    public void additiveController_getById_WithNoDBConnection() {
 
         when(productRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);
@@ -256,7 +256,7 @@ public class ProductControllerUnitTest {
     }
 
     @Test
-    public void productController_Delete_getProductesWithNoDBConnection() {
+    public void productController_Delete_WithNoDBConnection() {
 
         when(productRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);
@@ -324,7 +324,7 @@ public class ProductControllerUnitTest {
     }
 
     @Test
-    public void productController_Put_getProductesWithNoDBConnection() {
+    public void productController_Put_WithNoDBConnection() {
 
         when(productRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);

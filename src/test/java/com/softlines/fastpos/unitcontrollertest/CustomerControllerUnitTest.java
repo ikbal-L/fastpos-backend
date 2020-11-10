@@ -79,7 +79,7 @@ public class CustomerControllerUnitTest {
 
     @Test
     @Order(4)
-    public void customerController_getAll_getCustomersWithNoDBConnection() {
+    public void customerController_getAll_WithNoDBConnection() {
         when(customerRepository.findAll())
                 .thenThrow(DataAccessResourceFailureException.class);
 
@@ -193,7 +193,7 @@ public class CustomerControllerUnitTest {
     }
 
     @Test
-    public void customerController_getById_getCustomerWithNoDBConnection() {
+    public void customerController_getById_WithNoDBConnection() {
 
         when(customerRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);
@@ -239,7 +239,7 @@ public class CustomerControllerUnitTest {
     }
 
     @Test
-    public void customerController_Delete_getCustomeresWithNoDBConnection() {
+    public void customerController_Delete_WithNoDBConnection() {
 
         when(customerRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);
@@ -301,7 +301,7 @@ public class CustomerControllerUnitTest {
     }
 
     @Test
-    public void customerController_Put_getCustomeresWithNoDBConnection() {
+    public void customerController_Put_WithNoDBConnection() {
 
         when(customerRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);

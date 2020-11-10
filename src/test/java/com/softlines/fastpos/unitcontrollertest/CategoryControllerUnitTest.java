@@ -87,7 +87,7 @@ public class CategoryControllerUnitTest {
 
     @Test
     @Order(4)
-    public void categoryController_getAll_getCategoriesWithNoDBConnection() {
+    public void categoryController_getAll_WithNoDBConnection() {
         when(categoryRepository.findAll())
                 .thenThrow(DataAccessResourceFailureException.class);
 
@@ -222,7 +222,7 @@ public class CategoryControllerUnitTest {
 
     @Test
     @Order(12)
-    public void CategoryController_getById_getCategoryWithNoDBConnection() {
+    public void CategoryController_getById_WithNoDBConnection() {
 
         when(categoryRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);
@@ -272,7 +272,7 @@ public class CategoryControllerUnitTest {
 
     @Test
     @Order(15)
-    public void categoryController_Delete_getCategoriesWithNoDBConnection() {
+    public void categoryController_Delete_WithNoDBConnection() {
 
         when(categoryRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);
@@ -338,7 +338,7 @@ public class CategoryControllerUnitTest {
 
     @Test
     @Order(19)
-    public void categoryController_Put_getCategoryesWithNoDBConnection() {
+    public void categoryController_Put_WithNoDBConnection() {
 
         when(categoryRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);
