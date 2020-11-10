@@ -2,15 +2,13 @@ package com.softlines.fastpos.jwtsecurity.jwtcontroller;
 
 import com.softlines.fastpos.exceptionmanagement.ExceptionHandling;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
-import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.RoleDTO;
+import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.PrivilegeDTO;
+import com.softlines.fastpos.jwtsecurity.securitydomain.securitymapper.PrivilegeMapper;
 import com.softlines.fastpos.jwtsecurity.securityrepository.PrivilegeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +21,8 @@ public class PrivilegeController {
     PrivilegeRepository privilegeRepository;
     @Autowired
     ExceptionHandling exceptionHandling;
+    @Autowired
+    PrivilegeMapper privilegeMapper;
 
     //@PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
     @PostMapping("/save")
@@ -86,9 +86,11 @@ public class PrivilegeController {
 
     //@PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
     @GetMapping("/getall")
-    public ResponseEntity<List<Privilege>> getPrivileges() {
+    public ResponseEntity<List<PrivilegeDTO>> getPrivileges() {
         try {
-            return ResponseEntity.ok().body(privilegeRepository.findAll());
+            List<Privilege> allPrivileges = privilegeRepository.findAll();
+
+            return ResponseEntity.ok().body(privilegeMapper.toPrivilegeDTOs(allPrivileges));
         } catch (Exception exception) {
             return exceptionHandling.getResponseEntityAccordingToException(exception);
         }
@@ -96,11 +98,11 @@ public class PrivilegeController {
 
     //@PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
     @GetMapping("/getbyid/{id}")
-    public ResponseEntity<Privilege> getPrivilegeById(@PathVariable long id) {
+    public ResponseEntity<PrivilegeDTO> getPrivilegeById(@PathVariable long id) {
         try {
             Optional<Privilege> privilege = privilegeRepository.findById(id);
             if(privilege.isPresent()){
-                return ResponseEntity.ok().body(privilege.get());
+                return ResponseEntity.ok().body(privilegeMapper.toPrivilegeDTO(privilege.get()));
             }else {
                 return ResponseEntity.noContent().build();
             }

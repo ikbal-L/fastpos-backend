@@ -7,25 +7,23 @@ import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
 import com.softlines.fastpos.jwtsecurity.securityrepository.PrivilegeRepository;
 import com.softlines.fastpos.testStatics.Statics;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.MethodOrderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
-import org.springframework.http.*;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = {ModelApplication.class, RoutingDatasourceTestProfileJPAConfig.class, TestSecurityJPAConfig.class})
 @AutoConfigureMockMvc
-//@Profile("test")
+@ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PrivilegeControllerIntegrationTest {
 
@@ -43,18 +41,6 @@ public class PrivilegeControllerIntegrationTest {
         //adminToken = Statics.obtainAccessToken("admin", "admin", mvc);
     }
 
-//    @Test
-//    @Order(1)
-//    public void privilegeController_savePrivilege_emptyName() throws Exception {
-//        privilege = Privilege.builder()
-//                .name("").build();
-//        mvc.perform(post("/privilege/save")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(Statics.asJsonString(privilege)))
-//                //.header("Authorization", adminToken))
-//                .andDo(print())
-//                .andExpect(status().isBadRequest());
-//    }
     @Test
     @Order(1)
     public void privilegeController_savePrivilege_notEmptyName() throws Exception {
@@ -156,6 +142,21 @@ public class PrivilegeControllerIntegrationTest {
                 .andExpect(jsonPath("name", is("EDIT_PRIVILEGE")));
         privilegeRepository.delete(privilege);
     }
+
+    @Test
+    @Order(9)
+    public void privilegeController_getAllPrivilege() throws Exception {
+        privilege = privilegeRepository.save(Privilege.builder()
+                    .name("UPDATE_PRIVILEGE").build());
+        mvc.perform(get("/privilege/getall")
+                .contentType(MediaType.APPLICATION_JSON)
+                /*.header("Authorization", adminToken)*/)
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is(privilege)));
+        privilegeRepository.delete(privilege);
+    }
+
 
 
 }
