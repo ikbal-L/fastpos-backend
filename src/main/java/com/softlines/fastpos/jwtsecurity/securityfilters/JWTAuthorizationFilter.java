@@ -2,6 +2,7 @@ package com.softlines.fastpos.jwtsecurity.securityfilters;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
@@ -21,6 +22,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstants.SECRET;
 import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstants.HEADER_STRING;
@@ -60,7 +64,14 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             String user = decoded.getSubject();
 
             if (user != null) {
-                return new UsernamePasswordAuthenticationToken(user, decoded.getClaim("dbID").asLong(), new ArrayList<>());
+                Claim dbID = decoded.getClaim("dbID");
+                Claim annexId = decoded.getClaim("annexId");
+                Claim terminalId = decoded.getClaim("terminalId");
+                Map<String, Long> claims = new HashMap<>();
+                claims.put("dbID", dbID.asLong());
+                claims.put("annexId", annexId.asLong());
+                claims.put("terminalId", terminalId.asLong());
+                return new UsernamePasswordAuthenticationToken(user, claims, new ArrayList<>());
             }
             return null;
         }

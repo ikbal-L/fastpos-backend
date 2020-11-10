@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ApiSecurity {
@@ -40,7 +41,7 @@ public class ApiSecurity {
         }
 
         CustomContextHolder.clear();
-        CustomContextHolder.setId((Long)auth.getCredentials());
+        CustomContextHolder.setId(((HashMap<String, Long>)auth.getCredentials()).get("dbID"));
 
         return grantedAuthorities.contains(new SimpleGrantedAuthority(privilege));
     }
