@@ -109,7 +109,6 @@ public class CustomerControllerUnitTest {
     }
 
     @Test
-    @Order(5)
     public void customerController_Save_WithExistCustomer() {
 
         var customer =Customer.builder().id(1).name("tacos").build();
@@ -157,7 +156,6 @@ public class CustomerControllerUnitTest {
 
 
     @Test
-    @Order(9)
     public void customerController_getById_WithNotEmptyCustomer() {
 
         var customer =
@@ -174,7 +172,6 @@ public class CustomerControllerUnitTest {
     }
 
     @Test
-    @Order(10)
     public void customerController_getById_WithEmptyCustomer() {
 
         var customer = new Customer();
@@ -188,7 +185,6 @@ public class CustomerControllerUnitTest {
 
 
     @Test
-    @Order(11)
     public void customerController_getById_WithNullCustomer() {
 
         var res = customerController.getCustomer(1);
@@ -197,7 +193,6 @@ public class CustomerControllerUnitTest {
     }
 
     @Test
-    @Order(12)
     public void customerController_getById_getCustomerWithNoDBConnection() {
 
         when(customerRepository.findById(5l))
@@ -244,7 +239,6 @@ public class CustomerControllerUnitTest {
     }
 
     @Test
-    @Order(12)
     public void customerController_Delete_getCustomeresWithNoDBConnection() {
 
         when(customerRepository.findById(5l))
@@ -307,7 +301,6 @@ public class CustomerControllerUnitTest {
     }
 
     @Test
-    @Order(12)
     public void customerController_Put_getCustomeresWithNoDBConnection() {
 
         when(customerRepository.findById(5l))

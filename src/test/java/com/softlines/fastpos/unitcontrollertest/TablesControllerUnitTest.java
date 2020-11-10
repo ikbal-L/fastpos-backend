@@ -3,12 +3,10 @@ package com.softlines.fastpos.unitcontrollertest;
 import com.softlines.fastpos.ModelApplication;
 import com.softlines.fastpos.controller.TablesController;
 import com.softlines.fastpos.domain.Tables;
-import com.softlines.fastpos.domain.Product;
 import com.softlines.fastpos.dto.TableDto;
 import com.softlines.fastpos.dto.mapping.TableMapper;
 import com.softlines.fastpos.repository.TableRepository;
 import org.junit.Test;
-import org.junit.jupiter.api.Order;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -20,11 +18,9 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -46,7 +42,6 @@ public class TablesControllerUnitTest {
     TableMapper tableMapper;
 
     @Test
-    @Order(1)
     public void tablesController_getAll_WithNotEmptyTablesList() {
 
         var categories = Arrays.asList(
@@ -66,7 +61,6 @@ public class TablesControllerUnitTest {
     }
 
     @Test
-    @Order(2)
     public void tablesController_getAll_WithEmptyTablesList() {
         var tables = new ArrayList<Tables>();
         when(tableRepository.findAll()).thenReturn(tables);
@@ -75,7 +69,6 @@ public class TablesControllerUnitTest {
     }
 
     @Test
-    @Order(3)
     public void tablesController_getAll_WithNullTablesList() {
         when(tableRepository.findAll()).thenReturn(null);
 
@@ -85,7 +78,6 @@ public class TablesControllerUnitTest {
 
 
     @Test
-    @Order(4)
     public void tablesController_getAll_getTablesWithNoDBConnection() {
         when(tableRepository.findAll())
                 .thenThrow(DataAccessResourceFailureException.class);
@@ -171,7 +163,6 @@ public class TablesControllerUnitTest {
 
 
     @Test
-    @Order(9)
     public void TablesController_getById_WithNotEmptyTablesList() {
 
         var table =
@@ -180,14 +171,13 @@ public class TablesControllerUnitTest {
                         .build();
 
         when(tableRepository.findById(1l)).thenReturn(Optional.ofNullable(table));
-
         var res = tablesController.getTable(1);
+
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals((res.getBody()).getNumber(), table.getNumber());
     }
 
     @Test
-    @Order(10)
     public void TablesController_getById_WithEmptyTablesList() {
 
         var Tables = new Tables();
@@ -200,7 +190,6 @@ public class TablesControllerUnitTest {
     }
 
     @Test
-    @Order(11)
     public void TablesController_getById_WithNullTables() {
 
         var res = tablesController.getTable(1);
@@ -209,7 +198,6 @@ public class TablesControllerUnitTest {
     }
 
     @Test
-    @Order(12)
     public void TablesController_getById_getTablesWithNoDBConnection() {
 
         when(tableRepository.findById(5l))
@@ -256,7 +244,6 @@ public class TablesControllerUnitTest {
     }
 
     @Test
-    @Order(12)
     public void tablesController_Delete_getTablesWithNoDBConnection() {
 
         when(tableRepository.findById(5l))
@@ -319,7 +306,6 @@ public class TablesControllerUnitTest {
     }
 
     @Test
-    @Order(12)
     public void tablesController_Put_getTablesWithNoDBConnection() {
 
         when(tableRepository.findById(5l))

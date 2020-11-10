@@ -46,7 +46,6 @@ public class ProductControllerUnitTest {
     ProductMapper productMapper;
 
     @Test
-    @Order(1)
     public void productController_getAll_WithNotEmptyProductsList() throws Exception {
 
         var products = Arrays.asList(
@@ -70,7 +69,6 @@ public class ProductControllerUnitTest {
     }
 
     @Test
-    @Order(2)
     public void productController_getAll_WithEmptyProductsList() {
         var Products = new ArrayList<Product>();
         when(productRepository.findAll()).thenReturn(Products);
@@ -79,7 +77,6 @@ public class ProductControllerUnitTest {
     }
 
     @Test
-    @Order(3)
     public void productController_getAll_WithNullProductsList() {
         when(productRepository.findAll()).thenReturn(null);
 
@@ -88,7 +85,6 @@ public class ProductControllerUnitTest {
     }
 
     @Test
-    @Order(4)
     public void productController_gelAll_getProductsWithNoDBConnectionException() {
 
         when(productRepository.findAll())
@@ -106,7 +102,6 @@ public class ProductControllerUnitTest {
      */
 
     @Test
-    @Order(5)
     public void productController_Save_WithData() {
 
         var product = Product.builder()
@@ -125,7 +120,6 @@ public class ProductControllerUnitTest {
 
 
     @Test
-    @Order(6)
     public void productController_Save_WithoutData() {
 
         var product = Product.builder().category(Category.builder().build()).build();
@@ -139,7 +133,6 @@ public class ProductControllerUnitTest {
 
 
     @Test
-    @Order(5)
     public void productController_Save_WithExistProduct() {
 
         var product = Product.builder()
@@ -156,7 +149,6 @@ public class ProductControllerUnitTest {
 
 
     @Test
-    @Order(7)
     public void productController_save_WithNoDBConnection() {
 
         var product =
@@ -179,7 +171,6 @@ public class ProductControllerUnitTest {
      */
 
     @Test
-    @Order(9)
     public void AdditiveController_getById_WithNotEmptyAdditive() {
 
         var product =
@@ -200,7 +191,6 @@ public class ProductControllerUnitTest {
 
 
     @Test
-    @Order(10)
     public void productController_getById_WithEmptyProduct() {
 
         var additive = new Product();
@@ -211,7 +201,6 @@ public class ProductControllerUnitTest {
     }
 
     @Test
-    @Order(11)
     public void productController_getById_WithNullProduct() {
 
         var res = productController.getProduct(1);
@@ -220,7 +209,6 @@ public class ProductControllerUnitTest {
     }
 
     @Test
-    @Order(12)
     public void additiveController_getById_getAdditivesWithNoDBConnection() {
 
         when(productRepository.findById(5l))
@@ -268,7 +256,6 @@ public class ProductControllerUnitTest {
     }
 
     @Test
-    @Order(12)
     public void productController_Delete_getProductesWithNoDBConnection() {
 
         when(productRepository.findById(5l))
@@ -337,7 +324,6 @@ public class ProductControllerUnitTest {
     }
 
     @Test
-    @Order(12)
     public void productController_Put_getProductesWithNoDBConnection() {
 
         when(productRepository.findById(5l))

@@ -230,6 +230,7 @@ public class AnnexControllerUnitTest {
      */
 
     @Test
+    @Order(13)
     public void annexController_Delete_WithAnnexId() {
 
         var annex =
@@ -247,6 +248,7 @@ public class AnnexControllerUnitTest {
     }
 
     @Test
+    @Order(14)
     public void annexController_Delete_WithNotExistAnnexId() {
 
         when(annexRepository.findById(1l)).thenReturn(null);
@@ -259,7 +261,7 @@ public class AnnexControllerUnitTest {
     }
 
     @Test
-    @Order(12)
+    @Order(15)
     public void annexController_Delete_getAnnexesWithNoDBConnection() {
 
         when(annexRepository.findById(5l))
@@ -277,6 +279,7 @@ public class AnnexControllerUnitTest {
      */
 
     @Test
+    @Order(16)
     public void annexController_Put_WithData() {
 
         var annex = Annex.builder()
@@ -293,6 +296,7 @@ public class AnnexControllerUnitTest {
     }
 
     @Test
+    @Order(17)
     public void annexController_Put_WithIdNotExist() {
 
         var annex = Annex.builder()
@@ -309,6 +313,7 @@ public class AnnexControllerUnitTest {
     }
 
     @Test
+    @Order(18)
     public void annexController_Put_WithNullData() {
 
         var annex = Annex.builder().id(1).build();
@@ -322,7 +327,7 @@ public class AnnexControllerUnitTest {
     }
 
     @Test
-    @Order(12)
+    @Order(19)
     public void annexController_Put_getAnnexesWithNoDBConnection() {
 
         when(annexRepository.findById(5l))

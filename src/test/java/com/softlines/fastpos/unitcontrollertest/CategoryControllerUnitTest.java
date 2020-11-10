@@ -76,7 +76,7 @@ public class CategoryControllerUnitTest {
     }
 
     @Test
-    @Order(4)
+    @Order(3)
     public void categoryController_getAll_WithNullCategoriesList() {
         when(categoryRepository.findAll()).thenReturn(null);
 
@@ -86,7 +86,7 @@ public class CategoryControllerUnitTest {
 
 
     @Test
-    @Order(5)
+    @Order(4)
     public void categoryController_getAll_getCategoriesWithNoDBConnection() {
         when(categoryRepository.findAll())
                 .thenThrow(DataAccessResourceFailureException.class);
@@ -103,6 +103,7 @@ public class CategoryControllerUnitTest {
 
 
     @Test
+    @Order(5)
     public void categoryController_Save_WithData() {
 
         var category =
@@ -122,6 +123,7 @@ public class CategoryControllerUnitTest {
     }
 
     @Test
+    @Order(6)
     public void categoryController_Save_WithExistCategory() {
 
         var category =
@@ -141,6 +143,7 @@ public class CategoryControllerUnitTest {
 
 
     @Test
+    @Order(7)
     public void categoryController_Save_WithoutData() {
 
         var category = Category.builder().build();
@@ -154,6 +157,7 @@ public class CategoryControllerUnitTest {
 
 
     @Test
+    @Order(8)
     public void categoryController_save_WithNoDBConnection() {
 
         var category =
@@ -236,6 +240,7 @@ public class CategoryControllerUnitTest {
      */
 
     @Test
+    @Order(13)
     public void categoryController_Delete_WithCategoryId() {
 
         var category =
@@ -253,6 +258,7 @@ public class CategoryControllerUnitTest {
     }
 
     @Test
+    @Order(14)
     public void categoryController_Delete_WithNotExistCategoryId() {
 
         when(categoryRepository.findById(1l)).thenReturn(null);
@@ -265,7 +271,7 @@ public class CategoryControllerUnitTest {
     }
 
     @Test
-    @Order(12)
+    @Order(15)
     public void categoryController_Delete_getCategoriesWithNoDBConnection() {
 
         when(categoryRepository.findById(5l))
@@ -283,6 +289,7 @@ public class CategoryControllerUnitTest {
      */
 
     @Test
+    @Order(16)
     public void categoryController_Put_WithData() {
 
         var category = Category.builder()
@@ -299,6 +306,7 @@ public class CategoryControllerUnitTest {
     }
 
     @Test
+    @Order(17)
     public void categoryController_Put_WithIdNotExist() {
 
         var category = Category.builder()
@@ -315,6 +323,7 @@ public class CategoryControllerUnitTest {
     }
 
     @Test
+    @Order(18)
     public void categoryController_Put_WithNullData() {
 
         var category = Category.builder().id(1).build();
@@ -328,7 +337,7 @@ public class CategoryControllerUnitTest {
     }
 
     @Test
-    @Order(12)
+    @Order(19)
     public void categoryController_Put_getCategoryesWithNoDBConnection() {
 
         when(categoryRepository.findById(5l))

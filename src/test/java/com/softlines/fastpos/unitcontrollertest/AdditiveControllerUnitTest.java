@@ -235,6 +235,7 @@ public class AdditiveControllerUnitTest {
      */
 
     @Test
+    @Order(13)
     public void additiveController_Delete_WithAdditiveId() {
 
         var additive =
@@ -253,6 +254,7 @@ public class AdditiveControllerUnitTest {
     }
 
     @Test
+    @Order(14)
     public void additiveController_Delete_WithNotExistAdditiveId() {
 
         when(additiveRepository.findById(1l)).thenReturn(null);
@@ -265,7 +267,7 @@ public class AdditiveControllerUnitTest {
     }
 
     @Test
-    @Order(12)
+    @Order(15)
     public void additiveController_Delete_WithNoDBConnection() {
 
         when(additiveRepository.findById(5l))
@@ -283,6 +285,7 @@ public class AdditiveControllerUnitTest {
      */
 
     @Test
+    @Order(16)
     public void additiveController_Put_WithData() {
 
         var additive = Additive.builder()
@@ -300,6 +303,7 @@ public class AdditiveControllerUnitTest {
     }
 
     @Test
+    @Order(17)
     public void additiveController_Put_WithIdNotExist() {
 
         var additive = Additive.builder()
@@ -317,6 +321,7 @@ public class AdditiveControllerUnitTest {
     }
 
     @Test
+    @Order(18)
     public void additiveController_Put_WithNullData() {
 
         var additive = Additive.builder().id(1).build();
@@ -330,7 +335,7 @@ public class AdditiveControllerUnitTest {
     }
 
     @Test
-    @Order(12)
+    @Order(19)
     public void additiveController_Put_WithNoDBConnection() {
 
         when(additiveRepository.findById(5l))
