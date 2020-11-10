@@ -110,7 +110,6 @@ public class ProductControllerUnitTest {
     public void productController_Save_WithData() {
 
         var product = Product.builder()
-                        .id(1l)
                         .name("Pizza")
                         .additives(Arrays.asList(Additive.builder().id(1).description("harrisa").build()))
                         .category(Category.builder().build())
@@ -144,7 +143,6 @@ public class ProductControllerUnitTest {
     public void productController_Save_WithExistProduct() {
 
         var product = Product.builder()
-                .id(1)
                 .name("tacos")
                 .category(Category.builder().build())
                 .additives(Arrays.asList(Additive.builder().build())).build();
@@ -163,7 +161,6 @@ public class ProductControllerUnitTest {
 
         var product =
                 Product.builder()
-                        .id(1l)
                         .name("harrisa")
                         .backgroundString("red")
                         .rank(2)
@@ -176,7 +173,6 @@ public class ProductControllerUnitTest {
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
 
     }
-
 
     /**
      * ------------------>  GetById Product Unit Test  <------------------------

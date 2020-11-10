@@ -148,7 +148,7 @@ public class CategoryControllerUnitTest {
         when(categoryRepository.save(any(Category.class))).thenReturn(category);
         var res = categoryController.addCategory(categoryMapper.toCategoryDto(category));
 
-        assertEquals(res.getStatusCode(), HttpStatus.BAD_REQUEST);
+        assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
 
     }
 

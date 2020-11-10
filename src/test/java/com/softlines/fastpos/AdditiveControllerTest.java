@@ -79,13 +79,13 @@ public class AdditiveControllerTest {
 
         Additive.setBackgroundString("red");
         Additive.setRank(4);
-        Additive.setDescription("harrisa+++");
+        Additive.setDescription("harrisa++");
 
         mvc.perform(post("/additive/save")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(Additive)))
                 .andDo(print())
-                .andExpect(jsonPath("description", is("harrisa+++")))
+                .andExpect(jsonPath("description", is("harrisa++")))
                 .andExpect(status().isCreated());
 
     }
@@ -94,13 +94,13 @@ public class AdditiveControllerTest {
     @Test
     public void putAdditives() throws Exception {
 
-        Additive.setId(2);
+        Additive.setId(1);
         Additive.setBackgroundString("red");
         Additive.setDescription("may");
         Additive.setRank(4);
 
 
-        mvc.perform(put("/additive/put/{id}", "2")
+        mvc.perform(put("/additive/put/{id}", "1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(Additive)))
                 .andDo(print())

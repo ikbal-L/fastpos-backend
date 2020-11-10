@@ -156,7 +156,7 @@ public class AnnexControllerTestExample {
     }
 
     @Test
-    public void getAllAnnexes_AnnexesListNotEmpty_Unit() throws Exception {
+    public void getAllAnnexes_AnnexesListNotEmpty_Unit() {
         List<Annex> annexesList = new ArrayList<>();
         annexesList.add(new Annex(1, "aaa", "adr", "key"));
         when(annexRepository.findAll()).thenReturn(annexesList);

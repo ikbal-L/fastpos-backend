@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +46,7 @@ public class CustomerController {
     public ResponseEntity<List<Customer>> getCustomers() {
 
         try {
+
             List<Customer> customers = customerRepository.findAll();
 
             if (customers == null || customers.isEmpty())
@@ -65,6 +64,7 @@ public class CustomerController {
     public ResponseEntity<Customer> getCustomer(@PathVariable long id) {
 
         try {
+            
             Optional<Customer> optionalCustomer = customerRepository.findById(id);
 
             if (optionalCustomer.isPresent() && id!=0)
@@ -96,6 +96,7 @@ public class CustomerController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity deleteCustomer(@PathVariable long id) {
+
         try {
 
             Optional<Customer> optionalCustomer = customerRepository.findById(id);
@@ -112,4 +113,5 @@ public class CustomerController {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
+
 }

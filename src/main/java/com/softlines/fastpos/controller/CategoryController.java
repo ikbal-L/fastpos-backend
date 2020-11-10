@@ -34,11 +34,14 @@ public class CategoryController {
 
             Optional<Category> optionalCategory = categoryRepository.findById(categoryDto.getId());
 
-            if (!optionalCategory.isPresent() && !categoryDto.getName().isEmpty()) {
+            if (!optionalCategory.isPresent()) {
+                if (categoryDto.getName() != null && !categoryDto.getName().isEmpty()) {
+                    Category createdCategory = categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto, false));
+                    return ResponseEntity.status(HttpStatus.CREATED).body(categoryMapper.toCategoryDto(createdCategory));
+                } else {
+                    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
-                Category createdCategory = categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto, false));
-                return ResponseEntity.status(HttpStatus.CREATED).body(categoryMapper.toCategoryDto(createdCategory));
-
+                }
             } else {
 
                 return ResponseEntity.status(HttpStatus.FOUND).build();
