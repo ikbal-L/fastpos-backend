@@ -47,7 +47,6 @@ public class TablesControllerUnitTest {
         var categories = Arrays.asList(
                 Tables.builder()
                         .id(1l)
-
                         .build()
         );
 
@@ -115,9 +114,7 @@ public class TablesControllerUnitTest {
         var table =
                 Tables.builder()
                         .id(1)
-
                         .number(2)
-
                         .tableOrders(Arrays.asList(com.softlines.fastpos.domain.Order.builder().build())).build();
 
         when(tableRepository.findById(table.getId())).thenReturn(Optional.of(table));
