@@ -1,6 +1,8 @@
 package com.softlines.fastpos.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -10,19 +12,20 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
-    @Column(nullable = false,unique = true)
-                String name;
+    @Column(nullable = false, unique = true)
+    String name;
     double price;
     String unit;
-    boolean isMuchInDemand ;
+    boolean isMuchInDemand;
     String type;
     int availableStock;
     String description;
     String backgroundString;
-    boolean isPlatter ;
+    boolean isPlatter;
     int rank;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

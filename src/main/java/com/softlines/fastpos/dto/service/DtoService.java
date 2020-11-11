@@ -12,4 +12,6 @@ public interface DtoService {
     Order orderDtoToOrder(OrderDto orderDto);
     List<OrderItem> orderItemDtoListToOrderItemList(List<OrderItemDto> oiDtos,boolean getDataFromRepository);
     Additive additiveDtoToAdditive(AdditiveDto additiveDto);
+
+    Person perosnDtoToPerson(PersonDto personDto, boolean getDataFromRepository);
 }

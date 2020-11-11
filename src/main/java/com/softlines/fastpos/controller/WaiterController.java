@@ -1,43 +1,39 @@
 package com.softlines.fastpos.controller;
 
-import com.softlines.fastpos.domain.Category;
-import com.softlines.fastpos.dto.CategoryDto;
-import com.softlines.fastpos.dto.mapping.CategoryMapper;
+import com.softlines.fastpos.domain.Waiter;
 import com.softlines.fastpos.dto.service.DtoService;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
-import com.softlines.fastpos.repository.CategoryRepository;
+import com.softlines.fastpos.repository.WaiterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/category")
-public class CategoryController {
+@RequestMapping("/waiter")
+public class WaiterController {
 
     @Autowired
-    private CategoryRepository categoryRepository;
-    @Autowired
-    CategoryMapper categoryMapper;
+    private WaiterRepository waiterRepository;
+
+
     @Autowired
     DtoService dtoService;
 
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping("/save")
-    public ResponseEntity addCategory(@RequestBody CategoryDto categoryDto) {
+    public ResponseEntity addWaiter(@RequestBody Waiter waiter ) {
         try {
 
-            Optional<Category> optionalCategory = categoryRepository.findById(categoryDto.getId());
+            Optional<Waiter> optionalWaiter = waiterRepository.findById(waiter.getId());
 
-            if (!optionalCategory.isPresent()) {
-                if (categoryDto.getName() != null && !categoryDto.getName().isEmpty()) {
-                    Category createdCategory = categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto, false));
-                    return ResponseEntity.status(HttpStatus.CREATED).body(categoryMapper.toCategoryDto(createdCategory));
+            if (!optionalWaiter.isPresent()) {
+                if (waiter.getName() != null && !waiter.getName().isEmpty()) {
+                    Waiter createdWaiter = waiterRepository.save(waiter);
+                    return ResponseEntity.status(HttpStatus.CREATED).body(createdWaiter);
                 } else {
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
@@ -54,16 +50,16 @@ public class CategoryController {
     }
 
     @GetMapping("/getall")
-    public ResponseEntity<List<CategoryDto>> getCategories() {
+    public ResponseEntity<List<Waiter>> getWaiters() {
         try {
 
-            List<Category> categories = categoryRepository.findAll();
+            List<Waiter> categories = waiterRepository.findAll();
 
             if (categories == null || categories.isEmpty()) {
                 return ResponseEntity.noContent().build();
 
             } else {
-                return ResponseEntity.ok().body(categoryMapper.toCategoryDTOs(categories));
+                return ResponseEntity.ok().body(categories);
             }
 
         } catch (Exception exception) {
@@ -73,14 +69,14 @@ public class CategoryController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<CategoryDto> getCategory(@PathVariable long id) {
+    public ResponseEntity<Waiter> getWaiter(@PathVariable long id) {
 
         try {
 
-            Optional<Category> optionalCategory = categoryRepository.findById(id);
+            Optional<Waiter> optionalWaiter = waiterRepository.findById(id);
 
-            if (optionalCategory.isPresent() && id != 0)
-                return ResponseEntity.ok().body(categoryMapper.toCategoryDto(optionalCategory.get()));
+            if (optionalWaiter.isPresent() && id != 0)
+                return ResponseEntity.ok().body(optionalWaiter.get());
             else
                 return ResponseEntity.noContent().build();
 
@@ -92,13 +88,13 @@ public class CategoryController {
     }
 
     @GetMapping("/getByName/{name}")
-    public ResponseEntity<List<CategoryDto>> getProductByName(@PathVariable String name) {
+    public ResponseEntity<List<Waiter>> getWaiterByName(@PathVariable String name) {
         try {
 
-            List<Category> categories = categoryRepository.findByName(name);
+            List<Waiter> categories = waiterRepository.findByName(name);
 
             if (categories != null)
-                return ResponseEntity.ok().body(categoryMapper.toCategoryDTOs(categories));
+                return ResponseEntity.ok().body(categories);
             else
                 return ResponseEntity.noContent().build();
 
@@ -108,13 +104,13 @@ public class CategoryController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<CategoryDto> editCategory(@PathVariable long id, @RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<Waiter> editWaiter(@PathVariable long id, @RequestBody Waiter waiter) {
         try {
 
-            Optional<Category> optionalCategory = categoryRepository.findById(id);
+            Optional<Waiter> optionalWaiter = waiterRepository.findById(id);
 
-            if (optionalCategory.isPresent() && id != 0 ) {
-                return ResponseEntity.ok().body(categoryMapper.toCategoryDto(categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto, false))));
+            if (optionalWaiter.isPresent() && id != 0 && waiter.getName() != null) {
+                return ResponseEntity.ok().body(waiterRepository.save(waiter));
             } else {
                 return ResponseEntity.noContent().build();
             }
@@ -126,13 +122,13 @@ public class CategoryController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleteCategory(@PathVariable long id) {
+    public ResponseEntity deleteWaiter(@PathVariable long id) {
 
         try {
-            Category categoryToDel = categoryRepository.findById(id).get();
-            if (categoryToDel != null) {
+            Waiter waiterToDel = waiterRepository.findById(id).get();
+            if (waiterToDel != null) {
 
-                categoryRepository.delete(categoryToDel);
+                waiterRepository.delete(waiterToDel);
                 return ResponseEntity.ok().build();
 
             } else {

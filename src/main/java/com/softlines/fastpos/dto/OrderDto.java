@@ -35,7 +35,7 @@ public class OrderDto {
 //    Customer customer;
 //    Table table;
 //    List<OrderStateElement> orderStates;
-//    Delivereyman delivereyman;
+//    Deliveryman delivereyman;
 //    Waiter waiter;
 
 }

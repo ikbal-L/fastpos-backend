@@ -3,6 +3,8 @@ package com.softlines.fastpos.dto.service;
 import com.softlines.fastpos.domain.*;
 import com.softlines.fastpos.dto.*;
 import com.softlines.fastpos.dto.mapping.*;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
+import com.softlines.fastpos.jwtsecurity.securityrepository.RoleRepository;
 import com.softlines.fastpos.repository.AdditiveRepository;
 import com.softlines.fastpos.repository.CategoryRepository;
 import com.softlines.fastpos.repository.ProductRepository;
@@ -22,6 +24,9 @@ public class DtoServiceImpl implements DtoService {
     private ProductRepository productRepository;
     @Autowired
     private AdditiveRepository additiveRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
     ////////////////////////////
     ///////////////////////////
     @Autowired
@@ -34,6 +39,10 @@ public class DtoServiceImpl implements DtoService {
     OrderMapper orderMapper;
     @Autowired
     OrderItemMapper orderItemMapper;
+
+    @Autowired
+    PersonMapper personMapper;
+
 
 
     // TODO Remove repository in services
@@ -59,13 +68,29 @@ public class DtoServiceImpl implements DtoService {
         Category category = categoryMapper.toCategory(categoryDto);
 
         if (getDataFromRepository) {
-            for (Long idProduct : categoryDto.getIdProducts()) {
+            for (Long idProduct : categoryDto.getProductIds()) {
                 products.add(productRepository.findById(idProduct).get());
             }
             category.setProducts(products);
         }
 
         return category;
+
+    }
+
+    @Override
+    public Person perosnDtoToPerson(PersonDto personDto, boolean getDataFromRepository) {
+        List<Role> roles = new ArrayList<Role>();
+        Person person = personMapper.toPerson(personDto);
+
+//        if (getDataFromRepository) {
+//            for (Long idProduct : personDto.getRolesId()) {
+//                roles.add(roleRepository.findById(idProduct).get());
+//            }
+//            person.setRoles(roles);
+//        }
+
+        return person;
 
     }
 
