@@ -6,12 +6,10 @@ import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
 import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.RoleDTO;
 import com.softlines.fastpos.jwtsecurity.securitydomain.securitymapper.RoleMapper;
-import com.softlines.fastpos.jwtsecurity.securityrepository.RoleRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Arrays;
 
@@ -26,7 +24,7 @@ public class RoleMappingUnitTesting {
     RoleController roleController;
     //DTO to Role
     @Test
-    public void roleMapperTurnsRoleToRoleDTO_PrivilegesNotEmpty() {
+    public void roleMapper_roleDTOToRole_PrivilegesNotEmpty() {
         var roleDTO = RoleDTO.builder()
                 .id(1l)
                 .name("ROLE_HR")
@@ -39,7 +37,7 @@ public class RoleMappingUnitTesting {
         assertEquals(role.getPrivileges().get(0).getId(), roleDTO.getPrivilegeIds().get(0));
     }
     @Test
-    public void roleMapperTurnsRoleToRoleDTO_PrivilegesEmpty() {
+    public void roleMapper_roleDTOToRole_PrivilegesEmpty() {
         var roleDTO = RoleDTO.builder()
                 .id(1l)
                 .name("ROLE_HR")
@@ -48,7 +46,7 @@ public class RoleMappingUnitTesting {
         assertEquals(role.getPrivileges().size(), 0);
     }
     @Test
-    public void roleMapperTurnsRoleToRoleDTO_PrivilegesNull() {
+    public void roleMapper_roleDTOToRole_PrivilegesNull() {
         var roleDTO = RoleDTO.builder()
                 .id(1l)
                 .name("ROLE_HR")
@@ -57,13 +55,13 @@ public class RoleMappingUnitTesting {
         assertEquals(role.getPrivileges(), null);
     }
    @Test
-    public void roleMapperTurnsRoleToRoleDTO_RoleDTOIsNull() {
+    public void roleMapper_roleDTOToRole_RoleDTOIsNull() {
         var role = roleMapper.toRole(null);
         assertEquals(role, null);
     }
     //Role to DTO
     @Test
-    public void roleMapperTurnsRoleDTOToRole_PrivilegesNotEmpty() {
+    public void roleMapper_roleToRoleDTO_PrivilegesNotEmpty() {
         var privilege1 = Privilege.builder()
                 .id(1l)
                 .name("READ_PRIVILEGE").build();
@@ -82,7 +80,7 @@ public class RoleMappingUnitTesting {
         assertEquals(roleDTO.getPrivilegeIds().get(0), role.getPrivileges().get(0).getId());
     }
     @Test
-    public void roleMapperTurnsRoleDTOToRole_PrivilegesEmpty() {
+    public void roleMapper_roleToRoleDTO_PrivilegesEmpty() {
         var role = Role.builder()
                 .id(1l)
                 .name("ROLE_HR")
@@ -91,7 +89,7 @@ public class RoleMappingUnitTesting {
         assertEquals(0, roleDTO.getPrivilegeIds().size());
     }
     @Test
-    public void roleMapperTurnsRoleDTOToRole_PrivilegesNull() {
+    public void roleMapper_roleToRoleDTO_PrivilegesNull() {
         var role = Role.builder()
                 .id(1l)
                 .name("ROLE_HR")
@@ -100,7 +98,7 @@ public class RoleMappingUnitTesting {
         assertEquals(null, roleDTO.getPrivilegeIds());
     }
    @Test
-    public void roleMapperTurnsRoleDTOToRole_RoleIsNull() {
+    public void roleMapper_roleToRoleDTO_RoleIsNull() {
         var roleDTO = roleMapper.toRoleDto(null);
         assertEquals(roleDTO, null);
     }

@@ -1,7 +1,6 @@
 package com.softlines.fastpos.jwtsecurity.jwtcontroller;
 
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.softlines.fastpos.exceptionmanagement.ExceptionHandling;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
@@ -17,6 +16,7 @@ import com.softlines.fastpos.jwtsecurity.securityrepository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.FieldError;
@@ -70,7 +70,7 @@ public class UserController {
         }
     }
 
-    //@PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
+    @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
     @GetMapping("/getall")
     public ResponseEntity<List<UserDTO>> getAllUsers(){
         try {
@@ -90,7 +90,7 @@ public class UserController {
                 var userDTO = userMapper.toUserDto(jwTuser);
                 return ResponseEntity.ok().body(userDTO);
             }
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.status(HttpStatus.FOUND).build();
         }catch (Exception e){
             return exceptionHandling.getResponseEntityAccordingToException(e);
         }

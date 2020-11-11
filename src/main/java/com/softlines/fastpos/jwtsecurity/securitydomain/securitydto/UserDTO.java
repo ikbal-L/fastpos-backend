@@ -1,15 +1,19 @@
 package com.softlines.fastpos.jwtsecurity.securitydomain.securitydto;
 
 import com.softlines.fastpos.constants.MessageKeyConstants;
-import lombok.Builder;
-import lombok.Data;
+
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Data
+
 @Builder
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDTO {
     long id;
     @NotBlank(message = MessageKeyConstants.USER_USERNAME_VALIDATION_ERROR)
@@ -25,4 +29,7 @@ public class UserDTO {
     private boolean tokenExpired;
     private List<Long> roleIds;
     private long dbId;
+
+    private long annexId;
+    private long terminalId;
 }

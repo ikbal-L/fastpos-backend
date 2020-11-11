@@ -73,14 +73,7 @@ public class UserControllerUnitTesting {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("no password provided", response.getBody());
     }
-//    @Test
-//    public void userController_saveUser_nullUsername(){
-//        var user = JWTuser.builder()
-//                .password("password")
-//                .id(1l).build();
-//        var response = userController.addUser(userMapper.toUserDto(user));
-//        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-//    }
+
     @Test
     public void userController_saveUser_noConnection(){
         var user = JWTuser.builder()
@@ -308,7 +301,6 @@ public class UserControllerUnitTesting {
         Mockito.when(jwTuserRepository.findById(1l)).thenReturn(Optional.ofNullable(user));
         var response = userController.getUserPrivileges(1l);
         assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
-        //assertEquals(2, response.getBody().size());
     }
     @Test
     public void userController_getPrivileges_noConnection(){

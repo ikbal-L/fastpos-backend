@@ -66,7 +66,7 @@ public class DbConfig {
     @Bean
     @Profile("prod")
     public CustomRoutingDataSource customRoutingDataSource() throws Exception {
-        //initiateDB();
+//        initiateDB();
         try{
             List<DbInfo> dbInfos = dbInfoRepository.findAll();
             Map<Object, Object> map = new HashMap<>();

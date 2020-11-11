@@ -143,7 +143,7 @@
 //
 //        //Arrange
 //        var Annex = Annex.builder().id(1).description("harrisa").build();
-//        when( annexRepository.findById(Annex.getId())).thenReturn(Optional.of(Annex));
+//        when( annexRepository.findRoleById(Annex.getId())).thenReturn(Optional.of(Annex));
 //
 //        //Act
 //        var res = annexController.addAnnex(Annex);
@@ -190,7 +190,7 @@
 //                        .description("harrisa")
 //                        .build();
 //
-//        when(annexRepository.findById(1l)).thenReturn(Optional.ofNullable(Annex));
+//        when(annexRepository.findRoleById(1l)).thenReturn(Optional.ofNullable(Annex));
 //
 //        var res = annexController.getAnnex(1);
 //        assertEquals(res.getStatusCode(), HttpStatus.OK);
@@ -202,7 +202,7 @@
 //    public void annexController_getById_WithEmptyAnnex() {
 //
 //        var Annex = new Annex();
-//        when(annexRepository.findById(0l)).thenReturn(Optional.of(Annex));
+//        when(annexRepository.findRoleById(0l)).thenReturn(Optional.of(Annex));
 //        var res = annexController.getAnnex(0);
 //        assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
 //
@@ -221,7 +221,7 @@
 //    @Order(12)
 //    public void annexController_getById_getAnnexsWithNoDBConnection() {
 //
-//        when(annexRepository.findById(5l))
+//        when(annexRepository.findRoleById(5l))
 //                .thenThrow(DataAccessResourceFailureException.class);
 //
 //        var res = annexController.getAnnex(5);
@@ -245,7 +245,7 @@
 //                        .description("harrisa")
 //                        .build();
 //
-//        when(annexRepository.findById(1l)).thenReturn(Optional.ofNullable(Annex));
+//        when(annexRepository.findRoleById(1l)).thenReturn(Optional.ofNullable(Annex));
 //        annexController.deleteAnnex(1);
 //
 //        verify(annexRepository, times(1)).delete(Annex);
@@ -256,11 +256,11 @@
 //    @Test
 //    public void annexController_Delete_WithNotExistAnnexId() {
 //
-//        when(annexRepository.findById(1l)).thenReturn(null);
+//        when(annexRepository.findRoleById(1l)).thenReturn(null);
 //
 //        annexController.deleteAnnex(1);
 //
-//        verify(annexRepository, times(1)).findById(1l);
+//        verify(annexRepository, times(1)).findRoleById(1l);
 //        verifyNoMoreInteractions(annexRepository);
 //
 //    }
@@ -269,7 +269,7 @@
 //    @Order(12)
 //    public void annexController_Delete_getAnnexsWithNoDBConnection() {
 //
-//        when(annexRepository.findById(5l))
+//        when(annexRepository.findRoleById(5l))
 //                .thenThrow(DataAccessResourceFailureException.class);
 //
 //        var res = annexController.getAnnex(5);
@@ -292,10 +292,10 @@
 //                .description("harrisa")
 //                .build();
 //
-//        when(annexRepository.findById(Annex.getId())).thenReturn(Optional.of(Annex));
+//        when(annexRepository.findRoleById(Annex.getId())).thenReturn(Optional.of(Annex));
 //        ResponseEntity<Annex> returned = annexController.editAnnex(1, Annex);
 //
-//        verify(annexRepository, times(1)).findById(Annex.getId());
+//        verify(annexRepository, times(1)).findRoleById(Annex.getId());
 //        assertEquals(returned.getStatusCode(), HttpStatus.OK);
 //
 //    }
@@ -309,10 +309,10 @@
 //                .description("harrisa")
 //                .build();
 //
-//        when(annexRepository.findById(Annex.getId())).thenReturn(Optional.empty());
+//        when(annexRepository.findRoleById(Annex.getId())).thenReturn(Optional.empty());
 //        ResponseEntity<Annex> returned = annexController.editAnnex(10, Annex);
 //
-//        verify(annexRepository, times(1)).findById(Annex.getId());
+//        verify(annexRepository, times(1)).findRoleById(Annex.getId());
 //        assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
 //
 //    }
@@ -322,10 +322,10 @@
 //
 //        var Annex = Annex.builder().id(1).build();
 //
-//        when(annexRepository.findById(Annex.getId())).thenReturn(Optional.of(Annex));
+//        when(annexRepository.findRoleById(Annex.getId())).thenReturn(Optional.of(Annex));
 //        ResponseEntity<Annex> returned = annexController.editAnnex(1, Annex);
 //
-//        verify(annexRepository, times(1)).findById(Annex.getId());
+//        verify(annexRepository, times(1)).findRoleById(Annex.getId());
 //        assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
 //
 //    }
@@ -334,7 +334,7 @@
 //    @Order(12)
 //    public void annexController_Put_getAnnexsWithNoDBConnection() {
 //
-//        when(annexRepository.findById(5l))
+//        when(annexRepository.findRoleById(5l))
 //                .thenThrow(DataAccessResourceFailureException.class);
 //
 //        var res = annexController.getAnnex(5);

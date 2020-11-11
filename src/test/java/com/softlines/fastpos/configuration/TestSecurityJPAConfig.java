@@ -22,6 +22,7 @@ import java.util.Properties;
         transactionManagerRef = "authTransactionManager"
 )
 @EnableTransactionManagement
+@Profile("test")
 public class TestSecurityJPAConfig {
     @Bean
     @Primary

@@ -38,7 +38,7 @@ public class RoleControllerUnitTesting {
     public void RoleController_getRoles_ReturnsNotEmptyRolesList() {
         var roles = Arrays.asList(
                 Role.builder().id(1l).name("ROLE_HR")
-                        .privileges(Arrays.asList(new Privilege(1l, "privilege01")))
+                        .privileges(Arrays.asList(Privilege.builder().id(1l).name("privilege01").build()))
                         .build());
         Mockito.when(roleRepository.findAllRolesWithPrivileges()).thenReturn(roles);
 
@@ -104,7 +104,7 @@ public class RoleControllerUnitTesting {
                                         .build()))
                                 .build();
         var roleDTO = roleMapper.toRoleDto(role);
-        Mockito.when(roleRepository.findById(role.getId())).thenReturn(Optional.of(role));
+        Mockito.when(roleRepository.findRoleById(role.getId())).thenReturn(Optional.of(role));
 
         var res = roleController.saveRole(roleDTO);
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
@@ -118,7 +118,7 @@ public class RoleControllerUnitTesting {
                                         .build()))
                                 .build();
         var roleDTO = roleMapper.toRoleDto(role);
-        Mockito.when(roleRepository.findById(role.getId())).thenThrow(DataAccessResourceFailureException.class);
+        Mockito.when(roleRepository.findRoleById(role.getId())).thenThrow(DataAccessResourceFailureException.class);
 
         var res = roleController.saveRole(roleDTO);
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
@@ -163,7 +163,7 @@ public class RoleControllerUnitTesting {
     public void RoleController_deleteRole_nonExistingRole() {
         var role = Role.builder().build();
         var roleDTO = roleMapper.toRoleDto(role);
-        Mockito.when(roleRepository.findById(roleDTO.getId())).thenReturn(Optional.empty());
+        Mockito.when(roleRepository.findRoleById(roleDTO.getId())).thenReturn(Optional.empty());
         var res = roleController.deleteRole(roleDTO);
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
     }
@@ -175,7 +175,7 @@ public class RoleControllerUnitTesting {
                 .privileges(null)
                 .build();
         var roleDTO = roleMapper.toRoleDto(role);
-        Mockito.when(roleRepository.findById(roleDTO.getId())).thenReturn(java.util.Optional.ofNullable(role));
+        Mockito.when(roleRepository.findRoleById(roleDTO.getId())).thenReturn(java.util.Optional.ofNullable(role));
         var res = roleController.deleteRole(roleDTO);
         assertEquals(res.getStatusCode(), HttpStatus.ACCEPTED);
         assertEquals(res.getBody(), roleDTO);
@@ -188,7 +188,7 @@ public class RoleControllerUnitTesting {
             .privileges(null)
             .build();
         var roleDTO = roleMapper.toRoleDto(role);
-        Mockito.when(roleRepository.findById(roleDTO.getId())).thenThrow(DataAccessResourceFailureException.class);
+        Mockito.when(roleRepository.findRoleById(roleDTO.getId())).thenThrow(DataAccessResourceFailureException.class);
         var res = roleController.deleteRole(roleDTO);
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
     }
@@ -204,7 +204,7 @@ public class RoleControllerUnitTesting {
                 .id(1l).name("ROLE_HR")
                 .privileges(null)
                 .build();
-        Mockito.when(roleRepository.findById(roleDTO.getId())).thenReturn(java.util.Optional.ofNullable(roleToEdit));
+        Mockito.when(roleRepository.findRoleById(roleDTO.getId())).thenReturn(java.util.Optional.ofNullable(roleToEdit));
         Mockito.when(roleRepository.save(Mockito.any(Role.class))).thenReturn(role);
         var res = roleController.editRole(roleDTO);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
@@ -218,7 +218,7 @@ public class RoleControllerUnitTesting {
             .privileges(null)
             .build();
         var roleDTO = roleMapper.toRoleDto(role);
-        Mockito.when(roleRepository.findById(roleDTO.getId())).thenReturn(Optional.empty());
+        Mockito.when(roleRepository.findRoleById(roleDTO.getId())).thenReturn(Optional.empty());
         var res = roleController.editRole(roleDTO);
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
     }
@@ -230,7 +230,7 @@ public class RoleControllerUnitTesting {
             .privileges(null)
             .build();
         var roleDTO = roleMapper.toRoleDto(role);
-        Mockito.when(roleRepository.findById(roleDTO.getId())).thenThrow(DataAccessResourceFailureException.class);
+        Mockito.when(roleRepository.findRoleById(roleDTO.getId())).thenThrow(DataAccessResourceFailureException.class);
         var res = roleController.editRole(roleDTO);
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
     }

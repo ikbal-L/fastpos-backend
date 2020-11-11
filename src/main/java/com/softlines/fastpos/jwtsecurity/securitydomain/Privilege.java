@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Entity
 @Setter
@@ -21,5 +22,7 @@ public class Privilege {
     @NotBlank(message = MessageKeyConstants.PRIVILEGE_NAME_VALIDATION_ERROR)
     @Column(name = "name")
     private String name;
+    @ManyToMany(mappedBy = "privileges")
+    private List<Role> roles;
 
 }
