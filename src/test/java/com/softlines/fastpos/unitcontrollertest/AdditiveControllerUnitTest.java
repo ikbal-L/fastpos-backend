@@ -17,19 +17,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import javax.persistence.Entity;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
-
-import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 
@@ -37,6 +31,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ModelApplication.class)
 @AutoConfigureMockMvc
 @EnableAutoConfiguration(exclude = SecurityAutoConfiguration.class)
+@ActiveProfiles("test")
 public class AdditiveControllerUnitTest {
 
     @MockBean
@@ -89,7 +84,7 @@ public class AdditiveControllerUnitTest {
 
     @Test
     @Order(4)
-    public void AdditiveController_getAll_getAdditivesWithNoDBConnection() {
+    public void AdditiveController_getAll_WithNoDBConnection() {
         when(additiveRepository.findAll())
                 .thenThrow(DataAccessResourceFailureException.class);
 
@@ -110,7 +105,6 @@ public class AdditiveControllerUnitTest {
 
         var additive =
                 Additive.builder()
-                        .id(1)
                         .description("harrisa")
                         .backgroundString("red")
                         .rank(2)
@@ -166,7 +160,6 @@ public class AdditiveControllerUnitTest {
 
         var additive =
                 Additive.builder()
-                        .id(1l)
                         .description("harrisa")
                         .backgroundString("red")
                         .rank(2)
@@ -178,7 +171,6 @@ public class AdditiveControllerUnitTest {
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
 
     }
-
 
     /**
      * ------------------>  GetById Additive Unit Test  <------------------------
@@ -225,7 +217,7 @@ public class AdditiveControllerUnitTest {
 
     @Test
     @Order(12)
-    public void additiveController_getById_getAdditivesWithNoDBConnection() {
+    public void additiveController_getById_WithNoDBConnection() {
 
         when(additiveRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);
@@ -242,6 +234,7 @@ public class AdditiveControllerUnitTest {
      */
 
     @Test
+    @Order(13)
     public void additiveController_Delete_WithAdditiveId() {
 
         var additive =
@@ -260,6 +253,7 @@ public class AdditiveControllerUnitTest {
     }
 
     @Test
+    @Order(14)
     public void additiveController_Delete_WithNotExistAdditiveId() {
 
         when(additiveRepository.findById(1l)).thenReturn(null);
@@ -272,8 +266,8 @@ public class AdditiveControllerUnitTest {
     }
 
     @Test
-    @Order(12)
-    public void additiveController_Delete_getAdditivesWithNoDBConnection() {
+    @Order(15)
+    public void additiveController_Delete_WithNoDBConnection() {
 
         when(additiveRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);
@@ -290,6 +284,7 @@ public class AdditiveControllerUnitTest {
      */
 
     @Test
+    @Order(16)
     public void additiveController_Put_WithData() {
 
         var additive = Additive.builder()
@@ -307,6 +302,7 @@ public class AdditiveControllerUnitTest {
     }
 
     @Test
+    @Order(17)
     public void additiveController_Put_WithIdNotExist() {
 
         var additive = Additive.builder()
@@ -324,6 +320,7 @@ public class AdditiveControllerUnitTest {
     }
 
     @Test
+    @Order(18)
     public void additiveController_Put_WithNullData() {
 
         var additive = Additive.builder().id(1).build();
@@ -337,8 +334,8 @@ public class AdditiveControllerUnitTest {
     }
 
     @Test
-    @Order(12)
-    public void additiveController_Put_getAdditivesWithNoDBConnection() {
+    @Order(19)
+    public void additiveController_Put_WithNoDBConnection() {
 
         when(additiveRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);

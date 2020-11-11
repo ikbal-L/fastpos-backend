@@ -1,13 +1,14 @@
 package com.softlines.fastpos;
 
+import static org.hamcrest.CoreMatchers.is;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.softlines.fastpos.dto.ProductDto;
-import com.softlines.fastpos.dto.mapping.ProductMapper;
-import com.softlines.fastpos.repository.ProductRepository;
-import org.assertj.core.util.Lists;
-import org.hamcrest.Matchers;
+import com.softlines.fastpos.dto.OrderItemDto;
+import com.softlines.fastpos.dto.TableDto;
+import com.softlines.fastpos.dto.mapping.TableMapper;
+import com.softlines.fastpos.dto.service.DtoService;
+import com.softlines.fastpos.repository.TableRepository;
 import org.junit.Test;
-import org.junit.jupiter.api.Order;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -22,10 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -35,7 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ModelApplication.class)
 @AutoConfigureMockMvc
 @EnableAutoConfiguration(exclude = SecurityAutoConfiguration.class)
-public class MappingProductTest {
+public class MappingTableTest {
+
     @Autowired
     private MockMvc mvc;
 
@@ -43,106 +42,90 @@ public class MappingProductTest {
     HttpServletResponse response;
 
     @Autowired
-    ProductRepository productRepository;
+    TableRepository tableRepository;
     @Autowired
-    ProductMapper productMapper;
+    TableMapper tableMapper;
 
+    OrderItemDto tableItemDto = new OrderItemDto();
 
-    ProductDto product = new ProductDto();
+    @Autowired
+    DtoService dtoService;
+    TableDto tableDto = new TableDto();
     List<Long> listAdditives = new ArrayList();
 
     @Test
-    public void getProducts() throws Exception {
+    public void getTables() throws Exception {
 
-        var products = productRepository.findAll();
-        mvc.perform(get("/product/getall")
+        var tables = tableRepository.findAll();
+        mvc.perform(get("/table/getall")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(jsonPath("$[1].idAdditives[0]").value(productMapper.toProductDTOs(products).get(1).getIdAdditives().get(0)))
+                .andExpect(jsonPath("$[0].number").value(tableMapper.toTableDTOs(tables).get(0).getNumber()))
                 .andExpect(status().isOk());
 
     }
 
     @Test
-    public void getProduct() throws Exception {
-        var product = productRepository.findById((long) 1).get();
-        mvc.perform(get("/product/get/{id}", 1)
+    public void getTable() throws Exception {
+
+        var table = tableRepository.findById((long) 1).get();
+        mvc.perform(get("/table/get/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(jsonPath("name").value(productMapper.toProductDto(product).getName()))
+                .andExpect(jsonPath("number").value(tableMapper.toTableDto(table).getNumber()))
                 .andExpect(status().isOk());
 
     }
 
 
     @Test
-    public void addProducts() throws Exception {
+    public void addOrder() throws Exception {
 
-        product.setAvailableStock(0);
-        product.setBackgroundString("red");
-        product.setDescription("desc");
-        product.setMuchInDemand(true);
-        product.setName("pro 2");
-        product.setRank(15);
-        product.setType("type");
-        product.setPlatter(true);
-        product.setPrice(450);
-        product.setType("sad");
-        product.setUnit("U");
-        product.setCategoryId(1);
+        tableDto.setNumber(1);
+        tableDto.setVirtual(true);
+        tableDto.setSeats(8);
+        //////////////////////////////////////////////////
 
-        listAdditives.add(1l);
-        product.setIdAdditives(listAdditives);
 
-        mvc.perform(post("/product/save")
+        mvc.perform(post("/table/save")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(product)))
+                .content(asJsonString(tableDto)))
                 .andDo(print())
-                .andExpect(jsonPath("name", is("pro 2")))
+                .andExpect(jsonPath("number", is("1")))
                 .andExpect(status().isCreated());
 
     }
 
     @Test
-    public void getProductWithIdNotExist() throws Exception {
-        mvc.perform(get("/product/get/{id}", 10)
+    public void getTableWithIdNotExist() throws Exception {
+        mvc.perform(get("/table/get/{id}", 10)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void putProducts() throws Exception {
+    public void putTables() throws Exception {
 
-        product.setId(2);
-        product.setAvailableStock(0);
-        product.setBackgroundString("red");
-        product.setDescription("desc");
-        product.setMuchInDemand(true);
-        product.setName("pro put");
-        product.setRank(4);
-        product.setPlatter(true);
-        product.setPrice(30);
-        product.setType("sad");
-        product.setUnit("U");
-        listAdditives.add((long) 2);
-        listAdditives.add((long) 1);
-        product.setCategoryId(1);
-        product.setIdAdditives(listAdditives);
 
-        mvc.perform(put("/product/put/{id}", "2")
+        tableDto.setId(2);
+        tableDto.setNumber(3);
+        tableDto.setVirtual(true);
+        tableDto.setSeats(6);
+
+        mvc.perform(put("/table/put/{id}", "2")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(product)))
+                .content(asJsonString(tableDto)))
                 .andDo(print())
-                .andExpect(jsonPath("name", is("pro put")))
+                .andExpect(jsonPath("number", is(3)))
                 .andExpect(status().isOk());
 
     }
 
     @Test
-    public void deleteProducts() throws Exception {
+    public void deleteTables() throws Exception {
 
-        mvc.perform(delete("/product/delete/{id}", "19")
+        mvc.perform(delete("/table/delete/{id}", "3")
                 .contentType(MediaType.APPLICATION_JSON)
         )
                 .andDo(print())
@@ -150,13 +133,16 @@ public class MappingProductTest {
 
     }
 
+
     public String asJsonString(final Object obj) {
+
         try {
             final ObjectMapper mapper = new ObjectMapper();
             return mapper.writeValueAsString(obj);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
     }
 
 }

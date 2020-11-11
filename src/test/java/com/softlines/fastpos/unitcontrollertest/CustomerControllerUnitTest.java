@@ -2,7 +2,6 @@ package com.softlines.fastpos.unitcontrollertest;
 
 import com.softlines.fastpos.ModelApplication;
 import com.softlines.fastpos.controller.CustomerController;
-import com.softlines.fastpos.domain.Additive;
 import com.softlines.fastpos.domain.Customer;
 import com.softlines.fastpos.repository.CustomerRepository;
 import org.junit.Test;
@@ -16,19 +15,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ModelApplication.class)
 @AutoConfigureMockMvc
 @EnableAutoConfiguration(exclude = SecurityAutoConfiguration.class)
-
 public class CustomerControllerUnitTest {
 
     @MockBean
@@ -77,7 +79,7 @@ public class CustomerControllerUnitTest {
 
     @Test
     @Order(4)
-    public void customerController_getAll_getCustomersWithNoDBConnection() {
+    public void customerController_getAll_WithNoDBConnection() {
         when(customerRepository.findAll())
                 .thenThrow(DataAccessResourceFailureException.class);
 
@@ -107,7 +109,6 @@ public class CustomerControllerUnitTest {
     }
 
     @Test
-    @Order(5)
     public void customerController_Save_WithExistCustomer() {
 
         var customer =Customer.builder().id(1).name("tacos").build();
@@ -155,7 +156,6 @@ public class CustomerControllerUnitTest {
 
 
     @Test
-    @Order(9)
     public void customerController_getById_WithNotEmptyCustomer() {
 
         var customer =
@@ -172,7 +172,6 @@ public class CustomerControllerUnitTest {
     }
 
     @Test
-    @Order(10)
     public void customerController_getById_WithEmptyCustomer() {
 
         var customer = new Customer();
@@ -186,7 +185,6 @@ public class CustomerControllerUnitTest {
 
 
     @Test
-    @Order(11)
     public void customerController_getById_WithNullCustomer() {
 
         var res = customerController.getCustomer(1);
@@ -195,8 +193,115 @@ public class CustomerControllerUnitTest {
     }
 
     @Test
-    @Order(12)
-    public void customerController_getById_getCustomerWithNoDBConnection() {
+    public void customerController_getById_WithNoDBConnection() {
+
+        when(customerRepository.findById(5l))
+                .thenThrow(DataAccessResourceFailureException.class);
+
+        var res = customerController.getCustomer(5);
+
+        assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
+
+    }
+
+
+    /**
+     * ------------------>  Delete Customer Unit Test  <------------------------
+     */
+
+    @Test
+    public void customerController_Delete_WithCustomerId() {
+
+        var customer =
+                Customer.builder()
+                        .id(1l)
+                        .name("name")
+                        .build();
+
+        when(customerRepository.findById(1l)).thenReturn(Optional.ofNullable(customer));
+        customerController.deleteCustomer(1);
+
+        verify(customerRepository, times(1)).delete(customer);
+
+
+    }
+
+    @Test
+    public void customerController_Delete_WithNotExistCustomerId() {
+
+        when(customerRepository.findById(1l)).thenReturn(null);
+
+        customerController.deleteCustomer(1);
+
+        verify(customerRepository, times(1)).findById(1l);
+        verifyNoMoreInteractions(customerRepository);
+
+    }
+
+    @Test
+    public void customerController_Delete_WithNoDBConnection() {
+
+        when(customerRepository.findById(5l))
+                .thenThrow(DataAccessResourceFailureException.class);
+
+        var res = customerController.getCustomer(5);
+
+        assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
+
+    }
+
+
+    /**
+     * ------------------>  Put Customer Unit Test  <------------------------
+     */
+
+    @Test
+    public void customerController_Put_WithData() {
+
+        var customer = Customer.builder()
+                .id(1l)
+                .name("harrisa")
+                .build();
+
+        when(customerRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
+        ResponseEntity<Customer> returned = customerController.editCustomer(1, customer);
+
+        verify(customerRepository, times(1)).findById(customer.getId());
+        assertEquals(returned.getStatusCode(), HttpStatus.OK);
+
+    }
+
+    @Test
+    public void customerController_Put_WithIdNotExist() {
+
+        var customer = Customer.builder()
+                .id(10l)
+                .name("harrisa")
+                .build();
+
+        when(customerRepository.findById(customer.getId())).thenReturn(Optional.empty());
+        ResponseEntity<Customer> returned = customerController.editCustomer(10, customer);
+
+        verify(customerRepository, times(1)).findById(customer.getId());
+        assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
+
+    }
+
+    @Test
+    public void customerController_Put_WithNullData() {
+
+        var customer = Customer.builder().id(1).build();
+
+        when(customerRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
+        ResponseEntity<Customer> returned = customerController.editCustomer(1, customer);
+
+        verify(customerRepository, times(1)).findById(customer.getId());
+        assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
+
+    }
+
+    @Test
+    public void customerController_Put_WithNoDBConnection() {
 
         when(customerRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);

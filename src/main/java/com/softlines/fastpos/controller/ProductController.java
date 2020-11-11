@@ -41,7 +41,7 @@ public class ProductController {
 
             if (!optionalProduct.isPresent()) {
 
-                if (productDto.getName() != null && !productDto.getName().isEmpty()) {
+                if (productDto.getName() != null && !productDto.getName().isEmpty() && productDto.getId()==0) {
                     Product product = dtoService.productDtoToProduct(productDto, false);
                     return ResponseEntity.status(HttpStatus.CREATED).body(productMapper.toProductDto(productRepository.save(product)));
                 } else {
@@ -66,7 +66,7 @@ public class ProductController {
 
             List<Product> products = productRepository.findAll();
 
-            if (products == null || products.isEmpty())
+            if (products == null || products.isEmpty() )
                 return ResponseEntity.noContent().build();
             else
                 return ResponseEntity.ok().body(productMapper.toProductDTOs(products));
@@ -117,7 +117,7 @@ public class ProductController {
         try {
             Optional<Product> optionalProduct = productRepository.findById(id);
 
-            if (optionalProduct.isPresent()) {
+            if (optionalProduct.isPresent() && id != 0 && productDto.getName() != null) {
 
                 Product product = dtoService.productDtoToProduct(productDto, false);
                 return ResponseEntity.status(HttpStatus.OK).body(productMapper.toProductDto(productRepository.save(product)));

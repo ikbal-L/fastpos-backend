@@ -1,21 +1,16 @@
 package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Additive;
-import com.softlines.fastpos.domain.Category;
 import com.softlines.fastpos.dto.AdditiveDto;
 import com.softlines.fastpos.dto.mapping.AdditiveMapper;
 import com.softlines.fastpos.dto.service.DtoService;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.AdditiveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 @RestController
@@ -38,8 +33,8 @@ public class AdditiveController {
 
             Optional<Additive> optionalAdditive = additiveRepository.findById(additive.getId());
 
+            if (!(optionalAdditive.isPresent()) && additive.getId()==0) {
 
-            if (!(optionalAdditive.isPresent())) {
                 if (additive.getDescription() != null &&
                         !additive.getDescription().isEmpty())
                     return ResponseEntity.status(HttpStatus.CREATED).body(additiveRepository.save(additive));
@@ -98,16 +93,10 @@ public class AdditiveController {
         try {
             Optional<Additive> optionalAdditive = additiveRepository.findById(id);
 
-            if (optionalAdditive.isPresent() && additive.getDescription()!=null) {
-
+            if (optionalAdditive.isPresent() && id != 0 && additive.getDescription() != null) {
                 return ResponseEntity.ok().body(additiveRepository.save(additive));
-
             } else {
-//                ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-//                messageSource.setDefaultEncoding("UTF-8");
-//                messageSource.setBasenames("messages");
-//                return ResponseEntity.ok().body(messageSource.getMessage("notfound", null,lang!=null ? new Locale(lang):null));
-                return ResponseEntity.noContent().build();
+              return ResponseEntity.noContent().build();
             }
 
         } catch (Exception exception) {
@@ -121,6 +110,7 @@ public class AdditiveController {
         try {
 
             Optional<Additive> additiveToDel = additiveRepository.findById(id);
+
             if (additiveToDel.isPresent()) {
 
                 additiveRepository.delete(additiveToDel.get());

@@ -7,6 +7,9 @@ import java.util.List;
 
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class OrderItem {
 
