@@ -1,5 +1,7 @@
 package com.softlines.fastpos.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
@@ -8,14 +10,23 @@ import java.util.List;
 
 // TODO Remove additiveDto
 
+
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AdditiveDto {
 
+    @JsonProperty("Id")
     long id;
-    @NotBlank(message = "validation.error.additive.description")
-    private String description;
-    @NotBlank(message = "validation.error.additive.background")
-    private String backgroundString;
-    private int rank;
 
+    @JsonProperty("Description")
+    @NotBlank(message = "validation.error.additive.description")
+    String description;
+
+    @JsonProperty("BackgroundString")
+    @NotBlank(message = "validation.error.additive.background")
+    String backgroundString;
+
+    @JsonProperty("Rank")
+    int rank;
 }

@@ -1,6 +1,7 @@
 package com.softlines.fastpos.domain;
 
 import com.softlines.fastpos.constants.MessageKeyConstants;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,11 +18,18 @@ public class Additive {
     // TODO Add Ingrediants to additive entity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty("Id")
     long id;
+
     @Column(name = "description",nullable = false,unique = true)
+    @JsonProperty("Description")
     @NotBlank(message = MessageKeyConstants.ADDITIVE_DESCRIPTION_VALIDATION_ERROR)
     String description ;
+
+    @JsonProperty("BackgroundString")
     @NotBlank(message = MessageKeyConstants.ADDITIVE_BACKGROUND_VALIDATION_ERROR)
     String backgroundString;
+
+    @JsonProperty("Rank")
     int rank;
 }

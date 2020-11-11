@@ -15,12 +15,12 @@ public interface CategoryMapper {
 
     CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
 
-    @Mapping(source = "products", target = "idProducts", qualifiedByName = "ProductToId")
+    @Mapping(source = "products", target = "productIds", qualifiedByName = "ProductToId")
     CategoryDto toCategoryDto(Category category);
 
     List<CategoryDto> toCategoryDTOs(List<Category> category);
 
-    @Mapping(source = "idProducts", target = "products", qualifiedByName = "ProductToId")
+    @Mapping(source = "productIds", target = "products", qualifiedByName = "ProductToId")
     Category toCategory(CategoryDto categoryDTO);
 
     @Named("ProductToId")
