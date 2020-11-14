@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 //package com.softlines.fastpos.unitcontrollertest;
 //
 //import com.softlines.fastpos.ModelApplication;
@@ -346,7 +346,7 @@
 //
 //
 //}
-=======
+
 package com.softlines.fastpos.unitcontrollertest;
 
 import com.softlines.fastpos.ModelApplication;
@@ -690,4 +690,3 @@ public class AnnexControllerUnitTest {
 
 
 }
->>>>>>> origin/unit_product
