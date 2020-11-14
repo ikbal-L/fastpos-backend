@@ -1,7 +1,7 @@
 package com.softlines.fastpos.controller;
 
 
-import com.softlines.fastpos.domain.Restaurent;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Restaurent;
 import com.softlines.fastpos.dto.RestaurentDto;
 import com.softlines.fastpos.dto.mapping.RestaurentMapper;
 import com.softlines.fastpos.repository.RestaurentRepository;

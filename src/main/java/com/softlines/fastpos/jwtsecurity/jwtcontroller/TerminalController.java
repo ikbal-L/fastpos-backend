@@ -1,7 +1,7 @@
 package com.softlines.fastpos.controller;
 
 
-import com.softlines.fastpos.domain.Terminal;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Terminal;
 import com.softlines.fastpos.dto.TerminalDto;
 import com.softlines.fastpos.dto.mapping.TerminalMapper;
 import com.softlines.fastpos.repository.TerminalRepository;

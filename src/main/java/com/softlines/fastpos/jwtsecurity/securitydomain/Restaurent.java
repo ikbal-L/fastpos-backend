@@ -1,5 +1,6 @@
 package com.softlines.fastpos.domain;
 
+import com.softlines.fastpos.jwtsecurity.securitydomain.Annex;
 import lombok.Data;
 
 import javax.persistence.*;

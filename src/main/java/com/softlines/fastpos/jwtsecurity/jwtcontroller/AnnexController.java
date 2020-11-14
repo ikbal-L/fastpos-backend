@@ -1,13 +1,12 @@
 package com.softlines.fastpos.controller;
 
-import com.softlines.fastpos.domain.Annex;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Annex;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.AnnexRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;

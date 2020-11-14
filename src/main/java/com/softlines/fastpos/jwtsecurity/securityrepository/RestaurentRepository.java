@@ -1,7 +1,6 @@
 package com.softlines.fastpos.repository;
 
-import com.softlines.fastpos.domain.Additive;
-import com.softlines.fastpos.domain.Restaurent;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Restaurent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
