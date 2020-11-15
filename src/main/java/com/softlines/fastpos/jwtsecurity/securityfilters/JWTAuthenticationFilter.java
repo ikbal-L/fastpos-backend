@@ -64,11 +64,12 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest req,
                                             HttpServletResponse res,
                                             FilterChain chain,
-                                            Authentication auth) {
+                                            Authentication auth) throws IOException {
         //TODO when changing dbInfo by dbId, you should change this instruction : DONE!
         var dbId = ((CustomJWTuserDetails) auth.getPrincipal()).getDbId() == null ? 0
                 : ((CustomJWTuserDetails) auth.getPrincipal()).getDbId();
-
+        creds = new ObjectMapper()
+                .readValue(req.getInputStream(), UserDTO.class);
         String token = createToken(auth.getName(), dbId);
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
     }

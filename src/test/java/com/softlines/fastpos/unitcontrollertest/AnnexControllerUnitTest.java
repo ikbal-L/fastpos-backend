@@ -2,10 +2,10 @@
 //package com.softlines.fastpos.unitcontrollertest;
 //
 //import com.softlines.fastpos.ModelApplication;
-//import com.softlines.fastpos.controller.AnnexController;
-//import com.softlines.fastpos.domain.Annex;
-//import com.softlines.fastpos.domain.Annex;
-//import com.softlines.fastpos.repository.AnnexRepository;
+//import com.softlines.fastpos.jwtsecurity.jwtcontroller.AnnexController;
+//import com.softlines.fastpos.jwtsecurity.securitydomain.Annex;
+//import com.softlines.fastpos.jwtsecurity.securitydomain.Annex;
+//import com.softlines.fastpos.jwtsecurity.securityrepository.AnnexRepository;
 //import org.junit.Test;
 //import org.junit.jupiter.api.Order;
 //import org.junit.runner.RunWith;
@@ -350,9 +350,9 @@
 package com.softlines.fastpos.unitcontrollertest;
 
 import com.softlines.fastpos.ModelApplication;
-import com.softlines.fastpos.controller.AnnexController;
-import com.softlines.fastpos.domain.Annex;
-import com.softlines.fastpos.repository.AnnexRepository;
+import com.softlines.fastpos.jwtsecurity.jwtcontroller.AnnexController;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Annex;
+import com.softlines.fastpos.jwtsecurity.securityrepository.AnnexRepository;
 import org.junit.Test;
 import org.junit.jupiter.api.Order;
 import org.junit.runner.RunWith;

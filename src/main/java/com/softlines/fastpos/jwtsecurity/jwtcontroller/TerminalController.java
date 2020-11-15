@@ -1,10 +1,10 @@
-package com.softlines.fastpos.controller;
+package com.softlines.fastpos.jwtsecurity.jwtcontroller;
 
 
 import com.softlines.fastpos.jwtsecurity.securitydomain.Terminal;
 import com.softlines.fastpos.dto.TerminalDto;
 import com.softlines.fastpos.dto.mapping.TerminalMapper;
-import com.softlines.fastpos.repository.TerminalRepository;
+import com.softlines.fastpos.jwtsecurity.securityrepository.TerminalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,15 +1,12 @@
-package com.softlines.fastpos.domain;
+package com.softlines.fastpos.jwtsecurity.securitydomain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import java.util.List;
+import javax.persistence.*;
 
 @Data
 @Builder
@@ -20,13 +17,16 @@ public class Annex {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty("Id")
+//    @JsonProperty("Id")
     long id;
-    @JsonProperty("Name")
+//    @JsonProperty("Name")
     String name;
-    @JsonProperty("Address")
+//    @JsonProperty("Address")
     String address;
-    @JsonProperty("ServerLicenceKey")
+//    @JsonProperty("ServerLicenceKey")
     String serverLicenceKey;
+
+//    @OneToMany//(mappedBy = "annex")
+//    List<Terminal> terminals;
 
 }
