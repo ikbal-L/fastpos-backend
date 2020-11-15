@@ -32,8 +32,6 @@ import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstant
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
-    @Autowired
-    JWTuserRepository jwTuserRepository;
 
     public JWTAuthorizationFilter(AuthenticationManager authManager) {
         super(authManager);

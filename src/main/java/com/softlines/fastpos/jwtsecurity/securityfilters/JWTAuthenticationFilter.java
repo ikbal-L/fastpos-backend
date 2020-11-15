@@ -4,8 +4,12 @@ import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softlines.fastpos.jwtsecurity.securitydetails.CustomJWTuserDetails;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Session;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Terminal;
 import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.UserDTO;
 import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
+import com.softlines.fastpos.jwtsecurity.securityrepository.SessionRepository;
+import com.softlines.fastpos.jwtsecurity.securityrepository.TerminalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +18,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -38,8 +43,15 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private UserDTO creds;
 
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
+    private SessionRepository sessionRepository;
+
+
+    public JWTAuthenticationFilter(AuthenticationManager authenticationManager ,
+                                   SessionRepository sessionRepository) {
         this.authenticationManager = authenticationManager;
+        this.sessionRepository = sessionRepository;
+
+
     }
 
     @Override
@@ -68,19 +80,25 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         //TODO when changing dbInfo by dbId, you should change this instruction : DONE!
         var dbId = ((CustomJWTuserDetails) auth.getPrincipal()).getDbId() == null ? 0
                 : ((CustomJWTuserDetails) auth.getPrincipal()).getDbId();
-        creds = new ObjectMapper()
-                .readValue(req.getInputStream(), UserDTO.class);
-        String token = createToken(auth.getName(), dbId);
+
+
+        var user = ((CustomJWTuserDetails) auth.getPrincipal()).getJwtUser();
+        var terminal = new Terminal();
+        terminal.setId(creds.getTerminalId());
+        Session session = Session.builder().date(new Date()).user(user).terminal(terminal).build();
+        var createdSession = sessionRepository.save(session);
+        String token = createToken(auth.getName(), dbId,createdSession);
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
     }
 
-    private String createToken(String name, long dbID){
+    private String createToken(String name, long dbID, Session session){
         String token = JWT.create()
                 .withSubject(name)
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .withClaim("dbID", dbID)
-                .withClaim("annexId", creds.getAnnexId())
-                .withClaim("terminalId", creds.getTerminalId())
+//                .withClaim("annexId", creds.getAnnexId())
+//                .withClaim("terminalId", creds.getTerminalId())
+                .withClaim("sessionId", session.getId())
                 .sign(HMAC512(SECRET.getBytes()));
         return token;
     }

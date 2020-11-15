@@ -2,6 +2,9 @@ package com.softlines.fastpos.jwtsecurity.securityconfiguration;
 
 import com.softlines.fastpos.jwtsecurity.securityfilters.JWTAuthenticationFilter;
 import com.softlines.fastpos.jwtsecurity.securityfilters.JWTAuthorizationFilter;
+import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
+import com.softlines.fastpos.jwtsecurity.securityrepository.SessionRepository;
+import com.softlines.fastpos.jwtsecurity.securityrepository.TerminalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +30,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Qualifier("JWTuserDetailsServiceImpl")
     @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired
+    private SessionRepository sessionRepository;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -42,10 +47,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
                 //.antMatchers(HttpMethod.POST, "/user/save").permitAll()
-//                .antMatchers(HttpMethod.POST, "/login").permitAll()
+                .antMatchers(HttpMethod.POST, "/login").permitAll()
                 .anyRequest().permitAll()//.authenticated()
                 .and()
-                .addFilter(new JWTAuthenticationFilter(authenticationManager()))
+                .addFilter(new JWTAuthenticationFilter(
+                        authenticationManager(),
+                        sessionRepository))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager()))
                 // this disables session creation on Spring Security
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

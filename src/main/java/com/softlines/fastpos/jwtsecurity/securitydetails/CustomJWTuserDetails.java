@@ -1,25 +1,17 @@
 package com.softlines.fastpos.jwtsecurity.securitydetails;
 
-import com.softlines.fastpos.jwtsecurity.securitydomain.DbInfo;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
-import com.softlines.fastpos.jwtsecurity.securityrepository.PrivilegeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class CustomJWTuserDetails implements UserDetails {
 
-    private final JWTuser jwTuser;
+    private final JWTuser jwtUser;
 
-    public CustomJWTuserDetails(JWTuser jwTuser) {
-        this.jwTuser = jwTuser;
+    public CustomJWTuserDetails(JWTuser jwtUser) {
+        this.jwtUser = jwtUser;
     }
 
 
@@ -30,12 +22,12 @@ public class CustomJWTuserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return jwTuser.getPassword();
+        return jwtUser.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return jwTuser.getUsername();
+        return jwtUser.getUsername();
     }
 
     @Override
@@ -55,10 +47,14 @@ public class CustomJWTuserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return jwTuser.isEnabled();
+        return jwtUser.isEnabled();
     }
 
     public Long getDbId() {
-        return jwTuser.getDbId();
+        return jwtUser.getDbId();
+    }
+
+    public JWTuser getJwtUser() {
+        return jwtUser;
     }
 }
