@@ -25,8 +25,15 @@ public class Annex {
     String address;
 //    @JsonProperty("ServerLicenceKey")
     String serverLicenceKey;
-
+    @OneToOne
+    private DbInfo dbInfo;
 //    @OneToMany//(mappedBy = "annex")
 //    List<Terminal> terminals;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "annex_user",
+            joinColumns = @JoinColumn(name = "annex_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    List<JWTuser> users;
 }

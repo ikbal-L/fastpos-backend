@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/annex")
+@RequestMapping("/config/annex")
 public class AnnexController {
 
     ExceptionManagement exceptionManagement = new ExceptionManagement();

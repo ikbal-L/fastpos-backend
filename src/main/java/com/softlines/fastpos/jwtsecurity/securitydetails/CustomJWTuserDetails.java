@@ -50,9 +50,6 @@ public class CustomJWTuserDetails implements UserDetails {
         return jwtUser.isEnabled();
     }
 
-    public Long getDbId() {
-        return jwtUser.getDbId();
-    }
 
     public JWTuser getJwtUser() {
         return jwtUser;

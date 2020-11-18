@@ -48,9 +48,8 @@ public class JWTuser {
             inverseJoinColumns = @JoinColumn(
                     name = "role_id", referencedColumnName = "id"))
     private List<Role> roles;
+    @ManyToMany(mappedBy = "users")
+    private List<Annex> annexes;
 
-    //@ManyToOne
-    @JoinColumn(name = "dbId")
-    private long dbId;
 
 }

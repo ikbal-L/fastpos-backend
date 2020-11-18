@@ -1,15 +1,16 @@
 package com.softlines.fastpos.jwtsecurity.securityconfiguration;
 
+import com.softlines.fastpos.jwtsecurity.securityfilters.ConfigAuthorizationFilter;
 import com.softlines.fastpos.jwtsecurity.securityfilters.JWTAuthenticationFilter;
-import com.softlines.fastpos.jwtsecurity.securityfilters.JWTAuthorizationFilter;
-import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
-import com.softlines.fastpos.jwtsecurity.securityrepository.SessionRepository;
-import com.softlines.fastpos.jwtsecurity.securityrepository.TerminalRepository;
+import com.softlines.fastpos.jwtsecurity.securityfilters.ApiAuthorizationFilter;
+import com.softlines.fastpos.jwtsecurity.securityrepository.AnnexRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,41 +25,102 @@ import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstant
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity
-@Configuration
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration {
 
-    @Qualifier("JWTuserDetailsServiceImpl")
-    @Autowired
-    private UserDetailsService userDetailsService;
-    @Autowired
-    private SessionRepository sessionRepository;
+    @Order(1)
+    @Configuration
+    public static class SecurityConfiguration1 extends WebSecurityConfigurerAdapter {
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(getPasswordEncoder());
+        @Qualifier("JWTuserDetailsServiceImpl")
+        @Autowired
+        private UserDetailsService userDetailsService;
+        @Autowired
+        private AnnexRepository annexRepository;
+        @Autowired
+        private JWTAuthenticationFilter jwtAuthenticationFilter;
+
+        @Override
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+            auth.userDetailsService(userDetailsService).passwordEncoder(getPasswordEncoder());
+        }
+
+        @Bean
+        public AuthenticationManager getAuthenticationManager() throws Exception {
+            return authenticationManager();
+        }
+
+        private PasswordEncoder getPasswordEncoder() {
+            return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        }
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+
+            http
+                    .antMatcher("/api/**")
+                    .cors().and().csrf().disable().authorizeRequests()
+                    .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
+                    //.antMatchers(HttpMethod.POST, "/user/save").permitAll()
+                    .antMatchers(HttpMethod.POST, "/login").permitAll()
+                    .anyRequest()
+//                .permitAll()
+                    .authenticated()
+                    .and()
+                    .addFilter(jwtAuthenticationFilter)
+                    .addFilter(new ApiAuthorizationFilter(authenticationManager(), annexRepository))
+                    // this disables session creation on Spring Security
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        }
+
+        @Bean(name = "apiAuth")
+        ApiSecurity webSecurity() {
+            return new ApiSecurity();
+        }
+
     }
 
-    private PasswordEncoder getPasswordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    @Order(2)
+    @Configuration
+    public static class SecurityConfiguration2 extends WebSecurityConfigurerAdapter {
+
+        @Qualifier("JWTuserDetailsServiceImpl")
+        @Autowired
+        private UserDetailsService userDetailsService;
+        @Autowired
+        private AnnexRepository annexRepository;
+        @Autowired
+        private JWTAuthenticationFilter jwtAuthenticationFilter;
+
+        @Override
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+            auth.userDetailsService(userDetailsService).passwordEncoder(getPasswordEncoder());
+        }
+
+        @Bean
+        public AuthenticationManager getAuthenticationManager() throws Exception {
+            return authenticationManager();
+        }
+
+        private PasswordEncoder getPasswordEncoder() {
+            return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        }
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+
+            http
+                    .antMatcher("/config/**")
+                    .cors().and().csrf().disable().authorizeRequests()
+                    //.antMatchers(HttpMethod.POST, "/user/save").permitAll()
+                    .anyRequest()
+//                .permitAll()
+                    .authenticated()
+                    .and()
+                    .addFilter(jwtAuthenticationFilter)
+                    .addFilter(new ConfigAuthorizationFilter(authenticationManager(), annexRepository))
+                    // this disables session creation on Spring Security
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        }
+
     }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable().authorizeRequests()
-                .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
-                //.antMatchers(HttpMethod.POST, "/user/save").permitAll()
-                .antMatchers(HttpMethod.POST, "/login").permitAll()
-                .anyRequest().permitAll()//.authenticated()
-                .and()
-                .addFilter(new JWTAuthenticationFilter(
-                        authenticationManager(),
-                        sessionRepository))
-                .addFilter(new JWTAuthorizationFilter(authenticationManager()))
-                // this disables session creation on Spring Security
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-    }
-
-    @Bean(name = "apiAuth")
-    ApiSecurity webSecurity(){ return new ApiSecurity();}
-
 }

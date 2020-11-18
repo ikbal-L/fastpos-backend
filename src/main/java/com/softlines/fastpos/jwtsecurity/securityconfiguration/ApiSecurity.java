@@ -39,9 +39,9 @@ public class ApiSecurity {
         for (Privilege privilege1: privileges) {
             grantedAuthorities.add(new SimpleGrantedAuthority(privilege1.getName()));
         }
-
-        CustomContextHolder.clear();
-        CustomContextHolder.setId(((HashMap<String, Long>)auth.getCredentials()).get("dbID"));
+        //TODO Where to switch DB?
+//        CustomContextHolder.clear();
+//        CustomContextHolder.setId(((HashMap<String, Long>)auth.getCredentials()).get("dbID"));
 
         return grantedAuthorities.contains(new SimpleGrantedAuthority(privilege));
     }

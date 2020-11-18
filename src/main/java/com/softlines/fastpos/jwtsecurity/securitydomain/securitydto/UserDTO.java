@@ -1,5 +1,6 @@
 package com.softlines.fastpos.jwtsecurity.securitydomain.securitydto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softlines.fastpos.constants.MessageKeyConstants;
 
 import lombok.*;
@@ -28,8 +29,6 @@ public class UserDTO {
     private Boolean enabled;
     private boolean tokenExpired;
     private List<Long> roleIds;
-    private long dbId;
-
-    private long annexId;
+    @JsonProperty("TerminalId")
     private long terminalId;
 }

@@ -23,16 +23,6 @@ public class Person {
     long id;
     @JsonProperty("Name")
     String name;
-    @JsonProperty("Address")
-    String address;
-    @JsonProperty("ServerLicenceKey")
-    String serverLicenceKey;
-    @JsonProperty("Username")
-    String username;
-    @JsonProperty("Password")
-    String password;
-    @JsonProperty("PinCode")
-    String pinCode;
     @JsonProperty("PhoneNumber")
     String phoneNumber;
     @JsonProperty("BackgroundString")

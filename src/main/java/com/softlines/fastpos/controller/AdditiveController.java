@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/additive")
+@RequestMapping("/api/additive")
 public class AdditiveController {
 
     @Autowired
@@ -71,7 +71,7 @@ public class AdditiveController {
 
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping(value = "/get/{id}",produces = "application/json")
     public ResponseEntity<AdditiveDto> getAdditive(@PathVariable long id) {
 
         try {

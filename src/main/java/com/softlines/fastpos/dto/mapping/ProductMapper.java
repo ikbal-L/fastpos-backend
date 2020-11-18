@@ -33,7 +33,10 @@ public interface ProductMapper {
 
     @Named("CategoryToId")
     public static long CategoryToId(Category category) {
-        return category.getId();
+        if (category!=null){
+            return category.getId();
+        }
+        return  0;
     }
 
 
