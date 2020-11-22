@@ -4,9 +4,15 @@ import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softlines.fastpos.jwtsecurity.securitydetails.CustomJWTuserDetails;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Session;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Terminal;
 import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.UserDTO;
 import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
+import com.softlines.fastpos.jwtsecurity.securityrepository.SessionRepository;
+import com.softlines.fastpos.jwtsecurity.securityrepository.TerminalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,6 +20,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -31,16 +38,22 @@ import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstant
 import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstants.SECRET;
 import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstants.HEADER_STRING;
 import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstants.TOKEN_PREFIX;
-
+@Component
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private AuthenticationManager authenticationManager;
-
     private UserDTO creds;
+    @Autowired
+    private SessionRepository sessionRepository;
+    @Autowired
+    private TerminalRepository terminalRepository ;
 
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
+//    public JWTAuthenticationFilter(AuthenticationManager authenticationManager ,
+//                                   SessionRepository sessionRepository) {
+//        this.authenticationManager = authenticationManager;
+//        this.sessionRepository = sessionRepository;
+//
+//
+//    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req,
@@ -49,7 +62,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             creds = new ObjectMapper()
                     .readValue(req.getInputStream(), UserDTO.class);
 
-            return authenticationManager.authenticate(
+            return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
                             creds.getUsername(),
                             creds.getPassword(),
@@ -64,25 +77,55 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest req,
                                             HttpServletResponse res,
                                             FilterChain chain,
-                                            Authentication auth) {
+                                            Authentication auth) throws IOException {
         //TODO when changing dbInfo by dbId, you should change this instruction : DONE!
-        var dbId = ((CustomJWTuserDetails) auth.getPrincipal()).getDbId() == null ? 0
-                : ((CustomJWTuserDetails) auth.getPrincipal()).getDbId();
 
-        String token = createToken(auth.getName(), dbId);
-        res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+
+
+        var user = ((CustomJWTuserDetails) auth.getPrincipal()).getJwtUser();
+        var optionalTerminal = terminalRepository.findById(creds.getTerminalId());
+        if (optionalTerminal.isPresent()){
+            var terminal  = optionalTerminal.get();
+            var dbId =terminal.getAnnex().getDbInfo().getId();
+            Session session = Session.builder()
+                    .date(new Date())
+                    .user(user)
+                    .terminal(terminal)
+                    .agent(creds.getAgent())
+                    .ipAddress(req.getRemoteAddr()).build();
+            Session createdSession = null;
+            try {
+                createdSession = sessionRepository.save(session);
+            } catch (DataIntegrityViolationException e) {
+                res.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
+            }
+            String token = createToken(auth.getName(), user.getId(),createdSession);
+            res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+        }
+
+
+
+
+
+
     }
 
-    private String createToken(String name, long dbID){
+    private String createToken(String name, long userId,Session session){
         String token = JWT.create()
                 .withSubject(name)
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .withClaim("dbID", dbID)
-                .withClaim("annexId", creds.getAnnexId())
-                .withClaim("terminalId", creds.getTerminalId())
+//                .withClaim("dbID", dbID)
+//                .withClaim("annexId", creds.getAnnexId())
+//                .withClaim("terminalId", creds.getTerminalId())
+                .withClaim("sessionId", session==null?0:session.getId())
+//                .withClaim("userId",userId)
                 .sign(HMAC512(SECRET.getBytes()));
         return token;
     }
 
-
+    @Override
+    @Autowired
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+        super.setAuthenticationManager(authenticationManager);
+    }
 }

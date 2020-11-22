@@ -29,9 +29,11 @@ public class Product {
     int availableStock;
     String description;
     String backgroundString;
+
     @Column(name = "isPlatter")
     boolean platter;
     int rank;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "products_additives",

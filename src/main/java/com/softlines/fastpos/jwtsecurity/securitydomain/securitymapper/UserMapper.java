@@ -1,12 +1,11 @@
 package com.softlines.fastpos.jwtsecurity.securitydomain.securitymapper;
 
+import com.softlines.fastpos.jwtsecurity.securitydomain.Annex;
 import com.softlines.fastpos.jwtsecurity.securitydomain.DbInfo;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
 import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.UserDTO;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -17,9 +16,15 @@ public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
     @Mapping(source = "roles", target = "roleIds", qualifiedByName = "rolessToIds")
+    @Named("ToUserDto")
     UserDTO toUserDto(JWTuser jwTuser);
 
+    @IterableMapping(qualifiedByName = "ToUserDto")
     List<UserDTO> toUserDTOs(List<JWTuser> jwTusers);
+
+    @Mapping(source = "annexes",target = "annexesIds",qualifiedByName = "annexesToIds" )
+    UserDTO toUserDtoWithAnnexes(JWTuser jwtUser);
+
 
     @Mapping(source = "roleIds", target = "roles", qualifiedByName = "idsToRoles")
     JWTuser toJWTuser(UserDTO userDTO);
@@ -33,5 +38,16 @@ public interface UserMapper {
         Role role = new Role();
         role.setId(roleId);
         return role;
+    }
+
+    @Named("annexesToIds")
+    static long annexesToIds(Annex annex) {
+        return annex.getId();
+    }
+    @Named("idsToAnnexes")
+    static Annex idsToAnnexes(long roleId) {
+        Annex annex = new Annex();
+        annex.setId(roleId);
+        return annex;
     }
 }

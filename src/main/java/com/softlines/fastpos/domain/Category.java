@@ -24,7 +24,7 @@ public class Category {
     @NotBlank(message = MessageKeyConstants.PRIVILEGE_NAME_VALIDATION_ERROR)
     String name;
     String backgroundString;
-    int rank;
+    Integer rank;
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     List<Product> products;

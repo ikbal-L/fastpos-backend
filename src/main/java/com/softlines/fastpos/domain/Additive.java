@@ -27,5 +27,5 @@ public class Additive {
     @NotBlank(message = MessageKeyConstants.ADDITIVE_BACKGROUND_VALIDATION_ERROR)
     String backgroundString;
 
-    int rank;
+    Integer rank;
 }

@@ -24,6 +24,7 @@ public interface ProductMapper {
 
     @Mapping(source = "idAdditives", target = "additives", qualifiedByName = "IdToAdditive")
     @Mapping(source = "categoryId", target = "category", qualifiedByName = "IdToCategory")
+
     Product toProduct(ProductDto productDTO);
 
     @Named("AdditiveToId")
@@ -33,7 +34,10 @@ public interface ProductMapper {
 
     @Named("CategoryToId")
     public static long CategoryToId(Category category) {
-        return category.getId();
+        if (category!=null){
+            return category.getId();
+        }
+        return  0;
     }
 
 
@@ -43,6 +47,8 @@ public interface ProductMapper {
         additive.setId(idAdditive);
         return additive;
     }
+
+
 
     @Named("IdToCategory")
     public static Category IdToCategory(long categoryId) {

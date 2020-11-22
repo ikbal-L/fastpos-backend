@@ -1,4 +1,4 @@
-package com.softlines.fastpos.domain;
+package com.softlines.fastpos.jwtsecurity.securitydomain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,14 +19,14 @@ public class Restaurent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
+
     @Column(nullable = false)
     String name;
-    String address;
-    String serverLicenceKey;
-    //  TODO add User owner to restaurent
-    //    User owner;
 
-    //  TODO Relation between Annex and Restaurent
+    String address;
+
+    String serverLicenceKey;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurent_id")
     List<Annex> annexes;

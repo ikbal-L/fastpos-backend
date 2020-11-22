@@ -1,13 +1,7 @@
 package com.softlines.fastpos.dbconfig.configuration;
 
-import com.softlines.fastpos.jwtsecurity.securitydomain.DbInfo;
-import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
-import com.softlines.fastpos.jwtsecurity.securityrepository.DbInfoRepository;
-import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
-import com.softlines.fastpos.jwtsecurity.securityrepository.PrivilegeRepository;
-import com.softlines.fastpos.jwtsecurity.securityrepository.RoleRepository;
+import com.softlines.fastpos.jwtsecurity.securitydomain.*;
+import com.softlines.fastpos.jwtsecurity.securityrepository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +44,12 @@ public class DbConfig {
     @Autowired
     private PrivilegeRepository privilegeRepository;
 
+    @Autowired
+    private AnnexRepository annexRepository;
+
+    @Autowired
+    private TerminalRepository terminalRepository;
+
     public DriverManagerDataSource createDataSources(DbInfo dbInfo) throws Exception {
         try{
             DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -77,6 +77,7 @@ public class DbConfig {
             CustomRoutingDataSource customRoutingDataSource = new CustomRoutingDataSource();
             customRoutingDataSource.setTargetDataSources(map);
             customRoutingDataSource.setDefaultTargetDataSource(createDataSources(dbInfos.get(0)));
+
             return customRoutingDataSource;
         }catch (Exception e){
             throw new Exception("DB not Found Exception: "+ e);
@@ -121,25 +122,25 @@ public class DbConfig {
         dbInfo.setUrl("jdbc:mysql://localhost:3306/jwtauthsoftlines?createDatabaseIfNotExist=true");
         dbInfo.setName("defaultDB");
         dbInfo.setUsername("root");
-        dbInfo.setPassword("root");
+        dbInfo.setPassword("");
 
         DbInfo dbInfo2 = new DbInfo();
         dbInfo2.setDriverClassName("com.mysql.cj.jdbc.Driver");
         dbInfo2.setUrl("jdbc:mysql://localhost:3306/jwtauthsoftlines2?createDatabaseIfNotExist=true");
         dbInfo2.setName("firstDB");
         dbInfo2.setUsername("root");
-        dbInfo2.setPassword("root");
+        dbInfo2.setPassword("");
 
         DbInfo dbInfo3 = new DbInfo();
         dbInfo3.setDriverClassName("com.mysql.cj.jdbc.Driver");
         dbInfo3.setUrl("jdbc:mysql://localhost:3306/jwtauthsoftlines3?createDatabaseIfNotExist=true");
         dbInfo3.setName("secondDB");
         dbInfo3.setUsername("root");
-        dbInfo3.setPassword("root");
+        dbInfo3.setPassword("");
 
-        dbInfoRepository.save(createIfNotFound(dbInfo));
-        dbInfoRepository.save(createIfNotFound(dbInfo2));
-        dbInfoRepository.save(createIfNotFound(dbInfo3));
+        var createdDbInfo1 = dbInfoRepository.save(createIfNotFound(dbInfo));
+        var createdDbInfo2 = dbInfoRepository.save(createIfNotFound(dbInfo2));
+        var createdDbInfo3 = dbInfoRepository.save(createIfNotFound(dbInfo3));
 
         Privilege readPrivilege
                 = createPrivilegeIfNotFound("READ_PRIVILEGE");
@@ -162,7 +163,6 @@ public class DbConfig {
         admin.setEnabled(true);
 
         dbInfo = dbInfoRepository.findByName("defaultDB");
-        admin.setDbId(dbInfo.getId());
         jwTuserRepository.save(admin);
 
         Role userRole = roleRepository.findByName("ROLE_USER");
@@ -175,8 +175,34 @@ public class DbConfig {
         user.setRoles(Arrays.asList(userRole));
         user.setEnabled(true);
         dbInfo2 = dbInfoRepository.findByName("firstDB");
-        user.setDbId(dbInfo2.getId());
         jwTuserRepository.save(user);
+        Annex annex1 = Annex.builder()
+                .name("Annex1")
+                .address("Address1")
+                .serverLicenceKey(UUID.randomUUID().toString())
+                .dbInfo(createdDbInfo1)
+                .build();
+        Annex annex2 = Annex.builder()
+                .name("Annex2")
+                .address("Address2")
+                .serverLicenceKey(UUID.randomUUID().toString())
+                .dbInfo(createdDbInfo2)
+                .build();
+        Annex annex3 = Annex.builder()
+                .name("Annex2")
+                .address("Address2")
+                .serverLicenceKey(UUID.randomUUID().toString())
+                .dbInfo(createdDbInfo3)
+                .build();
+        Annex createdAnnex1 = annexRepository.save(annex1);
+        Annex createdAnnex2 = annexRepository.save(annex2);
+        Annex createdAnnex3 = annexRepository.save(annex3);
+        Terminal terminal1 = Terminal.builder().active(true).licenceKey(UUID.randomUUID().toString()).annex(createdAnnex1).build();
+        Terminal terminal2 = Terminal.builder().active(true).licenceKey(UUID.randomUUID().toString()).annex(createdAnnex2).build();
+        Terminal terminal3 = Terminal.builder().active(true).licenceKey(UUID.randomUUID().toString()).annex(createdAnnex3).build();
+        terminalRepository.save(terminal1);
+        terminalRepository.save(terminal2);
+        terminalRepository.save(terminal3);
     }
 
     Privilege createPrivilegeIfNotFound(String name) {

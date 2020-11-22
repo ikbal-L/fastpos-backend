@@ -4,6 +4,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -18,7 +19,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
     String buyerId;
-    LocalDateTime orderTime;
+    Date orderTime;
     Duration elapsedTime;
     double orderTotal;
     double total;

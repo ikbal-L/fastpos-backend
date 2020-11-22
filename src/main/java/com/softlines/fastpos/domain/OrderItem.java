@@ -18,8 +18,6 @@ public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
-    @NotBlank(message = MessageKeyConstants.PRIVILEGE_NAME_VALIDATION_ERROR)
-    String name;
     double unitPrice;
     int quantity;
     double total;
@@ -28,7 +26,7 @@ public class OrderItem {
     double discountPercentatge;
     @ManyToOne(fetch = FetchType.LAZY)
     Product product;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "orderItems_additives",
             joinColumns = @JoinColumn(name = "orderItem_id"),

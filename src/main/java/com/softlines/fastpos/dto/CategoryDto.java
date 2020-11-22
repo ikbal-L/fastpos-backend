@@ -15,7 +15,7 @@ public class CategoryDto {
     @JsonProperty("BackgroundString")
     String backgroundString;
     @JsonProperty("Rank")
-    int rank;
+    Integer rank;
     @JsonProperty("ProductIds")
     List<Long> productIds;
 

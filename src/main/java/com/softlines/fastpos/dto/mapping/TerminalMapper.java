@@ -1,8 +1,8 @@
 package com.softlines.fastpos.dto.mapping;
 
-import com.softlines.fastpos.domain.Annex;
-import com.softlines.fastpos.domain.Terminal;
-import com.softlines.fastpos.dto.TerminalDto;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Annex;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Terminal;
+import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.TerminalDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/table")
+@RequestMapping("/api/table")
 public class TablesController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 

@@ -2,7 +2,6 @@ package com.softlines.fastpos.unitcontrollertest;
 
 import com.softlines.fastpos.ModelApplication;
 import com.softlines.fastpos.controller.RestaurentController;
-import com.softlines.fastpos.domain.Annex;
 import com.softlines.fastpos.domain.Restaurent;
 import com.softlines.fastpos.dto.RestaurentDto;
 import com.softlines.fastpos.dto.mapping.RestaurentMapper;

@@ -1,6 +1,6 @@
-package com.softlines.fastpos.repository;
+package com.softlines.fastpos.jwtsecurity.securityrepository;
 
-import com.softlines.fastpos.domain.Terminal;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Terminal;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

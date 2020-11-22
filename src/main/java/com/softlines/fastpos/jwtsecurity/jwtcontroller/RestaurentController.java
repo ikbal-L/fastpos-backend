@@ -1,11 +1,11 @@
-package com.softlines.fastpos.controller;
+package com.softlines.fastpos.jwtsecurity.jwtcontroller;
 
 
-import com.softlines.fastpos.domain.Restaurent;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Restaurent;
 import com.softlines.fastpos.dto.RestaurentDto;
 import com.softlines.fastpos.dto.mapping.RestaurentMapper;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
-import com.softlines.fastpos.repository.RestaurentRepository;
+import com.softlines.fastpos.jwtsecurity.securityrepository.RestaurentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

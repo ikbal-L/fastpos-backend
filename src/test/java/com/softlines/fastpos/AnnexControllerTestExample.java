@@ -3,16 +3,15 @@ package com.softlines.fastpos;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softlines.fastpos.configuration.RoutingDatasourceTestProfileJPAConfig;
 import com.softlines.fastpos.configuration.TestSecurityJPAConfig;
-import com.softlines.fastpos.controller.AnnexController;
-import com.softlines.fastpos.domain.Annex;
+import com.softlines.fastpos.jwtsecurity.jwtcontroller.AnnexController;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Annex;
 import com.softlines.fastpos.jwtsecurity.jwtcontroller.UserController;
 import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.UserDTO;
 import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
-import com.softlines.fastpos.repository.AnnexRepository;
+import com.softlines.fastpos.jwtsecurity.securityrepository.AnnexRepository;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -87,7 +86,7 @@ public class AnnexControllerTestExample {
                 .address("adre123")
                 .serverLicenceKey("ket123")
                 .build();
-        var saved = annexRepository.save(new Annex(3, "annex1", "addr", "key123"));
+        var saved = annexRepository.save(new Annex(3, "annex1", "addr", "key123",));
         var saved2 = annexRepository.save(annex);
         var annexes = annexRepository.findAll();
         TestRestTemplate testRestTemplate
