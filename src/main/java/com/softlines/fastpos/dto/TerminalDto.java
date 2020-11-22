@@ -8,7 +8,7 @@ public class TerminalDto {
     long id;
     String licenceKey;
     boolean isActive;
-    long annexId;
+    Long annexId;
 
 
 }

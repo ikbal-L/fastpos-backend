@@ -22,7 +22,7 @@ public class Category {
     @Column(nullable = false,unique = true)
     String name;
     String backgroundString;
-    int rank;
+    Integer rank;
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     List<Product> products;

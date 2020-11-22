@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softlines.fastpos.dto.ProductDto;
 import com.softlines.fastpos.dto.mapping.ProductMapper;
 import com.softlines.fastpos.repository.ProductRepository;
-import org.assertj.core.util.Lists;
-import org.hamcrest.Matchers;
 import org.junit.Test;
-import org.junit.jupiter.api.Order;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -22,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;

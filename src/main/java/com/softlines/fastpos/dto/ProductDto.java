@@ -1,8 +1,6 @@
 package com.softlines.fastpos.dto;
 
-//import lombok.Data;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -30,12 +28,14 @@ public class ProductDto {
     @JsonProperty("BackgroundString")
     String backgroundString;
     @JsonProperty("IsPlatter")
-    boolean isPlatter ;
+    boolean platter;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     @JsonProperty("Rank")
-    int rank;
+    Integer rank;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     @JsonProperty("CategoryId")
-    long categoryId;
+    Long categoryId;
     @JsonProperty("IdAdditives")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     List<Long> idAdditives;
 }

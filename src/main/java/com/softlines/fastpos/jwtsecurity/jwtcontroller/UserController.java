@@ -9,10 +9,7 @@ import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.RoleDTO;
 import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.UserDTO;
 import com.softlines.fastpos.jwtsecurity.securitydomain.securitymapper.RoleMapper;
 import com.softlines.fastpos.jwtsecurity.securitydomain.securitymapper.UserMapper;
-import com.softlines.fastpos.jwtsecurity.securityrepository.DbInfoRepository;
-import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
-import com.softlines.fastpos.jwtsecurity.securityrepository.PrivilegeRepository;
-import com.softlines.fastpos.jwtsecurity.securityrepository.RoleRepository;
+import com.softlines.fastpos.jwtsecurity.securityrepository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +25,7 @@ import javax.validation.Valid;
 import java.util.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/config/user")
 public class UserController {
 
     @Autowired
@@ -70,16 +67,16 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
-    @GetMapping("/getall")
-    public ResponseEntity<List<UserDTO>> getAllUsers(){
-        try {
-            List<JWTuser> allUsers = jwTuserRepository.findAllUsers();
-            return ResponseEntity.ok().body(userMapper.toUserDTOs(allUsers));
-        }catch (Exception e){
-            return exceptionHandling.getResponseEntityAccordingToException(e);
-        }
-    }
+//    @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
+//    @GetMapping("/getall")
+//    public ResponseEntity<List<UserDTO>> getAllUsers(){
+//        try {
+//            List<JWTuser> allUsers = jwTuserRepository.findAllUsers();
+//            return ResponseEntity.ok().body(userMapper.toUserDTOs(allUsers));
+//        }catch (Exception e){
+//            return exceptionHandling.getResponseEntityAccordingToException(e);
+//        }
+//    }
 
     //@PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
     @GetMapping("/get/{username}")
@@ -162,6 +159,28 @@ public class UserController {
                     privileges.addAll(privilegeRepository.findAllById(roleDTO.getPrivilegeIds()));
                 }
                 return  ResponseEntity.status(HttpStatus.ACCEPTED).body(privileges);
+            }
+            return ResponseEntity.noContent().build();
+        }catch (Exception e){
+            return exceptionHandling.getResponseEntityAccordingToException(e);
+        }
+    }
+
+    //@PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
+
+
+    @GetMapping("/getannexes/{userId}")
+    public ResponseEntity<List<Long>> getUserAnnexes(@PathVariable("userId") long userId){
+        try {
+            Optional<JWTuser> jwTuser = jwTuserRepository.findByIdWithAnnexes(userId);
+            if(jwTuser.isPresent()){
+                var user = jwTuser.get();
+                System.out.println(user.getEmail());
+                System.out.println(user.getFirstName());
+//                List<Long> annexesIds = userMapper.toUserDto(user).getAnnexesIds();
+                List<Long> annexesIds = userMapper.toUserDtoWithAnnexes(jwTuser.get()).getAnnexesIds();
+//                return  ResponseEntity.status(HttpStatus.OK).body(annexesIds);
+                return  ResponseEntity.status(HttpStatus.OK).body(annexesIds);
             }
             return ResponseEntity.noContent().build();
         }catch (Exception e){

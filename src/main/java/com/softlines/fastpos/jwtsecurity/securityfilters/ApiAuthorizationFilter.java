@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.softlines.fastpos.dbconfig.configuration.CustomContextHolder;
+import com.softlines.fastpos.jwtsecurity.securityconfiguration.FilterResponseWrapper;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Annex;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
@@ -14,6 +15,7 @@ import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.connector.ResponseFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -58,8 +60,10 @@ public class ApiAuthorizationFilter extends BasicAuthenticationFilter {
         UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
         chain.doFilter(req, res);
     }
+
 
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {

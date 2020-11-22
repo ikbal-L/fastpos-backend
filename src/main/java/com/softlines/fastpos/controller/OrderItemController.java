@@ -76,23 +76,7 @@ public class OrderItemController {
 
     }
 
-    @GetMapping("/getByname/{name}")
-    public ResponseEntity<List<OrderItemDto>> getOrderItemByName(@PathVariable String name) {
-        try {
 
-            List<OrderItem> orderItem = orderItemRepository.findByName(name);
-            if (orderItem != null) {
-
-                return ResponseEntity.ok().body(orderItemMapper.toOrderItemDTOs(orderItem));
-
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-
-        } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
-        }
-    }
 
     @PutMapping("/put/{id}")
     public ResponseEntity<OrderItemDto> editOrderItem(@PathVariable long id, @RequestBody OrderItemDto orderItemDto) {
@@ -100,7 +84,7 @@ public class OrderItemController {
             OrderItem existingOrderItem = orderItemRepository.findById(id).get();
 
             if (existingOrderItem != null) {
-                existingOrderItem.setName(orderItemDto.getName());
+//                existingOrderItem.setName(orderItemDto.getName());
 
                 return ResponseEntity.ok().body(orderItemMapper.toOrderItemDto(orderItemRepository.save(existingOrderItem)));
             } else {

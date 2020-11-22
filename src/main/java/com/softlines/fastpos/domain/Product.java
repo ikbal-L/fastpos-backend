@@ -25,8 +25,10 @@ public class Product {
     int availableStock;
     String description;
     String backgroundString;
-    boolean isPlatter;
-    int rank;
+    @Column(name = "isPlatter")
+    boolean platter ;
+    @Column(nullable = true)
+    Integer rank;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "products_additives",

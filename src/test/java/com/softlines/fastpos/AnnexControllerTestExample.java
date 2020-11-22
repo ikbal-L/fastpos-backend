@@ -86,7 +86,7 @@ public class AnnexControllerTestExample {
                 .address("adre123")
                 .serverLicenceKey("ket123")
                 .build();
-        var saved = annexRepository.save(new Annex(3, "annex1", "addr", "key123"));
+        var saved = annexRepository.save(new Annex(3, "annex1", "addr", "key123",));
         var saved2 = annexRepository.save(annex);
         var annexes = annexRepository.findAll();
         TestRestTemplate testRestTemplate

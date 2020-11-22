@@ -83,21 +83,26 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 
         var user = ((CustomJWTuserDetails) auth.getPrincipal()).getJwtUser();
-//        var optionalTerminal = terminalRepository.findById(creds.getTerminalId());
-//        if (optionalTerminal.isPresent()){
-//            var terminal  = optionalTerminal.get();
-//            var dbId =terminal.getAnnex().getDbInfo().getId();
-//            Session session = Session.builder().date(new Date()).user(user).terminal(terminal).build();
-//            Session createdSession = null;
-//            try {
-//                createdSession = sessionRepository.save(session);
-//            } catch (DataIntegrityViolationException e) {
-//                res.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
-//            }
-//
-//        }
-        String token = createToken(auth.getName(), user.getId());
-        res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+        var optionalTerminal = terminalRepository.findById(creds.getTerminalId());
+        if (optionalTerminal.isPresent()){
+            var terminal  = optionalTerminal.get();
+            var dbId =terminal.getAnnex().getDbInfo().getId();
+            Session session = Session.builder()
+                    .date(new Date())
+                    .user(user)
+                    .terminal(terminal)
+                    .agent(creds.getAgent())
+                    .ipAddress(req.getRemoteAddr()).build();
+            Session createdSession = null;
+            try {
+                createdSession = sessionRepository.save(session);
+            } catch (DataIntegrityViolationException e) {
+                res.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
+            }
+            String token = createToken(auth.getName(), user.getId(),createdSession);
+            res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+        }
+
 
 
 
@@ -105,15 +110,15 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     }
 
-    private String createToken(String name, long userId){
+    private String createToken(String name, long userId,Session session){
         String token = JWT.create()
                 .withSubject(name)
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
 //                .withClaim("dbID", dbID)
 //                .withClaim("annexId", creds.getAnnexId())
 //                .withClaim("terminalId", creds.getTerminalId())
-//                .withClaim("sessionId", session==null?0:session.getId())
-                .withClaim("userId",userId)
+                .withClaim("sessionId", session==null?0:session.getId())
+//                .withClaim("userId",userId)
                 .sign(HMAC512(SECRET.getBytes()));
         return token;
     }

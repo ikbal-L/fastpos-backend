@@ -20,11 +20,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstants.SIGN_UP_URL;
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity
+@Configuration
 public class SecurityConfiguration {
 
     @Order(1)
@@ -64,19 +66,27 @@ public class SecurityConfiguration {
                     .antMatchers(HttpMethod.POST, "/login").permitAll()
                     .anyRequest()
 //                .permitAll()
-                    .authenticated()
+                    .authenticated().and().formLogin().failureHandler(authenticationFailureHandler())
                     .and()
                     .addFilter(jwtAuthenticationFilter)
                     .addFilter(new ApiAuthorizationFilter(authenticationManager(), annexRepository))
                     // this disables session creation on Spring Security
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .and()
+                    .formLogin()
+                    .failureHandler(authenticationFailureHandler());
         }
 
-        @Bean(name = "apiAuth")
-        ApiSecurity webSecurity() {
-            return new ApiSecurity();
-        }
 
+
+    }
+    @Bean(name = "apiAuth")
+    ApiSecurity webSecurity() {
+        return new ApiSecurity();
+    }
+    @Bean
+    public static AuthenticationFailureHandler authenticationFailureHandler() {
+        return new ApiAuthenticationFailureHandler();
     }
 
     @Order(2)

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/order")
+@RequestMapping("/api/order")
 public class OrderController {
 
     @Autowired
@@ -35,7 +35,8 @@ public class OrderController {
 
             if (!optionalOrder.isPresent()) {
 
-                if (orderDto.getOrderItems().get(0).getName() != null && orderDto.getOrderItems().size() > 0) {
+//                orderDto.getOrderItems().get(0).getName() != null &&
+                if ( orderDto.getOrderItems().size() > 0) {
                     Order order = dtoService.orderDtoToOrder(orderDto);
 
                     return ResponseEntity.status(HttpStatus.CREATED).body(orderMapper.toOrderDto(orderRepository.save(order)));

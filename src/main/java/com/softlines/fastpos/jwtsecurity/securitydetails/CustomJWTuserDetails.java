@@ -1,5 +1,6 @@
 package com.softlines.fastpos.jwtsecurity.securitydetails;
 
+import com.softlines.fastpos.jwtsecurity.securitydomain.Agent;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,10 +11,10 @@ public class CustomJWTuserDetails implements UserDetails {
 
     private final JWTuser jwtUser;
 
+
     public CustomJWTuserDetails(JWTuser jwtUser) {
         this.jwtUser = jwtUser;
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

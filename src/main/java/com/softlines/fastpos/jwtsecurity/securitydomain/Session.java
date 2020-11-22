@@ -24,4 +24,7 @@ public class Session {
     @ManyToOne
     @JoinColumn(name = "terminal_id")
     private Terminal terminal;
+
+    private Agent agent ;
+    private String ipAddress;
 }

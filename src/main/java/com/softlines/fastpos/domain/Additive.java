@@ -31,5 +31,5 @@ public class Additive {
     String backgroundString;
 
     @JsonProperty("Rank")
-    int rank;
+    Integer rank;
 }
