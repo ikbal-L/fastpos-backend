@@ -59,13 +59,15 @@ public class ProductController {
 
         try {
 
-            List<Product> products = productRepository.findAllProductsWithAdditives();
+            List<Product> products = productRepository.findAll();
 
             if (products == null || products.isEmpty() )
                 return ResponseEntity.noContent().build();
-            else
-                return ResponseEntity.ok().body(productMapper.toProductDTOs(products));
 
+            else {
+                var productDtos = productMapper.toProductDTOs(products);
+                return ResponseEntity.ok().body(productDtos);
+            }
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
@@ -133,7 +135,9 @@ public class ProductController {
             if ( id != 0 && productDto.getName() != null) {
 
                 Product product = dtoService.productDtoToProduct(productDto, false);
-                return ResponseEntity.status(HttpStatus.OK).body(productMapper.toProductDto(productRepository.save(product)));
+                Product updatedProduct = productRepository.save(product);
+                ProductDto updatedProductDto= productMapper.toProductDto(updatedProduct);
+                return ResponseEntity.status(HttpStatus.OK).body(updatedProductDto);
 
             } else {
                 return ResponseEntity.noContent().build();

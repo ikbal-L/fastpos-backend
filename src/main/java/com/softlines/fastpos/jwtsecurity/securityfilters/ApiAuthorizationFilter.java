@@ -12,6 +12,7 @@ import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
 import com.softlines.fastpos.jwtsecurity.securityrepository.AnnexRepository;
 import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
+import com.softlines.fastpos.jwtsecurity.securityrepository.SessionRepository;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.connector.ResponseFacade;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,10 +42,10 @@ import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstant
 
 public class ApiAuthorizationFilter extends BasicAuthenticationFilter {
 
-    private AnnexRepository annexRepository;
-    public ApiAuthorizationFilter(AuthenticationManager authManager, AnnexRepository annexRepository) {
+    private SessionRepository sessionRepository;
+    public ApiAuthorizationFilter(AuthenticationManager authManager, SessionRepository sessionRepository) {
         super(authManager);
-        this.annexRepository = annexRepository;
+        this.sessionRepository = sessionRepository;
     }
 
     @Override
@@ -69,19 +70,6 @@ public class ApiAuthorizationFilter extends BasicAuthenticationFilter {
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader(HEADER_STRING);
 
-        String annexIdString = request.getHeader("Annex-Id");
-        if (annexIdString==null ) return null;
-        long annexId = -1;
-        try {
-            annexId = Long.parseLong(annexIdString);
-        } catch (NumberFormatException e) {
-
-            return null;
-        }
-
-        Annex annex  = null;
-        var annexOptional = annexRepository.findById(annexId);
-        if (annexOptional.isPresent()) annex = annexOptional.get();
 
         if (token != null) {
             // parse the token.
@@ -93,20 +81,25 @@ public class ApiAuthorizationFilter extends BasicAuthenticationFilter {
             if (user != null) {
 //                Claim dbID = decoded.getClaim("dbID");
 //                Claim annexId = decoded.getClaim("annexId");
-//                Claim terminalId = decoded.getClaim("terminalId");
+                Claim sessionId = decoded.getClaim("sessionId");
+                var sessionOptional = sessionRepository.findById(sessionId.asLong());
+                if (sessionOptional.isPresent()){
+                    var terminal = sessionOptional.get().getTerminal();
+                    var annex = terminal.getAnnex();
+                    var dbinfo = annex.getDbInfo();
+                    if (dbinfo!=null){
+                        CustomContextHolder.clear();
+                        CustomContextHolder.setId(dbinfo.getId());
+                        return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                    }
+                    return null;
+                }
 //                Map<String, Long> claims = new HashMap<>();
 //                claims.put("dbID", dbID.asLong());
 //                claims.put("annexId", annexId.asLong());
 //                claims.put("terminalId", terminalId.asLong());
 //
-                if (annex!=null){
-                    var optionalUser = annex.getUsers().stream().takeWhile(u->u.getId()==decoded.getClaim("userId").asLong()).findFirst();
-                    if (optionalUser.isEmpty())
-                        return null;
-                    CustomContextHolder.clear();
-                    CustomContextHolder.setId(annex.getDbInfo().getId());
-                    return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
-                }
+
                 return null;
             }
             return null;

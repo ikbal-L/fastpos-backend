@@ -62,7 +62,7 @@ public class CategoryController {
                 return ResponseEntity.noContent().build();
 
             } else {
-                return ResponseEntity.ok().body(categoryMapper.toCategoryDTOs(categories));
+                return ResponseEntity.ok().body(categoryMapper.toCategoryDTOsWithProducts(categories));
             }
 
         } catch (Exception exception) {

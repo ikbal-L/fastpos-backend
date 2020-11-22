@@ -32,7 +32,7 @@ public class Product {
 
     @Column(name = "isPlatter")
     boolean platter;
-    int rank;
+    Integer rank;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

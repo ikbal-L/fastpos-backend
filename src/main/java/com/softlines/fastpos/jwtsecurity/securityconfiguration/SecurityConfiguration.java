@@ -4,6 +4,7 @@ import com.softlines.fastpos.jwtsecurity.securityfilters.ConfigAuthorizationFilt
 import com.softlines.fastpos.jwtsecurity.securityfilters.JWTAuthenticationFilter;
 import com.softlines.fastpos.jwtsecurity.securityfilters.ApiAuthorizationFilter;
 import com.softlines.fastpos.jwtsecurity.securityrepository.AnnexRepository;
+import com.softlines.fastpos.jwtsecurity.securityrepository.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -37,7 +38,7 @@ public class SecurityConfiguration {
         @Autowired
         private UserDetailsService userDetailsService;
         @Autowired
-        private AnnexRepository annexRepository;
+        private SessionRepository sessionRepository;
         @Autowired
         private JWTAuthenticationFilter jwtAuthenticationFilter;
 
@@ -69,7 +70,7 @@ public class SecurityConfiguration {
                     .authenticated().and().formLogin().failureHandler(authenticationFailureHandler())
                     .and()
                     .addFilter(jwtAuthenticationFilter)
-                    .addFilter(new ApiAuthorizationFilter(authenticationManager(), annexRepository))
+                    .addFilter(new ApiAuthorizationFilter(authenticationManager(), sessionRepository))
                     // this disables session creation on Spring Security
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()
