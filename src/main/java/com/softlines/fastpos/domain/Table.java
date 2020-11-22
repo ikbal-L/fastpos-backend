@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@javax.persistence.Table(name = "Table")
+@javax.persistence.Table(name = "Tables")
 public class Table {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

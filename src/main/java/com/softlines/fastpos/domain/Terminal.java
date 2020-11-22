@@ -6,8 +6,6 @@ import javax.persistence.*;
 @Data
 @Entity
 public class Terminal {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;

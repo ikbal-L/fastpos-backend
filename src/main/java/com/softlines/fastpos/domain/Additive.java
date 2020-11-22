@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "additive")
+@javax.persistence.Table(name = "additive")
 public class Additive {
     // TODO Add Ingrediants to additive entity
     @Id
