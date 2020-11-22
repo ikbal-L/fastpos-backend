@@ -1,17 +1,17 @@
 package com.softlines.fastpos.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
+
+import com.softlines.fastpos.constants.MessageKeyConstants;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import javax.persistence.*;
-import java.io.Serializable;
-import java.util.List;
+import javax.validation.constraints.NotBlank;
+
 
 @Data
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @MappedSuperclass
@@ -19,27 +19,13 @@ public class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty("Id")
     long id;
-    @JsonProperty("Name")
+    @NotBlank(message = MessageKeyConstants.PRIVILEGE_NAME_VALIDATION_ERROR)
     String name;
-    @JsonProperty("Address")
-    String address;
-    @JsonProperty("ServerLicenceKey")
-    String serverLicenceKey;
-    @JsonProperty("Username")
-    String username;
-    @JsonProperty("Password")
-    String password;
-    @JsonProperty("PinCode")
-    String pinCode;
-    @JsonProperty("PhoneNumber")
     String phoneNumber;
-    @JsonProperty("BackgroundString")
     String backgroundString;
-    @JsonProperty("IsActive")
-    boolean isActive;
-    @JsonProperty("Descriptor")
+    @Column(name="isActive")
+    boolean active;
     Descriptor descriptor;
 
 

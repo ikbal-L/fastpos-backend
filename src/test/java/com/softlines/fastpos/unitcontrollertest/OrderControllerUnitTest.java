@@ -50,7 +50,7 @@ public class OrderControllerUnitTest {
 
         var orders = Arrays.asList(
                 Order.builder()
-                        .id(1l)
+                        .id(1L)
                         .orderstate(OrderState.Payed)
                         .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
                                 .id(1).product(Product.builder().build())
@@ -61,7 +61,7 @@ public class OrderControllerUnitTest {
                         .build()
         );
 
-        when(orderRepository.findAll()).thenReturn(orders);
+        when(orderRepository.findAllOrdersWithOrderItems()).thenReturn(orders);
         var res = orderController.getOrders();
 
         assertEquals(res.getStatusCode(), HttpStatus.OK);
@@ -77,7 +77,7 @@ public class OrderControllerUnitTest {
     @Test
     public void orderController_getAll_WithEmptyOrdersList() {
         var orders = new ArrayList<Order>();
-        when(orderRepository.findAll()).thenReturn(orders);
+        when(orderRepository.findAllOrdersWithOrderItems()).thenReturn(orders);
         var res = orderController.getOrders();
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
     }
@@ -85,7 +85,7 @@ public class OrderControllerUnitTest {
 
     @Test
     public void orderController_getAll_WithNullOrdersList() {
-        when(orderRepository.findAll()).thenReturn(null);
+        when(orderRepository.findAllOrdersWithOrderItems()).thenReturn(null);
 
         var res = orderController.getOrders();
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
@@ -95,7 +95,7 @@ public class OrderControllerUnitTest {
     @Test
     public void orderController_gelAll_WithNoDBConnectionException() {
 
-        when(orderRepository.findAll())
+        when(orderRepository.findAllOrdersWithOrderItems())
                 .thenThrow(DataAccessResourceFailureException.class);
 
         var res = orderController.getOrders();
@@ -139,7 +139,7 @@ public class OrderControllerUnitTest {
     public void orderController_Save_WithoutData() {
 
         var order = Order.builder()
-                .orderItems(Arrays.asList(OrderItem.builder().order(Order.builder().build()).product(Product.builder().build()).build()))
+                .orderItems(Arrays.asList())
                 .table(Tables.builder().build())
                 .build();
 
@@ -157,10 +157,16 @@ public class OrderControllerUnitTest {
         var order =
                 Order.builder()
                         .id(1)
+                        .orderItems(Arrays.asList(OrderItem.builder()
+                                .additive(Arrays.asList(Additive.builder().build()))
+                                .product(Product.builder().build())
+                                .order(Order.builder().id(1).build())
+                                .build()))
+
                         .table(Tables.builder().build())
                         .build();
 
-        when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
+        when(orderRepository.findByIdOrderWithOrderItems(order.getId())).thenReturn(order);
         var res = orderController.addOrder(orderMapper.toOrderDto(order));
 
         assertEquals(res.getStatusCode(), HttpStatus.FOUND);
@@ -197,7 +203,7 @@ public class OrderControllerUnitTest {
      */
 
     @Test
-    public void AdditiveController_getById_WithNotEmptyAdditive() {
+    public void OrderController_getById_WithNotEmptyOrder() {
 
         var order =
                 Order.builder()
@@ -212,7 +218,7 @@ public class OrderControllerUnitTest {
                         .table(Tables.builder().build())
                         .build();
 
-        when(orderRepository.findById(1l)).thenReturn(Optional.ofNullable(order));
+        when(orderRepository.findByIdOrderWithOrderItems(1l)).thenReturn(order);
 
         var res = orderController.getOrder(1);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
@@ -224,7 +230,7 @@ public class OrderControllerUnitTest {
     public void orderController_getById_WithEmptyOrder() {
 
         var order = new Order();
-        when(orderRepository.findById(0l)).thenReturn(Optional.of(order));
+        when(orderRepository.findByIdOrderWithOrderItems(0l)).thenReturn(order);
         var res = orderController.getOrder(0);
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
 
@@ -239,9 +245,9 @@ public class OrderControllerUnitTest {
     }
 
     @Test
-    public void additiveController_getById_WithNoDBConnection() {
+    public void OrderController_getById_WithNoDBConnection() {
 
-        when(orderRepository.findById(5l))
+        when(orderRepository.findByIdOrderWithOrderItems(5L))
                 .thenThrow(DataAccessResourceFailureException.class);
 
         var res = orderController.getOrder(5);
@@ -260,10 +266,10 @@ public class OrderControllerUnitTest {
 
         var order =
                 Order.builder()
-                        .id(1l)
+                        .id(1L)
                         .build();
 
-        when(orderRepository.findById(1l)).thenReturn(Optional.ofNullable(order));
+        when(orderRepository.findByIdOrderWithOrderItems(1l)).thenReturn(order);
         orderController.deleteOrder(1);
 
         verify(orderRepository, times(1)).delete(order);
@@ -274,11 +280,11 @@ public class OrderControllerUnitTest {
     @Test
     public void orderController_Delete_WithNotExistOrderId() {
 
-        when(orderRepository.findById(1l)).thenReturn(null);
+        when(orderRepository.findByIdOrderWithOrderItems(1L)).thenReturn(null);
 
         orderController.deleteOrder(1);
 
-        verify(orderRepository, times(1)).findById(1l);
+        verify(orderRepository, times(1)).findByIdOrderWithOrderItems(1L);
         verifyNoMoreInteractions(orderRepository);
 
     }
@@ -286,7 +292,7 @@ public class OrderControllerUnitTest {
     @Test
     public void orderController_Delete_WithNoDBConnection() {
 
-        when(orderRepository.findById(5l))
+        when(orderRepository.findByIdOrderWithOrderItems(5L))
                 .thenThrow(DataAccessResourceFailureException.class);
 
         var res = orderController.getOrder(5);
@@ -302,26 +308,24 @@ public class OrderControllerUnitTest {
 
     @Test
     public void orderController_Put_WithData() {
+        var orders = Order.builder()
+                .id(1L)
+                .orderstate(OrderState.Payed)
+                .orderItems(Arrays.asList(OrderItem.builder()
+                        .id(1).name("pizza")
+                        .additive(Arrays.asList(Additive.builder().build()))
+                        .product(Product.builder().build())
+                        .order(Order.builder().id(1).build()).build()))
+                .elapsedTime(Duration.ZERO)
+                .orderTime(LocalDateTime.now())
+                .table(Tables.builder().id(1).build())
+                .build();
 
-        var orders =
-                Order.builder()
-                        .id(1l)
-                        .orderstate(OrderState.Payed)
-                        .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
-                                .id(1).name("pizza")
-                                .product(Product.builder().build())
-                                .order(Order.builder().build()).build()))
-                        .elapsedTime(Duration.ZERO)
-                        .orderTime(LocalDateTime.now())
-                        .table(Tables.builder().build())
-                        .build();
-
-        when(orderRepository.findById(orders.getId())).thenReturn(Optional.of(orders));
+        when(orderRepository.findByIdOrderWithOrderItems(orders.getId())).thenReturn(orders);
         ResponseEntity<OrderDto> returned = orderController.editOrder(1, orderMapper.toOrderDto(orders));
 
-        verify(orderRepository, times(1)).findById(orders.getId());
+        verify(orderRepository, times(1)).findByIdOrderWithOrderItems(orders.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.OK);
-
     }
 
     @Test
@@ -329,9 +333,10 @@ public class OrderControllerUnitTest {
 
         var order =
                 Order.builder()
+//                        .id(1)
                         .orderstate(OrderState.Payed)
                         .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
-                                .id(1).name("pizza")
+                                .name("pizza")
                                 .product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
                         .elapsedTime(Duration.ZERO)
@@ -339,10 +344,10 @@ public class OrderControllerUnitTest {
                         .table(Tables.builder().build())
                         .build();
 
-        when(orderRepository.findById(order.getId())).thenReturn(Optional.empty());
-        ResponseEntity<OrderDto> returned = orderController.editOrder(0, orderMapper.toOrderDto(order));
+        when(orderRepository.findByIdOrderWithOrderItems(order.getId())).thenReturn(null);
+        ResponseEntity<OrderDto> returned = orderController.editOrder(0L, orderMapper.toOrderDto(order));
 
-        verify(orderRepository, times(1)).findById(order.getId());
+        verify(orderRepository, times(1)).findByIdOrderWithOrderItems(order.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
 
     }
@@ -350,29 +355,27 @@ public class OrderControllerUnitTest {
     @Test
     public void orderController_Put_WithNullData() {
 
-        var order =
-                Order.builder()
-                        .id(1)
-//                        .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build())).product(Product.builder().build())
-//                                .order(Order.builder().build()).build()))
-                        .table(Tables.builder().build())
-                        .build();
+        var order = Order.builder()
+                .id(1L)
+                .table(Tables.builder().id(1).build())
+                .build();
 
-        when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
-        ResponseEntity<OrderDto> returned = orderController.editOrder(1, orderMapper.toOrderDto(order));
+        when(orderRepository.findByIdOrderWithOrderItems(order.getId())).thenReturn(order);
+        ResponseEntity<OrderDto> returned = orderController.editOrder(1L, orderMapper.toOrderDto(order));
 
-        verify(orderRepository, times(1)).findById(order.getId());
+        verify(orderRepository, times(1)).findByIdOrderWithOrderItems(order.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
 
     }
 
+
     @Test
     public void orderController_Put_WithNoDBConnection() {
 
-        when(orderRepository.findById(5l))
+        when(orderRepository.findByIdOrderWithOrderItems(5L))
                 .thenThrow(DataAccessResourceFailureException.class);
 
-        var res = orderController.getOrder(5);
+        var res = orderController.getOrder(5L);
 
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
 

@@ -1,11 +1,17 @@
 package com.softlines.fastpos.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Restaurent {
 
@@ -14,7 +20,6 @@ public class Restaurent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
     @Column(nullable = false)
-
     String name;
     String address;
     String serverLicenceKey;
@@ -22,7 +27,7 @@ public class Restaurent {
     //    User owner;
 
     //  TODO Relation between Annex and Restaurent
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurent_id")
     List<Annex> annexes;
 

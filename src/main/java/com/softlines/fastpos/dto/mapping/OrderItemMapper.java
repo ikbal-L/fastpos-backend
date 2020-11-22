@@ -1,9 +1,6 @@
 package com.softlines.fastpos.dto.mapping;
 
-import com.softlines.fastpos.domain.Additive;
-import com.softlines.fastpos.domain.Order;
-import com.softlines.fastpos.domain.OrderItem;
-import com.softlines.fastpos.domain.Product;
+import com.softlines.fastpos.domain.*;
 import com.softlines.fastpos.dto.OrderItemDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -72,5 +69,7 @@ public interface OrderItemMapper {
         order.setId(orderId);
         return order;
     }
+
+
 
 }

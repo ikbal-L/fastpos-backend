@@ -12,7 +12,9 @@ public class Terminal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
     String licenceKey;
-    boolean isActive;
+
+    @Column(name = "isActive")
+    boolean active;
     // TODO check relation between annex and terminal
     @ManyToOne
     Annex annex;

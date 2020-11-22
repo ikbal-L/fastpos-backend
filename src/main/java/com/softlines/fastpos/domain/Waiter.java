@@ -1,11 +1,12 @@
 package com.softlines.fastpos.domain;
 
-
-import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
-@Data
+@SuperBuilder
+@NoArgsConstructor
 @Entity
 public class Waiter extends  Person{
 

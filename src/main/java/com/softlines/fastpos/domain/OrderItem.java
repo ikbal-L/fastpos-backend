@@ -1,8 +1,10 @@
 package com.softlines.fastpos.domain;
 
+import com.softlines.fastpos.constants.MessageKeyConstants;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 
@@ -16,6 +18,7 @@ public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
+    @NotBlank(message = MessageKeyConstants.PRIVILEGE_NAME_VALIDATION_ERROR)
     String name;
     double unitPrice;
     int quantity;

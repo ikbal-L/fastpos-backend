@@ -1,6 +1,9 @@
 package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Deliveryman;
+import com.softlines.fastpos.dto.DeliverymanDto;
+import com.softlines.fastpos.dto.service.DtoService;
+import com.softlines.fastpos.dto.service.DtoServiceImpl;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.DeliverymanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +20,22 @@ public class DeliverymanController {
     @Autowired
     private DeliverymanRepository deliverymanRepository;
 
-
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
+    @Autowired
+    DtoService dtoService;
+
     @PostMapping("/save")
-    public ResponseEntity addDeliveryman(@RequestBody Deliveryman deliveryman ) {
+    public ResponseEntity addDeliveryman(@RequestBody DeliverymanDto deliverymanDto ) {
         try {
 
-            Optional<Deliveryman> optionalDeliveryman = deliverymanRepository.findById(deliveryman.getId());
+            Optional<Deliveryman> optionalDeliveryman = deliverymanRepository.findById(deliverymanDto.getId());
 
             if (!optionalDeliveryman.isPresent()) {
-                if (deliveryman.getName() != null && !deliveryman.getName().isEmpty()) {
+                if (deliverymanDto.getName() != null && !deliverymanDto.getName().isEmpty()) {
+                    Deliveryman deliveryman=  dtoService.deliverymanDtoToDeliveryman(deliverymanDto,false);
                     Deliveryman createdDeliveryman = deliverymanRepository.save(deliveryman);
-                    return ResponseEntity.status(HttpStatus.CREATED).body(createdDeliveryman);
+                    return ResponseEntity.status(HttpStatus.CREATED).build();
                 } else {
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
@@ -53,7 +59,6 @@ public class DeliverymanController {
 
             if (deliverymanList == null || deliverymanList.isEmpty()) {
                 return ResponseEntity.noContent().build();
-
             } else {
                 return ResponseEntity.ok().body(deliverymanList);
             }

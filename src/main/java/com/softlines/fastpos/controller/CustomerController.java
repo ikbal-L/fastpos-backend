@@ -60,6 +60,25 @@ public class CustomerController {
 
     }
 
+
+    @GetMapping("/getmany")
+    public ResponseEntity<List<Customer>> getCustomers(@RequestBody List<Long> ids) {
+
+        try {
+
+            List<Customer> customers = customerRepository.findAllById(ids);
+
+            if (customers == null || customers.isEmpty())
+                return ResponseEntity.noContent().build();
+            else
+                return ResponseEntity.ok().body(customers);
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+
+    }
+
     @GetMapping("/get/{id}")
     public ResponseEntity<Customer> getCustomer(@PathVariable long id) {
 

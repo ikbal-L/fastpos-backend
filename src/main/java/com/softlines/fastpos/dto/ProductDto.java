@@ -17,7 +17,7 @@ public class ProductDto {
     @JsonProperty("Unit")
     String unit;
     @JsonProperty("IsMuchInDemand")
-    boolean isMuchInDemand;
+    boolean muchInDemand;
     @JsonProperty("Type")
     String type;
     @JsonProperty("AvailableStock")
@@ -27,7 +27,7 @@ public class ProductDto {
     @JsonProperty("BackgroundString")
     String backgroundString;
     @JsonProperty("IsPlatter")
-    boolean isPlatter ;
+    boolean platter ;
     @JsonProperty("Rank")
     int rank;
     @JsonProperty("CategoryId")

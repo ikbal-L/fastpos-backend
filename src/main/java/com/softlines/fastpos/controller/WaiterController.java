@@ -1,7 +1,10 @@
 package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Waiter;
+import com.softlines.fastpos.dto.WaiterDto;
+import com.softlines.fastpos.dto.mapping.WaiterMapper;
 import com.softlines.fastpos.dto.service.DtoService;
+import com.softlines.fastpos.dto.service.DtoServiceImpl;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.WaiterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/waiter")
@@ -22,26 +26,30 @@ public class WaiterController {
     @Autowired
     DtoService dtoService;
 
+    @Autowired
+    WaiterMapper waiterMapper;
+
+
+
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping("/save")
-    public ResponseEntity addWaiter(@RequestBody Waiter waiter ) {
+    public ResponseEntity addWaiter(@RequestBody WaiterDto waiterDto) {
+
         try {
 
-            Optional<Waiter> optionalWaiter = waiterRepository.findById(waiter.getId());
+            Optional<Waiter> optionalWaiter = waiterRepository.findById(waiterDto.getId());
 
             if (!optionalWaiter.isPresent()) {
-                if (waiter.getName() != null && !waiter.getName().isEmpty()) {
-                    Waiter createdWaiter = waiterRepository.save(waiter);
+                if (waiterDto.getName() != null && !waiterDto.getName().isEmpty()) {
+                    dtoService.waiterDtoToWaiter(waiterDto, false);
+                    Waiter createdWaiter = waiterRepository.save(waiterMapper.toWaiter(waiterDto));
                     return ResponseEntity.status(HttpStatus.CREATED).body(createdWaiter);
                 } else {
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-
                 }
             } else {
-
                 return ResponseEntity.status(HttpStatus.FOUND).build();
-
             }
 
         } catch (Exception exception) {
@@ -50,16 +58,16 @@ public class WaiterController {
     }
 
     @GetMapping("/getall")
-    public ResponseEntity<List<Waiter>> getWaiters() {
+    public ResponseEntity<List<WaiterDto>> getWaiters() {
         try {
 
-            List<Waiter> categories = waiterRepository.findAll();
+            List<Waiter> waiters = waiterRepository.findAll();
 
-            if (categories == null || categories.isEmpty()) {
+            if (waiters == null || waiters.isEmpty()) {
                 return ResponseEntity.noContent().build();
 
             } else {
-                return ResponseEntity.ok().body(categories);
+                return ResponseEntity.ok().body(waiterMapper.toWaiterDTOs(waiters));
             }
 
         } catch (Exception exception) {
@@ -69,14 +77,15 @@ public class WaiterController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<Waiter> getWaiter(@PathVariable long id) {
+    public ResponseEntity<WaiterDto> getWaiter(@PathVariable long id) {
 
         try {
 
             Optional<Waiter> optionalWaiter = waiterRepository.findById(id);
 
             if (optionalWaiter.isPresent() && id != 0)
-                return ResponseEntity.ok().body(optionalWaiter.get());
+
+                return ResponseEntity.ok().body( waiterMapper.toWaiterDto(optionalWaiter.get()));
             else
                 return ResponseEntity.noContent().build();
 
@@ -88,13 +97,13 @@ public class WaiterController {
     }
 
     @GetMapping("/getByName/{name}")
-    public ResponseEntity<List<Waiter>> getWaiterByName(@PathVariable String name) {
+    public ResponseEntity<List<WaiterDto>> getWaiterByName(@PathVariable String name) {
         try {
 
-            List<Waiter> categories = waiterRepository.findByName(name);
+            List<Waiter> waiters = waiterRepository.findByName(name);
 
-            if (categories != null)
-                return ResponseEntity.ok().body(categories);
+            if (waiters != null)
+                return ResponseEntity.ok().body( waiterMapper.toWaiterDTOs(waiters));
             else
                 return ResponseEntity.noContent().build();
 
@@ -104,12 +113,13 @@ public class WaiterController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<Waiter> editWaiter(@PathVariable long id, @RequestBody Waiter waiter) {
+    public ResponseEntity editWaiter(@PathVariable long id, @RequestBody Waiter waiter) {
         try {
 
             Optional<Waiter> optionalWaiter = waiterRepository.findById(id);
 
             if (optionalWaiter.isPresent() && id != 0 && waiter.getName() != null) {
+
                 return ResponseEntity.ok().body(waiterRepository.save(waiter));
             } else {
                 return ResponseEntity.noContent().build();

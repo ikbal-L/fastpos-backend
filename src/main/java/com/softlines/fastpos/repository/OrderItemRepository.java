@@ -9,5 +9,4 @@ public interface OrderItemRepository extends JpaRepository<OrderItem,Long> {
 
     List<OrderItem> findByName(String name);
 
-
 }

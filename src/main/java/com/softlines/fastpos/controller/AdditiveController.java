@@ -27,17 +27,17 @@ public class AdditiveController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping("/save")
-    public ResponseEntity<Additive> addAdditive(@RequestBody Additive additive) {
+    public ResponseEntity addAdditive(@RequestBody AdditiveDto additiveDto) {
 
         try {
 
-            Optional<Additive> optionalAdditive = additiveRepository.findById(additive.getId());
+            Optional<Additive> optionalAdditive = additiveRepository.findById(additiveDto.getId());
 
-            if (!(optionalAdditive.isPresent()) && additive.getId()==0) {
+            if (!(optionalAdditive.isPresent()) && additiveDto.getId()==0) {
 
-                if (additive.getDescription() != null &&
-                        !additive.getDescription().isEmpty())
-                    return ResponseEntity.status(HttpStatus.CREATED).body(additiveRepository.save(additive));
+                if (additiveDto.getDescription() != null &&
+                        !additiveDto.getDescription().isEmpty())
+                    return ResponseEntity.status(HttpStatus.CREATED).body(additiveRepository.save(additiveMapper.toAditive(additiveDto) ));
                 else
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
@@ -48,11 +48,10 @@ public class AdditiveController {
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
-
     }
 
     @GetMapping("/getall")
-    public ResponseEntity<List<Additive>> getAdditives() {
+    public ResponseEntity<List<AdditiveDto>> getAdditives() {
 
         try {
 
@@ -61,13 +60,32 @@ public class AdditiveController {
             if (additives == null || additives.isEmpty())
                 return ResponseEntity.noContent().build();
             else
-                return ResponseEntity.ok().body(additives);
+                return ResponseEntity.ok().body(additiveMapper.toAdditiveDTOs(additives) );
 
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }
+
+    @GetMapping("/getmany")
+    public ResponseEntity<List<AdditiveDto>> getMany(@RequestBody List<Long> ids) {
+
+        try {
+
+            List<Additive> additives = additiveRepository.findAllById(ids);
+
+            if (additives == null || additives.isEmpty())
+                return ResponseEntity.noContent().build();
+            else
+                return ResponseEntity.ok().body(additiveMapper.toAdditiveDTOs(additives) );
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+
+    }
+
 
     @GetMapping("/get/{id}")
     public ResponseEntity<AdditiveDto> getAdditive(@PathVariable long id) {
@@ -88,13 +106,15 @@ public class AdditiveController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<Additive> editAdditive(@PathVariable long id, @RequestBody Additive additive) {
+    public ResponseEntity<AdditiveDto> editAdditive(@PathVariable long id, @RequestBody AdditiveDto additiveDto) {
 
         try {
             Optional<Additive> optionalAdditive = additiveRepository.findById(id);
 
-            if (optionalAdditive.isPresent() && id != 0 && additive.getDescription() != null) {
-                return ResponseEntity.ok().body(additiveRepository.save(additive));
+            if (optionalAdditive.isPresent() && id != 0 && additiveDto.getDescription() != null) {
+               Additive additive= dtoService.additiveDtoToAdditive(additiveDto,false );
+
+                return ResponseEntity.ok().body(additiveMapper.toAdditiveDto( additiveRepository.save(additive)));
             } else {
               return ResponseEntity.noContent().build();
             }

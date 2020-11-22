@@ -1,9 +1,11 @@
 package com.softlines.fastpos.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.softlines.fastpos.constants.MessageKeyConstants;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Data
@@ -16,18 +18,21 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
-    @Column(nullable = false, unique = true)
+    @NotBlank(message = MessageKeyConstants.PRIVILEGE_NAME_VALIDATION_ERROR)
     String name;
+    @NotBlank(message = MessageKeyConstants.PRIVILEGE_NAME_VALIDATION_ERROR)
     double price;
     String unit;
-    boolean isMuchInDemand;
+    @Column(name = "isMuchInDemand")
+    boolean muchInDemand;
     String type;
     int availableStock;
     String description;
     String backgroundString;
-    boolean isPlatter;
+    @Column(name = "isPlatter")
+    boolean platter;
     int rank;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "products_additives",
             joinColumns = @JoinColumn(name = "product_id"),

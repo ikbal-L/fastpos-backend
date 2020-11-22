@@ -24,7 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -57,7 +57,7 @@ public class CategoryControllerUnitTest {
                         .build()
         );
 
-        when(categoryRepository.findAll()).thenReturn(categories);
+        when(categoryRepository.findAllCategoriesWithProducts()).thenReturn(categories);
 
         var res = categoryController.getCategories();
         assertEquals(res.getStatusCode(), HttpStatus.OK);
@@ -70,7 +70,7 @@ public class CategoryControllerUnitTest {
     @Order(2)
     public void categoryController_getAll_WithEmptyCategoriesList() {
         var Categories = new ArrayList<Category>();
-        when(categoryRepository.findAll()).thenReturn(Categories);
+        when(categoryRepository.findAllCategoriesWithProducts()).thenReturn(Categories);
         var res = categoryController.getCategories();
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
     }
@@ -78,7 +78,7 @@ public class CategoryControllerUnitTest {
     @Test
     @Order(3)
     public void categoryController_getAll_WithNullCategoriesList() {
-        when(categoryRepository.findAll()).thenReturn(null);
+        when(categoryRepository.findAllCategoriesWithProducts()).thenReturn(null);
 
         var res = categoryController.getCategories();
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
@@ -88,15 +88,70 @@ public class CategoryControllerUnitTest {
     @Test
     @Order(4)
     public void categoryController_getAll_WithNoDBConnection() {
-        when(categoryRepository.findAll())
+        when(categoryRepository.findAllCategoriesWithProducts())
                 .thenThrow(DataAccessResourceFailureException.class);
 
         var res = categoryController.getCategories();
 
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
     }
+    /**
+     * ------------------>  Put Category Unit Test  <------------------------
+     */
 
 
+
+    @Test
+    @Order(1)
+    public void categoryController_getMany_WithNotEmptyCategoriesList() {
+
+        var categories = Arrays.asList(
+                Category.builder()
+                        .id(1l)
+                        .name("Tacos")
+                        .build()
+        );
+
+        when(categoryRepository.findAllCategoriesWithProducts()).thenReturn(categories);
+
+        var res = categoryController.getCategories();
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
+        assertEquals((res.getBody()).get(0).getName(), categories.get(0).getName());
+        assertEquals((res.getBody()).size(), 1);
+
+    }
+
+    @Test
+    @Order(2)
+    public void categoryController_getMany_WithEmptyCategoriesList() {
+        var Categories = new ArrayList<Category>();
+        when(categoryRepository.findAllCategoriesWithProducts()).thenReturn(Categories);
+        var res = categoryController.getCategories();
+        assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
+    }
+
+    @Test
+    @Order(3)
+    public void categoryController_getMany_WithNullCategoriesList() {
+        when(categoryRepository.findAllCategoriesWithProducts()).thenReturn(null);
+
+        var res = categoryController.getCategories();
+        assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
+    }
+
+
+    @Test
+    @Order(4)
+    public void categoryController_getMany_WithNoDBConnection() {
+        when(categoryRepository.findAllCategoriesWithProducts())
+                .thenThrow(DataAccessResourceFailureException.class);
+
+        var res = categoryController.getCategories();
+
+        assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
+    }
+    
+    
     /**
      * ------------------>  Save Category Unit Test  <------------------------
      */
@@ -134,7 +189,7 @@ public class CategoryControllerUnitTest {
                         .rank(2)
                         .products(Arrays.asList(Product.builder().id(1).build())).build();
 
-        when(categoryRepository.findById(category.getId())).thenReturn(java.util.Optional.of(category));
+        when(categoryRepository.findByIdCategoryWithProducts(category.getId())).thenReturn(category);
         var res = categoryController.addCategory(categoryMapper.toCategoryDto(category));
 
         assertEquals(res.getStatusCode(), HttpStatus.FOUND);
@@ -193,7 +248,7 @@ public class CategoryControllerUnitTest {
                         .name("tacos")
                         .build();
 
-        when(categoryRepository.findById(1l)).thenReturn(java.util.Optional.ofNullable(category));
+        when(categoryRepository.findByIdCategoryWithProducts(1l)).thenReturn(category);
 
         var res = categoryController.getCategory(1);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
@@ -204,8 +259,8 @@ public class CategoryControllerUnitTest {
     @Order(10)
     public void CategoryController_getById_WithEmptyCategory() {
 
-        var Category = new Category();
-        when(categoryRepository.findById(0l)).thenReturn(java.util.Optional.of(Category));
+        var category = new Category();
+        when(categoryRepository.findByIdCategoryWithProducts(0l)).thenReturn(category);
         var res = categoryController.getCategory(0);
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
 
@@ -224,7 +279,7 @@ public class CategoryControllerUnitTest {
     @Order(12)
     public void CategoryController_getById_WithNoDBConnection() {
 
-        when(categoryRepository.findById(5l))
+        when(categoryRepository.findByIdCategoryWithProducts(5l))
                 .thenThrow(DataAccessResourceFailureException.class);
 
         var res = categoryController.getCategory(5);
@@ -249,7 +304,7 @@ public class CategoryControllerUnitTest {
                         .name("name")
                         .build();
 
-        when(categoryRepository.findById(1l)).thenReturn(Optional.ofNullable(category));
+        when(categoryRepository.findByIdCategoryWithProducts(1l)).thenReturn(category);
         categoryController.deleteCategory(1);
 
         verify(categoryRepository, times(1)).delete(category);
@@ -261,11 +316,11 @@ public class CategoryControllerUnitTest {
     @Order(14)
     public void categoryController_Delete_WithNotExistCategoryId() {
 
-        when(categoryRepository.findById(1l)).thenReturn(null);
+        when(categoryRepository.findByIdCategoryWithProducts(1l)).thenReturn(null);
 
         categoryController.deleteCategory(1);
 
-        verify(categoryRepository, times(1)).findById(1l);
+        verify(categoryRepository, times(1)).findByIdCategoryWithProducts(1l);
         verifyNoMoreInteractions(categoryRepository);
 
     }
@@ -274,7 +329,7 @@ public class CategoryControllerUnitTest {
     @Order(15)
     public void categoryController_Delete_WithNoDBConnection() {
 
-        when(categoryRepository.findById(5l))
+        when(categoryRepository.findByIdCategoryWithProducts(5l))
                 .thenThrow(DataAccessResourceFailureException.class);
 
         var res = categoryController.getCategory(5);
@@ -297,10 +352,10 @@ public class CategoryControllerUnitTest {
                 .name("harrisa")
                 .build();
 
-        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
+        when(categoryRepository.findByIdCategoryWithProducts(category.getId())).thenReturn(category);
         ResponseEntity<CategoryDto> returned = categoryController.editCategory(1,categoryMapper.toCategoryDto( category));
 
-        verify(categoryRepository, times(1)).findById(category.getId());
+        verify(categoryRepository, times(1)).findByIdCategoryWithProducts(category.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.OK);
 
     }
@@ -314,10 +369,10 @@ public class CategoryControllerUnitTest {
                 .name("harrisa")
                 .build();
 
-        when(categoryRepository.findById(category.getId())).thenReturn(Optional.empty());
+        when(categoryRepository.findByIdCategoryWithProducts(category.getId())).thenReturn(null);
         ResponseEntity<CategoryDto> returned = categoryController.editCategory(10, categoryMapper.toCategoryDto( category));
 
-        verify(categoryRepository, times(1)).findById(category.getId());
+        verify(categoryRepository, times(1)).findByIdCategoryWithProducts(category.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
 
     }
@@ -328,10 +383,10 @@ public class CategoryControllerUnitTest {
 
         var category = Category.builder().id(1).build();
 
-        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
+        when(categoryRepository.findByIdCategoryWithProducts(category.getId())).thenReturn(category);
         var returned = categoryController.editCategory(1,categoryMapper.toCategoryDto(category) );
 
-        verify(categoryRepository, times(1)).findById(category.getId());
+        verify(categoryRepository, times(1)).findByIdCategoryWithProducts(category.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
 
     }
@@ -340,7 +395,7 @@ public class CategoryControllerUnitTest {
     @Order(19)
     public void categoryController_Put_WithNoDBConnection() {
 
-        when(categoryRepository.findById(5l))
+        when(categoryRepository.findByIdCategoryWithProducts(5l))
                 .thenThrow(DataAccessResourceFailureException.class);
 
         var res = categoryController.getCategory(5);

@@ -23,6 +23,7 @@ public interface OrderMapper {
     OrderDto toOrderDto(Order order);
 
     @Mapping(source = "tableId", target = "table", qualifiedByName = "TableIdToTable")
+    @Mapping(source = "orderItems", target = "orderItems", qualifiedByName = "OrderItemsDtoToOrderItems")
     Order toOrder(OrderDto orderDto);
 
 
@@ -61,5 +62,20 @@ public interface OrderMapper {
         return INSTANCE.toOrderItemDto(orderItems);
 
     }
+
+    @Named("OrderItemsDtoToOrderItems")
+    public static OrderItem OrderItemsDtoToOrderItems(OrderItemDto orderItemsDto) {
+        OrderItemMapper INSTANCE = Mappers.getMapper(OrderItemMapper.class);
+        return INSTANCE.toOrderItem(orderItemsDto);
+
+    }
+
+    @Named("IdToProduct")
+    public static Product ProductToId(long productId) {
+        Product product = new Product();
+        product.setId(productId);
+        return product;
+    }
+
 
 }

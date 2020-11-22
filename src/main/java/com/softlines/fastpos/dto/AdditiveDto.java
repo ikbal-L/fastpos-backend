@@ -18,15 +18,13 @@ public class AdditiveDto {
 
     @JsonProperty("Id")
     long id;
-
     @JsonProperty("Description")
     @NotBlank(message = "validation.error.additive.description")
     String description;
-
     @JsonProperty("BackgroundString")
     @NotBlank(message = "validation.error.additive.background")
     String backgroundString;
-
     @JsonProperty("Rank")
     int rank;
+
 }

@@ -7,16 +7,12 @@ import com.softlines.fastpos.dto.service.DtoServiceImpl;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.ProductRepository;
 import com.softlines.fastpos.service.ProductService;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/product")
@@ -37,9 +33,9 @@ public class ProductController {
     public ResponseEntity<ProductDto> addProduct(@RequestBody ProductDto productDto) {
 
         try {
-            Optional<Product> optionalProduct = productRepository.findById(productDto.getId());
+           Product optionalProduct = productRepository.findByIdProductWithAdditives(productDto.getId());
 
-            if (!optionalProduct.isPresent()) {
+            if (optionalProduct ==null) {
 
                 if (productDto.getName() != null && !productDto.getName().isEmpty() && productDto.getId()==0) {
                     Product product = dtoService.productDtoToProduct(productDto, false);
@@ -54,7 +50,6 @@ public class ProductController {
 
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
-
         }
 
     }
@@ -64,7 +59,7 @@ public class ProductController {
 
         try {
 
-            List<Product> products = productRepository.findAll();
+            List<Product> products = productRepository.findAllProductsWithAdditives();
 
             if (products == null || products.isEmpty() )
                 return ResponseEntity.noContent().build();
@@ -76,16 +71,34 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/getmany")
+    public ResponseEntity<List<ProductDto>> getMany(@RequestBody List<Long> ids) {
+
+        try {
+
+            List<Product> products = productRepository.findManyProductsWithAdditives(ids);
+
+            if (ids!=null && products == null || products.isEmpty())
+                return ResponseEntity.noContent().build();
+            else
+                return ResponseEntity.ok().body(productMapper.toProductDTOs(products));
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+
+    }
+
 
     @GetMapping("/get/{id}")
     public ResponseEntity<ProductDto> getProduct(@PathVariable long id) {
 
         try {
 
-            Optional<Product> optionalProduct = productRepository.findById(id);
+            Product optionalProduct = productRepository.findByIdProductWithAdditives(id);
 
-            if (optionalProduct.isPresent() && id != 0)
-                return ResponseEntity.ok().body(productMapper.toProductDto(optionalProduct.get()));
+            if (id != 0)
+                return ResponseEntity.ok().body(productMapper.toProductDto(optionalProduct));
             else
                 return ResponseEntity.noContent().build();
 
@@ -115,9 +128,9 @@ public class ProductController {
     @PutMapping("/put/{id}")
     public ResponseEntity<ProductDto> editProduct(@PathVariable long id, @RequestBody ProductDto productDto) {
         try {
-            Optional<Product> optionalProduct = productRepository.findById(id);
+            Product optionalProduct = productRepository.findByIdProductWithAdditives(id);
 
-            if (optionalProduct.isPresent() && id != 0 && productDto.getName() != null) {
+            if ( id != 0 && productDto.getName() != null) {
 
                 Product product = dtoService.productDtoToProduct(productDto, false);
                 return ResponseEntity.status(HttpStatus.OK).body(productMapper.toProductDto(productRepository.save(product)));
@@ -136,10 +149,10 @@ public class ProductController {
     public ResponseEntity deleteProduct(@PathVariable long id) {
 
         try {
-            Optional<Product> optionalProduct = productRepository.findById(id);
+            Product optionalProduct = productRepository.findByIdProductWithAdditives(id);
 
-            if (optionalProduct.isPresent()) {
-                productRepository.delete(optionalProduct.get());
+            if (optionalProduct!=null) {
+                productRepository.delete(optionalProduct);
                 return ResponseEntity.ok().build();
             } else {
                 return ResponseEntity.notFound().build();

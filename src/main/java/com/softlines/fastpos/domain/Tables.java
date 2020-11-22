@@ -22,11 +22,10 @@ public class Tables {
     long id;
     int number;
     int seats;
-    boolean isVirtual;
-    @OneToMany(mappedBy = "table", fetch = FetchType.EAGER)
+    @Column(name = "isVirtual")
+    boolean virtual;
+    @OneToMany(mappedBy = "table", fetch = FetchType.LAZY)
     List<Order> tableOrders;
 
-//    List<Long> placeId;
-//    Place place;
 
 }

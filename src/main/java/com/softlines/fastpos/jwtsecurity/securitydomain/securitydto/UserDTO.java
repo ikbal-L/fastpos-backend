@@ -1,5 +1,6 @@
 package com.softlines.fastpos.jwtsecurity.securitydomain.securitydto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softlines.fastpos.constants.MessageKeyConstants;
 
 import lombok.*;
@@ -17,8 +18,10 @@ import java.util.List;
 public class UserDTO {
     long id;
     @NotBlank(message = MessageKeyConstants.USER_USERNAME_VALIDATION_ERROR)
+    @JsonProperty("Username")
     private String username;
     @NotBlank(message = MessageKeyConstants.USER_PASSWORD_VALIDATION_ERROR)
+    @JsonProperty("Password")
     private String password;
     private String pinCode;
     private String firstName;
@@ -30,6 +33,8 @@ public class UserDTO {
     private List<Long> roleIds;
     private long dbId;
 
+    @JsonProperty("AnnexId")
     private long annexId;
+    @JsonProperty("TerminalId")
     private long terminalId;
 }

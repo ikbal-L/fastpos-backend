@@ -10,10 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/category")
@@ -32,9 +30,9 @@ public class CategoryController {
     public ResponseEntity addCategory(@RequestBody CategoryDto categoryDto) {
         try {
 
-            Optional<Category> optionalCategory = categoryRepository.findById(categoryDto.getId());
+            Category optionalCategory = categoryRepository.findByIdCategoryWithProducts(categoryDto.getId());
 
-            if (!optionalCategory.isPresent()) {
+            if (optionalCategory ==null) {
                 if (categoryDto.getName() != null && !categoryDto.getName().isEmpty()) {
                     Category createdCategory = categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto, false));
                     return ResponseEntity.status(HttpStatus.CREATED).body(categoryMapper.toCategoryDto(createdCategory));
@@ -55,9 +53,10 @@ public class CategoryController {
 
     @GetMapping("/getall")
     public ResponseEntity<List<CategoryDto>> getCategories() {
+
         try {
 
-            List<Category> categories = categoryRepository.findAll();
+            List<Category> categories = categoryRepository.findAllCategoriesWithProducts();
 
             if (categories == null || categories.isEmpty()) {
                 return ResponseEntity.noContent().build();
@@ -72,15 +71,35 @@ public class CategoryController {
 
     }
 
+
+    @GetMapping("/getmany")
+    public ResponseEntity<List<CategoryDto>> getMany(@RequestBody List<Long> ids) {
+        try {
+
+            List<Category> categories = categoryRepository.findManyCategoriesWithProducts(ids);
+
+            if (categories == null || categories.isEmpty()) {
+                return ResponseEntity.noContent().build();
+
+            } else {
+                return ResponseEntity.ok().body(categoryMapper.toCategoryDTOs(categories));
+            }
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+
+    }
+
+
     @GetMapping("/get/{id}")
     public ResponseEntity<CategoryDto> getCategory(@PathVariable long id) {
 
         try {
+            Category optionalCategory = categoryRepository.findByIdCategoryWithProducts(id);
 
-            Optional<Category> optionalCategory = categoryRepository.findById(id);
-
-            if (optionalCategory.isPresent() && id != 0)
-                return ResponseEntity.ok().body(categoryMapper.toCategoryDto(optionalCategory.get()));
+            if (optionalCategory != null && id != 0)
+                return ResponseEntity.ok().body(categoryMapper.toCategoryDto(optionalCategory));
             else
                 return ResponseEntity.noContent().build();
 
@@ -91,29 +110,14 @@ public class CategoryController {
 
     }
 
-    @GetMapping("/getByName/{name}")
-    public ResponseEntity<List<CategoryDto>> getProductByName(@PathVariable String name) {
-        try {
-
-            List<Category> categories = categoryRepository.findByName(name);
-
-            if (categories != null)
-                return ResponseEntity.ok().body(categoryMapper.toCategoryDTOs(categories));
-            else
-                return ResponseEntity.noContent().build();
-
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
-        }
-    }
 
     @PutMapping("/put/{id}")
     public ResponseEntity<CategoryDto> editCategory(@PathVariable long id, @RequestBody CategoryDto categoryDto) {
         try {
 
-            Optional<Category> optionalCategory = categoryRepository.findById(id);
+           Category optionalCategory = categoryRepository.findByIdCategoryWithProducts(id);
 
-            if (optionalCategory.isPresent() && id != 0 ) {
+            if (optionalCategory != null && id != 0 && categoryDto.getName() != null) {
                 return ResponseEntity.ok().body(categoryMapper.toCategoryDto(categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto, false))));
             } else {
                 return ResponseEntity.noContent().build();
@@ -129,7 +133,8 @@ public class CategoryController {
     public ResponseEntity deleteCategory(@PathVariable long id) {
 
         try {
-            Category categoryToDel = categoryRepository.findById(id).get();
+
+            Category categoryToDel = categoryRepository.findByIdCategoryWithProducts(id);
             if (categoryToDel != null) {
 
                 categoryRepository.delete(categoryToDel);

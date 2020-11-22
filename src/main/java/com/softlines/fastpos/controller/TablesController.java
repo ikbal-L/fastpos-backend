@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/table")
@@ -29,14 +28,14 @@ public class TablesController {
 
         try {
 
-            Optional<Tables> optionalTable = tableRepository.findById(tableDto.getId());
+            Tables table = tableRepository.findByIdTablesOrders(tableDto.getId());
 
-            if (!optionalTable.isPresent() && tableDto.getId() == 0) {
+            if (table == null && tableDto.getId() == 0) {
 
-                if (tableDto.getNumber() !=0) {
+                if (tableDto.getNumber() != 0) {
                     Tables tables = tableMapper.toTable(tableDto);
                     return ResponseEntity.status(HttpStatus.CREATED).body(tableMapper.toTableDto(tableRepository.save(tables)));
-                }else{
+                } else {
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
                 }
 
@@ -53,7 +52,7 @@ public class TablesController {
     @GetMapping("/getall")
     public ResponseEntity<List<TableDto>> getTables() {
         try {
-            List<Tables> tables = tableRepository.findAll();
+            List<Tables> tables = tableRepository.findAllTablesWithTableOrders();
             if (tables == null || tables.isEmpty())
                 return ResponseEntity.noContent().build();
             else
@@ -69,10 +68,26 @@ public class TablesController {
     public ResponseEntity<TableDto> getTable(@PathVariable long id) {
 
         try {
-            Optional<Tables> optionalTable = tableRepository.findById(id);
+            Tables optionalTable = tableRepository.findByIdTablesOrders(id);
 
-            if (optionalTable.isPresent() && id != 0)
-                return ResponseEntity.ok().body(tableMapper.toTableDto(optionalTable.get()));
+            if (optionalTable!=null && id != 0)
+                return ResponseEntity.ok().body(tableMapper.toTableDto(optionalTable));
+            else
+                return ResponseEntity.noContent().build();
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+    }
+
+    @GetMapping("/getbynumber/{number}")
+    public ResponseEntity<TableDto> getTableByNumber(@PathVariable int number) {
+
+        try {
+            Tables optionalTable = tableRepository.findByNumberWithOrders(number);
+
+            if (optionalTable!=null && number != 0)
+                return ResponseEntity.ok().body(tableMapper.toTableDto(optionalTable));
             else
                 return ResponseEntity.noContent().build();
 
@@ -85,13 +100,13 @@ public class TablesController {
     public ResponseEntity editTable(@PathVariable long id, @RequestBody TableDto tableDto) {
 
         try {
-            Optional<Tables> optionalTable = tableRepository.findById(id);
+            Tables optionalTable = tableRepository.findByIdTablesOrders(id);
 
-            if (optionalTable.isPresent() && tableDto.getNumber()!=0) {
+            if (optionalTable !=null && tableDto.getNumber() != 0) {
 
 
-                    Tables tables = tableMapper.toTable(tableDto);
-                    return ResponseEntity.ok().body(tableRepository.save(tables));
+                Tables tables = tableMapper.toTable(tableDto);
+                return ResponseEntity.ok().body(tableRepository.save(tables));
             } else {
                 return ResponseEntity.noContent().build();
             }
@@ -105,17 +120,15 @@ public class TablesController {
 
         try {
 
-            Optional<Tables> TableToDel = tableRepository.findById(id);
+            Tables TableToDel = tableRepository.findByIdTablesOrders(id);
 
-            if (TableToDel.isPresent() && id != 0) {
+            if (TableToDel != null && id != 0) {
 
-                tableRepository.delete(TableToDel.get());
+                tableRepository.delete(TableToDel);
                 return ResponseEntity.ok().build();
 
             } else {
-
                 return ResponseEntity.notFound().build();
-
             }
 
         } catch (Exception exception) {

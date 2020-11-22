@@ -43,6 +43,11 @@ public class DtoServiceImpl implements DtoService {
     @Autowired
     PersonMapper personMapper;
 
+    @Autowired
+    WaiterMapper waiterMapper;
+
+    @Autowired
+    DeliverymanMapper deliverymanMapper;
 
 
     // TODO Remove repository in services
@@ -79,19 +84,24 @@ public class DtoServiceImpl implements DtoService {
     }
 
     @Override
-    public Person perosnDtoToPerson(PersonDto personDto, boolean getDataFromRepository) {
-        List<Role> roles = new ArrayList<Role>();
+    public Person personDtoToPerson(PersonDto personDto, boolean getDataFromRepository) {
         Person person = personMapper.toPerson(personDto);
-
-//        if (getDataFromRepository) {
-//            for (Long idProduct : personDto.getRolesId()) {
-//                roles.add(roleRepository.findById(idProduct).get());
-//            }
-//            person.setRoles(roles);
-//        }
-
         return person;
 
+    }
+
+    @Override
+    public Waiter waiterDtoToWaiter(WaiterDto waiterDto, boolean getDataFromRepository) {
+        Waiter waiter = waiterMapper.toWaiter(waiterDto);
+
+        return waiter;
+    }
+
+    @Override
+    public Deliveryman deliverymanDtoToDeliveryman(DeliverymanDto deliverymanDto, boolean getDataFromRepository) {
+        Deliveryman deliveryman = deliverymanMapper.toDeliveryman(deliverymanDto);
+
+        return deliveryman;
     }
 
 
@@ -99,30 +109,30 @@ public class DtoServiceImpl implements DtoService {
     public OrderItem orderItemDtoToOrderItem(OrderItemDto oiDto, boolean getDataFromRepository) {
         List<Additive> additives = new ArrayList<Additive>();
         OrderItem orderItem = orderItemMapper.toOrderItem(oiDto);
-       if (getDataFromRepository) {
-           for (Long idAdditive : oiDto.getIdAdditives()) {
-               additives.add(additiveRepository.findById(idAdditive).get());
-           }
-           orderItem.setAdditive(additives);
-           orderItem.setProduct(productRepository.findById(oiDto.getProductId()).get());
-       }
+        if (getDataFromRepository) {
+            for (Long idAdditive : oiDto.getIdAdditives()) {
+                additives.add(additiveRepository.findById(idAdditive).get());
+            }
+            orderItem.setAdditive(additives);
+            orderItem.setProduct(productRepository.findById(oiDto.getProductId()).get());
+        }
         return orderItem;
     }
 
     @Override
-    public List<OrderItem> orderItemDtoListToOrderItemList(List<OrderItemDto> orderItemDtos,boolean getDataFromRepository) {
+    public List<OrderItem> orderItemDtoListToOrderItemList(List<OrderItemDto> orderItemDtos, boolean getDataFromRepository) {
         List<Additive> additives = new ArrayList<Additive>();
         List<OrderItem> orderItems = orderItemMapper.toOrderItemList(orderItemDtos);
-      if (getDataFromRepository) {
-          for (int i = 0; i < orderItemDtos.size(); i++) {
-              additives.clear();
-              for (Long idAdditive : orderItemDtos.get(i).getIdAdditives()) {
-                  additives.add(additiveRepository.findById(idAdditive).get());
-              }
-              orderItems.get(i).setAdditive(additives);
-              orderItems.get(i).setProduct(productRepository.findById(orderItemDtos.get(i).getProductId()).get());
-          }
-      }
+        if (getDataFromRepository) {
+            for (int i = 0; i < orderItemDtos.size(); i++) {
+                additives.clear();
+                for (Long idAdditive : orderItemDtos.get(i).getIdAdditives()) {
+                    additives.add(additiveRepository.findById(idAdditive).get());
+                }
+                orderItems.get(i).setAdditive(additives);
+                orderItems.get(i).setProduct(productRepository.findById(orderItemDtos.get(i).getProductId()).get());
+            }
+        }
         return orderItems;
     }
 
@@ -130,7 +140,7 @@ public class DtoServiceImpl implements DtoService {
     @Override
     public Order orderDtoToOrder(OrderDto orderDto) {
         Order order = orderMapper.toOrder(orderDto);
-        order.setOrderItems(orderItemDtoListToOrderItemList(orderDto.getOrderItems(),false));
+        order.setOrderItems(orderItemDtoListToOrderItemList(orderDto.getOrderItems(), false));
         for (OrderItem orderItem : order.getOrderItems()) {
             orderItem.setOrder(order);
         }
@@ -138,7 +148,7 @@ public class DtoServiceImpl implements DtoService {
     }
 
     @Override
-    public Additive additiveDtoToAdditive(AdditiveDto additiveDto) {
+    public Additive additiveDtoToAdditive(AdditiveDto additiveDto, boolean getDataFromRepository) {
         Additive additive = additiveMapper.toAditive(additiveDto);
         return additive;
     }

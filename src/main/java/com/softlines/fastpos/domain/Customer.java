@@ -1,12 +1,14 @@
 package com.softlines.fastpos.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.softlines.fastpos.constants.MessageKeyConstants;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Data
 @Builder
@@ -17,12 +19,9 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty("Id")
     long id;
-    @Column(nullable = false)
-    @JsonProperty("Name")
+    @NotBlank(message = MessageKeyConstants.PRIVILEGE_NAME_VALIDATION_ERROR)
     String name;
-    @JsonProperty("Mobile")
     String mobile;
 
 }

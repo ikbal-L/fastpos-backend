@@ -1,3 +1,3 @@
 package com.softlines.fastpos.domain;
 
-public enum Descriptor {Delivery, OnTable, Takeaway, InWaiting}
+public enum Descriptor {User, Server, Deliverymen}

@@ -3,6 +3,7 @@ package com.softlines.fastpos.unitcontrollertest;
 import com.softlines.fastpos.ModelApplication;
 import com.softlines.fastpos.controller.AdditiveController;
 import com.softlines.fastpos.domain.Additive;
+import com.softlines.fastpos.dto.AdditiveDto;
 import com.softlines.fastpos.dto.mapping.AdditiveMapper;
 import com.softlines.fastpos.repository.AdditiveRepository;
 import org.junit.Test;
@@ -21,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -93,6 +95,69 @@ public class AdditiveControllerUnitTest {
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
     }
 
+    /**
+     * ------------------>  Get Many Additive Unit Test  <------------------------
+     */
+
+    @Test
+    @Order(1)
+    public void AdditiveController_getMany_WithNotEmptyAdditivesList() {
+
+        var additives = Arrays.asList(
+                Additive.builder()
+                        .id(1)
+                        .description("harrisa")
+                        .build());
+        List<Long> listIds = new ArrayList<>();
+        listIds.add(1l);
+
+        when(additiveRepository.findAllById(listIds)).thenReturn(additives);
+        var res = additiveController.getMany(listIds);
+
+        assertEquals(res.getStatusCode(), HttpStatus.OK);
+        assertEquals((res.getBody()).get(0).getDescription(), additives.get(0).getDescription());
+        assertEquals((res.getBody()).size(), 1);
+    }
+
+    @Test
+    @Order(2)
+    public void AdditiveController_getMany_WithEmptyAdditivesList() {
+        var additives = new ArrayList<Additive>();
+        when(additiveRepository.findAllById(null)).thenReturn(additives);
+        var res = additiveController.getAdditives();
+        assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
+    }
+
+    @Test
+    @Order(3)
+    public void AdditiveController_getMany_WithNullAdditivesList() {
+
+        when(additiveRepository.findAllById(null)).thenReturn(null);
+
+        var res = additiveController.getMany(null);
+        assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
+
+    }
+
+    @Test
+    @Order(4)
+    public void AdditiveController_getMany_WithNoDBConnection() {
+        var additives = Arrays.asList(
+                Additive.builder()
+                        .id(1)
+                        .description("harrisa")
+                        .build());
+        List<Long> listIds = new ArrayList<>();
+        listIds.add(1l);
+
+
+        when(additiveRepository.findAllById(listIds))
+                .thenThrow(DataAccessResourceFailureException.class);
+
+        var res = additiveController.getMany(listIds);
+
+        assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
+    }
 
     /**
      * ------------------>  Save Additive Unit Test  <------------------------
@@ -112,10 +177,9 @@ public class AdditiveControllerUnitTest {
 
         when(additiveRepository.save(any(Additive.class))).thenReturn(additive);
 
-        var res = additiveController.addAdditive(additive);
+        var res = additiveController.addAdditive(additiveMapper.toAdditiveDto(additive) );
 
         assertEquals(res.getStatusCode(), HttpStatus.CREATED);
-        assertEquals((res.getBody()).getDescription(), additive.getDescription());
 
     }
 
@@ -129,7 +193,7 @@ public class AdditiveControllerUnitTest {
         when(additiveRepository.save(any(Additive.class))).thenReturn(additive);
 
         //Act
-        var res = additiveController.addAdditive(additive);
+        var res = additiveController.addAdditive(additiveMapper.toAdditiveDto(additive) );
 
         //Assert
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
@@ -146,7 +210,7 @@ public class AdditiveControllerUnitTest {
         when( additiveRepository.findById(additive.getId())).thenReturn(Optional.of(additive));
 
         //Act
-        var res = additiveController.addAdditive(additive);
+        var res = additiveController.addAdditive(additiveMapper.toAdditiveDto(additive) );
 
         //Assert
         assertEquals(res.getStatusCode(), HttpStatus.FOUND);
@@ -166,7 +230,7 @@ public class AdditiveControllerUnitTest {
                         .build();
 
         when(additiveRepository.save(any(Additive.class))).thenThrow(DataAccessResourceFailureException.class);
-        var res = additiveController.addAdditive(additive);
+        var res = additiveController.addAdditive(additiveMapper.toAdditiveDto(additive) );
 
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
 
@@ -294,7 +358,7 @@ public class AdditiveControllerUnitTest {
                 .build();
 
         when(additiveRepository.findById(additive.getId())).thenReturn(Optional.of(additive));
-        ResponseEntity<Additive> returned = additiveController.editAdditive(1, additive);
+        ResponseEntity<AdditiveDto> returned = additiveController.editAdditive(1,additiveMapper.toAdditiveDto(additive) );
 
         verify(additiveRepository, times(1)).findById(additive.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.OK);
@@ -312,7 +376,7 @@ public class AdditiveControllerUnitTest {
                 .build();
 
         when(additiveRepository.findById(additive.getId())).thenReturn(Optional.empty());
-        ResponseEntity<Additive> returned = additiveController.editAdditive(10, additive);
+        ResponseEntity<AdditiveDto> returned = additiveController.editAdditive(10, additiveMapper.toAdditiveDto(additive) );
 
         verify(additiveRepository, times(1)).findById(additive.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
@@ -326,7 +390,7 @@ public class AdditiveControllerUnitTest {
         var additive = Additive.builder().id(1).build();
 
         when(additiveRepository.findById(additive.getId())).thenReturn(Optional.of(additive));
-        ResponseEntity<Additive> returned = additiveController.editAdditive(1, additive);
+        ResponseEntity<AdditiveDto> returned = additiveController.editAdditive(1, additiveMapper.toAdditiveDto(additive) );
 
         verify(additiveRepository, times(1)).findById(additive.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);

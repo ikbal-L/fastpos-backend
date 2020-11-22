@@ -31,13 +31,12 @@ public class OrderController {
     public ResponseEntity<OrderDto> addOrder(@RequestBody OrderDto orderDto) {
 
         try {
-            Optional<Order> optionalOrder = orderRepository.findById(orderDto.getId());
+            Order optionalOrder = orderRepository.findByIdOrderWithOrderItems(orderDto.getId());
 
-            if (!optionalOrder.isPresent()) {
+            if (optionalOrder == null) {
 
-                if (orderDto.getOrderItems().get(0).getName() != null && orderDto.getOrderItems().size() > 0) {
+                if (orderDto.getOrderItems().size() > 0) {
                     Order order = dtoService.orderDtoToOrder(orderDto);
-
                     return ResponseEntity.status(HttpStatus.CREATED).body(orderMapper.toOrderDto(orderRepository.save(order)));
                 } else {
                     return ResponseEntity.noContent().build();
@@ -58,7 +57,7 @@ public class OrderController {
 
         try {
 
-            List<Order> orders = orderRepository.findAll();
+            List<Order> orders = orderRepository.findAllOrdersWithOrderItems();
 
             if (orders == null || orders.isEmpty())
                 return ResponseEntity.noContent().build();
@@ -75,9 +74,11 @@ public class OrderController {
     public ResponseEntity<OrderDto> getOrder(@PathVariable long id) {
 
         try {
-            Optional<Order> optionalOrder = orderRepository.findById(id);
-            if (optionalOrder.isPresent() && id != 0)
-                return ResponseEntity.ok().body(orderMapper.toOrderDto(optionalOrder.get()));
+
+            Order optionalOrder = orderRepository.findByIdOrderWithOrderItems(id);
+
+            if (optionalOrder != null && id != 0)
+                return ResponseEntity.ok().body(orderMapper.toOrderDto(optionalOrder));
             else
                 return ResponseEntity.noContent().build();
 
@@ -91,13 +92,10 @@ public class OrderController {
     public ResponseEntity<OrderDto> editOrder(@PathVariable long id, @RequestBody OrderDto orderDto) {
 
         try {
-            Optional<Order> optionalOrder = orderRepository.findById(id);
+            Order optionalOrder = orderRepository.findByIdOrderWithOrderItems(id);
 
-            Order existingOrder = null;
-            if (optionalOrder.isPresent())
-                existingOrder = optionalOrder.get();
 
-            if (!optionalOrder.isPresent() && id != 0 && orderDto.getOrderItems() != null && orderDto.getOrderItems().size() > 0) {
+            if (optionalOrder != null && id != 0 && orderDto.getOrderItems() != null && orderDto.getOrderItems().size() > 0) {
 
                 Order order = dtoService.orderDtoToOrder(orderDto);
                 return ResponseEntity.ok().body(orderMapper.toOrderDto(orderRepository.save(order)));
@@ -117,15 +115,15 @@ public class OrderController {
 
         try {
 
-            Optional<Order> optionalOrder = orderRepository.findById(id);
+            Order optionalOrder = orderRepository.findByIdOrderWithOrderItems(id);
 
-            if (optionalOrder.isPresent()) {
+            if (optionalOrder != null) {
 
-                orderRepository.delete(optionalOrder.get());
+                orderRepository.delete(optionalOrder);
                 return ResponseEntity.ok().build();
 
             } else {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(orderMapper.toOrderDto(optionalOrder.get()));
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             }
 
         } catch (Exception exception) {
@@ -133,9 +131,6 @@ public class OrderController {
         }
 
     }
-
-
-
 
 
 }
