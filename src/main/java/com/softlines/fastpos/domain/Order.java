@@ -21,7 +21,6 @@ public class Order {
     String buyerId;
     Date orderTime;
     Duration elapsedTime;
-    double orderTotal;
     double total;
     int splittedFromId;
     double newTotal;
@@ -34,7 +33,7 @@ public class Order {
     boolean additivesVisibility;
     OrderState orderstate;
     OrderType type;
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<OrderItem> orderItems;
     @ManyToOne
     @JoinColumn(name = "tables_id")

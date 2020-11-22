@@ -16,13 +16,17 @@ import java.util.List;
 @Entity
 @javax.persistence.Table(name = "Tables")
 public class Table {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
+
     int number;
     int seats;
+
     @Column(name = "isVirtual")
     boolean virtual;
+
     @OneToMany(mappedBy = "table", fetch = FetchType.LAZY)
     List<Order> tableOrders;
 

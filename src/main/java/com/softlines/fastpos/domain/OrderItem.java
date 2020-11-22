@@ -23,7 +23,7 @@ public class OrderItem {
     double total;
     double discountAmount;
     double totalDiscountAmount;
-    double discountPercentatge;
+    double discountPercentage;
     @ManyToOne(fetch = FetchType.LAZY)
     Product product;
     @ManyToMany(fetch = FetchType.LAZY)

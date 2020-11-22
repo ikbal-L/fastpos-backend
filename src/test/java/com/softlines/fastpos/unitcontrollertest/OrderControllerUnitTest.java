@@ -20,10 +20,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.xml.crypto.Data;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -55,7 +57,7 @@ public class OrderControllerUnitTest {
                                 .id(1).product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
                         .elapsedTime(Duration.ZERO)
-                        .orderTime(LocalDateTime.now())
+                        .orderTime(new Date())
                         .table(Table.builder().build())
                         .build()
         );
@@ -115,11 +117,11 @@ public class OrderControllerUnitTest {
                         .id(1l)
                         .orderstate(OrderState.Payed)
                         .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
-                                .id(1).name("pizza")
+                                .id(1)
                                 .product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
                         .elapsedTime(Duration.ZERO)
-                        .orderTime(LocalDateTime.now())
+                        .orderTime(new Date())
                         .table(Table.builder().build())
                         .build();
 
@@ -127,9 +129,10 @@ public class OrderControllerUnitTest {
 
         var res = orderController.addOrder(orderMapper.toOrderDto(orders));
         assertEquals(res.getStatusCode(), HttpStatus.CREATED);
-        assertEquals((res.getBody()).getOrderItems().get(0).getName(), orders.getOrderItems().get(0).getName());
-        assertEquals((res.getBody()).getOrderItems().get(0).getProductId(), orders.getOrderItems().get(0).getProduct().getId());
-        assertEquals((res.getBody()).getOrderItems().get(0).getIdAdditives().get(0), orders.getOrderItems().get(0).getAdditive().get(0).getId());
+        assertEquals((res.getBody()).getOrderItems().get(0).getProductId(),
+                orders.getOrderItems().get(0).getProduct().getId());
+        assertEquals((res.getBody()).getOrderItems().get(0).getIdAdditives().get(0),
+                orders.getOrderItems().get(0).getAdditive().get(0).getId());
 
     }
 
@@ -180,11 +183,11 @@ public class OrderControllerUnitTest {
                         .id(1l)
                         .orderstate(OrderState.Payed)
                         .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
-                                .id(1).name("pizza")
+                                .id(1)
                                 .product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
                         .elapsedTime(Duration.ZERO)
-                        .orderTime(LocalDateTime.now())
+                        .orderTime(new Date())
                         .table(Table.builder().build())
                         .build();
 
@@ -209,11 +212,11 @@ public class OrderControllerUnitTest {
                         .id(1l)
                         .orderstate(OrderState.Payed)
                         .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
-                                .id(1).name("pizza")
+                                .id(1)
                                 .product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
                         .elapsedTime(Duration.ZERO)
-                        .orderTime(LocalDateTime.now())
+                        .orderTime(new Date())
                         .table(Table.builder().build())
                         .build();
 
@@ -311,12 +314,12 @@ public class OrderControllerUnitTest {
                 .id(1L)
                 .orderstate(OrderState.Payed)
                 .orderItems(Arrays.asList(OrderItem.builder()
-                        .id(1).name("pizza")
+                        .id(1)
                         .additive(Arrays.asList(Additive.builder().build()))
                         .product(Product.builder().build())
                         .order(Order.builder().id(1).build()).build()))
                 .elapsedTime(Duration.ZERO)
-                .orderTime(LocalDateTime.now())
+                .orderTime(new Date())
                 .table(Table.builder().id(1).build())
                 .build();
 
@@ -335,11 +338,10 @@ public class OrderControllerUnitTest {
 //                        .id(1)
                         .orderstate(OrderState.Payed)
                         .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
-                                .name("pizza")
                                 .product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
                         .elapsedTime(Duration.ZERO)
-                        .orderTime(LocalDateTime.now())
+                        .orderTime(new Date())
                         .table(Table.builder().build())
                         .build();
 
