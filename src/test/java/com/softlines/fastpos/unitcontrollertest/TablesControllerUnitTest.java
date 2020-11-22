@@ -2,7 +2,7 @@ package com.softlines.fastpos.unitcontrollertest;
 
 import com.softlines.fastpos.ModelApplication;
 import com.softlines.fastpos.controller.TablesController;
-import com.softlines.fastpos.domain.Tables;
+import com.softlines.fastpos.domain.Table;
 import com.softlines.fastpos.dto.TableDto;
 import com.softlines.fastpos.dto.mapping.TableMapper;
 import com.softlines.fastpos.repository.TableRepository;
@@ -45,7 +45,7 @@ public class TablesControllerUnitTest {
     public void tablesController_getAll_WithNotEmptyTablesList() {
 
         var categories = Arrays.asList(
-                Tables.builder()
+                Table.builder()
                         .id(1l)
                         .build()
         );
@@ -61,7 +61,7 @@ public class TablesControllerUnitTest {
 
     @Test
     public void tablesController_getAll_WithEmptyTablesList() {
-        var tables = new ArrayList<Tables>();
+        var tables = new ArrayList<Table>();
         when(tableRepository.findAll()).thenReturn(tables);
         var res = tablesController.getTables();
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
@@ -88,19 +88,19 @@ public class TablesControllerUnitTest {
 
 
     /**
-     * ------------------>  Save Tables Unit Test  <------------------------
+     * ------------------>  Save Table Unit Test  <------------------------
      */
 
 
     @Test
     public void tablesController_Save_WithData() {
 
-        var table = Tables.builder()
+        var table = Table.builder()
                 .number(2)
                 .tableOrders(Arrays.asList(com.softlines.fastpos.domain.Order.builder().build()))
                 .build();
 
-        when(tableRepository.save(any(Tables.class))).thenReturn(table);
+        when(tableRepository.save(any(Table.class))).thenReturn(table);
 
         var res = tablesController.addTable(tableMapper.toTableDto(table));
         assertEquals(res.getStatusCode(), HttpStatus.CREATED);
@@ -112,7 +112,7 @@ public class TablesControllerUnitTest {
     public void tablesController_Save_WithExistTables() {
 
         var table =
-                Tables.builder()
+                Table.builder()
                         .id(1)
                         .number(2)
                         .tableOrders(Arrays.asList(com.softlines.fastpos.domain.Order.builder().build())).build();
@@ -128,9 +128,9 @@ public class TablesControllerUnitTest {
     @Test
     public void tablesController_Save_WithoutData() {
 
-        var table = Tables.builder().tableOrders(Arrays.asList(com.softlines.fastpos.domain.Order.builder().build())).build();
+        var table = Table.builder().tableOrders(Arrays.asList(com.softlines.fastpos.domain.Order.builder().build())).build();
 
-        when(tableRepository.save(any(Tables.class))).thenReturn(table);
+        when(tableRepository.save(any(Table.class))).thenReturn(table);
         var res = tablesController.addTable(tableMapper.toTableDto(table));
 
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
@@ -141,12 +141,12 @@ public class TablesControllerUnitTest {
     @Test
     public void tablesController_save_WithNoDBConnection() {
 
-        var table = Tables.builder()
+        var table = Table.builder()
                 .number(2)
                 .tableOrders(Arrays.asList(com.softlines.fastpos.domain.Order.builder().build()))
                 .build();
 
-        when(tableRepository.save(any(Tables.class))).thenThrow(DataAccessResourceFailureException.class);
+        when(tableRepository.save(any(Table.class))).thenThrow(DataAccessResourceFailureException.class);
         var res = tablesController.addTable(tableMapper.toTableDto(table));
 
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
@@ -155,7 +155,7 @@ public class TablesControllerUnitTest {
 
 
     /**
-     * ------------------>  GetById Tables Unit Test  <------------------------
+     * ------------------>  GetById Table Unit Test  <------------------------
      */
 
 
@@ -163,7 +163,7 @@ public class TablesControllerUnitTest {
     public void TablesController_getById_WithNotEmptyTablesList() {
 
         var table =
-                Tables.builder()
+                Table.builder()
                         .id(1).tableOrders(Arrays.asList(com.softlines.fastpos.domain.Order.builder().build()))
                         .build();
 
@@ -177,7 +177,7 @@ public class TablesControllerUnitTest {
     @Test
     public void TablesController_getById_WithEmptyTablesList() {
 
-        var Tables = new Tables();
+        var Tables = new Table();
 
         when(tableRepository.findById(0l)).thenReturn(Optional.of(Tables));
         var res = tablesController.getTable(0l);
@@ -208,14 +208,14 @@ public class TablesControllerUnitTest {
 
 
     /**
-     * ------------------>  Delete Tables Unit Test  <------------------------
+     * ------------------>  Delete Table Unit Test  <------------------------
      */
 
     @Test
     public void tablesController_Delete_WithTablesId() {
 
         var table =
-                Tables.builder()
+                Table.builder()
                         .id(1l)
                         .number(3)
                         .build();
@@ -254,13 +254,13 @@ public class TablesControllerUnitTest {
 
 
     /**
-     * ------------------>  Put Tables Unit Test  <------------------------
+     * ------------------>  Put Table Unit Test  <------------------------
      */
 
     @Test
     public void tablesController_Put_WithData() {
 
-        var table = Tables.builder()
+        var table = Table.builder()
                 .id(1l)
                 .number(5)
                 .build();
@@ -276,7 +276,7 @@ public class TablesControllerUnitTest {
     @Test
     public void tablesController_Put_WithIdNotExist() {
 
-        var table = Tables.builder()
+        var table = Table.builder()
                 .id(10l)
                 .number(3)
                 .build();
@@ -292,7 +292,7 @@ public class TablesControllerUnitTest {
     @Test
     public void tablesController_Put_WithNullData() {
 
-        var table = Tables.builder().id(1).build();
+        var table = Table.builder().id(1).build();
 
         when(tableRepository.findById(table.getId())).thenReturn(Optional.of(table));
         var returned = tablesController.editTable(1, tableMapper.toTableDto(table));

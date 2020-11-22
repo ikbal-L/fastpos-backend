@@ -1,6 +1,6 @@
 package com.softlines.fastpos.controller;
 
-import com.softlines.fastpos.domain.Tables;
+import com.softlines.fastpos.domain.Table;
 import com.softlines.fastpos.dto.TableDto;
 import com.softlines.fastpos.dto.mapping.TableMapper;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
@@ -28,12 +28,12 @@ public class TablesController {
 
         try {
 
-            Tables table = tableRepository.findByIdTablesOrders(tableDto.getId());
+            Table table = tableRepository.findByIdTablesOrders(tableDto.getId());
 
             if (table == null && tableDto.getId() == 0) {
 
                 if (tableDto.getNumber() != 0) {
-                    Tables tables = tableMapper.toTable(tableDto);
+                    Table tables = tableMapper.toTable(tableDto);
                     return ResponseEntity.status(HttpStatus.CREATED).body(tableMapper.toTableDto(tableRepository.save(tables)));
                 } else {
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -52,7 +52,7 @@ public class TablesController {
     @GetMapping("/getall")
     public ResponseEntity<List<TableDto>> getTables() {
         try {
-            List<Tables> tables = tableRepository.findAllTablesWithTableOrders();
+            List<Table> tables = tableRepository.findAllTablesWithTableOrders();
             if (tables == null || tables.isEmpty())
                 return ResponseEntity.noContent().build();
             else
@@ -68,7 +68,7 @@ public class TablesController {
     public ResponseEntity<TableDto> getTable(@PathVariable long id) {
 
         try {
-            Tables optionalTable = tableRepository.findByIdTablesOrders(id);
+            Table optionalTable = tableRepository.findByIdTablesOrders(id);
 
             if (optionalTable!=null && id != 0)
                 return ResponseEntity.ok().body(tableMapper.toTableDto(optionalTable));
@@ -84,7 +84,7 @@ public class TablesController {
     public ResponseEntity<TableDto> getTableByNumber(@PathVariable int number) {
 
         try {
-            Tables optionalTable = tableRepository.findByNumberWithOrders(number);
+            Table optionalTable = tableRepository.findByNumberWithOrders(number);
 
             if (optionalTable!=null && number != 0)
                 return ResponseEntity.ok().body(tableMapper.toTableDto(optionalTable));
@@ -100,13 +100,13 @@ public class TablesController {
     public ResponseEntity editTable(@PathVariable long id, @RequestBody TableDto tableDto) {
 
         try {
-            Tables optionalTable = tableRepository.findByIdTablesOrders(id);
+            Table optionalTable = tableRepository.findByIdTablesOrders(id);
 
             if (optionalTable !=null && tableDto.getNumber() != 0) {
 
 
-                Tables tables = tableMapper.toTable(tableDto);
-                return ResponseEntity.ok().body(tableRepository.save(tables));
+                Table table = tableMapper.toTable(tableDto);
+                return ResponseEntity.ok().body(tableRepository.save(table));
             } else {
                 return ResponseEntity.noContent().build();
             }
@@ -120,7 +120,7 @@ public class TablesController {
 
         try {
 
-            Tables TableToDel = tableRepository.findByIdTablesOrders(id);
+            Table TableToDel = tableRepository.findByIdTablesOrders(id);
 
             if (TableToDel != null && id != 0) {
 

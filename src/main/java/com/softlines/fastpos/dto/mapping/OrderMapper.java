@@ -3,12 +3,10 @@ package com.softlines.fastpos.dto.mapping;
 import com.softlines.fastpos.domain.*;
 import com.softlines.fastpos.dto.OrderDto;
 import com.softlines.fastpos.dto.OrderItemDto;
-import com.softlines.fastpos.dto.TableDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -45,15 +43,15 @@ public interface OrderMapper {
     }
 
     @Named("TableToId")
-    public static long TableToId(Tables tables) {
-        return tables.getId();
+    public static long TableToId(Table table) {
+        return table.getId();
     }
 
     @Named("TableIdToTable")
-    public static Tables TableIdToTable(long id ) {
-        Tables tables = new Tables();
-        tables.setId(id);
-        return tables;
+    public static Table TableIdToTable(long id ) {
+        Table table = new Table();
+        table.setId(id);
+        return table;
     }
 
     @Named("orderItemsToOrderItemsDto")

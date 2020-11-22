@@ -77,7 +77,7 @@ create or replace table annex
     foreign key (restaurent_id) references restaurent (id)
 );
 
-create or replace table tables
+create or replace table table
 (
     id bigint auto_increment
     primary key,
@@ -108,7 +108,7 @@ create or replace table orders
     type int null,
     tables_id bigint null,
     constraint FKe5rvlcvymyef5878c1qpg86lu
-    foreign key (tables_id) references tables (id)
+    foreign key (tables_id) references table (id)
 );
 
 create or replace table orderitem

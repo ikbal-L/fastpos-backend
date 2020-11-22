@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "orders")
+@javax.persistence.Table(name = "orders")
 public class Order {
 
     @Id
@@ -37,7 +37,7 @@ public class Order {
     List<OrderItem> orderItems;
     @ManyToOne
     @JoinColumn(name = "tables_id")
-    Tables table;
+    Table table;
 
 }
 

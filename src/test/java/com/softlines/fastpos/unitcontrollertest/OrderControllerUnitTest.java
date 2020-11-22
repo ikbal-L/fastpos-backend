@@ -24,7 +24,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -57,7 +56,7 @@ public class OrderControllerUnitTest {
                                 .order(Order.builder().build()).build()))
                         .elapsedTime(Duration.ZERO)
                         .orderTime(LocalDateTime.now())
-                        .table(Tables.builder().build())
+                        .table(Table.builder().build())
                         .build()
         );
 
@@ -121,7 +120,7 @@ public class OrderControllerUnitTest {
                                 .order(Order.builder().build()).build()))
                         .elapsedTime(Duration.ZERO)
                         .orderTime(LocalDateTime.now())
-                        .table(Tables.builder().build())
+                        .table(Table.builder().build())
                         .build();
 
         when(orderRepository.save(Mockito.any(Order.class))).thenReturn(orders);
@@ -140,7 +139,7 @@ public class OrderControllerUnitTest {
 
         var order = Order.builder()
                 .orderItems(Arrays.asList())
-                .table(Tables.builder().build())
+                .table(Table.builder().build())
                 .build();
 
         when(orderRepository.save(Mockito.any(Order.class))).thenReturn(order);
@@ -163,7 +162,7 @@ public class OrderControllerUnitTest {
                                 .order(Order.builder().id(1).build())
                                 .build()))
 
-                        .table(Tables.builder().build())
+                        .table(Table.builder().build())
                         .build();
 
         when(orderRepository.findByIdOrderWithOrderItems(order.getId())).thenReturn(order);
@@ -186,7 +185,7 @@ public class OrderControllerUnitTest {
                                 .order(Order.builder().build()).build()))
                         .elapsedTime(Duration.ZERO)
                         .orderTime(LocalDateTime.now())
-                        .table(Tables.builder().build())
+                        .table(Table.builder().build())
                         .build();
 
 
@@ -215,7 +214,7 @@ public class OrderControllerUnitTest {
                                 .order(Order.builder().build()).build()))
                         .elapsedTime(Duration.ZERO)
                         .orderTime(LocalDateTime.now())
-                        .table(Tables.builder().build())
+                        .table(Table.builder().build())
                         .build();
 
         when(orderRepository.findByIdOrderWithOrderItems(1l)).thenReturn(order);
@@ -318,7 +317,7 @@ public class OrderControllerUnitTest {
                         .order(Order.builder().id(1).build()).build()))
                 .elapsedTime(Duration.ZERO)
                 .orderTime(LocalDateTime.now())
-                .table(Tables.builder().id(1).build())
+                .table(Table.builder().id(1).build())
                 .build();
 
         when(orderRepository.findByIdOrderWithOrderItems(orders.getId())).thenReturn(orders);
@@ -341,7 +340,7 @@ public class OrderControllerUnitTest {
                                 .order(Order.builder().build()).build()))
                         .elapsedTime(Duration.ZERO)
                         .orderTime(LocalDateTime.now())
-                        .table(Tables.builder().build())
+                        .table(Table.builder().build())
                         .build();
 
         when(orderRepository.findByIdOrderWithOrderItems(order.getId())).thenReturn(null);
@@ -357,7 +356,7 @@ public class OrderControllerUnitTest {
 
         var order = Order.builder()
                 .id(1L)
-                .table(Tables.builder().id(1).build())
+                .table(Table.builder().id(1).build())
                 .build();
 
         when(orderRepository.findByIdOrderWithOrderItems(order.getId())).thenReturn(order);

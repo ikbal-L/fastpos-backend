@@ -56,11 +56,11 @@ public class MappingTableTest {
     @Test
     public void getTables() throws Exception {
 
-        var tables = tableRepository.findAll();
+        var table = tableRepository.findAll();
         mvc.perform(get("/table/getall")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(jsonPath("$[0].number").value(tableMapper.toTableDTOs(tables).get(0).getNumber()))
+                .andExpect(jsonPath("$[0].number").value(tableMapper.toTableDTOs(table).get(0).getNumber()))
                 .andExpect(status().isOk());
 
     }
