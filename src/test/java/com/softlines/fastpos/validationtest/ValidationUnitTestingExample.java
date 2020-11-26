@@ -45,7 +45,7 @@ public class ValidationUnitTestingExample {
     }
 
     @Test
-    public void testAdditiveValidation_withInvalidAdditie() {
+    public void testAdditiveValidation_withInvalidAdditive() {
         AdditiveDto additive = new AdditiveDto();
         Set<ConstraintViolation<AdditiveDto>> violations = validator.validate(additive);
         assertThat(violations.isEmpty()).isFalse();
@@ -53,8 +53,9 @@ public class ValidationUnitTestingExample {
         assertThat(violations.size()).isEqualTo(2);
     }
 
+
     @Test
-    public void testAdditiveValidation_withVvalidAdditie() {
+    public void testAdditiveValidation_withValidAdditive() {
         AdditiveDto additive = new AdditiveDto();
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();

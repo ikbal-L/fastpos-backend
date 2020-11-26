@@ -3,6 +3,7 @@ package com.softlines.fastpos.unitcontrollertest;
 import com.softlines.fastpos.ModelApplication;
 import com.softlines.fastpos.controller.CustomerController;
 import com.softlines.fastpos.domain.Customer;
+import com.softlines.fastpos.dto.CustomerDto;
 import com.softlines.fastpos.repository.CustomerRepository;
 import org.junit.Test;
 import org.junit.jupiter.api.Order;
@@ -264,7 +265,7 @@ public class CustomerControllerUnitTest {
                 .build();
 
         when(customerRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
-        ResponseEntity<Customer> returned = customerController.editCustomer(1, customer);
+        ResponseEntity<CustomerDto> returned = customerController.editCustomer(1, customer);
 
         verify(customerRepository, times(1)).findById(customer.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.OK);
@@ -280,7 +281,7 @@ public class CustomerControllerUnitTest {
                 .build();
 
         when(customerRepository.findById(customer.getId())).thenReturn(Optional.empty());
-        ResponseEntity<Customer> returned = customerController.editCustomer(10, customer);
+        ResponseEntity<CustomerDto> returned = customerController.editCustomer(10, customer);
 
         verify(customerRepository, times(1)).findById(customer.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
@@ -293,7 +294,7 @@ public class CustomerControllerUnitTest {
         var customer = Customer.builder().id(1).build();
 
         when(customerRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
-        ResponseEntity<Customer> returned = customerController.editCustomer(1, customer);
+        ResponseEntity<CustomerDto> returned = customerController.editCustomer(1, customer);
 
         verify(customerRepository, times(1)).findById(customer.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);

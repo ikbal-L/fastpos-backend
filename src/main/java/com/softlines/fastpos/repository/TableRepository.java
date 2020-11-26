@@ -12,16 +12,16 @@ import java.util.List;
 @Repository
 public interface TableRepository extends JpaRepository<Table, Long> {
     
-    @Query(value="select distinct t from Table t  LEFT JOIN FETCH  t.tableOrders WHERE t.number = ?1")
+    @Query(value="select distinct t from Table t  WHERE t.number = ?1")
     Table findByNumberWithOrders(int Number);
 
-    @Query(value="select distinct t from Table t LEFT JOIN FETCH  t.tableOrders")
+    @Query(value="select distinct t from Table t ")
     List<Table> findAllTablesWithTableOrders();
 
-    @Query(value="select distinct t from Table t LEFT JOIN FETCH  t.tableOrders WHERE t.id = ?1")
+    @Query(value="select distinct t from Table t WHERE t.id = ?1")
     Table findByIdTablesOrders(long id);
 
-    @Query(value="select distinct t from Table t LEFT JOIN FETCH  t.tableOrders where t.id IN :ids")
+    @Query(value="select distinct t from Table t where t.id IN :ids")
     List<Table> getManyTablesWithOrders(@Param("ids") List<Long> TablesIds);
 
 }

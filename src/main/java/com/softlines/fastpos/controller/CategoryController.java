@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/category")
+@RequestMapping("/category")
 public class CategoryController {
 
     @Autowired
@@ -38,7 +38,6 @@ public class CategoryController {
                     return ResponseEntity.status(HttpStatus.CREATED).body(categoryMapper.toCategoryDto(createdCategory));
                 } else {
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-
                 }
             } else {
 

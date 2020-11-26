@@ -6,12 +6,15 @@ import com.softlines.fastpos.dto.OrderItemDto;
 import com.softlines.fastpos.dto.mapping.OrderItemMapper;
 import com.softlines.fastpos.dto.service.DtoServiceImpl;
 import com.softlines.fastpos.repository.OrderItemRepository;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +30,7 @@ public class OrderItemController {
     OrderItemMapper orderItemMapper;
 
     @PostMapping(value = "/save", consumes = "application/json")
-    public ResponseEntity addOrderItem(@RequestBody OrderItemDto orderItemDto) {
+    public ResponseEntity addOrderItem(@Valid @RequestBody Data data, OrderItemDto orderItemDto) {
         try {
 
             Optional<OrderItem> optionalOrderItem = orderItemRepository.findById(orderItemDto.getId());

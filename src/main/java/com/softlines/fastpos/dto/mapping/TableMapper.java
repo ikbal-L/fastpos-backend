@@ -14,12 +14,10 @@ import java.util.List;
 public interface TableMapper {
     TableMapper INSTANCE = Mappers.getMapper(TableMapper.class);
 
-    @Mapping(source = "tableOrders", target = "tableOrdersId", qualifiedByName = "OrdersToId")
     TableDto toTableDto(Table table);
 
     List<TableDto> toTableDTOs(List<Table> tables);
 
-    @Mapping(source = "tableOrdersId", target = "tableOrders", qualifiedByName = "idsToOrders")
     Table toTable(TableDto tableDto);
 
     @Named("OrdersToId")

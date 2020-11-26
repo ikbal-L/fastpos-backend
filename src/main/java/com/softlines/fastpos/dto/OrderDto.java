@@ -1,14 +1,21 @@
 package com.softlines.fastpos.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.softlines.fastpos.constants.MessageKeyConstants;
 import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.domain.OrderType;
+import com.softlines.fastpos.validation.ValidationDiscountAmount;
 import lombok.*;
-import java.time.Duration;
+import org.hibernate.validator.constraints.Range;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
 @Data
+@ValidationDiscountAmount
 public class OrderDto {
 
     @JsonProperty("Id")
@@ -21,31 +28,44 @@ public class OrderDto {
     Date orderTime;
 
     @JsonProperty("ElapsedTime")
-    Duration elapsedTime;
+    String elapsedTime;
 
     @JsonProperty("Total")
-    double total;
+    @Min(value = 0,message = MessageKeyConstants.ORDER_TOTAL_VALIDATION_ERROR)
+    @NotNull
+    Double total;
 
     @JsonProperty("SplittedFromId")
     int splittedFromId;
 
     @JsonProperty("NewTotal")
+    @Min(0)
     double newTotal;
 
     @JsonProperty("DiscountAmount")
-    double discountAmount;
+    @Min(0)
+    @NotNull
+    Double discountAmount;
 
     @JsonProperty("TotalDiscountAmount")
-    double totalDiscountAmount;
+    @Min(0)
+    @NotNull
+    Double totalDiscountAmount;
 
     @JsonProperty("DiscountPercentage")
-    double discountPercentage;
+    @Range(min=0, max=100)
+    @NotNull
+    Double discountPercentage;
 
     @JsonProperty("GivenAmount")
-    double givenAmount;
+    @Min(0)
+    @NotNull
+    Double givenAmount;
 
     @JsonProperty("ReturnedAmount")
-    double returnedAmount;
+    @Min(value = 0,message = MessageKeyConstants.ORDER_TOTAL_VALIDATION_ERROR)
+    @NotNull
+    Double returnedAmount;
 
     @JsonProperty("ProductsVisibility")
     boolean productsVisibility;
@@ -63,6 +83,7 @@ public class OrderDto {
     List<OrderItemDto> orderItems;
 
     @JsonProperty("TableId")
+    @NotNull
     Long tableId;
 
 }

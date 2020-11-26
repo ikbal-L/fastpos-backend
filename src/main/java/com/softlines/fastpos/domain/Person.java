@@ -20,13 +20,12 @@ public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
-    @NotBlank(message = MessageKeyConstants.PRIVILEGE_NAME_VALIDATION_ERROR)
+    @NotBlank
     String name;
     String phoneNumber;
     String backgroundString;
     @Column(name="isActive")
     boolean active;
-    Descriptor descriptor;
 
 
 }

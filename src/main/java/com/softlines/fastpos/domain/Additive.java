@@ -1,10 +1,11 @@
 package com.softlines.fastpos.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.softlines.fastpos.constants.MessageKeyConstants;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
 
@@ -20,12 +21,14 @@ public class Additive {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
-    @Column(name = "description",nullable = false,unique = true)
+    @Column(nullable = false, unique = true)
     @NotBlank(message = MessageKeyConstants.ADDITIVE_DESCRIPTION_VALIDATION_ERROR)
-    String description ;
+    String description;
 
     @NotBlank(message = MessageKeyConstants.ADDITIVE_BACKGROUND_VALIDATION_ERROR)
     String backgroundString;
 
+    @Column(nullable = false, unique = true)
+    @Min(1)
     Integer rank;
 }

@@ -8,6 +8,7 @@ import com.softlines.fastpos.jwtsecurity.securityrepository.PrivilegeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class PrivilegeController {
     @Autowired
     PrivilegeMapper privilegeMapper;
 
-    //@PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
+//    @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
     @PostMapping("/save")
     public ResponseEntity<Privilege> addPrivilege(@RequestBody Privilege privilege){
         try {

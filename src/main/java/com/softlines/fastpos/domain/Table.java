@@ -27,8 +27,4 @@ public class Table {
     @Column(name = "isVirtual")
     boolean virtual;
 
-    @OneToMany(mappedBy = "table", fetch = FetchType.LAZY)
-    List<Order> tableOrders;
-
-
-}
+ }

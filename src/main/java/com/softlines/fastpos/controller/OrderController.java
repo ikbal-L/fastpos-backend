@@ -9,9 +9,12 @@ import com.softlines.fastpos.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
+import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -28,17 +31,16 @@ public class OrderController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping(value = "/save", consumes = "application/json")
-    public ResponseEntity<OrderDto> addOrder(@RequestBody OrderDto orderDto) {
+    public ResponseEntity<OrderDto> addOrder(@Valid @RequestBody OrderDto orderDto) {
 
         try {
-            //TODO use findById instead
             Optional<Order> foundOrder = orderRepository.findById(orderDto.getId());
 
             if (foundOrder.isEmpty()) {
 
                 if (orderDto.getOrderItems().size() > 0) {
                     Order order = dtoService.orderDtoToOrder(orderDto);
-                   OrderDto orderDto1= orderMapper.toOrderDto(orderRepository.save(order));
+                   OrderDto orderDto1= orderMapper.toOrderDto(orderRepository.saveAndFlush(order));
                     return ResponseEntity.status(HttpStatus.CREATED).body(orderDto1);
                 } else {
                     return ResponseEntity.noContent().build();
@@ -53,6 +55,7 @@ public class OrderController {
         }
 
     }
+
 
     @GetMapping("/getall")
     public ResponseEntity<List<OrderDto>> getOrders() {
