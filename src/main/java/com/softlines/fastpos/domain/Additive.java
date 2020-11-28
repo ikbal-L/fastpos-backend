@@ -1,9 +1,7 @@
 package com.softlines.fastpos.domain;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.softlines.fastpos.constants.MessageKeyConstants;
 import lombok.*;
-
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -16,7 +14,6 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @javax.persistence.Table(name = "additive")
 public class Additive {
-    // TODO Add Ingrediants to additive entity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;

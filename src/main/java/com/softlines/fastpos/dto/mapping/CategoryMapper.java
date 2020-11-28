@@ -23,6 +23,8 @@ public interface CategoryMapper {
     @Mapping(source = "productIds", target = "products", qualifiedByName = "ProductToId")
     Category toCategory(CategoryDto categoryDTO);
 
+    List<Category> toCategories(List<CategoryDto> categoryDtos);
+
     @Named("ProductToId")
     public static long ProductToId(Product products) {
         return products.getId();

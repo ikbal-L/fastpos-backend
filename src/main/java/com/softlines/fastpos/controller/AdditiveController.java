@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/additive")
@@ -34,12 +35,12 @@ public class AdditiveController {
 
             Optional<Additive> optionalAdditive = additiveRepository.findById(additiveDto.getId());
 
-            if (!(optionalAdditive.isPresent()) && additiveDto.getId()==0) {
+            if (!(optionalAdditive.isPresent()) && additiveDto.getId() == 0) {
 
                 if (additiveDto.getDescription() != null &&
                         !additiveDto.getDescription().isEmpty()) {
-                    Additive savedAdditve = additiveRepository.save(additiveMapper.toAditive(additiveDto));
-                    AdditiveDto savedAdditveDto =  additiveMapper.toAdditiveDto(savedAdditve);
+                    Additive savedAdditve = additiveRepository.save(additiveMapper.toAdditive(additiveDto));
+                    AdditiveDto savedAdditveDto = additiveMapper.toAdditiveDto(savedAdditve);
                     return ResponseEntity.status(HttpStatus.CREATED).body(savedAdditveDto);
                 } else
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -53,6 +54,35 @@ public class AdditiveController {
         }
     }
 
+
+    @PostMapping("/savemany")
+    public ResponseEntity<List<AdditiveDto>> addManyAdditive(@Valid @RequestBody List<AdditiveDto> additiveDtoList) {
+        try {
+
+            List<Long> ids = additiveDtoList.parallelStream().map(AdditiveDto::getId)
+                    .collect(Collectors.toList());
+
+            List<Additive> additives = additiveRepository.findAllById(ids);
+
+            if (additives.isEmpty()) {
+                Additive savedAdditve = additiveRepository.saveAll(additiveMapper.toAdditive(additiveDto));
+                AdditiveDto savedAdditveDto = additiveMapper.toAdditiveDto(savedAdditve);
+                return ResponseEntity.status(HttpStatus.CREATED).body(savedAdditveDto);
+
+
+        } else{
+            return ResponseEntity.status(HttpStatus.FOUND).build();
+        }
+
+    } catch(
+    Exception exception)
+
+    {
+        return exceptionManagement.getResponseEntityAccordingToException(exception);
+    }
+
+}
+
     @GetMapping("/getall")
     public ResponseEntity<List<AdditiveDto>> getAdditives() {
 
@@ -63,7 +93,7 @@ public class AdditiveController {
             if (additives == null || additives.isEmpty())
                 return ResponseEntity.noContent().build();
             else
-                return ResponseEntity.ok().body(additiveMapper.toAdditiveDTOs(additives) );
+                return ResponseEntity.ok().body(additiveMapper.toAdditiveDTOs(additives));
 
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
@@ -81,7 +111,7 @@ public class AdditiveController {
             if (additives == null || additives.isEmpty())
                 return ResponseEntity.noContent().build();
             else
-                return ResponseEntity.ok().body(additiveMapper.toAdditiveDTOs(additives) );
+                return ResponseEntity.ok().body(additiveMapper.toAdditiveDTOs(additives));
 
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
@@ -114,11 +144,11 @@ public class AdditiveController {
             Optional<Additive> optionalAdditive = additiveRepository.findById(id);
 
             if (optionalAdditive.isPresent() && id != 0 && additiveDto.getDescription() != null) {
-               Additive additive= dtoService.additiveDtoToAdditive(additiveDto,false );
+                Additive additive = dtoService.additiveDtoToAdditive(additiveDto, false);
 
-                return ResponseEntity.ok().body(additiveMapper.toAdditiveDto( additiveRepository.save(additive)));
+                return ResponseEntity.ok().body(additiveMapper.toAdditiveDto(additiveRepository.save(additive)));
             } else {
-              return ResponseEntity.noContent().build();
+                return ResponseEntity.noContent().build();
             }
 
         } catch (Exception exception) {
