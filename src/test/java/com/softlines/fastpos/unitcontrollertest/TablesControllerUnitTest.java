@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ModelApplication.class)
 @AutoConfigureMockMvc
@@ -50,7 +49,7 @@ public class TablesControllerUnitTest {
                         .build()
         );
 
-        when(tableRepository.findAll()).thenReturn(categories);
+        when(tableRepository.findAllTables()).thenReturn(categories);
 
         var res = tablesController.getTables();
         assertEquals(res.getStatusCode(), HttpStatus.OK);
@@ -78,7 +77,7 @@ public class TablesControllerUnitTest {
 
     @Test
     public void tablesController_getAll_getTablesWithNoDBConnection() {
-        when(tableRepository.findAll())
+        when(tableRepository.findAllTables())
                 .thenThrow(DataAccessResourceFailureException.class);
 
         var res = tablesController.getTables();
@@ -97,7 +96,6 @@ public class TablesControllerUnitTest {
 
         var table = Table.builder()
                 .number(2)
-                .tableOrders(Arrays.asList(com.softlines.fastpos.domain.Order.builder().build()))
                 .build();
 
         when(tableRepository.save(any(Table.class))).thenReturn(table);
@@ -115,7 +113,7 @@ public class TablesControllerUnitTest {
                 Table.builder()
                         .id(1)
                         .number(2)
-                        .tableOrders(Arrays.asList(com.softlines.fastpos.domain.Order.builder().build())).build();
+                        .build();
 
         when(tableRepository.findById(table.getId())).thenReturn(Optional.of(table));
         var res = tablesController.addTable(tableMapper.toTableDto(table));
@@ -125,25 +123,12 @@ public class TablesControllerUnitTest {
     }
 
 
-    @Test
-    public void tablesController_Save_WithoutData() {
-
-        var table = Table.builder().tableOrders(Arrays.asList(com.softlines.fastpos.domain.Order.builder().build())).build();
-
-        when(tableRepository.save(any(Table.class))).thenReturn(table);
-        var res = tablesController.addTable(tableMapper.toTableDto(table));
-
-        assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
-
-    }
-
 
     @Test
     public void tablesController_save_WithNoDBConnection() {
 
         var table = Table.builder()
                 .number(2)
-                .tableOrders(Arrays.asList(com.softlines.fastpos.domain.Order.builder().build()))
                 .build();
 
         when(tableRepository.save(any(Table.class))).thenThrow(DataAccessResourceFailureException.class);
@@ -164,10 +149,11 @@ public class TablesControllerUnitTest {
 
         var table =
                 Table.builder()
-                        .id(1).tableOrders(Arrays.asList(com.softlines.fastpos.domain.Order.builder().build()))
+                        .id(1)
+                        .number(1)
                         .build();
 
-        when(tableRepository.findById(1l)).thenReturn(Optional.ofNullable(table));
+        when(tableRepository.findByIdTable(1L)).thenReturn(table);
         var res = tablesController.getTable(1);
 
         assertEquals(res.getStatusCode(), HttpStatus.OK);
@@ -197,7 +183,7 @@ public class TablesControllerUnitTest {
     @Test
     public void TablesController_getById_WithNoDBConnection() {
 
-        when(tableRepository.findById(5l))
+        when(tableRepository.findByIdTable(5l))
                 .thenThrow(DataAccessResourceFailureException.class);
 
         var res = tablesController.getTable(5);
@@ -246,7 +232,7 @@ public class TablesControllerUnitTest {
         when(tableRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);
 
-        var res = tablesController.getTable(5);
+        var res = tablesController.deleteTable(5);
 
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
 
@@ -304,11 +290,15 @@ public class TablesControllerUnitTest {
 
     @Test
     public void tablesController_Put_WithNoDBConnection() {
+        var table = Table.builder()
+                .id(10l)
+                .number(3)
+                .build();
 
         when(tableRepository.findById(5l))
                 .thenThrow(DataAccessResourceFailureException.class);
 
-        var res = tablesController.getTable(5);
+        var res = tablesController.editTable(5,tableMapper.toTableDto( table));
 
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
 

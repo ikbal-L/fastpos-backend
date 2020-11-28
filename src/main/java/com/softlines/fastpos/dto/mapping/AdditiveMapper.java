@@ -20,7 +20,8 @@ public interface AdditiveMapper {
     AdditiveDto toAdditiveDto(Additive additive);
     List<AdditiveDto> toAdditiveDTOs(List<Additive> additives);
 
-    Additive toAditive(AdditiveDto additiveDto);
+    Additive toAdditive(AdditiveDto additiveDto);
+    List<Additive> toAdditiveList(List<AdditiveDto> additiveDtoList);
 
     @Named("ProductToId")
     public static long ProductsToIds(Product product) {

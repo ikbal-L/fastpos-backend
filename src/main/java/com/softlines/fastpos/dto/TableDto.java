@@ -2,7 +2,9 @@ package com.softlines.fastpos.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import java.util.List;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 @Data
 public class TableDto {
@@ -10,11 +12,12 @@ public class TableDto {
     @JsonProperty("Id")
     long id;
     @JsonProperty("Number")
-    int number;
+    @NotNull
+    Integer number;
     @JsonProperty("Seats")
+    @Min(value = 0)
     int seats;
     @JsonProperty("IsVirtual")
     boolean virtual;
-    @JsonProperty("TableOrders")
-    List<Long> tableOrdersId;
+
 }

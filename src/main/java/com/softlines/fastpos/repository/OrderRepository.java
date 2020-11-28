@@ -6,13 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
-@Repository
 public interface OrderRepository extends JpaRepository<Order,Long> {
 
-    @Query(value="select DISTINCT o from Order o LEFT JOIN FETCH o.orderItems")
+    @Query(value="select DISTINCT o from Order o LEFT JOIN FETCH o.orderItems LEFT JOIN FETCH o.table")
     List<Order> findAllOrdersWithOrderItems();
 
-    @Query(value="select DISTINCT o from Order o LEFT JOIN FETCH o.orderItems WHERE o.id = ?1")
+    @Query(value="select DISTINCT o from Order o LEFT JOIN FETCH o.orderItems LEFT JOIN FETCH o.table WHERE o.id = ?1")
     Order findByIdOrderWithOrderItems(long id);
 
 }

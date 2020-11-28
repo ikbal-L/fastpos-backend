@@ -1,12 +1,15 @@
 package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Customer;
+import com.softlines.fastpos.dto.CustomerDto;
+import com.softlines.fastpos.dto.mapping.CustomerMapper;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -16,19 +19,24 @@ public class CustomerController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @Autowired
-    private CustomerRepository customerRepository;
+     CustomerRepository customerRepository;
+
+    @Autowired
+    CustomerMapper customerMapper;
 
     @PostMapping("/save")
-    public ResponseEntity addCustomer(@RequestBody Customer customer) {
+    public ResponseEntity<CustomerDto> addCustomer(@RequestBody Customer customer) {
         try {
 
             Optional<Customer> optionalCustomer = customerRepository.findById(customer.getId());
 
-            if (!optionalCustomer.isPresent() ) {
-                if (customer.getName() != null &&
-                        !customer.getName().isEmpty()) {
-                    return ResponseEntity.status(HttpStatus.CREATED).body(customerRepository.save(customer));
-                }else{
+            if (!optionalCustomer.isPresent()) {
+                if (customer.getName() != null  ) {
+                  Customer savedCustomer=  customerRepository.save(customer);
+
+                    return ResponseEntity.status(HttpStatus.CREATED)
+                            .body(customerMapper.toCustomerDto(savedCustomer));
+                } else {
                     return ResponseEntity.noContent().build();
 
                 }
@@ -43,7 +51,7 @@ public class CustomerController {
     }
 
     @GetMapping("/getall")
-    public ResponseEntity<List<Customer>> getCustomers() {
+    public ResponseEntity<List<CustomerDto>> getCustomers() {
 
         try {
 
@@ -52,7 +60,7 @@ public class CustomerController {
             if (customers == null || customers.isEmpty())
                 return ResponseEntity.noContent().build();
             else
-                return ResponseEntity.ok().body(customers);
+                return ResponseEntity.ok().body(customerMapper.toCustomerDTOs(customers));
 
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
@@ -62,7 +70,7 @@ public class CustomerController {
 
 
     @GetMapping("/getmany")
-    public ResponseEntity<List<Customer>> getCustomers(@RequestBody List<Long> ids) {
+    public ResponseEntity<List<CustomerDto>> getCustomers(@RequestBody List<Long> ids) {
 
         try {
 
@@ -71,7 +79,7 @@ public class CustomerController {
             if (customers == null || customers.isEmpty())
                 return ResponseEntity.noContent().build();
             else
-                return ResponseEntity.ok().body(customers);
+                return ResponseEntity.ok().body (customerMapper.toCustomerDTOs(customers) );
 
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
@@ -80,14 +88,14 @@ public class CustomerController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<Customer> getCustomer(@PathVariable long id) {
+    public ResponseEntity<CustomerDto> getCustomer(@PathVariable long id) {
 
         try {
-            
+
             Optional<Customer> optionalCustomer = customerRepository.findById(id);
 
-            if (optionalCustomer.isPresent() && id!=0)
-                return ResponseEntity.ok().body(optionalCustomer.get());
+            if (optionalCustomer.isPresent() && id != 0)
+                return ResponseEntity.ok().body(customerMapper.toCustomerDto( optionalCustomer.get()));
             else
                 return ResponseEntity.noContent().build();
 
@@ -98,13 +106,14 @@ public class CustomerController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity editCustomer(@PathVariable long id, @RequestBody Customer customer) {
+    public ResponseEntity<CustomerDto> editCustomer(@PathVariable long id, @RequestBody Customer customer) {
 
         try {
             Optional<Customer> optionalCustomer = customerRepository.findById(id);
 
-            if (optionalCustomer.isPresent() && customer.getName()!=null) {
-                return ResponseEntity.ok().body(customerRepository.save(customer));
+            if (optionalCustomer.isPresent() && customer.getName() != null) {
+                Customer savedCustomer=customerRepository.save(customer);
+                return ResponseEntity.ok().body(customerMapper.toCustomerDto(savedCustomer));
             } else {
                 return ResponseEntity.noContent().build();
             }

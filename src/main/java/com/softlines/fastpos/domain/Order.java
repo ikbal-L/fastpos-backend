@@ -2,9 +2,7 @@ package com.softlines.fastpos.domain;
 
 import lombok.*;
 import javax.persistence.*;
-import java.sql.Time;
-import java.time.Duration;
-import java.time.LocalDateTime;
+
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +21,7 @@ public class Order {
     String buyerId;
     Date orderTime;
     LocalTime elapsedTime;
-    double orderTotal;
+
     double total;
     int splittedFromId;
     double newTotal;
@@ -34,9 +32,11 @@ public class Order {
     double returnedAmount;
     boolean productsVisibility;
     boolean additivesVisibility;
+    @Enumerated(EnumType.STRING)
     OrderState orderstate;
+    @Enumerated(EnumType.STRING)
     OrderType type;
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<OrderItem> orderItems;
     @ManyToOne
     @JoinColumn(name = "tables_id")

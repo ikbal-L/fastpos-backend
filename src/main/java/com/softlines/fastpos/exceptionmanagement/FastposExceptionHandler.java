@@ -4,7 +4,11 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+
 import org.springframework.security.access.AccessDeniedException;
+
+import org.springframework.validation.BindingResult;
+
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -31,11 +35,15 @@ public class FastposExceptionHandler {
         List<String> errors = new ArrayList<>();
         for (ObjectError error : ex.getBindingResult().getAllErrors()) {
             String fieldName = ((FieldError) error).getField();
+
             String errorMessage = error.getDefaultMessage();
-            errors.add(errorMessage);
+
+            errors.add(fieldName+ " " +errorMessage);
         }
         return new ResponseEntity(errors, HttpStatus.UNPROCESSABLE_ENTITY);
     }
+
+
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public final ResponseEntity<Object> handleNullRequestBodyExceptions() {

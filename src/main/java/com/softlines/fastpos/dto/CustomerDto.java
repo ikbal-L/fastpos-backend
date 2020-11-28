@@ -1,27 +1,33 @@
-package com.softlines.fastpos.domain;
+package com.softlines.fastpos.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softlines.fastpos.constants.MessageKeyConstants;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
 
 @Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-@Entity
-public class Customer {
+@NoArgsConstructor
+public class CustomerDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @JsonProperty("Id")
     long id;
-    @Column(nullable = false)
+    @NotBlank
+
+    @JsonProperty("Name")
+    @NotBlank
     String name;
+
+    @JsonProperty("Mobile")
+    // TODO pattern
     String mobile;
+
 
 }

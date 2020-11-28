@@ -1,29 +1,55 @@
 package com.softlines.fastpos.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.softlines.fastpos.validation.ValidationDiscountAmount;
 import lombok.*;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
+@ValidationDiscountAmount(message = "validation.student.password.match")
 public class OrderItemDto {
 
+    @JsonProperty("Id")
     long id;
-    String name;
+
     @JsonProperty("UnitPrice")
-    double unitPrice;
+    @Min(1)
+    @NotNull
+    Double unitPrice;
+
     @JsonProperty("Quantity")
-    int quantity;
+    @Min(1)
+    @NotNull
+    Integer quantity;
+
     @JsonProperty("Total")
-    double total;
+    @NotNull
+    Double total;
+
     @JsonProperty("DiscountAmount")
-    double discountAmount;
+
+    Double discountAmount;
+
     @JsonProperty("TotalDiscountAmount")
-    double totalDiscountAmount;
+
+    Double totalDiscountAmount;
+
     @JsonProperty("DiscountPercentage")
-    double discountPercentage;
+
+    Double discountPercentage;
+
     @JsonProperty("ProductId")
-    long productId;
+    @NotNull
+    Long productId;
+
+    @JsonProperty("IdAdditives")
     List<Long> idAdditives;
-    long orderId;
+
+    @JsonProperty("orderId")
+      Long orderId;
+
+
 }

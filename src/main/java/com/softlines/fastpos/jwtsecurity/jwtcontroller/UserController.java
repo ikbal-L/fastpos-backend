@@ -67,16 +67,16 @@ public class UserController {
         }
     }
 
-//    @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
-//    @GetMapping("/getall")
-//    public ResponseEntity<List<UserDTO>> getAllUsers(){
-//        try {
-//            List<JWTuser> allUsers = jwTuserRepository.findAllUsers();
-//            return ResponseEntity.ok().body(userMapper.toUserDTOs(allUsers));
-//        }catch (Exception e){
-//            return exceptionHandling.getResponseEntityAccordingToException(e);
-//        }
-//    }
+    @PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
+    @GetMapping("/getall")
+    public ResponseEntity<List<UserDTO>> getAllUsers(){
+        try {
+            List<JWTuser> allUsers = jwTuserRepository.findAllUsers();
+            return ResponseEntity.ok().body(userMapper.toUserDTOs(allUsers));
+        }catch (Exception e){
+            return exceptionHandling.getResponseEntityAccordingToException(e);
+        }
+    }
 
     //@PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
     @GetMapping("/get/{username}")

@@ -13,10 +13,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.swing.text.Position;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -37,7 +45,7 @@ public class ValidationUnitTestingExample {
     }
 
     @Test
-    public void testAdditiveValidation_withInvalidAdditie() {
+    public void testAdditiveValidation_withInvalidAdditive() {
         AdditiveDto additive = new AdditiveDto();
         Set<ConstraintViolation<AdditiveDto>> violations = validator.validate(additive);
         assertThat(violations.isEmpty()).isFalse();
@@ -45,8 +53,9 @@ public class ValidationUnitTestingExample {
         assertThat(violations.size()).isEqualTo(2);
     }
 
+
     @Test
-    public void testAdditiveValidation_withVvalidAdditie() {
+    public void testAdditiveValidation_withValidAdditive() {
         AdditiveDto additive = new AdditiveDto();
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
@@ -56,10 +65,37 @@ public class ValidationUnitTestingExample {
         assertThat(violations.size(), is(2));
     }
 
-   @Test
+    @Test
     public void i18nMessageAccesTest() {
         var locale = new Locale("en");
         var messages = ResourceBundle.getBundle("messages", locale);
         var keys = messages.getKeys();
+    }
+
+    @Test
+    public void TestDuration() {
+//        String string = "00:11:00";
+//        DateFormat format = new SimpleDateFormat("hh:mm:ss", Locale.ENGLISH);
+//        Date date = null;
+//        try {
+//            date = format.parse(string);
+//
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println(date.getTime()); // Sat Jan 02 00:00:00 GMT 2010
+//        long timw = date.getTime();
+
+        String myTime = "10:30:55.214154";
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+        Date date = null;
+        try {
+            date = sdf.parse(myTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        String formattedTime = sdf.format(date);
+
+        System.out.println(date.getTime());
     }
 }

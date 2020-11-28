@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/restaurent")
@@ -26,16 +27,16 @@ public class RestaurentController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping("/save")
-    public ResponseEntity addRestaurent(@RequestBody RestaurentDto restaurentDto) {
+    public ResponseEntity<RestaurentDto> addRestaurent(@RequestBody RestaurentDto restaurentDto) {
 
         try {
 
-            Restaurent optionalRestaurent = restaurentRepository.findByIdRestaurentWithAnnexes(restaurentDto.getId());
+            Optional<Restaurent> optionalRestaurent = restaurentRepository.findById(restaurentDto.getId());
 
-            if (optionalRestaurent == null && restaurentDto.getName()!=null) {
+            if (optionalRestaurent.isEmpty() && restaurentDto.getName()!=null) {
                 
                 Restaurent restaurent = restaurentRepository.save(restaurentMapper.toRestaurent(restaurentDto));
-                return ResponseEntity.status(HttpStatus.CREATED).build();
+                return ResponseEntity.status(HttpStatus.CREATED).body(restaurentMapper.toRestaurentDto(restaurent));
 
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();

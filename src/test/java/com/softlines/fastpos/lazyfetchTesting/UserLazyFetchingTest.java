@@ -57,7 +57,6 @@ public class UserLazyFetchingTest {
                 .username("testUser")
                 .password("tetsPassword")
                 .roles(Arrays.asList(role1, role2))
-                .dbId(1l)
                 .build());
     }
     @AfterEach

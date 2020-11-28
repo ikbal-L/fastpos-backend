@@ -3,7 +3,6 @@ package com.softlines.fastpos.dto.service;
 import com.softlines.fastpos.domain.*;
 import com.softlines.fastpos.dto.*;
 import com.softlines.fastpos.dto.mapping.*;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
 import com.softlines.fastpos.jwtsecurity.securityrepository.RoleRepository;
 import com.softlines.fastpos.repository.AdditiveRepository;
 import com.softlines.fastpos.repository.CategoryRepository;
@@ -88,6 +87,15 @@ public class DtoServiceImpl implements DtoService {
     }
 
     @Override
+    public List<Category> categoriesDtoToCategories(List<CategoryDto> categoryDtos, boolean getDataFromRepository) {
+        List<Product> products = new ArrayList<Product>();
+        List<Category> categories = categoryMapper.toCategories(categoryDtos);
+
+        return categories;
+
+    }
+
+    @Override
     public Person personDtoToPerson(PersonDto personDto, boolean getDataFromRepository) {
         Person person = personMapper.toPerson(personDto);
         return person;
@@ -153,8 +161,15 @@ public class DtoServiceImpl implements DtoService {
 
     @Override
     public Additive additiveDtoToAdditive(AdditiveDto additiveDto, boolean getDataFromRepository) {
-        Additive additive = additiveMapper.toAditive(additiveDto);
+        Additive additive = additiveMapper.toAdditive(additiveDto);
         return additive;
+    }
+
+
+    @Override
+    public List<Additive> additivesDtoToAdditives(List<AdditiveDto> additiveDtoList, boolean getDataFromRepository) {
+        List<Additive> additiveList = additiveMapper.toAdditiveList(additiveDtoList);
+        return additiveList;
     }
 
 }

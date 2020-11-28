@@ -12,9 +12,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/category")
+@RequestMapping("/category")
 public class CategoryController {
 
     @Autowired
@@ -27,19 +29,39 @@ public class CategoryController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping("/save")
-    public ResponseEntity addCategory(@RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<CategoryDto> addCategory(@RequestBody CategoryDto categoryDto) {
         try {
 
-            Category optionalCategory = categoryRepository.findByIdCategoryWithProducts(categoryDto.getId());
+            Optional<Category> optionalCategory = categoryRepository.findById(categoryDto.getId());
 
-            if (optionalCategory ==null) {
-                if (categoryDto.getName() != null && !categoryDto.getName().isEmpty()) {
-                    Category createdCategory = categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto, false));
-                    return ResponseEntity.status(HttpStatus.CREATED).body(categoryMapper.toCategoryDto(createdCategory));
-                } else {
-                    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            if (optionalCategory.isEmpty()) {
+                Category category = dtoService.categoryDtoToCategory(categoryDto, false);
+                Category createdCategory = categoryRepository.save(category);
+                return ResponseEntity.status(HttpStatus.CREATED).body(categoryMapper.toCategoryDto(createdCategory));
 
-                }
+            } else {
+
+                return ResponseEntity.status(HttpStatus.FOUND).build();
+
+            }
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+    }
+
+    @PostMapping("/savemany")
+    public ResponseEntity<List<CategoryDto>> addManyCategory(@RequestBody List<CategoryDto> categoryDtos) {
+        try {
+            List<Long> ids = categoryDtos.parallelStream().map(CategoryDto::getId)
+                    .collect(Collectors.toList());
+            List<Category> LisCategories = categoryRepository.findAllById(ids);
+
+            if (LisCategories == null) {
+                List<Category> categories = dtoService.categoriesDtoToCategories(categoryDtos, false);
+                List<Category> createdCategories = categoryRepository.saveAll(categories);
+                return ResponseEntity.status(HttpStatus.CREATED).body(categoryMapper.toCategoryDTOs(createdCategories));
+
             } else {
 
                 return ResponseEntity.status(HttpStatus.FOUND).build();
@@ -115,7 +137,7 @@ public class CategoryController {
     public ResponseEntity<CategoryDto> editCategory(@PathVariable long id, @RequestBody CategoryDto categoryDto) {
         try {
 
-           Category optionalCategory = categoryRepository.findByIdCategoryWithProducts(id);
+            Category optionalCategory = categoryRepository.findByIdCategoryWithProducts(id);
 
             if (optionalCategory != null && id != 0 && categoryDto.getName() != null) {
                 var category = dtoService.categoryDtoToCategory(categoryDto, false);

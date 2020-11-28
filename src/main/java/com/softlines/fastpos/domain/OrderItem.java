@@ -1,10 +1,7 @@
 package com.softlines.fastpos.domain;
 
-import com.softlines.fastpos.constants.MessageKeyConstants;
 import lombok.*;
-
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 
@@ -23,10 +20,10 @@ public class OrderItem {
     double total;
     double discountAmount;
     double totalDiscountAmount;
-    double discountPercentatge;
+    double discountPercentage;
     @ManyToOne(fetch = FetchType.LAZY)
     Product product;
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "orderItems_additives",
             joinColumns = @JoinColumn(name = "orderItem_id"),

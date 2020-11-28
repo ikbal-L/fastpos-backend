@@ -104,7 +104,6 @@ public class WaiterControllerUnitTest {
     @Order(5)
     public void WaiterController_Save_WithData() {
 
-
         Waiter waiter = new Waiter();
         waiter.setName("fatiha");
         waiter.setBackgroundString("red");
@@ -114,23 +113,6 @@ public class WaiterControllerUnitTest {
         var res = waiterController.addWaiter(waiterMapper.toWaiterDto(waiter));
 
         assertEquals(res.getStatusCode(), HttpStatus.CREATED);
-
-    }
-
-
-    @Test
-    @Order(6)
-    public void WaiterController_Save_WithNullWaiterDescription() {
-
-        //Arrange
-        Waiter waiter = new Waiter();
-        when(waiterRepository.save(any(Waiter.class))).thenReturn(waiter);
-
-        //Act
-        var res = waiterController.addWaiter(waiterMapper.toWaiterDto(waiter));
-
-        //Assert
-        assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
 
     }
 

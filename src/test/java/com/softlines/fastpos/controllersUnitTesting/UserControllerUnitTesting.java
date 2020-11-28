@@ -106,6 +106,7 @@ public class UserControllerUnitTesting {
         assertEquals(1l, response.getBody().get(0).getRoleIds().get(0));
         assertEquals(2l, response.getBody().get(1).getRoleIds().get(0));
     }
+
     @Test
     public void userController_getAllUsers_returnEmptyList(){
         Mockito.when(jwTuserRepository.findAllUsers()).thenReturn(Arrays.asList());

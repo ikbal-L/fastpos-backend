@@ -20,10 +20,12 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
-    @NotBlank(message = MessageKeyConstants.PRIVILEGE_NAME_VALIDATION_ERROR)
+    @NotBlank(message = MessageKeyConstants.PRODUCT_NAME_VALIDATION_ERROR)
+    @Column(nullable = false,unique = true)
     String name;
 
-    @NotNull
+
+    @Column(nullable = false)
     double price;
 
     String unit;
@@ -36,6 +38,8 @@ public class Product {
 
     String description;
 
+
+    @Column(nullable = false)
     String backgroundString;
 
     @Column(name = "isPlatter")

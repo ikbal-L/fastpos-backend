@@ -1,59 +1,90 @@
 package com.softlines.fastpos.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.softlines.fastpos.constants.MessageKeyConstants;
 import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.domain.OrderType;
+import com.softlines.fastpos.validation.ValidationDiscountAmount;
 import lombok.*;
 
-import java.sql.Time;
-import java.time.Duration;
-import java.time.LocalDateTime;
+import org.hibernate.validator.constraints.Range;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
 @Data
+@ValidationDiscountAmount
 public class OrderDto {
 
+    @JsonProperty("Id")
     long id;
+
     @JsonProperty("BuyerId")
     String buyerId;
+
     @JsonProperty("OrderTime")
     Date orderTime;
+
     @JsonProperty("ElapsedTime")
     LocalTime elapsedTime;
+
     @JsonProperty("Total")
-    double total;
+    @Min(value = 0, message = MessageKeyConstants.ORDER_RETURNED_AMOUNT_VALIDATION_ERROR)
+    @NotNull
+    Double total;
+
     @JsonProperty("SplittedFromId")
     int splittedFromId;
+
     @JsonProperty("NewTotal")
+    @Min(0)
     double newTotal;
+
     @JsonProperty("DiscountAmount")
-    double discountAmount;
+    @Min(0)
+
+    Double discountAmount;
+
     @JsonProperty("TotalDiscountAmount")
-    double totalDiscountAmount;
+    @Min(0)
+
+    Double totalDiscountAmount;
+
     @JsonProperty("DiscountPercentage")
-    double discountPercentage;
+    @Range(min = 0, max = 100)
+
+    Double discountPercentage;
+
     @JsonProperty("GivenAmount")
-    double givenAmount;
+    @Min(0)
+
+    Double givenAmount;
+
     @JsonProperty("ReturnedAmount")
-    double returnedAmount;
+    @Min(value = 0, message = MessageKeyConstants.ORDER_TOTAL_VALIDATION_ERROR)
+
+    Double returnedAmount;
+
+    @JsonProperty("ProductsVisibility")
     boolean productsVisibility;
+
+    @JsonProperty("AdditivesVisibility")
     boolean additivesVisibility;
+
+    @JsonProperty("Orderstate")
     OrderState orderstate;
+
     @JsonProperty("Type")
     OrderType type;
+
     @JsonProperty("OrderItems")
     List<OrderItemDto> orderItems;
+
     @JsonProperty("TableId")
     Long tableId;
-
-//    Session session;
-//    Customer customer;
-//    Table table;
-//    List<OrderStateElement> orderStates;
-//    Deliveryman delivereyman;
-//    Waiter waiter;
 
 }
 

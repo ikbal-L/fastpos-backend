@@ -85,7 +85,7 @@ public class MappingProductTest {
         product.setPrice(450);
         product.setType("sad");
         product.setUnit("U");
-        product.setCategoryId(1);
+        product.setCategoryId(1l);
 
         listAdditives.add(1l);
         product.setIdAdditives(listAdditives);
@@ -123,7 +123,7 @@ public class MappingProductTest {
         product.setUnit("U");
         listAdditives.add((long) 2);
         listAdditives.add((long) 1);
-        product.setCategoryId(1);
+        product.setCategoryId(1l);
         product.setIdAdditives(listAdditives);
 
         mvc.perform(put("/product/put/{id}", "2")

@@ -86,7 +86,14 @@ public class AnnexControllerTestExample {
                 .address("adre123")
                 .serverLicenceKey("ket123")
                 .build();
-        var saved = annexRepository.save(new Annex(3, "annex1", "addr", "key123",));
+        var annex2 = Annex.builder()
+                .id(3)
+                .name("annex1")
+                .address("annex1")
+                .serverLicenceKey("ket123")
+                .build();
+
+        var saved = annexRepository.save(annex2);
         var saved2 = annexRepository.save(annex);
         var annexes = annexRepository.findAll();
         TestRestTemplate testRestTemplate
@@ -117,7 +124,14 @@ public class AnnexControllerTestExample {
                 .address("adre123")
                 .serverLicenceKey("ket123")
                 .build();
-        var saved = annexRepository.save(new Annex(3, "annex1", "addr", "key123"));
+        var annex2 = Annex.builder()
+                .id(3)
+                .name("annex1")
+                .address("annex1")
+                .serverLicenceKey("ket123")
+                .build();
+
+        var saved = annexRepository.save(annex2);
         var saved2 = annexRepository.save(annex);
         var annexes = annexRepository.findAll();
         TestRestTemplate testRestTemplate
@@ -178,7 +192,14 @@ public class AnnexControllerTestExample {
                 .address("adre123")
                 .serverLicenceKey("ket123")
                 .build();
-        var saved = annexRepository.save(new Annex(3, "annex1", "addr", "key123"));
+        var annex2 = Annex.builder()
+                .id(3)
+                .name("annex1")
+                .address("annex1")
+                .serverLicenceKey("ket123")
+                .build();
+
+        var saved = annexRepository.save(annex2);
         var saved2 = annexRepository.save(annex);
         var annexes = annexRepository.findAll();
 
@@ -195,7 +216,14 @@ public class AnnexControllerTestExample {
     @Test
     public void getAllAnnexes_AnnexesListNotEmpty() throws Exception {
         List<Annex> annexesList = new ArrayList<>();
-        annexesList.add(new Annex(1, "aaa", "adr", "key"));
+        var annex2 = Annex.builder()
+                .id(3)
+                .name("annex1")
+                .address("annex1")
+                .serverLicenceKey("ket123")
+                .build();
+
+        annexesList.add(annex2);
         when(mockedAnnexRepository.findAll()).thenReturn(annexesList);
 
         var annexes = mockedAnnexRepository.findAll();
@@ -213,7 +241,14 @@ public class AnnexControllerTestExample {
     @Test
     public void getAllAnnexes_AnnexesListNotEmpty_Unit() {
         List<Annex> annexesList = new ArrayList<>();
-        annexesList.add(new Annex(1, "aaa", "adr", "key"));
+        var annex2 = Annex.builder()
+                .id(3)
+                .name("annex1")
+                .address("annex1")
+                .serverLicenceKey("ket123")
+                .build();
+
+        annexesList.add(annex2);
         when(annexRepository.findAll()).thenReturn(annexesList);
 
         var res = annexController.getAnnexes();
@@ -237,8 +272,15 @@ public class AnnexControllerTestExample {
 
     @Test
     public void getAnnex_ExistingOne() throws Exception {
+        var annex2 = Annex.builder()
+                .id(3)
+                .name("annex1")
+                .address("annex1")
+                .serverLicenceKey("ket123")
+                .build();
+
         when(mockedAnnexRepository.findById((long) 1))
-                .thenReturn(Optional.of(new Annex(1, "aaa", "addr", "key123")));
+                .thenReturn(Optional.of(annex2));
         var optinalAnnex = mockedAnnexRepository.findById((long) 1);
         mvc.perform(get("/annex/get/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON))
