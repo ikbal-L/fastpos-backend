@@ -4,6 +4,7 @@ import com.softlines.fastpos.ModelApplication;
 import com.softlines.fastpos.controller.CustomerController;
 import com.softlines.fastpos.domain.Customer;
 import com.softlines.fastpos.dto.CustomerDto;
+import com.softlines.fastpos.dto.mapping.CustomerMapper;
 import com.softlines.fastpos.repository.CustomerRepository;
 import org.junit.Test;
 import org.junit.jupiter.api.Order;
@@ -27,7 +28,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ModelApplication.class)
 @AutoConfigureMockMvc
@@ -40,6 +40,8 @@ public class CustomerControllerUnitTest {
     @Autowired
     CustomerController customerController;
 
+    @Autowired
+    CustomerMapper customerMapper;
     @Test
     @Order(1)
     public void customerController_getAll_WithNotEmptyCustomersList() throws Exception {
@@ -105,7 +107,7 @@ public class CustomerControllerUnitTest {
         var res = customerController.addCustomer(customer);
 
         assertEquals(res.getStatusCode(), HttpStatus.CREATED);
-        assertEquals((res.getBody()), customer);
+        assertEquals((res.getBody()), customerMapper.toCustomerDto( customer));
 
     }
 

@@ -10,7 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/table")
@@ -24,20 +26,16 @@ public class TablesController {
     private TableRepository tableRepository;
 
     @PostMapping("/save")
-    public ResponseEntity<TableDto> addTable(@RequestBody TableDto tableDto) {
+    public ResponseEntity<TableDto> addTable(@Valid @RequestBody TableDto tableDto) {
 
         try {
 
-            Table table = tableRepository.findByIdTablesOrders(tableDto.getId());
+            Optional<Table> table = tableRepository.findById(tableDto.getId());
 
-            if (table == null && tableDto.getId() == 0) {
+            if (table.isEmpty() && tableDto.getId() == 0) {
 
-                if (tableDto.getNumber() != 0) {
                     Table tables = tableMapper.toTable(tableDto);
                     return ResponseEntity.status(HttpStatus.CREATED).body(tableMapper.toTableDto(tableRepository.save(tables)));
-                } else {
-                    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-                }
 
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();
@@ -52,7 +50,7 @@ public class TablesController {
     @GetMapping("/getall")
     public ResponseEntity<List<TableDto>> getTables() {
         try {
-            List<Table> tables = tableRepository.findAllTablesWithTableOrders();
+            List<Table> tables = tableRepository.findAllTables();
             if (tables == null || tables.isEmpty())
                 return ResponseEntity.noContent().build();
             else
@@ -68,10 +66,10 @@ public class TablesController {
     public ResponseEntity<TableDto> getTable(@PathVariable long id) {
 
         try {
-            Table optionalTable = tableRepository.findByIdTablesOrders(id);
+           Table table = tableRepository.findByIdTable(id);
 
-            if (optionalTable!=null && id != 0)
-                return ResponseEntity.ok().body(tableMapper.toTableDto(optionalTable));
+            if (table!=null && id != 0)
+                return ResponseEntity.ok().body(tableMapper.toTableDto(table));
             else
                 return ResponseEntity.noContent().build();
 
@@ -84,7 +82,7 @@ public class TablesController {
     public ResponseEntity<TableDto> getTableByNumber(@PathVariable int number) {
 
         try {
-            Table optionalTable = tableRepository.findByNumberWithOrders(number);
+            Table optionalTable = tableRepository.findByNumber(number);
 
             if (optionalTable!=null && number != 0)
                 return ResponseEntity.ok().body(tableMapper.toTableDto(optionalTable));
@@ -97,16 +95,15 @@ public class TablesController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity editTable(@PathVariable long id, @RequestBody TableDto tableDto) {
+    public ResponseEntity<TableDto> editTable(@PathVariable long id, @RequestBody TableDto tableDto) {
 
         try {
-            Table optionalTable = tableRepository.findByIdTablesOrders(id);
+            Optional<Table> optionalTable = tableRepository.findById(id);
 
-            if (optionalTable !=null && tableDto.getNumber() != 0) {
-
-
+            if (optionalTable.isPresent() && tableDto.getNumber() != 0) {
                 Table table = tableMapper.toTable(tableDto);
-                return ResponseEntity.ok().body(tableRepository.save(table));
+                Table savedTable=  tableRepository.save(table);
+                return ResponseEntity.ok().body(tableMapper.toTableDto(savedTable));
             } else {
                 return ResponseEntity.noContent().build();
             }
@@ -120,11 +117,11 @@ public class TablesController {
 
         try {
 
-            Table TableToDel = tableRepository.findByIdTablesOrders(id);
+            Optional<Table> TableToDel = tableRepository.findById(id);
 
-            if (TableToDel != null && id != 0) {
+            if (TableToDel.isPresent() && id != 0) {
 
-                tableRepository.delete(TableToDel);
+                tableRepository.delete(TableToDel.get());
                 return ResponseEntity.ok().build();
 
             } else {

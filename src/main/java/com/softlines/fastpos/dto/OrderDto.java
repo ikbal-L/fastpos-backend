@@ -7,10 +7,9 @@ import com.softlines.fastpos.domain.OrderType;
 import com.softlines.fastpos.validation.ValidationDiscountAmount;
 import lombok.*;
 import org.hibernate.validator.constraints.Range;
-
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
@@ -28,10 +27,10 @@ public class OrderDto {
     Date orderTime;
 
     @JsonProperty("ElapsedTime")
-    String elapsedTime;
+    LocalTime elapsedTime;
 
     @JsonProperty("Total")
-    @Min(value = 0,message = MessageKeyConstants.ORDER_TOTAL_VALIDATION_ERROR)
+    @Min(value = 0, message = MessageKeyConstants.ORDER_RETURNED_AMOUNT_VALIDATION_ERROR)
     @NotNull
     Double total;
 
@@ -44,27 +43,27 @@ public class OrderDto {
 
     @JsonProperty("DiscountAmount")
     @Min(0)
-    @NotNull
+
     Double discountAmount;
 
     @JsonProperty("TotalDiscountAmount")
     @Min(0)
-    @NotNull
+
     Double totalDiscountAmount;
 
     @JsonProperty("DiscountPercentage")
-    @Range(min=0, max=100)
-    @NotNull
+    @Range(min = 0, max = 100)
+
     Double discountPercentage;
 
     @JsonProperty("GivenAmount")
     @Min(0)
-    @NotNull
+
     Double givenAmount;
 
     @JsonProperty("ReturnedAmount")
-    @Min(value = 0,message = MessageKeyConstants.ORDER_TOTAL_VALIDATION_ERROR)
-    @NotNull
+    @Min(value = 0, message = MessageKeyConstants.ORDER_TOTAL_VALIDATION_ERROR)
+
     Double returnedAmount;
 
     @JsonProperty("ProductsVisibility")
@@ -83,7 +82,6 @@ public class OrderDto {
     List<OrderItemDto> orderItems;
 
     @JsonProperty("TableId")
-    @NotNull
     Long tableId;
 
 }

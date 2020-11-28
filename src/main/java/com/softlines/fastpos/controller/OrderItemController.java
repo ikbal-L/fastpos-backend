@@ -5,6 +5,7 @@ import com.softlines.fastpos.domain.OrderItem;
 import com.softlines.fastpos.dto.OrderItemDto;
 import com.softlines.fastpos.dto.mapping.OrderItemMapper;
 import com.softlines.fastpos.dto.service.DtoServiceImpl;
+import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.OrderItemRepository;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,22 +30,25 @@ public class OrderItemController {
     @Autowired
     OrderItemMapper orderItemMapper;
 
+    ExceptionManagement exceptionManagement = new ExceptionManagement();
+
     @PostMapping(value = "/save", consumes = "application/json")
-    public ResponseEntity addOrderItem(@Valid @RequestBody Data data, OrderItemDto orderItemDto) {
+    public ResponseEntity<OrderItemDto> addOrderItem(@Valid @RequestBody Data data, OrderItemDto orderItemDto) {
         try {
 
             Optional<OrderItem> optionalOrderItem = orderItemRepository.findById(orderItemDto.getId());
             if (!optionalOrderItem.isPresent()) {
 
-                OrderItem orderItem = dtoService.orderItemDtoToOrderItem(orderItemDto,false);
-                return ResponseEntity.status(HttpStatus.CREATED).body(orderItemMapper.toOrderItemDto(orderItemRepository.save(orderItem)));
+                OrderItem orderItem = dtoService.orderItemDtoToOrderItem(orderItemDto, false);
+                OrderItem savedOrderItem = orderItemRepository.save(orderItem);
+                return ResponseEntity.status(HttpStatus.CREATED).body(orderItemMapper.toOrderItemDto(savedOrderItem));
 
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
 
@@ -58,7 +62,7 @@ public class OrderItemController {
                 return ResponseEntity.notFound().build();
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
 
@@ -74,11 +78,10 @@ public class OrderItemController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }
-
 
 
     @PutMapping("/put/{id}")
@@ -87,14 +90,13 @@ public class OrderItemController {
             OrderItem existingOrderItem = orderItemRepository.findById(id).get();
 
             if (existingOrderItem != null) {
-//                existingOrderItem.setName(orderItemDto.getName());
 
                 return ResponseEntity.ok().body(orderItemMapper.toOrderItemDto(orderItemRepository.save(existingOrderItem)));
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(orderItemDto);
             }
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }
@@ -113,7 +115,7 @@ public class OrderItemController {
             }
 
         } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Not Found", exception);
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
 }

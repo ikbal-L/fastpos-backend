@@ -23,7 +23,7 @@ public class OrderItem {
     double discountPercentage;
     @ManyToOne(fetch = FetchType.LAZY)
     Product product;
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "orderItems_additives",
             joinColumns = @JoinColumn(name = "orderItem_id"),

@@ -20,10 +20,14 @@ public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
-    @NotBlank
+
+    @Column(nullable = false)
     String name;
+
     String phoneNumber;
+
     String backgroundString;
+
     @Column(name="isActive")
     boolean active;
 

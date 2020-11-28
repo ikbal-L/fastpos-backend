@@ -27,14 +27,15 @@ public class CategoryController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping("/save")
-    public ResponseEntity addCategory(@RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<CategoryDto> addCategory(@RequestBody CategoryDto categoryDto) {
         try {
 
             Category optionalCategory = categoryRepository.findByIdCategoryWithProducts(categoryDto.getId());
 
-            if (optionalCategory ==null) {
+            if (optionalCategory == null) {
                 if (categoryDto.getName() != null && !categoryDto.getName().isEmpty()) {
-                    Category createdCategory = categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto, false));
+                    Category category = dtoService.categoryDtoToCategory(categoryDto, false);
+                    Category createdCategory = categoryRepository.save(category);
                     return ResponseEntity.status(HttpStatus.CREATED).body(categoryMapper.toCategoryDto(createdCategory));
                 } else {
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -114,7 +115,7 @@ public class CategoryController {
     public ResponseEntity<CategoryDto> editCategory(@PathVariable long id, @RequestBody CategoryDto categoryDto) {
         try {
 
-           Category optionalCategory = categoryRepository.findByIdCategoryWithProducts(id);
+            Category optionalCategory = categoryRepository.findByIdCategoryWithProducts(id);
 
             if (optionalCategory != null && id != 0 && categoryDto.getName() != null) {
                 return ResponseEntity.ok().body(categoryMapper.toCategoryDto(categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto, false))));

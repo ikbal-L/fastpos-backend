@@ -186,28 +186,17 @@ public class ProductControllerUnitTest {
     }
 
 
-    @Test
-    public void productController_Save_WithoutData() {
-
-        var product = Product.builder().category(Category.builder().build()).build();
-
-        when(productRepository.save(Mockito.any(Product.class))).thenReturn(product);
-        var res = productController.addProduct(productMapper.toProductDto(product));
-
-        assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
-
-    }
-
 
     @Test
     public void productController_Save_WithExistProduct() {
 
         var product = Product.builder()
+                .id(2L)
                 .name("tacos")
                 .category(Category.builder().build())
                 .additives(Arrays.asList(Additive.builder().build())).build();
 
-        when(productRepository.findByIdProductWithAdditives(product.getId())).thenReturn(product);
+        when(productRepository.findById(product.getId())).thenReturn(java.util.Optional.of(product));
         var res = productController.addProduct(productMapper.toProductDto(product) );
 
         assertEquals(res.getStatusCode(), HttpStatus.FOUND);

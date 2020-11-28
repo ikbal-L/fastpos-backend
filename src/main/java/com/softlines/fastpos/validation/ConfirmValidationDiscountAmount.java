@@ -7,7 +7,7 @@ import javax.validation.ConstraintValidatorContext;
 public class ConfirmValidationDiscountAmount implements ConstraintValidator<ValidationDiscountAmount, OrderDto> {
 
     public boolean isValid(OrderDto orderDto, ConstraintValidatorContext context) {
-        return orderDto.getTotal() > orderDto.getDiscountAmount();
+        return orderDto.getTotal() >= orderDto.getDiscountAmount();
     }
 
 }

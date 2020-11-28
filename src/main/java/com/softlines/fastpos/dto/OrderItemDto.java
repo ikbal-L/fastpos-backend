@@ -23,22 +23,22 @@ public class OrderItemDto {
     @JsonProperty("Quantity")
     @Min(1)
     @NotNull
-    int quantity;
+    Integer quantity;
 
     @JsonProperty("Total")
     @NotNull
     Double total;
 
     @JsonProperty("DiscountAmount")
-    @NotNull
+
     Double discountAmount;
 
     @JsonProperty("TotalDiscountAmount")
-    @NotNull
+
     Double totalDiscountAmount;
 
     @JsonProperty("DiscountPercentage")
-    @NotNull
+
     Double discountPercentage;
 
     @JsonProperty("ProductId")
@@ -49,8 +49,7 @@ public class OrderItemDto {
     List<Long> idAdditives;
 
     @JsonProperty("orderId")
-    @NotNull
-    Long orderId;
+      Long orderId;
 
 
 }

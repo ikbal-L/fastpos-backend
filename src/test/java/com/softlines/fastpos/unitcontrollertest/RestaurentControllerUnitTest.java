@@ -190,7 +190,7 @@ public class RestaurentControllerUnitTest {
                 .annexes(Arrays.asList(Annex.builder().id(1).build()))
                 .build();
 
-        when(restaurentRepository.findByIdRestaurentWithAnnexes(restaurent.getId())).thenReturn(restaurent);
+        when(restaurentRepository.findById(restaurent.getId())).thenReturn(java.util.Optional.of(restaurent));
         var res = restaurentController.addRestaurent(restaurentMapper.toRestaurentDto(restaurent));
 
         assertEquals(res.getStatusCode(), HttpStatus.FOUND);
@@ -198,18 +198,6 @@ public class RestaurentControllerUnitTest {
     }
 
 
-    @Test
-    @Order(7)
-    public void restaurentController_Save_WithoutData() {
-
-        var restaurent = Restaurent.builder().build();
-
-        when(restaurentRepository.save(any(Restaurent.class))).thenReturn(restaurent);
-        var res = restaurentController.addRestaurent(restaurentMapper.toRestaurentDto(restaurent));
-
-        assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
-
-    }
 
 
     @Test

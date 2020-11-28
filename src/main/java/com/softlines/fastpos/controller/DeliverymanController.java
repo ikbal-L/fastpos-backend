@@ -2,6 +2,7 @@ package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Deliveryman;
 import com.softlines.fastpos.dto.DeliverymanDto;
+import com.softlines.fastpos.dto.mapping.DeliverymanMapper;
 import com.softlines.fastpos.dto.service.DtoService;
 import com.softlines.fastpos.dto.service.DtoServiceImpl;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
@@ -10,11 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/deliveryman")
+@RequestMapping("/deliveryman")
 public class DeliverymanController {
 
     @Autowired
@@ -25,17 +27,23 @@ public class DeliverymanController {
     @Autowired
     DtoService dtoService;
 
+
+    @Autowired
+    DeliverymanMapper deliverymanMapper;
+
     @PostMapping("/save")
-    public ResponseEntity addDeliveryman(@RequestBody DeliverymanDto deliverymanDto ) {
+    public ResponseEntity<DeliverymanDto> addDeliveryman(@RequestBody DeliverymanDto deliverymanDto) {
         try {
 
             Optional<Deliveryman> optionalDeliveryman = deliverymanRepository.findById(deliverymanDto.getId());
 
             if (!optionalDeliveryman.isPresent()) {
                 if (deliverymanDto.getName() != null && !deliverymanDto.getName().isEmpty()) {
-                    Deliveryman deliveryman=  dtoService.deliverymanDtoToDeliveryman(deliverymanDto,false);
+                    Deliveryman deliveryman = dtoService.deliverymanDtoToDeliveryman(deliverymanDto, false);
                     Deliveryman createdDeliveryman = deliverymanRepository.save(deliveryman);
-                    return ResponseEntity.status(HttpStatus.CREATED).build();
+
+                    return ResponseEntity.status(HttpStatus.CREATED)
+                            .body(deliverymanMapper.toDeliverymanDto(deliveryman));
                 } else {
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
@@ -52,7 +60,7 @@ public class DeliverymanController {
     }
 
     @GetMapping("/getall")
-    public ResponseEntity<List<Deliveryman>> getDeliverymen() {
+    public ResponseEntity<List<DeliverymanDto>> getDeliverymen() {
         try {
 
             List<Deliveryman> deliverymanList = deliverymanRepository.findAll();
@@ -60,7 +68,7 @@ public class DeliverymanController {
             if (deliverymanList == null || deliverymanList.isEmpty()) {
                 return ResponseEntity.noContent().build();
             } else {
-                return ResponseEntity.ok().body(deliverymanList);
+                return ResponseEntity.ok().body(deliverymanMapper.toDeliverymanDTOs(deliverymanList));
             }
 
         } catch (Exception exception) {
@@ -70,17 +78,16 @@ public class DeliverymanController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<Deliveryman> getDeliveryman(@PathVariable long id) {
+    public ResponseEntity<DeliverymanDto> getDeliveryman(@PathVariable long id) {
 
         try {
 
             Optional<Deliveryman> optionalDeliveryman = deliverymanRepository.findById(id);
 
             if (optionalDeliveryman.isPresent() && id != 0)
-                return ResponseEntity.ok().body(optionalDeliveryman.get());
+                return ResponseEntity.ok().body(deliverymanMapper.toDeliverymanDto(optionalDeliveryman.get()));
             else
                 return ResponseEntity.noContent().build();
-
 
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
@@ -88,14 +95,14 @@ public class DeliverymanController {
 
     }
 
-    @GetMapping("/getByName/{name}")
-    public ResponseEntity<List<Deliveryman>> getDeliverymanByName(@PathVariable String name) {
+    @GetMapping("/getallactive")
+    public ResponseEntity<List<DeliverymanDto>> getAllActiveDeliveryman() {
         try {
 
-            List<Deliveryman> categories = deliverymanRepository.findByName(name);
+            List<Deliveryman> deliverymanList = deliverymanRepository.findAllActiveDeliverymen(true);
 
-            if (categories != null)
-                return ResponseEntity.ok().body(categories);
+            if (deliverymanList != null)
+                return ResponseEntity.ok().body(deliverymanMapper.toDeliverymanDTOs(deliverymanList));
             else
                 return ResponseEntity.noContent().build();
 
@@ -105,13 +112,14 @@ public class DeliverymanController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<Deliveryman> editDeliveryman(@PathVariable long id, @RequestBody Deliveryman deliveryman) {
+    public ResponseEntity<DeliverymanDto> editDeliveryman(@PathVariable long id, @RequestBody Deliveryman deliveryman) {
         try {
 
             Optional<Deliveryman> optionalDeliveryman = deliverymanRepository.findById(id);
 
             if (optionalDeliveryman.isPresent() && id != 0 && deliveryman.getName() != null) {
-                return ResponseEntity.ok().body(deliverymanRepository.save(deliveryman));
+                Deliveryman updatedDeliveryman = deliverymanRepository.save(deliveryman);
+                return ResponseEntity.ok().body(deliverymanMapper.toDeliverymanDto(updatedDeliveryman));
             } else {
                 return ResponseEntity.noContent().build();
             }

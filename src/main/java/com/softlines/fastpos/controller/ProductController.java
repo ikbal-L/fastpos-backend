@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/product")
@@ -34,16 +35,12 @@ public class ProductController {
     public ResponseEntity<ProductDto> addProduct(@Valid @RequestBody ProductDto productDto) {
 
         try {
-           Product optionalProduct = productRepository.findByIdProductWithAdditives(productDto.getId());
+           Optional<Product> optionalProduct = productRepository.findById(productDto.getId());
 
-            if (optionalProduct ==null) {
+            if (optionalProduct.isEmpty()) {
 
-                if (productDto.getName() != null && !productDto.getName().isEmpty() && productDto.getId()==0) {
                     Product product = dtoService.productDtoToProduct(productDto, false);
                     return ResponseEntity.status(HttpStatus.CREATED).body(productMapper.toProductDto(productRepository.save(product)));
-                } else {
-                    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-                }
 
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();

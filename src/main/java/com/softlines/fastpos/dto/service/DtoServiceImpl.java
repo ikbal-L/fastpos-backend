@@ -141,9 +141,9 @@ public class DtoServiceImpl implements DtoService {
     public Order orderDtoToOrder(OrderDto orderDto) {
         Order order = orderMapper.toOrder(orderDto);
         order.setOrderItems(orderItemDtoListToOrderItemList(orderDto.getOrderItems(), false));
-//        for (OrderItem orderItem : order.getOrderItems()) {
-//            orderItem.setOrder(order);
-//        }
+        for (OrderItem orderItem : order.getOrderItems()) {
+            orderItem.setOrder(order);
+        }
         return order;
     }
 

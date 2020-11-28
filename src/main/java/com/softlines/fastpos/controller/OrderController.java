@@ -9,12 +9,9 @@ import com.softlines.fastpos.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -40,7 +37,7 @@ public class OrderController {
 
                 if (orderDto.getOrderItems().size() > 0) {
                     Order order = dtoService.orderDtoToOrder(orderDto);
-                   OrderDto orderDto1= orderMapper.toOrderDto(orderRepository.saveAndFlush(order));
+                    OrderDto orderDto1 = orderMapper.toOrderDto(orderRepository.save(order));
                     return ResponseEntity.status(HttpStatus.CREATED).body(orderDto1);
                 } else {
                     return ResponseEntity.noContent().build();
@@ -79,10 +76,10 @@ public class OrderController {
     public ResponseEntity<OrderDto> getOrder(@PathVariable long id) {
         try {
 
-            Order optionalOrder = orderRepository.findByIdOrderWithOrderItems(id);
+            Order order = orderRepository.findByIdOrderWithOrderItems(id);
 
-            if (optionalOrder != null && id != 0)
-                return ResponseEntity.ok().body(orderMapper.toOrderDto(optionalOrder));
+            if (order!=null  && id != 0)
+                return ResponseEntity.ok().body(orderMapper.toOrderDto(order));
             else
                 return ResponseEntity.noContent().build();
 
@@ -95,10 +92,10 @@ public class OrderController {
     public ResponseEntity<OrderDto> editOrder(@PathVariable long id, @RequestBody OrderDto orderDto) {
 
         try {
-            Order optionalOrder = orderRepository.findByIdOrderWithOrderItems(id);
+            Optional<Order> optionalOrder = orderRepository.findById(id);
 
 
-            if (optionalOrder != null && id != 0 && orderDto.getOrderItems() != null && orderDto.getOrderItems().size() > 0) {
+            if (optionalOrder.isPresent() && id != 0 && orderDto.getOrderItems() != null && orderDto.getOrderItems().size() > 0) {
 
                 Order order = dtoService.orderDtoToOrder(orderDto);
                 return ResponseEntity.ok().body(orderMapper.toOrderDto(orderRepository.save(order)));
@@ -118,11 +115,11 @@ public class OrderController {
 
         try {
 
-            Order optionalOrder = orderRepository.findByIdOrderWithOrderItems(id);
+            Optional<Order> optionalOrder = orderRepository.findById(id);
 
-            if (optionalOrder != null) {
+            if (optionalOrder.isPresent()) {
 
-                orderRepository.delete(optionalOrder);
+                orderRepository.delete(optionalOrder.get());
                 return ResponseEntity.ok().build();
 
             } else {

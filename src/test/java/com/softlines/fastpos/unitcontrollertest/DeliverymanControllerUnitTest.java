@@ -5,6 +5,7 @@ import com.softlines.fastpos.controller.DeliverymanController;
 import com.softlines.fastpos.domain.Deliveryman;
 import com.softlines.fastpos.domain.Deliveryman;
 import com.softlines.fastpos.domain.Descriptor;
+import com.softlines.fastpos.dto.DeliverymanDto;
 import com.softlines.fastpos.dto.mapping.DeliverymanMapper;
 import com.softlines.fastpos.repository.DeliverymanRepository;
 import com.softlines.fastpos.repository.DeliverymanRepository;
@@ -112,7 +113,6 @@ public class DeliverymanControllerUnitTest {
         deliveryman.setName("fatiha");
         deliveryman.setBackgroundString("red");
         deliveryman.setPhoneNumber("0464150");
-        deliveryman.setDescriptor(Descriptor.Deliverymen);
 
         when(deliverymanRepository.save(any(Deliveryman.class))).thenReturn(deliveryman);
         var res = deliverymanController.addDeliveryman(deliverymanMapper.toDeliverymanDto(deliveryman));
@@ -296,7 +296,7 @@ public class DeliverymanControllerUnitTest {
         deliveryman.setPhoneNumber("072064150");
 
         when(deliverymanRepository.findById(deliveryman.getId())).thenReturn(Optional.of(deliveryman));
-        ResponseEntity<Deliveryman> returned = deliverymanController.editDeliveryman(1, deliveryman);
+        ResponseEntity<DeliverymanDto> returned = deliverymanController.editDeliveryman(1, deliveryman);
 
         verify(deliverymanRepository, times(1)).findById(deliveryman.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.OK);
@@ -312,7 +312,7 @@ public class DeliverymanControllerUnitTest {
         deliveryman.setPhoneNumber("072064150");
 
         when(deliverymanRepository.findById(deliveryman.getId())).thenReturn(Optional.empty());
-        ResponseEntity<Deliveryman> returned = deliverymanController.editDeliveryman(0, deliveryman);
+        ResponseEntity<DeliverymanDto> returned = deliverymanController.editDeliveryman(0, deliveryman);
 
         verify(deliverymanRepository, times(1)).findById(deliveryman.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
@@ -328,7 +328,7 @@ public class DeliverymanControllerUnitTest {
 
 
         when(deliverymanRepository.findById(deliveryman.getId())).thenReturn(Optional.of(deliveryman));
-        ResponseEntity<Deliveryman> returned = deliverymanController.editDeliveryman(1, deliveryman);
+        ResponseEntity<DeliverymanDto> returned = deliverymanController.editDeliveryman(1, deliveryman);
 
         verify(deliverymanRepository, times(1)).findById(deliveryman.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);

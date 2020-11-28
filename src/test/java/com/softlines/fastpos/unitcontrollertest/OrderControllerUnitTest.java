@@ -19,13 +19,11 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import javax.xml.crypto.Data;
-import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -56,7 +54,7 @@ public class OrderControllerUnitTest {
                         .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
                                 .id(1).product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
-                        .elapsedTime(Duration.ZERO)
+                        .elapsedTime(LocalTime.now())
                         .orderTime(new Date())
                         .table(Table.builder().build())
                         .build()
@@ -120,7 +118,7 @@ public class OrderControllerUnitTest {
                                 .id(1)
                                 .product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
-                        .elapsedTime(Duration.ZERO)
+                        .elapsedTime(LocalTime.now())
                         .orderTime(new Date())
                         .table(Table.builder().build())
                         .build();
@@ -168,7 +166,7 @@ public class OrderControllerUnitTest {
                         .table(Table.builder().build())
                         .build();
 
-        when(orderRepository.findByIdOrderWithOrderItems(order.getId())).thenReturn(order);
+        when(orderRepository.findById(order.getId())).thenReturn(java.util.Optional.of(order));
         var res = orderController.addOrder(orderMapper.toOrderDto(order));
 
         assertEquals(res.getStatusCode(), HttpStatus.FOUND);
@@ -186,7 +184,7 @@ public class OrderControllerUnitTest {
                                 .id(1)
                                 .product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
-                        .elapsedTime(Duration.ZERO)
+                        .elapsedTime(LocalTime.now())
                         .orderTime(new Date())
                         .table(Table.builder().build())
                         .build();
@@ -209,18 +207,18 @@ public class OrderControllerUnitTest {
 
         var order =
                 Order.builder()
-                        .id(1l)
+                        .id(1L)
                         .orderstate(OrderState.Payed)
                         .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
                                 .id(1)
                                 .product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
-                        .elapsedTime(Duration.ZERO)
+                        .elapsedTime(LocalTime.now())
                         .orderTime(new Date())
                         .table(Table.builder().build())
                         .build();
 
-        when(orderRepository.findByIdOrderWithOrderItems(1l)).thenReturn(order);
+        when(orderRepository.findByIdOrderWithOrderItems(1L)).thenReturn(order);
 
         var res = orderController.getOrder(1);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
@@ -271,7 +269,7 @@ public class OrderControllerUnitTest {
                         .id(1L)
                         .build();
 
-        when(orderRepository.findByIdOrderWithOrderItems(1l)).thenReturn(order);
+        when(orderRepository.findById(1l)).thenReturn(java.util.Optional.ofNullable(order));
         orderController.deleteOrder(1);
 
         verify(orderRepository, times(1)).delete(order);
@@ -282,11 +280,11 @@ public class OrderControllerUnitTest {
     @Test
     public void orderController_Delete_WithNotExistOrderId() {
 
-        when(orderRepository.findByIdOrderWithOrderItems(1L)).thenReturn(null);
+        when(orderRepository.findById(1L)).thenReturn(null);
 
         orderController.deleteOrder(1);
 
-        verify(orderRepository, times(1)).findByIdOrderWithOrderItems(1L);
+        verify(orderRepository, times(1)).findById(1L);
         verifyNoMoreInteractions(orderRepository);
 
     }
@@ -294,10 +292,10 @@ public class OrderControllerUnitTest {
     @Test
     public void orderController_Delete_WithNoDBConnection() {
 
-        when(orderRepository.findByIdOrderWithOrderItems(5L))
+        when(orderRepository.findById(5L))
                 .thenThrow(DataAccessResourceFailureException.class);
 
-        var res = orderController.getOrder(5);
+        var res = orderController.deleteOrder(5);
 
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
 
@@ -318,15 +316,15 @@ public class OrderControllerUnitTest {
                         .additive(Arrays.asList(Additive.builder().build()))
                         .product(Product.builder().build())
                         .order(Order.builder().id(1).build()).build()))
-                .elapsedTime(Duration.ZERO)
+                .elapsedTime(LocalTime.now())
                 .orderTime(new Date())
                 .table(Table.builder().id(1).build())
                 .build();
 
-        when(orderRepository.findByIdOrderWithOrderItems(orders.getId())).thenReturn(orders);
+        when(orderRepository.findById(orders.getId())).thenReturn(java.util.Optional.of(orders));
         ResponseEntity<OrderDto> returned = orderController.editOrder(1, orderMapper.toOrderDto(orders));
 
-        verify(orderRepository, times(1)).findByIdOrderWithOrderItems(orders.getId());
+        verify(orderRepository, times(1)).findById(orders.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.OK);
     }
 
@@ -335,20 +333,21 @@ public class OrderControllerUnitTest {
 
         var order =
                 Order.builder()
-//                        .id(1)
+                        .id(0)
                         .orderstate(OrderState.Payed)
-                        .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
+                        .orderItems(Arrays.asList(OrderItem.builder()
+                                .additive(Arrays.asList(Additive.builder().build()))
                                 .product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
-                        .elapsedTime(Duration.ZERO)
+                        .elapsedTime(LocalTime.now())
                         .orderTime(new Date())
                         .table(Table.builder().build())
                         .build();
 
-        when(orderRepository.findByIdOrderWithOrderItems(order.getId())).thenReturn(null);
+        when(orderRepository.findById(order.getId())).thenReturn(Optional.empty());
         ResponseEntity<OrderDto> returned = orderController.editOrder(0L, orderMapper.toOrderDto(order));
 
-        verify(orderRepository, times(1)).findByIdOrderWithOrderItems(order.getId());
+        verify(orderRepository, times(1)).findById(order.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
 
     }
@@ -361,10 +360,10 @@ public class OrderControllerUnitTest {
                 .table(Table.builder().id(1).build())
                 .build();
 
-        when(orderRepository.findByIdOrderWithOrderItems(order.getId())).thenReturn(order);
+        when(orderRepository.findById(order.getId())).thenReturn(java.util.Optional.of(order));
         ResponseEntity<OrderDto> returned = orderController.editOrder(1L, orderMapper.toOrderDto(order));
 
-        verify(orderRepository, times(1)).findByIdOrderWithOrderItems(order.getId());
+        verify(orderRepository, times(1)).findById(order.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
 
     }

@@ -5,6 +5,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Min;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class Order {
     long id;
     String buyerId;
     Date orderTime;
-    String elapsedTime;
+    LocalTime elapsedTime;
     double total;
     int splittedFromId;
     double newTotal;
@@ -32,7 +33,9 @@ public class Order {
     double returnedAmount;
     boolean productsVisibility;
     boolean additivesVisibility;
+    @Enumerated(EnumType.STRING)
     OrderState orderstate;
+    @Enumerated(EnumType.STRING)
     OrderType type;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<OrderItem> orderItems;
