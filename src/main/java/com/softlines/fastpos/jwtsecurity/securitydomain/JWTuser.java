@@ -1,6 +1,7 @@
 package com.softlines.fastpos.jwtsecurity.securitydomain;
 
 
+import com.softlines.fastpos.domain.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -11,7 +12,7 @@ import java.util.List;
 @Table(name = "users")
 @Setter @Getter @AllArgsConstructor @NoArgsConstructor
 @Builder
-public class JWTuser {
+public class JWTuser extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

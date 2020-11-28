@@ -29,4 +29,5 @@ public class ApiAuthenticationFailureHandler implements AuthenticationFailureHan
         response.getOutputStream().println(objectMapper.writeValueAsString(data));
 
     }
+
 }

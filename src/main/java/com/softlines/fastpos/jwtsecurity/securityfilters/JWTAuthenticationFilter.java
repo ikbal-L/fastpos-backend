@@ -41,6 +41,7 @@ import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstant
 @Component
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
+    //TODO find a method to retrieve content of request after successful attempt [Remove unnecessary creds variable]
     private UserDTO creds;
     @Autowired
     private SessionRepository sessionRepository;
@@ -78,7 +79,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             HttpServletResponse res,
                                             FilterChain chain,
                                             Authentication auth) throws IOException {
-        //TODO when changing dbInfo by dbId, you should change this instruction : DONE!
+
 
 
 
@@ -99,7 +100,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             } catch (DataIntegrityViolationException e) {
                 res.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
             }
-            String token = createToken(auth.getName(), user.getId(),createdSession);
+            String token = createToken(auth.getName(), user.getId(),createdSession,auth);
             res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
         }
 
@@ -110,14 +111,21 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     }
 
-    private String createToken(String name, long userId,Session session){
+    private String createToken(String name, long userId,Session session,Authentication auth){
+
+        List<String> grantedAuthorities = new ArrayList<>();
+        for (GrantedAuthority grantedAuthority : auth.getAuthorities()) {
+            grantedAuthorities.add(grantedAuthority.getAuthority());
+        }
+
         String token = JWT.create()
                 .withSubject(name)
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
 //                .withClaim("dbID", dbID)
 //                .withClaim("annexId", creds.getAnnexId())
 //                .withClaim("terminalId", creds.getTerminalId())
-                .withClaim("sessionId", session==null?0:session.getId())
+                .withClaim("sessionId", session==null?"":session.getId().toString())
+                .withClaim("grantedAuthorities", grantedAuthorities)
 //                .withClaim("userId",userId)
                 .sign(HMAC512(SECRET.getBytes()));
         return token;

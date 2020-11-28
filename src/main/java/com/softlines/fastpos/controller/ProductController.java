@@ -10,8 +10,10 @@ import com.softlines.fastpos.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.util.List;
 
 @RestController
@@ -53,18 +55,21 @@ public class ProductController {
         }
 
     }
-
+    @PreAuthorize("hasAuthority('Read_Product')")
+//    @PreAuthorize("hasRole('admin') or ha")
     @GetMapping("/getall")
-    public ResponseEntity<List<ProductDto>> getProducts() {
+    public ResponseEntity<List<ProductDto>> getProducts( ) {
 
         try {
 
-            List<Product> products = productRepository.findAll();
+            List<Product> products = productRepository.findAllProductsWithAdditives();
+//            List<Product> products = productRepository.findAll();
 
             if (products == null || products.isEmpty() )
                 return ResponseEntity.noContent().build();
 
             else {
+//                var productDtos = productMapper.toProductDTOsWithAdditives(products);
                 var productDtos = productMapper.toProductDTOs(products);
                 return ResponseEntity.ok().body(productDtos);
             }

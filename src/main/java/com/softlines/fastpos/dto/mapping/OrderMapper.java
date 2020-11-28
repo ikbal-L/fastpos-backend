@@ -6,6 +6,7 @@ import com.softlines.fastpos.dto.OrderItemDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public interface OrderMapper {
 
 
     @Mapping(source = "orderItems", target = "orderItems", qualifiedByName = "orderItemsToOrderItemsDto")
-    @Mapping(source = "table", target = "tableId", qualifiedByName = "TableToId")
+    @Mapping(source = "table", target = "tableId", qualifiedByName = "TableToId",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     OrderDto toOrderDto(Order order);
 
     @Mapping(source = "tableId", target = "table", qualifiedByName = "TableIdToTable")

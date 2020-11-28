@@ -62,7 +62,7 @@ public class CategoryController {
                 return ResponseEntity.noContent().build();
 
             } else {
-                return ResponseEntity.ok().body(categoryMapper.toCategoryDTOsWithProducts(categories));
+                return ResponseEntity.ok().body(categoryMapper.toCategoryDTOs(categories));
             }
 
         } catch (Exception exception) {
@@ -118,7 +118,10 @@ public class CategoryController {
            Category optionalCategory = categoryRepository.findByIdCategoryWithProducts(id);
 
             if (optionalCategory != null && id != 0 && categoryDto.getName() != null) {
-                return ResponseEntity.ok().body(categoryMapper.toCategoryDto(categoryRepository.save(dtoService.categoryDtoToCategory(categoryDto, false))));
+                var category = dtoService.categoryDtoToCategory(categoryDto, false);
+                var updatedCategory = categoryRepository.save(category);
+                var updatedCategoryDto = categoryMapper.toCategoryDto(updatedCategory);
+                return ResponseEntity.ok().body(updatedCategoryDto);
             } else {
                 return ResponseEntity.noContent().build();
             }

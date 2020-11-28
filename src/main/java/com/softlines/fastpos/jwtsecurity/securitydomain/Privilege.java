@@ -20,7 +20,7 @@ public class Privilege {
     private Long id;
 
     @NotBlank(message = MessageKeyConstants.PRIVILEGE_NAME_VALIDATION_ERROR)
-    @Column(name = "name")
+    @Column(name = "name",unique = true)
     private String name;
     @ManyToMany(mappedBy = "privileges")
     private List<Role> roles;

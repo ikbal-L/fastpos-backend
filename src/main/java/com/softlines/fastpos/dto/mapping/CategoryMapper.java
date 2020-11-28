@@ -3,10 +3,7 @@ package com.softlines.fastpos.dto.mapping;
 import com.softlines.fastpos.domain.Category;
 import com.softlines.fastpos.domain.Product;
 import com.softlines.fastpos.dto.CategoryDto;
-import org.mapstruct.IterableMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -16,18 +13,11 @@ public interface CategoryMapper {
 
     CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
 
-    @Named("Generic")
+    @Mapping(source = "products", target = "productIds", qualifiedByName = "ProductToId",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     CategoryDto toCategoryDto(Category category);
 
-    @Named("WithProducts")
-    @Mapping(source = "products", target = "productIds", qualifiedByName = "ProductToId")
-    CategoryDto toCategoryDtoWithProducts(Category category);
 
-    @IterableMapping(qualifiedByName = "Generic")
     List<CategoryDto> toCategoryDTOs(List<Category> category);
-
-    @IterableMapping(qualifiedByName = "WithProducts")
-    List<CategoryDto> toCategoryDTOsWithProducts(List<Category> category);
 
     @Mapping(source = "productIds", target = "products", qualifiedByName = "ProductToId")
     Category toCategory(CategoryDto categoryDTO);

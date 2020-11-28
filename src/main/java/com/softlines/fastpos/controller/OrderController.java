@@ -38,7 +38,9 @@ public class OrderController {
 
                 if ( orderDto.getOrderItems().size() > 0) {
                     Order order = dtoService.orderDtoToOrder(orderDto);
-                    return ResponseEntity.status(HttpStatus.CREATED).body(orderMapper.toOrderDto(orderRepository.save(order)));
+                    Order createdOder = orderRepository.save(order);
+                    OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
+                    return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);
                 } else {
                     return ResponseEntity.noContent().build();
                 }

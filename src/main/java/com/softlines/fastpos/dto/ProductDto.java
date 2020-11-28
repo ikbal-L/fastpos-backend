@@ -3,7 +3,9 @@ package com.softlines.fastpos.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.*;
+
 import java.util.List;
 
 
@@ -35,13 +37,13 @@ public class ProductDto {
 
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     @JsonProperty("Rank")
+    @JsonSetter()
     Integer rank;
 
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    //    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     @JsonProperty("CategoryId")
     Long categoryId;
 
     @JsonProperty("IdAdditives")
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     List<Long> idAdditives;
 }

@@ -6,6 +6,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -18,16 +19,23 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
+
     @NotBlank(message = MessageKeyConstants.PRIVILEGE_NAME_VALIDATION_ERROR)
     String name;
-    @NotBlank(message = MessageKeyConstants.PRIVILEGE_NAME_VALIDATION_ERROR)
+
+    @NotNull
     double price;
+
     String unit;
+
     @Column(name = "isMuchInDemand")
     boolean muchInDemand;
+
     String type;
     int availableStock;
+
     String description;
+
     String backgroundString;
 
     @Column(name = "isPlatter")
@@ -40,6 +48,7 @@ public class Product {
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "additive_id"))
     List<Additive> additives;
+
     @ManyToOne(fetch = FetchType.LAZY)
     Category category;
 

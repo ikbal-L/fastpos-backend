@@ -4,6 +4,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -39,6 +40,10 @@ public class FastposExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public final ResponseEntity<Object> handleNullRequestBodyExceptions() {
         return new ResponseEntity("Body must not be null", HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+    @ExceptionHandler(AccessDeniedException.class)
+    public final ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException e){
+        return  new ResponseEntity<Object>(String.format("%s",e.getMessage()),HttpStatus.UNAUTHORIZED);
     }
 
 }

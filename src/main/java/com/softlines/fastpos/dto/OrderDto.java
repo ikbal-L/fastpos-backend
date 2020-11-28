@@ -5,8 +5,10 @@ import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.domain.OrderType;
 import lombok.*;
 
+import java.sql.Time;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
@@ -19,7 +21,7 @@ public class OrderDto {
     @JsonProperty("OrderTime")
     Date orderTime;
     @JsonProperty("ElapsedTime")
-    Duration elapsedTime;
+    LocalTime elapsedTime;
     @JsonProperty("Total")
     double total;
     @JsonProperty("SplittedFromId")

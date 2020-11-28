@@ -1,5 +1,5 @@
 package com.softlines.fastpos.dbconfig.configuration;
-
+import com.softlines.fastpos.jwtsecurity.securityconfiguration.AuditorAwareImpl;
 import com.softlines.fastpos.jwtsecurity.securitydomain.*;
 import com.softlines.fastpos.jwtsecurity.securityrepository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -18,6 +20,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.persistence.EntityManagerFactory;
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 
 @Configuration
@@ -27,6 +31,7 @@ import java.util.*;
         entityManagerFactoryRef = "entityManagerFactory",
         transactionManagerRef = "transactionManager"
 )
+@EnableJpaAuditing(auditorAwareRef = "auditorProvider")
 public class DbConfig {
 
     @Autowired
@@ -62,11 +67,15 @@ public class DbConfig {
         }
     }
 
-
+    @Bean
+    AuditorAware<String> auditorProvider() {
+        return new AuditorAwareImpl();
+    }
     @Bean
     @Profile("prod")
     public CustomRoutingDataSource customRoutingDataSource() throws Exception {
 //        initiateDB();
+//            initRolesAndPrivileges();
         try{
             List<DbInfo> dbInfos = dbInfoRepository.findAll();
             Map<Object, Object> map = new HashMap<>();
@@ -234,6 +243,27 @@ public class DbConfig {
             return dbInfo;
         }
         return null;
+    }
+    private  void initRolesAndPrivileges(){
+        String [] entities = {"Product","Additive","Category","Customer","Order","OrderItem","Deliveryman","Waiter"};
+        List<Privilege> privileges = new ArrayList<>();
+        for (String s:entities) {
+            privileges.add(Privilege.builder().name("Create_"+s).build());
+            privileges.add(Privilege.builder().name("Read_"+s).build());
+            privileges.add(Privilege.builder().name("Update_"+s).build());
+            privileges.add(Privilege.builder().name("Delete_"+s).build());
+        }
+        var createdPrivileges = privilegeRepository.saveAll(privileges);
+        List<Role> roles = new ArrayList<>();
+        Role admin = Role.builder().name("ROLE_ADMIN").privileges(createdPrivileges).build();
+        var privilegeStream = createdPrivileges.stream().filter(p->p.getName()=="Create_Order"|| p.getName()=="Update_Order");
+        var orderPrivilegesCreateUpdate = privilegeStream.collect(Collectors.toList());
+        Role clerk = Role.builder().name("ROLE_CLERK").privileges(orderPrivilegesCreateUpdate).build();
+        roles.add(admin);
+        roles.add(clerk);
+        roleRepository.saveAll(roles);
+
+
     }
 
 

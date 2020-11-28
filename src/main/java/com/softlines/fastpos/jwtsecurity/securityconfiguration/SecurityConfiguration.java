@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstants.SIGN_UP_URL;
 
@@ -60,6 +61,9 @@ public class SecurityConfiguration {
         protected void configure(HttpSecurity http) throws Exception {
 
             http
+                    .formLogin()
+                    .successHandler(authSuccessHandler())
+                    .failureHandler(authenticationFailureHandler()).and()
                     .antMatcher("/api/**")
                     .cors().and().csrf().disable().authorizeRequests()
                     .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
@@ -71,11 +75,10 @@ public class SecurityConfiguration {
                     .and()
                     .addFilter(jwtAuthenticationFilter)
                     .addFilter(new ApiAuthorizationFilter(authenticationManager(), sessionRepository))
+
                     // this disables session creation on Spring Security
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
-                    .formLogin()
-                    .failureHandler(authenticationFailureHandler());
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
         }
 
 
@@ -89,6 +92,11 @@ public class SecurityConfiguration {
     public static AuthenticationFailureHandler authenticationFailureHandler() {
         return new ApiAuthenticationFailureHandler();
     }
+    @Bean
+    public static AuthenticationSuccessHandler authSuccessHandler() {
+        return new ApiAuthenticationSuccessHandler();
+    }
+
 
     @Order(2)
     @Configuration

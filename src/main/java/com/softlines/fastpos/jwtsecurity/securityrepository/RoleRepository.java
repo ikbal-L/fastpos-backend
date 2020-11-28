@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
@@ -23,4 +24,9 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 
     @Query(value= "SELECT distinct p FROM Role p JOIN FETCH p.privileges WHERE p.id= ?1")
     Optional<Role> findRoleById(long id);
+
+    @Query(value= "SELECT r FROM Role r " +
+            "JOIN r.users u " +
+            "WHERE u.id = ?1")
+    Set<Role> getUserRoles(long userId);
 }

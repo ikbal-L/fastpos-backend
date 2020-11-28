@@ -57,11 +57,15 @@ public class DtoServiceImpl implements DtoService {
         List<Additive> additives = new ArrayList<Additive>();
         Product p = productMapper.toProduct(pDto);
         if (getDataFromRepository) {
-            for (Long idAdditive : pDto.getIdAdditives()) {
-                additives.add(additiveRepository.findById(idAdditive).get());
+            if (pDto.getIdAdditives()!=null && pDto.getIdAdditives().stream().count()>0) {
+                for (Long idAdditive : pDto.getIdAdditives()) {
+                    additives.add(additiveRepository.findById(idAdditive).get());
+                }
+                p.setAdditives(additives);
             }
-            p.setAdditives(additives);
-            p.setCategory(categoryRepository.findById(pDto.getCategoryId()).get());
+            if (pDto.getCategoryId()!=null) {
+                p.setCategory(categoryRepository.findById(pDto.getCategoryId()).get());
+            }
         }
         return p;
 

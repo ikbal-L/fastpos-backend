@@ -4,10 +4,7 @@ import com.softlines.fastpos.domain.Additive;
 import com.softlines.fastpos.domain.Category;
 import com.softlines.fastpos.domain.Product;
 import com.softlines.fastpos.dto.ProductDto;
-import org.mapstruct.IterableMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -17,38 +14,24 @@ public interface ProductMapper {
 
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
+//    @Named("Generic")
+//    ProductDto toProductDto(Product product);
+
     @Named("Generic")
+    @Mapping(source = "additives", target = "idAdditives", qualifiedByName = "AdditiveToId",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "category", target = "categoryId", qualifiedByName = "CategoryToId",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS )
     ProductDto toProductDto(Product product);
 
-    @Named("WithAdditives")
-    @Mapping(source = "additives", target = "idAdditives", qualifiedByName = "AdditiveToId")
-    ProductDto toProductDtoWithAdditives(Product product);
 
-    @Named("WithCategories")
-    @Mapping(source = "category", target = "categoryId", qualifiedByName = "CategoryToId")
-    ProductDto toProductDtoWithCategories(Product product);
-
-    @Named("WithCategoriesAndAdditives")
-    @Mapping(source = "additives", target = "idAdditives", qualifiedByName = "AdditiveToId")
-    @Mapping(source = "category", target = "categoryId", qualifiedByName = "CategoryToId")
-    ProductDto toProductDtoWithCategoriesAndAdditives(Product product);
-
-    @IterableMapping(qualifiedByName = "Generic")
+//    @IterableMapping(qualifiedByName = "Generic")
     List<ProductDto> toProductDTOs(List<Product> products);
 
-    @IterableMapping(qualifiedByName = "WithAdditives")
-    List<ProductDto> toProductDTOsWithAdditives(List<Product> products);
-
-    @IterableMapping(qualifiedByName = "WithCategories")
-    List<ProductDto> toProductDTOsWithCategories(List<Product> products);
-
-    @IterableMapping(qualifiedByName = "WithCategoriesAndAdditives")
-    List<ProductDto> toProductDTOsWithCategoriesAndAdditives(List<Product> products);
 
     @Mapping(source = "idAdditives", target = "additives", qualifiedByName = "IdToAdditive")
     @Mapping(source = "categoryId", target = "category", qualifiedByName = "IdToCategory")
-
     Product toProduct(ProductDto productDTO);
+
+    Product toProductWithCategory(ProductDto productDTO);
 
     @Named("AdditiveToId")
     public static long AdditiveToId(Additive additives) {

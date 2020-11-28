@@ -10,15 +10,17 @@ import java.util.Collection;
 public class CustomJWTuserDetails implements UserDetails {
 
     private final JWTuser jwtUser;
+    private Collection<GrantedAuthority> grantedAuthorities;
 
 
-    public CustomJWTuserDetails(JWTuser jwtUser) {
+    public CustomJWTuserDetails(JWTuser jwtUser, Collection<GrantedAuthority> grantedAuthorities) {
         this.jwtUser = jwtUser;
+        this.grantedAuthorities = grantedAuthorities;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return grantedAuthorities;
     }
 
     @Override

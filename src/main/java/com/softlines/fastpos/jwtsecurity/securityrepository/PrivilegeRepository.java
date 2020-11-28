@@ -20,4 +20,10 @@ public interface PrivilegeRepository extends JpaRepository<Privilege, Long> {
             "JOIN r.users u " +
             "WHERE u.username = ?1")
     Set<Privilege> findUserPrivileges(String username);
+
+    @Query(value= "SELECT p FROM Privilege p " +
+            "JOIN p.roles r " +
+            "JOIN r.users u " +
+            "WHERE u.id = ?1")
+    Set<Privilege> getUserPrivileges(long userId);
 }
