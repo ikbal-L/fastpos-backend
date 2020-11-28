@@ -65,8 +65,8 @@ public class AdditiveController {
             List<Additive> additives = additiveRepository.findAllById(ids);
 
             if (additives.isEmpty()) {
-                Additive savedAdditve = additiveRepository.saveAll(additiveMapper.toAdditive(additiveDto));
-                AdditiveDto savedAdditveDto = additiveMapper.toAdditiveDto(savedAdditve);
+                List<Additive> savedAdditve = additiveRepository.saveAll(additiveMapper.toAdditiveList(additiveDtoList));
+                List<AdditiveDto> savedAdditveDto = additiveMapper.toAdditiveDTOs(savedAdditve);
                 return ResponseEntity.status(HttpStatus.CREATED).body(savedAdditveDto);
 
 

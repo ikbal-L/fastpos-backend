@@ -164,7 +164,7 @@ public class DtoServiceImpl implements DtoService {
 
     @Override
     public List<Additive> additivesDtoToAdditives(List<AdditiveDto> additiveDtoList, boolean getDataFromRepository) {
-        List<Additive> additiveList = additiveMapper.toAditiveList(additiveDtoList);
+        List<Additive> additiveList = additiveMapper.toAdditiveList(additiveDtoList);
         return additiveList;
     }
 

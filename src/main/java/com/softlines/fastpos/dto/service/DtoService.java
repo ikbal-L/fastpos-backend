@@ -13,7 +13,7 @@ public interface DtoService {
     Order orderDtoToOrder(OrderDto orderDto);
     List<OrderItem> orderItemDtoListToOrderItemList(List<OrderItemDto> oiDtos,boolean getDataFromRepository);
     Additive additiveDtoToAdditive(AdditiveDto additiveDto,boolean getDataFromRepository);
-
+    List<Additive> additivesDtoToAdditives(List<AdditiveDto> additiveDtoList, boolean getDataFromRepository);
     Person personDtoToPerson(PersonDto personDto, boolean getDataFromRepository);
 
     Waiter waiterDtoToWaiter(WaiterDto waiterDto, boolean getDataFromRepository);
