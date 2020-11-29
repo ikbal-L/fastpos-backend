@@ -15,6 +15,7 @@ public interface TestEntityMapper {
     TestEntityMapper INSTANCE = Mappers.getMapper(TestEntityMapper.class);
 
     TestDTO toTestDto(TestEntity testEntity);
+
     List<AdditiveDto> toAdditiveDTOs(List<Additive> additives);
 
     TestEntity toTestEntity(TestDTO testDTO);

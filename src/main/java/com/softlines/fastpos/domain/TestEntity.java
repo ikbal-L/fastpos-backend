@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 
-@Data
+//@Data
 @Entity
 @Builder
 @NoArgsConstructor
@@ -33,5 +33,6 @@ public class TestEntity extends BaseEntity {
     private UUID id;
 
     private String data;
+
 
 }

@@ -5,9 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.UUID;
 
@@ -17,6 +20,8 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLDelete(sql = "UPDATE Session SET deleted=true WHERE id=?")
+@Where(clause = "deleted = false")
 public class Session {
     @Id
     @GeneratedValue
@@ -36,4 +41,9 @@ public class Session {
 
     private Agent agent ;
     private String ipAddress;
+
+    @Builder.Default
+    @NotNull
+    private boolean deleted = false;
+
 }

@@ -1,13 +1,18 @@
 package com.softlines.fastpos.jwtsecurity.securitydomain;
 
+import lombok.Builder;
 import lombok.Data;
-
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import javax.persistence.*;
-import java.util.List;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "dbinfo")
+@SQLDelete(sql = "UPDATE DbInfo SET deleted=true WHERE id=?")
+@Where(clause = "deleted = false")
 @Data
+
 public class DbInfo {
 
     @Id
@@ -33,4 +38,6 @@ public class DbInfo {
 //    @JoinColumn(name = "dbId")
 //    private List<JWTuser> jwTusers;
 
+    @NotNull
+    private boolean deleted = false;
 }

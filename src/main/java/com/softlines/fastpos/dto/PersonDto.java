@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Value;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 @Data
 @AllArgsConstructor
@@ -22,7 +23,7 @@ public class PersonDto {
     String name;
 
     @JsonProperty("PhoneNumber")
-    // TODO pattern
+    @Pattern(regexp = "^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$")
     String phoneNumber;
 
     @JsonProperty("BackgroundString")
@@ -30,6 +31,8 @@ public class PersonDto {
 
     @JsonProperty("IsActive")
     boolean active=true;
+
+    private boolean deleted = false;
 
 
 }

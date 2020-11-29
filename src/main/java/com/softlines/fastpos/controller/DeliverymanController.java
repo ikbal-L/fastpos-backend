@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +33,7 @@ public class DeliverymanController {
     DeliverymanMapper deliverymanMapper;
 
     @PostMapping("/save")
-    public ResponseEntity<DeliverymanDto> addDeliveryman(@RequestBody DeliverymanDto deliverymanDto) {
+    public ResponseEntity<DeliverymanDto> addDeliveryman(@Valid  @RequestBody DeliverymanDto deliverymanDto) {
         try {
 
             Optional<Deliveryman> optionalDeliveryman = deliverymanRepository.findById(deliverymanDto.getId());
@@ -49,9 +50,7 @@ public class DeliverymanController {
 
                 }
             } else {
-
                 return ResponseEntity.status(HttpStatus.FOUND).build();
-
             }
 
         } catch (Exception exception) {
@@ -78,7 +77,7 @@ public class DeliverymanController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<DeliverymanDto> getDeliveryman(@PathVariable long id) {
+    public ResponseEntity<DeliverymanDto> getDeliveryman(@Valid @PathVariable long id) {
 
         try {
 
@@ -112,7 +111,7 @@ public class DeliverymanController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<DeliverymanDto> editDeliveryman(@PathVariable long id, @RequestBody Deliveryman deliveryman) {
+    public ResponseEntity<DeliverymanDto> editDeliveryman(@Valid @PathVariable long id,@Valid @RequestBody Deliveryman deliveryman) {
         try {
 
             Optional<Deliveryman> optionalDeliveryman = deliverymanRepository.findById(id);
@@ -131,7 +130,7 @@ public class DeliverymanController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleteDeliveryman(@PathVariable long id) {
+    public ResponseEntity deleteDeliveryman(@Valid @PathVariable long id) {
 
         try {
             Deliveryman deliverymanToDel = deliverymanRepository.findById(id).get();

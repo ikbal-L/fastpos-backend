@@ -3,14 +3,22 @@ package com.softlines.fastpos.jwtsecurity.securitydomain;
 
 import com.softlines.fastpos.domain.BaseEntity;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
-@Setter @Getter @AllArgsConstructor @NoArgsConstructor
+@Setter @Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@SQLDelete(sql = "UPDATE JWTuser SET deleted=true WHERE id=?")
+@Where(clause = "deleted = false")
+
 @Builder
 public class JWTuser extends BaseEntity {
 
@@ -38,6 +46,7 @@ public class JWTuser extends BaseEntity {
 
     @Column(name = "enabled")
     private boolean enabled;
+
     @Column(name = "token_expired")
     private boolean tokenExpired;
 
@@ -49,8 +58,16 @@ public class JWTuser extends BaseEntity {
             inverseJoinColumns = @JoinColumn(
                     name = "role_id", referencedColumnName = "id"))
     private List<Role> roles;
+
     @ManyToMany(mappedBy = "users")
     private List<Annex> annexes;
+
+    private Agent agent;
+
+
+    @Builder.Default
+    @NotNull
+    private boolean deleted = false;
 
 
 }

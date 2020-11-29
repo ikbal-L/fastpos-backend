@@ -1,4 +1,4 @@
-package com.softlines.fastpos.dto.mapping;
+package com.softlines.fastpos.jwtsecurity.securitydomain.securitymapper;
 
 import com.softlines.fastpos.jwtsecurity.securitydomain.Annex;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Terminal;

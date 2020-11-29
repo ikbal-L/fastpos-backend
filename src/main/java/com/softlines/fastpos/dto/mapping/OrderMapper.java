@@ -18,11 +18,13 @@ public interface OrderMapper {
 
 
     @Mapping(source = "orderItems", target = "orderItems", qualifiedByName = "orderItemsToOrderItemsDto")
-    @Mapping(source = "table", target = "tableId", qualifiedByName = "TableToId",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "table", target = "tableId", qualifiedByName = "TableToId"
+            , nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     OrderDto toOrderDto(Order order);
 
     @Mapping(source = "tableId", target = "table", qualifiedByName = "TableIdToTable")
-    @Mapping(source = "orderItems", target = "orderItems", qualifiedByName = "OrderItemsDtoToOrderItems")
+    @Mapping(source = "orderItems", target = "orderItems", qualifiedByName = "OrderItemsDtoToOrderItems"
+            ,nullValueCheckStrategy =NullValueCheckStrategy.ALWAYS)
     Order toOrder(OrderDto orderDto);
 
 
@@ -49,7 +51,7 @@ public interface OrderMapper {
     }
 
     @Named("TableIdToTable")
-    public static Table TableIdToTable(long id ) {
+    public static Table TableIdToTable(long id) {
         Table table = new Table();
         table.setId(id);
         return table;

@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +26,7 @@ public class CustomerController {
     CustomerMapper customerMapper;
 
     @PostMapping("/save")
-    public ResponseEntity<CustomerDto> addCustomer(@RequestBody Customer customer) {
+    public ResponseEntity<CustomerDto> addCustomer(@Valid  @RequestBody Customer customer) {
         try {
 
             Optional<Customer> optionalCustomer = customerRepository.findById(customer.getId());
@@ -70,7 +71,7 @@ public class CustomerController {
 
 
     @GetMapping("/getmany")
-    public ResponseEntity<List<CustomerDto>> getCustomers(@RequestBody List<Long> ids) {
+    public ResponseEntity<List<CustomerDto>> getCustomers(@Valid @RequestBody List<Long> ids) {
 
         try {
 
@@ -88,7 +89,7 @@ public class CustomerController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<CustomerDto> getCustomer(@PathVariable long id) {
+    public ResponseEntity<CustomerDto> getCustomer(@Valid @PathVariable long id) {
 
         try {
 
@@ -106,7 +107,7 @@ public class CustomerController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<CustomerDto> editCustomer(@PathVariable long id, @RequestBody Customer customer) {
+    public ResponseEntity<CustomerDto> editCustomer(@Valid @PathVariable long id, @RequestBody Customer customer) {
 
         try {
             Optional<Customer> optionalCustomer = customerRepository.findById(id);
@@ -123,7 +124,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleteCustomer(@PathVariable long id) {
+    public ResponseEntity deleteCustomer(@Valid @PathVariable long id) {
 
         try {
 

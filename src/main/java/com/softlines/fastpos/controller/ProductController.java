@@ -78,7 +78,7 @@ public class ProductController {
     }
 
     @GetMapping("/getmany")
-    public ResponseEntity<List<ProductDto>> getMany(@RequestBody List<Long> ids) {
+    public ResponseEntity<List<ProductDto>> getMany(@Valid @RequestBody List<Long> ids) {
 
         try {
 
@@ -97,7 +97,7 @@ public class ProductController {
 
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<ProductDto> getProduct(@PathVariable long id) {
+    public ResponseEntity<ProductDto> getProduct(@Valid @PathVariable long id) {
 
         try {
 
@@ -115,7 +115,7 @@ public class ProductController {
     }
 
     @GetMapping("/getByName/{name}")
-    public ResponseEntity<List<ProductDto>> getProductByName(@PathVariable String name) {
+    public ResponseEntity<List<ProductDto>> getProductByName(@Valid @PathVariable String name) {
         try {
 
             List<Product> products = productRepository.findByName(name);
@@ -132,7 +132,7 @@ public class ProductController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<ProductDto> editProduct(@PathVariable long id, @RequestBody ProductDto productDto) {
+    public ResponseEntity<ProductDto> editProduct(@Valid @PathVariable long id,@Valid @RequestBody ProductDto productDto) {
         try {
             Product optionalProduct = productRepository.findByIdProductWithAdditives(id);
 
@@ -154,7 +154,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleteProduct(@PathVariable long id) {
+    public ResponseEntity deleteProduct(@Valid @PathVariable long id) {
 
         try {
             Product optionalProduct = productRepository.findByIdProductWithAdditives(id);

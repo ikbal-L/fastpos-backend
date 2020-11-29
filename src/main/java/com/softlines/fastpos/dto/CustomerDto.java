@@ -9,25 +9,28 @@ import lombok.NoArgsConstructor;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class CustomerDto {
 
-
     @JsonProperty("Id")
+    @Min(0)
     long id;
-    @NotBlank
 
     @JsonProperty("Name")
-    @NotBlank
+    @NotBlank(message = MessageKeyConstants.CUSTOMER_NAME_VALIDATION_ERROR)
     String name;
 
     @JsonProperty("Mobile")
-    // TODO pattern
+    @NotBlank(message = MessageKeyConstants.CUSTOMER_MOBILE_VALIDATION_ERROR)
+    @Pattern(regexp = "^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$")
     String mobile;
 
+    private boolean deleted = false;
 
 }

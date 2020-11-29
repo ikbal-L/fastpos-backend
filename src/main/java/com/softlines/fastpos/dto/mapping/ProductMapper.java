@@ -14,24 +14,22 @@ public interface ProductMapper {
 
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
-//    @Named("Generic")
-//    ProductDto toProductDto(Product product);
-
-    @Named("Generic")
-    @Mapping(source = "additives", target = "idAdditives", qualifiedByName = "AdditiveToId",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    @Mapping(source = "category", target = "categoryId", qualifiedByName = "CategoryToId",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS )
+    @Mapping(source = "additives", target = "idAdditives", qualifiedByName = "AdditiveToId"
+            ,nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "category", target = "categoryId", qualifiedByName = "CategoryToId"
+            ,nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS )
     ProductDto toProductDto(Product product);
 
 
-//    @IterableMapping(qualifiedByName = "Generic")
     List<ProductDto> toProductDTOs(List<Product> products);
 
 
-    @Mapping(source = "idAdditives", target = "additives", qualifiedByName = "IdToAdditive")
-    @Mapping(source = "categoryId", target = "category", qualifiedByName = "IdToCategory")
+    @Mapping(source = "idAdditives", target = "additives", qualifiedByName = "IdToAdditive"
+            ,nullValueCheckStrategy =NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "categoryId", target = "category", qualifiedByName = "IdToCategory"
+            ,nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     Product toProduct(ProductDto productDTO);
 
-    Product toProductWithCategory(ProductDto productDTO);
 
     @Named("AdditiveToId")
     public static long AdditiveToId(Additive additives) {

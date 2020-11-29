@@ -24,6 +24,7 @@ import java.util.List;
 public class OrderDto {
 
     @JsonProperty("Id")
+    @Min(0)
     long id;
 
     @JsonProperty("BuyerId")
@@ -69,7 +70,6 @@ public class OrderDto {
 
     @JsonProperty("ReturnedAmount")
     @Min(value = 0, message = MessageKeyConstants.ORDER_TOTAL_VALIDATION_ERROR)
-
     Double returnedAmount;
 
     @JsonProperty("ProductsVisibility")
@@ -89,6 +89,8 @@ public class OrderDto {
 
     @JsonProperty("TableId")
     Long tableId;
+
+    private boolean deleted = false;
 
 }
 

@@ -2,9 +2,13 @@ package com.softlines.fastpos.domain;
 
 import com.softlines.fastpos.constants.MessageKeyConstants;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 
 @Data
@@ -12,20 +16,26 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLDelete(sql = "UPDATE Additive SET deleted=true WHERE id=?")
+@Where(clause = "deleted = false")
 @javax.persistence.Table(name = "additive")
 public class Additive {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
     @Column(nullable = false, unique = true)
-    @NotBlank(message = MessageKeyConstants.ADDITIVE_DESCRIPTION_VALIDATION_ERROR)
     String description;
 
-    @NotBlank(message = MessageKeyConstants.ADDITIVE_BACKGROUND_VALIDATION_ERROR)
+    @NotBlank(message = MessageKeyConstants.ADDITIVE_BACKGROUND_STRING_VALIDATION_ERROR)
     String backgroundString;
 
     @Column(nullable = false, unique = true)
     @Min(1)
     Integer rank;
+
+    @Builder.Default
+    @NotNull
+    private boolean deleted = false;
 }

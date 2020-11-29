@@ -48,7 +48,7 @@ public class ProductDto {
     boolean platter;
 
     @JsonProperty("Rank")
-    @JsonSetter()
+    @Min(1)
     Integer rank;
 
     //    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
@@ -57,4 +57,7 @@ public class ProductDto {
 
     @JsonProperty("IdAdditives")
     List<Long> idAdditives;
+
+    private boolean deleted = false;
+
 }

@@ -3,7 +3,7 @@ package com.softlines.fastpos.jwtsecurity.jwtcontroller;
 
 import com.softlines.fastpos.jwtsecurity.securitydomain.Terminal;
 import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.TerminalDto;
-import com.softlines.fastpos.dto.mapping.TerminalMapper;
+import com.softlines.fastpos.jwtsecurity.securitydomain.securitymapper.TerminalMapper;
 import com.softlines.fastpos.jwtsecurity.securityrepository.TerminalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

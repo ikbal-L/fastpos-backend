@@ -13,13 +13,15 @@ public interface CategoryMapper {
 
     CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
 
-    @Mapping(source = "products", target = "productIds", qualifiedByName = "ProductToId",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "products", target = "productIds", qualifiedByName = "ProductToId"
+            ,nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     CategoryDto toCategoryDto(Category category);
 
 
     List<CategoryDto> toCategoryDTOs(List<Category> category);
 
-    @Mapping(source = "productIds", target = "products", qualifiedByName = "ProductToId")
+    @Mapping(source = "productIds", target = "products", qualifiedByName = "ProductToId"
+            ,nullValueCheckStrategy =NullValueCheckStrategy.ALWAYS)
     Category toCategory(CategoryDto categoryDTO);
 
     List<Category> toCategories(List<CategoryDto> categoryDtos);

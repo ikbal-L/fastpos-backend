@@ -76,7 +76,7 @@ public class OrderController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<OrderDto> getOrder(@PathVariable long id) {
+    public ResponseEntity<OrderDto> getOrder(@Valid @PathVariable long id) {
         try {
 
             Order order = orderRepository.findByIdOrderWithOrderItems(id);
@@ -92,7 +92,7 @@ public class OrderController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<OrderDto> editOrder(@PathVariable long id, @RequestBody OrderDto orderDto) {
+    public ResponseEntity<OrderDto> editOrder(@Valid @PathVariable long id, @Valid @RequestBody OrderDto orderDto) {
 
         try {
             Optional<Order> optionalOrder = orderRepository.findById(id);
@@ -114,7 +114,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleteOrder(@PathVariable long id) {
+    public ResponseEntity deleteOrder(@Valid @PathVariable long id) {
 
         try {
 

@@ -55,4 +55,6 @@ public class OrderItemDto {
     @JsonProperty("TimeStamp")
     Date timestamp;
 
+    private boolean deleted = false;
+
 }

@@ -115,7 +115,7 @@ public class WaiterController {
 
 
     @PutMapping("/put/{id}")
-    public ResponseEntity editWaiter(@PathVariable long id,@Valid @RequestBody Waiter waiter) {
+    public ResponseEntity editWaiter(@Valid @PathVariable long id,@Valid @RequestBody Waiter waiter) {
         try {
 
             Optional<Waiter> optionalWaiter = waiterRepository.findById(id);

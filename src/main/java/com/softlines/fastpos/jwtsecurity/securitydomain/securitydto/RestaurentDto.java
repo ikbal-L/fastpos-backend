@@ -1,4 +1,4 @@
-package com.softlines.fastpos.dto;
+package com.softlines.fastpos.jwtsecurity.securitydomain.securitydto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -11,14 +11,20 @@ public class RestaurentDto {
 
     @JsonProperty("Id")
     long id;
+
     @JsonProperty("Name")
     String name;
+
     @JsonProperty("Address")
     String address;
+
     @JsonProperty("ServerLicenceKey")
     String serverLicenceKey;
-    //    User owner;
+
     @JsonProperty("AnnexesId")
     List<Long> annexesId;
+
+    @JsonProperty("Deleted")
+    private boolean deleted = false;
 
 }

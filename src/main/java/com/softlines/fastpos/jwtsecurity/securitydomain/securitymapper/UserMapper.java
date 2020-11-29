@@ -15,24 +15,27 @@ public interface UserMapper {
 
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    @Mapping(source = "roles", target = "roleIds", qualifiedByName = "rolessToIds")
-    @Named("ToUserDto")
+    @Mapping(source = "roles", target = "roleIds", qualifiedByName = "rolesToIds"
+            , nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "annexes", target = "annexesIds", qualifiedByName = "annexesToIds"
+            , nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(target = "terminalId", ignore = true)
     UserDTO toUserDto(JWTuser jwTuser);
 
-    @IterableMapping(qualifiedByName = "ToUserDto")
+
     List<UserDTO> toUserDTOs(List<JWTuser> jwTusers);
 
-    @Mapping(source = "annexes",target = "annexesIds",qualifiedByName = "annexesToIds" )
-    UserDTO toUserDtoWithAnnexes(JWTuser jwtUser);
-
-
-    @Mapping(source = "roleIds", target = "roles", qualifiedByName = "idsToRoles")
+    @Mapping(source = "roleIds", target = "roles", qualifiedByName = "idsToRoles"
+            , nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "annexesIds", target = "annexes", qualifiedByName = "idsToAnnexes"
+            , nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     JWTuser toJWTuser(UserDTO userDTO);
 
     @Named("rolesToIds")
     static long rolesToIds(Role role) {
         return role.getId();
     }
+
     @Named("idsToRoles")
     static Role idsToRoles(long roleId) {
         Role role = new Role();
@@ -44,10 +47,12 @@ public interface UserMapper {
     static long annexesToIds(Annex annex) {
         return annex.getId();
     }
+
     @Named("idsToAnnexes")
     static Annex idsToAnnexes(long roleId) {
         Annex annex = new Annex();
         annex.setId(roleId);
         return annex;
     }
+
 }
