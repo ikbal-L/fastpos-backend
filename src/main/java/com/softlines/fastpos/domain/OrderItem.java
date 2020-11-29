@@ -2,6 +2,7 @@ package com.softlines.fastpos.domain;
 
 import lombok.*;
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 
@@ -32,5 +33,6 @@ public class OrderItem {
     @ManyToOne
     @JoinColumn(name = "order_id")
     Order order;
+    Date timestamp;
 
 }

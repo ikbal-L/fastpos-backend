@@ -34,11 +34,10 @@ public class FastposExceptionHandler {
     public final ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {
         List<String> errors = new ArrayList<>();
         for (ObjectError error : ex.getBindingResult().getAllErrors()) {
-            String fieldName = ((FieldError) error).getField();
 
             String errorMessage = error.getDefaultMessage();
 
-            errors.add(fieldName+ " " +errorMessage);
+            errors.add(errorMessage);
         }
         return new ResponseEntity(errors, HttpStatus.UNPROCESSABLE_ENTITY);
     }

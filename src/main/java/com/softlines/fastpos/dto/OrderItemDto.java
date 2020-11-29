@@ -1,15 +1,16 @@
 package com.softlines.fastpos.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.softlines.fastpos.validation.ValidationDiscountAmount;
+import com.softlines.fastpos.validation.OrderValidationDiscountAmountGreaterThanTotal;
 import lombok.*;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.List;
 
 @Data
-@ValidationDiscountAmount(message = "validation.student.password.match")
+@OrderValidationDiscountAmountGreaterThanTotal(message = "validation.student.password.match")
 public class OrderItemDto {
 
     @JsonProperty("Id")
@@ -51,5 +52,7 @@ public class OrderItemDto {
     @JsonProperty("orderId")
       Long orderId;
 
+    @JsonProperty("TimeStamp")
+    Date timestamp;
 
 }

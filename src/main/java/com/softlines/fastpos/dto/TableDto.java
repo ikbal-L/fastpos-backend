@@ -13,6 +13,7 @@ public class TableDto {
     long id;
     @JsonProperty("Number")
     @NotNull
+    @Min(value = 1)
     Integer number;
     @JsonProperty("Seats")
     @Min(value = 0)
