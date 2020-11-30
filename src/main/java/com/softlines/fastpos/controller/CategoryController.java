@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ public class CategoryController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping("/save")
-    public ResponseEntity<CategoryDto> addCategory(@RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<CategoryDto> addCategory(@Valid @RequestBody CategoryDto categoryDto) {
         try {
 
             Optional<Category> optionalCategory = categoryRepository.findById(categoryDto.getId());
@@ -51,7 +52,7 @@ public class CategoryController {
     }
 
     @PostMapping("/savemany")
-    public ResponseEntity<List<CategoryDto>> addManyCategory(@RequestBody List<CategoryDto> categoryDtos) {
+    public ResponseEntity<List<CategoryDto>> addManyCategory(@Valid @RequestBody List<CategoryDto> categoryDtos) {
         try {
             List<Long> ids = categoryDtos.parallelStream().map(CategoryDto::getId)
                     .collect(Collectors.toList());
@@ -95,7 +96,7 @@ public class CategoryController {
 
 
     @GetMapping("/getmany")
-    public ResponseEntity<List<CategoryDto>> getMany(@RequestBody List<Long> ids) {
+    public ResponseEntity<List<CategoryDto>> getMany(@Valid @RequestBody List<Long> ids) {
         try {
 
             List<Category> categories = categoryRepository.findManyCategoriesWithProducts(ids);
@@ -115,7 +116,7 @@ public class CategoryController {
 
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<CategoryDto> getCategory(@PathVariable long id) {
+    public ResponseEntity<CategoryDto> getCategory(@Valid @PathVariable long id) {
 
         try {
             Category optionalCategory = categoryRepository.findByIdCategoryWithProducts(id);
@@ -134,7 +135,7 @@ public class CategoryController {
 
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<CategoryDto> editCategory(@PathVariable long id, @RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<CategoryDto> editCategory(@PathVariable long id,@Valid @RequestBody CategoryDto categoryDto) {
         try {
 
             Category optionalCategory = categoryRepository.findByIdCategoryWithProducts(id);
@@ -155,7 +156,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleteCategory(@PathVariable long id) {
+    public ResponseEntity deleteCategory(@Valid @PathVariable long id) {
 
         try {
 

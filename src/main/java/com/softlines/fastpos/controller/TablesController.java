@@ -63,7 +63,7 @@ public class TablesController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<TableDto> getTable(@PathVariable long id) {
+    public ResponseEntity<TableDto> getTable(@Valid @PathVariable long id) {
 
         try {
            Table table = tableRepository.findByIdTable(id);
@@ -79,7 +79,7 @@ public class TablesController {
     }
 
     @GetMapping("/getbynumber/{number}")
-    public ResponseEntity<TableDto> getTableByNumber(@PathVariable int number) {
+    public ResponseEntity<TableDto> getTableByNumber(@Valid @PathVariable int number) {
 
         try {
             Table optionalTable = tableRepository.findByNumber(number);
@@ -95,7 +95,7 @@ public class TablesController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<TableDto> editTable(@PathVariable long id, @RequestBody TableDto tableDto) {
+    public ResponseEntity<TableDto> editTable(@Valid @PathVariable long id,@Valid @RequestBody TableDto tableDto) {
 
         try {
             Optional<Table> optionalTable = tableRepository.findById(id);
@@ -113,7 +113,7 @@ public class TablesController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleteTable(@PathVariable long id) {
+    public ResponseEntity deleteTable(@Valid @PathVariable long id) {
 
         try {
 

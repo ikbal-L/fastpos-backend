@@ -4,8 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -13,6 +16,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@SQLDelete(sql = "UPDATE Restaurent SET deleted=true WHERE id=?")
+@Where(clause = "deleted = false")
 public class Restaurent {
 
 
@@ -31,4 +36,7 @@ public class Restaurent {
     @JoinColumn(name = "restaurent_id")
     List<Annex> annexes;
 
+    @Builder.Default
+    @NotNull
+    private boolean deleted = false;
 }

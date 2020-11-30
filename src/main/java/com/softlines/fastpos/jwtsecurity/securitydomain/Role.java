@@ -1,14 +1,19 @@
 package com.softlines.fastpos.jwtsecurity.securitydomain;
 
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Setter
 @Getter
+@SQLDelete(sql = "UPDATE Role SET deleted=true WHERE id=?")
+@Where(clause = "deleted = false")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -33,4 +38,7 @@ public class Role {
     @ManyToMany(mappedBy = "roles")
     private List<JWTuser> users;
 
+    @Builder.Default
+    @NotNull
+    private boolean deleted = false;
 }

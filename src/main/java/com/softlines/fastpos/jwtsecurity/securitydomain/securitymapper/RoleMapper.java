@@ -1,5 +1,6 @@
 package com.softlines.fastpos.jwtsecurity.securitydomain.securitymapper;
 
+import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
 import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.RoleDTO;
@@ -16,11 +17,13 @@ public interface RoleMapper {
     RoleMapper INSTANCE = Mappers.getMapper(RoleMapper.class);
 
     @Mapping(source = "privileges", target = "privilegeIds", qualifiedByName = "privilegesToIds")
+    @Mapping(source = "users", target = "userIds", qualifiedByName = "usersToIds")
     RoleDTO toRoleDto(Role role);
 
     List<RoleDTO> toRoleDTOs(List<Role> roles);
 
     @Mapping(source = "privilegeIds", target = "privileges", qualifiedByName = "idsToPrivileges")
+    @Mapping(source = "userIds", target = "users", qualifiedByName = "IdsToUsers")
     Role toRole(RoleDTO roleDTO);
 
     @Named("privilegesToIds")
@@ -34,4 +37,17 @@ public interface RoleMapper {
         privilege.setId(idPrivilege);
         return privilege;
     }
+
+    @Named("UsersToIds")
+    static JWTuser UsersToIds(long idUser) {
+        JWTuser jwTuser =new JWTuser();
+        jwTuser.setId(idUser);
+        return jwTuser;
+    }
+
+    @Named("usersToIds")
+    static long usersToIds(JWTuser jwTuser) {
+        return jwTuser.getId();
+    }
+
 }

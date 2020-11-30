@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softlines.fastpos.constants.MessageKeyConstants;
 import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.domain.OrderType;
-import com.softlines.fastpos.validation.ValidationDiscountAmount;
+import com.softlines.fastpos.validation.OrderItemValidationDiscountAmountGreaterThanTotal;
+import com.softlines.fastpos.validation.OrderDtoValidationDiscountAmountGreaterThanTotal;
+import com.softlines.fastpos.validation.OrderValidationTotalGreaterThanNewTotal;
 import lombok.*;
 
 import org.hibernate.validator.constraints.Range;
@@ -16,10 +18,13 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-@ValidationDiscountAmount
+@OrderDtoValidationDiscountAmountGreaterThanTotal
+@OrderItemValidationDiscountAmountGreaterThanTotal
+@OrderValidationTotalGreaterThanNewTotal
 public class OrderDto {
 
     @JsonProperty("Id")
+    @Min(0)
     long id;
 
     @JsonProperty("BuyerId")
@@ -65,7 +70,6 @@ public class OrderDto {
 
     @JsonProperty("ReturnedAmount")
     @Min(value = 0, message = MessageKeyConstants.ORDER_TOTAL_VALIDATION_ERROR)
-
     Double returnedAmount;
 
     @JsonProperty("ProductsVisibility")
@@ -85,6 +89,8 @@ public class OrderDto {
 
     @JsonProperty("TableId")
     Long tableId;
+
+    private boolean deleted = false;
 
 }
 

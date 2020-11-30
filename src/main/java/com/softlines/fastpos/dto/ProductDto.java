@@ -1,13 +1,11 @@
 package com.softlines.fastpos.dto;
 
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.*;
 
-import com.softlines.fastpos.validation.ValidationDiscountAmount;
+import com.softlines.fastpos.validation.OrderDtoValidationDiscountAmountGreaterThanTotal;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -17,6 +15,7 @@ import java.util.List;
 
 @Data
 //@ValidationDiscountAmount(message = "validation.student.password.match")
+@OrderDtoValidationDiscountAmountGreaterThanTotal(message = "validation.student.password.match")
 
 public class ProductDto {
     @JsonProperty("Id")
@@ -49,7 +48,7 @@ public class ProductDto {
     boolean platter;
 
     @JsonProperty("Rank")
-    @JsonSetter()
+    @Min(1)
     Integer rank;
 
     //    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
@@ -58,4 +57,7 @@ public class ProductDto {
 
     @JsonProperty("IdAdditives")
     List<Long> idAdditives;
+
+    private boolean deleted = false;
+
 }

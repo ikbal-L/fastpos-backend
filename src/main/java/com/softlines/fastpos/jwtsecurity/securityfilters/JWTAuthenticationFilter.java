@@ -81,8 +81,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             Authentication auth) throws IOException {
 
 
-
-
         var user = ((CustomJWTuserDetails) auth.getPrincipal()).getJwtUser();
         var optionalTerminal = terminalRepository.findById(creds.getTerminalId());
         if (optionalTerminal.isPresent()){
@@ -95,6 +93,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     .agent(creds.getAgent())
                     .ipAddress(req.getRemoteAddr()).build();
             Session createdSession = null;
+
             try {
                 createdSession = sessionRepository.save(session);
             } catch (DataIntegrityViolationException e) {

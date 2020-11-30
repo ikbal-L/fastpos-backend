@@ -23,8 +23,10 @@ public class AdditiveController {
 
     @Autowired
     AdditiveMapper additiveMapper;
+
     @Autowired
     private AdditiveRepository additiveRepository;
+
     @Autowired
     DtoService dtoService;
 
@@ -104,7 +106,7 @@ public class AdditiveController {
     }
 
     @GetMapping("/getmany")
-    public ResponseEntity<List<AdditiveDto>> getMany(@RequestBody List<Long> ids) {
+    public ResponseEntity<List<AdditiveDto>> getMany(@Valid @RequestBody List<Long> ids) {
 
         try {
 
@@ -122,7 +124,7 @@ public class AdditiveController {
     }
 
     @GetMapping(value = "/get/{id}", produces = "application/json")
-    public ResponseEntity<AdditiveDto> getAdditive(@PathVariable long id) {
+    public ResponseEntity<AdditiveDto> getAdditive(@Valid @PathVariable long id) {
 
         try {
 
@@ -140,7 +142,7 @@ public class AdditiveController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<AdditiveDto> editAdditive(@PathVariable long id, @RequestBody AdditiveDto additiveDto) {
+    public ResponseEntity<AdditiveDto> editAdditive(@Valid @PathVariable long id, @RequestBody AdditiveDto additiveDto) {
 
 
             Optional<Additive> optionalAdditive = additiveRepository.findById(id);
@@ -159,7 +161,7 @@ public class AdditiveController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleteAdditive(@PathVariable long id) {
+    public ResponseEntity deleteAdditive(@Valid @PathVariable long id) {
         try {
 
             Optional<Additive> additiveToDel = additiveRepository.findById(id);

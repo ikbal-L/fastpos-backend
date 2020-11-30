@@ -4,6 +4,7 @@ import com.softlines.fastpos.ModelApplication;
 import com.softlines.fastpos.controller.WaiterController;
 import com.softlines.fastpos.domain.Person;
 import com.softlines.fastpos.domain.Waiter;
+import com.softlines.fastpos.dto.WaiterDto;
 import com.softlines.fastpos.dto.mapping.WaiterMapper;
 import com.softlines.fastpos.repository.WaiterRepository;
 import org.junit.Test;
@@ -271,8 +272,10 @@ public class WaiterControllerUnitTest {
         waiter.setBackgroundString("red");
         waiter.setPhoneNumber("072064150");
 
+        WaiterDto waiterDto= waiterMapper.toWaiterDto(waiter);
+
         when(waiterRepository.findById(waiter.getId())).thenReturn(Optional.of(waiter));
-        ResponseEntity<Waiter> returned = waiterController.editWaiter(1, waiter);
+        ResponseEntity<WaiterDto> returned = waiterController.editWaiter(1, waiterDto);
 
         verify(waiterRepository, times(1)).findById(waiter.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.OK);
@@ -287,35 +290,23 @@ public class WaiterControllerUnitTest {
         waiter.setBackgroundString("red");
         waiter.setPhoneNumber("072064150");
 
+     WaiterDto waiterDto= waiterMapper.toWaiterDto(waiter);
+
         when(waiterRepository.findById(waiter.getId())).thenReturn(Optional.empty());
-        ResponseEntity<Waiter> returned = waiterController.editWaiter(0, waiter);
+        ResponseEntity<WaiterDto> returned = waiterController.editWaiter(0, waiterDto);
 
         verify(waiterRepository, times(1)).findById(waiter.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
 
     }
 
-    @Test
-    @Order(18)
-    public void waiterController_Put_WithNullData() {
 
-        Waiter waiter = new Waiter();
-        waiter.setId(1);
-
-
-        when(waiterRepository.findById(waiter.getId())).thenReturn(Optional.of(waiter));
-        ResponseEntity<Waiter> returned = waiterController.editWaiter(1, waiter);
-
-        verify(waiterRepository, times(1)).findById(waiter.getId());
-        assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
-
-    }
 
     @Test
     @Order(19)
     public void waiterController_Put_WithNoDBConnection() {
 
-        when(waiterRepository.findById(5l))
+        when(waiterRepository.findById(5L))
                 .thenThrow(DataAccessResourceFailureException.class);
 
         var res = waiterController.getWaiter(5);
@@ -323,6 +314,5 @@ public class WaiterControllerUnitTest {
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
 
     }
-
 
 }

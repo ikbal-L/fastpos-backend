@@ -10,14 +10,21 @@ import javax.validation.constraints.NotNull;
 public class TableDto {
 
     @JsonProperty("Id")
+    @Min(0)
     long id;
+
     @JsonProperty("Number")
     @NotNull
+    @Min(value = 1)
     Integer number;
+
     @JsonProperty("Seats")
     @Min(value = 0)
     int seats;
+
     @JsonProperty("IsVirtual")
     boolean virtual;
+
+    private boolean deleted = false;
 
 }

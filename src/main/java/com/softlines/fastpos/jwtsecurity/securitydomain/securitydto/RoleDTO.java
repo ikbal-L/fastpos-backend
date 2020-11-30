@@ -1,6 +1,8 @@
 package com.softlines.fastpos.jwtsecurity.securitydomain.securitydto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softlines.fastpos.constants.MessageKeyConstants;
+import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,8 +12,21 @@ import java.util.List;
 @Data
 @Builder
 public class RoleDTO {
+    @JsonProperty("Id")
     long id;
+
+    @JsonProperty("Name")
     @NotBlank(message = MessageKeyConstants.ROLE_NAME_VALIDATION_ERROR)
     String name;
+
+    @JsonProperty("PrivilegeIds")
     List<Long> privilegeIds;
+
+    @JsonProperty("Users")
+    List<Long> userIds;
+
+    @JsonProperty("Deleted")
+    @Builder.Default
+    boolean deleted = false;
+
 }

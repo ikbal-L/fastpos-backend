@@ -1,8 +1,8 @@
-package com.softlines.fastpos.dto.mapping;
+package com.softlines.fastpos.jwtsecurity.securitydomain.securitymapper;
 
 import com.softlines.fastpos.jwtsecurity.securitydomain.Annex;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Restaurent;
-import com.softlines.fastpos.dto.RestaurentDto;
+import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.RestaurentDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

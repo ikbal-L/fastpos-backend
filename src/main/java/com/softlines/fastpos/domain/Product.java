@@ -3,6 +3,8 @@ package com.softlines.fastpos.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softlines.fastpos.constants.MessageKeyConstants;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -13,6 +15,10 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+
+@SQLDelete(sql = "UPDATE Product SET deleted=true WHERE id=?")
+@Where(clause = "deleted = false")
+
 @Entity
 public class Product {
 
@@ -55,5 +61,9 @@ public class Product {
 
     @ManyToOne(fetch = FetchType.LAZY)
     Category category;
+
+    @Builder.Default
+    @NotNull
+    boolean deleted=false;
 
 }
