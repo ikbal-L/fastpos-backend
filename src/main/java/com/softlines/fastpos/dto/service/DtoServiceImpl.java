@@ -15,12 +15,12 @@ import java.util.List;
 
 @Service
 public class DtoServiceImpl implements DtoService {
-
-
     @Autowired
     private CategoryRepository categoryRepository;
+
     @Autowired
     private ProductRepository productRepository;
+
     @Autowired
     private AdditiveRepository additiveRepository;
 
@@ -30,12 +30,16 @@ public class DtoServiceImpl implements DtoService {
     ///////////////////////////
     @Autowired
     ProductMapper productMapper;
+
     @Autowired
     CategoryMapper categoryMapper;
+
     @Autowired
     AdditiveMapper additiveMapper;
+
     @Autowired
     OrderMapper orderMapper;
+
     @Autowired
     OrderItemMapper orderItemMapper;
 
@@ -48,8 +52,6 @@ public class DtoServiceImpl implements DtoService {
     @Autowired
     DeliverymanMapper deliverymanMapper;
 
-
-    // TODO Remove repository in services
 
     @Override
     public Product productDtoToProduct(ProductDto pDto, boolean getDataFromRepository) {

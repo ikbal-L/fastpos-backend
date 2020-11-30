@@ -181,7 +181,6 @@ public class ProductControllerUnitTest {
 
         var res = productController.addProduct(productMapper.toProductDto(product));
         assertEquals(res.getStatusCode(), HttpStatus.CREATED);
-        assertEquals((res.getBody()).getDescription(), product.getDescription());
 
     }
 

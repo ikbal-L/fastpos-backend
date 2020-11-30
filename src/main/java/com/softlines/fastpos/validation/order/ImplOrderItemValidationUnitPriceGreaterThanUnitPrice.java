@@ -1,4 +1,4 @@
-package com.softlines.fastpos.validation;
+package com.softlines.fastpos.validation.order;
 
 import com.softlines.fastpos.dto.OrderDto;
 

@@ -1,6 +1,7 @@
-package com.softlines.fastpos.validation;
+package com.softlines.fastpos.validation.customer;
 
 import com.softlines.fastpos.constants.MessageKeyConstants;
+
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;

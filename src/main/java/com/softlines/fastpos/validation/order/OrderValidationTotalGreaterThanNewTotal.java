@@ -1,4 +1,4 @@
-package com.softlines.fastpos.validation;
+package com.softlines.fastpos.validation.order;
 
 import com.softlines.fastpos.constants.MessageKeyConstants;
 
@@ -9,10 +9,10 @@ import java.lang.annotation.*;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {ImplOrderItemValidationUnitPriceGreaterThanUnitPrice.class})
-public @interface OrderItemValidationDiscountAmountGreaterThanTotal {
+@Constraint(validatedBy = {ImplOrderDtoValidationTotalGreaterThanNewTotal.class})
+public @interface OrderValidationTotalGreaterThanNewTotal {
 
-    String message() default MessageKeyConstants.ORDER_ITEM_DISCOUNT_AMOUNT_GREATER_THAN_TOTAL_ERROR;
+    String message() default MessageKeyConstants.ORDER_TOTAL_GREATER_THAN_NEW_TOTAL_ERROR;
 
 
     Class<?>[] groups() default {};

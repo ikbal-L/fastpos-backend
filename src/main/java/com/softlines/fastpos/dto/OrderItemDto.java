@@ -1,7 +1,7 @@
 package com.softlines.fastpos.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.softlines.fastpos.validation.OrderDtoValidationDiscountAmountGreaterThanTotal;
+import com.softlines.fastpos.validation.order.OrderDtoValidationDiscountAmountGreaterThanTotal;
 import lombok.*;
 
 import javax.validation.constraints.Min;

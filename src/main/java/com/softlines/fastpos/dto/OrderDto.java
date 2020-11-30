@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softlines.fastpos.constants.MessageKeyConstants;
 import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.domain.OrderType;
-import com.softlines.fastpos.validation.OrderItemValidationDiscountAmountGreaterThanTotal;
-import com.softlines.fastpos.validation.OrderDtoValidationDiscountAmountGreaterThanTotal;
-import com.softlines.fastpos.validation.OrderValidationTotalGreaterThanNewTotal;
+import com.softlines.fastpos.validation.order.OrderItemValidationDiscountAmountGreaterThanTotal;
+import com.softlines.fastpos.validation.order.OrderDtoValidationDiscountAmountGreaterThanTotal;
+import com.softlines.fastpos.validation.order.OrderValidationTotalGreaterThanNewTotal;
 import lombok.*;
 
 import org.hibernate.validator.constraints.Range;
@@ -20,6 +20,8 @@ import java.util.List;
 @Data
 @OrderDtoValidationDiscountAmountGreaterThanTotal
 @OrderItemValidationDiscountAmountGreaterThanTotal
+
+
 @OrderValidationTotalGreaterThanNewTotal
 public class OrderDto {
 

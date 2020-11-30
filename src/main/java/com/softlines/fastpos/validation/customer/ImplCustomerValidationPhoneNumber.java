@@ -1,9 +1,9 @@
-package com.softlines.fastpos.validation;
+package com.softlines.fastpos.validation.customer;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
-import com.softlines.fastpos.dto.CustomerDto;
+import com.softlines.fastpos.validation.customer.CustomerValidationPhoneNumber;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

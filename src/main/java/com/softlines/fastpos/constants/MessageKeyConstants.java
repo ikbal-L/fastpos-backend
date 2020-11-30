@@ -25,10 +25,12 @@ public class MessageKeyConstants {
 
     //// PRODUCT VALIDATION
     public static final String PRODUCT_NAME_VALIDATION_ERROR = "validation.product.error.name";
+    public static final String PRODUCT_IF_CATEGORY_ID_EQUAL_NULL_RANK_MUST_EQUAL_NULL_VALIDATION_ERROR = "validation.product.error.if_categoryId_equal_null_rank_must_equal_null";
 
     //// CATEGORY VALIDATION
     public static final String CATEGORY_BACKGROUND_STRING_VALIDATION_ERROR = "validation.category.error.backgroundString";
     public static final String CATEGORY_NAME_VALIDATION_ERROR = "validation.category.error.backgroundString";
+    public static final String CATEGORY_IF_RANK_EQUAL_NULL_PRODUCTS_IDS_MUST_EQUAL_NULL_VALIDATION_ERROR = "validation.product.error.if_rank_equal_null_than_productsIds_must_equal_null";
 
     //// CUSTOMER VALIDATION
     public static final String CUSTOMER_NAME_VALIDATION_ERROR = "validation.customer.error.name";

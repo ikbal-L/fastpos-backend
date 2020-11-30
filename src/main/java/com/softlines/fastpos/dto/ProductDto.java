@@ -1,22 +1,19 @@
 package com.softlines.fastpos.dto;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.softlines.fastpos.validation.product.ProductValidationIfCategoryIdEqualNullRankMustEqualNull;
 import lombok.*;
 
-import com.softlines.fastpos.validation.OrderDtoValidationDiscountAmountGreaterThanTotal;
+import com.softlines.fastpos.validation.order.OrderDtoValidationDiscountAmountGreaterThanTotal;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
 import java.util.List;
 
-
 @Data
-//@ValidationDiscountAmount(message = "validation.student.password.match")
-@OrderDtoValidationDiscountAmountGreaterThanTotal(message = "validation.student.password.match")
-
+@ProductValidationIfCategoryIdEqualNullRankMustEqualNull
 public class ProductDto {
     @JsonProperty("Id")
     long id;

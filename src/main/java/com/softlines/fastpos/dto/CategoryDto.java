@@ -2,6 +2,7 @@ package com.softlines.fastpos.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softlines.fastpos.constants.MessageKeyConstants;
+import com.softlines.fastpos.validation.category.CategoryValidationIfRank_EqualNull_Than_ProductIds_MustEqualNull;
 import lombok.*;
 
 import javax.validation.constraints.Min;
@@ -9,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 
+@CategoryValidationIfRank_EqualNull_Than_ProductIds_MustEqualNull
 @Data
 public class CategoryDto {
 
