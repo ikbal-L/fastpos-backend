@@ -17,11 +17,9 @@ import javax.validation.constraints.Pattern;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@CustomerValidationPhoneNumber
 public class CustomerDto {
 
     @JsonProperty("Id")
-    @Min(0)
     long id;
 
     @JsonProperty("Name")
@@ -30,6 +28,7 @@ public class CustomerDto {
 
     @JsonProperty("Mobile")
     @NotBlank(message = MessageKeyConstants.CUSTOMER_MOBILE_VALIDATION_ERROR)
+    @CustomerValidationPhoneNumber
     String mobile;
 
     private boolean deleted = false;

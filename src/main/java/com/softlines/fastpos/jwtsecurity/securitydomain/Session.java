@@ -23,6 +23,7 @@ import java.util.UUID;
 @SQLDelete(sql = "UPDATE Session SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
 public class Session {
+
     @Id
     @GeneratedValue
     @Type(type = "uuid-char")

@@ -93,6 +93,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     .agent(creds.getAgent())
                     .ipAddress(req.getRemoteAddr()).build();
             Session createdSession = null;
+
             try {
                 createdSession = sessionRepository.save(session);
             } catch (DataIntegrityViolationException e) {
