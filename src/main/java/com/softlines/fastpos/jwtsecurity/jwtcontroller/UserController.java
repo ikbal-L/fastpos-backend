@@ -178,7 +178,7 @@ public class UserController {
                 System.out.println(user.getEmail());
                 System.out.println(user.getFirstName());
 //                List<Long> annexesIds = userMapper.toUserDto(user).getAnnexesIds();
-                List<Long> annexesIds = userMapper.toUserDtoWithAnnexes(jwTuser.get()).getAnnexesIds();
+                List<Long> annexesIds = userMapper.toUserDto(jwTuser.get()).getAnnexesIds();
 //                return  ResponseEntity.status(HttpStatus.OK).body(annexesIds);
                 return  ResponseEntity.status(HttpStatus.OK).body(annexesIds);
             }

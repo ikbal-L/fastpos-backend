@@ -19,8 +19,9 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin(origins = "localhost", maxAge = 3600)
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/api/product")
 public class ProductController {
 
     @Autowired
@@ -35,7 +36,7 @@ public class ProductController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping(value = "/save", consumes = "application/json")
-    public ResponseEntity<ProductDto> addProduct(@Valid @RequestBody ProductDto productDto) {
+    public ResponseEntity<Long> addProduct(@Valid @RequestBody ProductDto productDto) {
 
         try {
            Optional<Product> optionalProduct = productRepository.findById(productDto.getId());
@@ -43,7 +44,9 @@ public class ProductController {
             if (optionalProduct.isEmpty()) {
 
                     Product product = dtoService.productDtoToProduct(productDto, false);
-                    return ResponseEntity.status(HttpStatus.CREATED).body(productMapper.toProductDto(productRepository.save(product)));
+                    var created = productRepository.save(product);
+                    return ResponseEntity.status(HttpStatus.CREATED).body(created.getId());
+//                    return ResponseEntity.status(HttpStatus.CREATED).body(productMapper.toProductDto(productRepository.save(product)));
 
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();

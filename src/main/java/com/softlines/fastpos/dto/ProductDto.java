@@ -16,7 +16,7 @@ import java.util.List;
 
 
 @Data
-@ValidationDiscountAmount(message = "validation.student.password.match")
+//@ValidationDiscountAmount(message = "validation.student.password.match")
 
 public class ProductDto {
     @JsonProperty("Id")

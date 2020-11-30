@@ -1,6 +1,8 @@
 package com.softlines.fastpos.exceptionmanagement;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -52,6 +54,11 @@ public class FastposExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public final ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException e){
         return  new ResponseEntity<Object>(String.format("%s",e.getMessage()),HttpStatus.UNAUTHORIZED);
+    }
+    //TODO Discuss how to handle this error on the client side
+    @ExceptionHandler(ConstraintViolationException.class)
+    public final ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException e){
+        return  new ResponseEntity<Object>(e.getCause().getLocalizedMessage(),HttpStatus.CONFLICT);
     }
 
 }

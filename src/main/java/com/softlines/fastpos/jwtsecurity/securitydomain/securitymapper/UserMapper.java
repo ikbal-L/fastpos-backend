@@ -15,15 +15,15 @@ public interface UserMapper {
 
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    @Mapping(source = "roles", target = "roleIds", qualifiedByName = "rolessToIds")
-    @Named("ToUserDto")
+    @Mapping(source = "roles", target = "roleIds", qualifiedByName = "rolessToIds",
+    nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "annexes",target = "annexesIds",qualifiedByName = "annexesToIds",
+    nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     UserDTO toUserDto(JWTuser jwTuser);
 
-    @IterableMapping(qualifiedByName = "ToUserDto")
+
     List<UserDTO> toUserDTOs(List<JWTuser> jwTusers);
 
-    @Mapping(source = "annexes",target = "annexesIds",qualifiedByName = "annexesToIds" )
-    UserDTO toUserDtoWithAnnexes(JWTuser jwtUser);
 
 
     @Mapping(source = "roleIds", target = "roles", qualifiedByName = "idsToRoles")

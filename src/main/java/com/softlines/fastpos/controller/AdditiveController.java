@@ -6,6 +6,7 @@ import com.softlines.fastpos.dto.mapping.AdditiveMapper;
 import com.softlines.fastpos.dto.service.DtoService;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.AdditiveRepository;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/additive")
+@RequestMapping("/api/additive")
 public class AdditiveController {
 
     @Autowired
@@ -30,7 +31,7 @@ public class AdditiveController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping("/save")
-    public ResponseEntity<AdditiveDto> addAdditive(@Valid @RequestBody AdditiveDto additiveDto) {
+    public ResponseEntity<Long> addAdditive(@Valid @RequestBody AdditiveDto additiveDto) {
         try {
 
             Optional<Additive> optionalAdditive = additiveRepository.findById(additiveDto.getId());
@@ -40,8 +41,9 @@ public class AdditiveController {
                 if (additiveDto.getDescription() != null &&
                         !additiveDto.getDescription().isEmpty()) {
                     Additive savedAdditve = additiveRepository.save(additiveMapper.toAdditive(additiveDto));
-                    AdditiveDto savedAdditveDto = additiveMapper.toAdditiveDto(savedAdditve);
-                    return ResponseEntity.status(HttpStatus.CREATED).body(savedAdditveDto);
+//                    AdditiveDto savedAdditveDto = additiveMapper.toAdditiveDto(savedAdditve);
+//                    return ResponseEntity.status(HttpStatus.CREATED).body(savedAdditveDto);
+                    return ResponseEntity.status(HttpStatus.CREATED).body(savedAdditve.getId());
                 } else
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
@@ -140,7 +142,7 @@ public class AdditiveController {
     @PutMapping("/put/{id}")
     public ResponseEntity<AdditiveDto> editAdditive(@PathVariable long id, @RequestBody AdditiveDto additiveDto) {
 
-        try {
+
             Optional<Additive> optionalAdditive = additiveRepository.findById(id);
 
             if (optionalAdditive.isPresent() && id != 0 && additiveDto.getDescription() != null) {
@@ -151,9 +153,8 @@ public class AdditiveController {
                 return ResponseEntity.noContent().build();
             }
 
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
-        }
+
+
 
     }
 
