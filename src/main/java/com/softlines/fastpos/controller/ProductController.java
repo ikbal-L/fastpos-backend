@@ -54,8 +54,8 @@ public class ProductController {
         }
 
     }
-    @PreAuthorize("hasAuthority('Read_Product')")
-//    @PreAuthorize("hasRole('admin') or ha")
+
+//    @PreAuthorize("hasAuthority('Read_Product')")
     @GetMapping("/getall")
     public ResponseEntity<List<ProductDto>> getProducts( ) {
 

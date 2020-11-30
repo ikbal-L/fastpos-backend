@@ -4,14 +4,12 @@ import com.softlines.fastpos.domain.Waiter;
 import com.softlines.fastpos.dto.WaiterDto;
 import com.softlines.fastpos.dto.mapping.WaiterMapper;
 import com.softlines.fastpos.dto.service.DtoService;
-import com.softlines.fastpos.dto.service.DtoServiceImpl;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.WaiterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +20,6 @@ public class WaiterController {
 
     @Autowired
     private WaiterRepository waiterRepository;
-
 
     @Autowired
     DtoService dtoService;
@@ -41,9 +38,9 @@ public class WaiterController {
             Optional<Waiter> optionalWaiter = waiterRepository.findById(waiterDto.getId());
 
             if (optionalWaiter.isEmpty()) {
-                    Waiter waiter=dtoService.waiterDtoToWaiter(waiterDto, false);
-                    Waiter createdWaiter = waiterRepository.save(waiter);
-                    return ResponseEntity.status(HttpStatus.CREATED).body(waiterMapper.toWaiterDto(createdWaiter));
+                Waiter waiter = dtoService.waiterDtoToWaiter(waiterDto, false);
+                Waiter createdWaiter = waiterRepository.save(waiter);
+                return ResponseEntity.status(HttpStatus.CREATED).body(waiterMapper.toWaiterDto(createdWaiter));
 
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();
@@ -113,16 +110,16 @@ public class WaiterController {
     }
 
 
-
     @PutMapping("/put/{id}")
-    public ResponseEntity editWaiter(@Valid @PathVariable long id,@Valid @RequestBody Waiter waiter) {
+    public ResponseEntity<WaiterDto> editWaiter(@Valid @PathVariable long id, @Valid @RequestBody WaiterDto waiterDto) {
         try {
 
             Optional<Waiter> optionalWaiter = waiterRepository.findById(id);
 
-            if (optionalWaiter.isPresent() && id != 0 && waiter.getName() != null) {
+            if (optionalWaiter.isPresent() && id != 0) {
 
-                return ResponseEntity.ok().body(waiterRepository.save(waiter));
+                Waiter waiter = waiterRepository.save(waiterMapper.toWaiter(waiterDto));
+                return ResponseEntity.ok().body(waiterMapper.toWaiterDto(waiter));
             } else {
                 return ResponseEntity.noContent().build();
             }

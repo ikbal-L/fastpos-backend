@@ -9,8 +9,8 @@ import java.lang.annotation.*;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {ImplOrderValidationDiscountAmountGreaterThanTotal.class})
-public @interface OrderValidationDiscountAmountGreaterThanTotal {
+@Constraint(validatedBy = {ImplOrderDtoValidationDiscountAmountGreaterThanTotal.class})
+public @interface OrderDtoValidationDiscountAmountGreaterThanTotal {
 
     String message() default MessageKeyConstants.ORDER_DISCOUNT_AMOUNT_GREATER_THAN_TOTAL_ERROR;
 

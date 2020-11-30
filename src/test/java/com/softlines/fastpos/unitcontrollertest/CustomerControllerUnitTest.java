@@ -19,6 +19,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
@@ -42,6 +43,7 @@ public class CustomerControllerUnitTest {
 
     @Autowired
     CustomerMapper customerMapper;
+
     @Test
     @Order(1)
     public void customerController_getAll_WithNotEmptyCustomersList() throws Exception {
@@ -101,52 +103,42 @@ public class CustomerControllerUnitTest {
     @Order(5)
     public void customerController_Save_WithData() {
 
-        var customer =Customer.builder().name("tacos").build();
+        var customer = Customer.builder().name("tacos").build();
 
         when(customerRepository.save(any(Customer.class))).thenReturn(customer);
-        var res = customerController.addCustomer(customer);
+        CustomerDto customerDto = customerMapper.toCustomerDto(customer);
+        var res = customerController.addCustomer(customerDto);
 
         assertEquals(res.getStatusCode(), HttpStatus.CREATED);
-        assertEquals((res.getBody()), customerMapper.toCustomerDto( customer));
+        assertEquals((res.getBody()), customerMapper.toCustomerDto(customer));
 
     }
 
     @Test
     public void customerController_Save_WithExistCustomer() {
 
-        var customer =Customer.builder().id(1).name("tacos").build();
+        var customer = Customer.builder().id(1).name("tacos").build();
+        CustomerDto customerDto = customerMapper.toCustomerDto(customer);
 
         when(customerRepository.findById(customer.getId())).thenReturn(java.util.Optional.of(customer));
-        var res = customerController.addCustomer(customer);
+        var res = customerController.addCustomer(customerDto);
 
         assertEquals(res.getStatusCode(), HttpStatus.FOUND);
 
     }
 
-
-    @Test
-    public void customerController_Save_WithNullCustomerName() {
-
-        var customer = Customer.builder().build();
-
-        when(customerRepository.save(any(Customer.class))).thenReturn(customer);
-        var res = customerController.addCustomer(customer);
-
-        assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
-
-    }
-
-
     @Test
     public void customerController_save_WithNoDBConnection() {
 
         var customer = Customer.builder()
-                        .id(1l)
-                        .name("harrisa")
-                        .build();
+                .id(1L)
+                .name("harrisa")
+                .build();
+
+        CustomerDto customerDto = customerMapper.toCustomerDto(customer);
 
         when(customerRepository.save(any(Customer.class))).thenThrow(DataAccessResourceFailureException.class);
-        var res = customerController.addCustomer( customer);
+        var res = customerController.addCustomer(customerDto);
 
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
 

@@ -81,8 +81,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             Authentication auth) throws IOException {
 
 
-
-
         var user = ((CustomJWTuserDetails) auth.getPrincipal()).getJwtUser();
         var optionalTerminal = terminalRepository.findById(creds.getTerminalId());
         if (optionalTerminal.isPresent()){

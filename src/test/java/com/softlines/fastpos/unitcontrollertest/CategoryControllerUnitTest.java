@@ -189,7 +189,7 @@ public class CategoryControllerUnitTest {
                         .rank(2)
                         .products(Arrays.asList(Product.builder().id(1).build())).build();
 
-        when(categoryRepository.findByIdCategoryWithProducts(category.getId())).thenReturn(category);
+        when(categoryRepository.findById(category.getId())).thenReturn(java.util.Optional.of(category));
         var res = categoryController.addCategory(categoryMapper.toCategoryDto(category));
 
         assertEquals(res.getStatusCode(), HttpStatus.FOUND);
@@ -197,18 +197,7 @@ public class CategoryControllerUnitTest {
     }
 
 
-    @Test
-    @Order(7)
-    public void categoryController_Save_WithoutData() {
 
-        var category = Category.builder().build();
-
-        when(categoryRepository.save(any(Category.class))).thenReturn(category);
-        var res = categoryController.addCategory(categoryMapper.toCategoryDto(category));
-
-        assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
-
-    }
 
 
     @Test

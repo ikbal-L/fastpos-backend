@@ -4,14 +4,12 @@ import com.softlines.fastpos.domain.Deliveryman;
 import com.softlines.fastpos.dto.DeliverymanDto;
 import com.softlines.fastpos.dto.mapping.DeliverymanMapper;
 import com.softlines.fastpos.dto.service.DtoService;
-import com.softlines.fastpos.dto.service.DtoServiceImpl;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.DeliverymanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;

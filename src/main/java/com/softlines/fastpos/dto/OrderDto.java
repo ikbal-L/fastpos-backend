@@ -5,7 +5,7 @@ import com.softlines.fastpos.constants.MessageKeyConstants;
 import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.domain.OrderType;
 import com.softlines.fastpos.validation.OrderItemValidationDiscountAmountGreaterThanTotal;
-import com.softlines.fastpos.validation.OrderValidationDiscountAmountGreaterThanTotal;
+import com.softlines.fastpos.validation.OrderDtoValidationDiscountAmountGreaterThanTotal;
 import com.softlines.fastpos.validation.OrderValidationTotalGreaterThanNewTotal;
 import lombok.*;
 
@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-@OrderValidationDiscountAmountGreaterThanTotal
+@OrderDtoValidationDiscountAmountGreaterThanTotal
 @OrderItemValidationDiscountAmountGreaterThanTotal
 @OrderValidationTotalGreaterThanNewTotal
 public class OrderDto {

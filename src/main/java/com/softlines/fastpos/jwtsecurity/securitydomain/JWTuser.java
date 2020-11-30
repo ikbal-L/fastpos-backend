@@ -62,6 +62,7 @@ public class JWTuser extends BaseEntity {
     @ManyToMany(mappedBy = "users")
     private List<Annex> annexes;
 
+//    @Enumerated(EnumType.STRING)
     private Agent agent;
 
 

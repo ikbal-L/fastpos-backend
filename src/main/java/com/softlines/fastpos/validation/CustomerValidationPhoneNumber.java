@@ -1,7 +1,6 @@
 package com.softlines.fastpos.validation;
 
 import com.softlines.fastpos.constants.MessageKeyConstants;
-
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
@@ -9,10 +8,10 @@ import java.lang.annotation.*;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {ImplOrderDtoValidationTotalGreaterThanNewTotal.class})
-public @interface OrderValidationTotalGreaterThanNewTotal {
+@Constraint(validatedBy = {ImplCustomerValidationPhoneNumber.class})
+public @interface CustomerValidationPhoneNumber {
 
-    String message() default MessageKeyConstants.ORDER_TOTAL_GREATER_THAN_NEW_TOTAL_ERROR;
+    String message() default MessageKeyConstants.CUSTOMER_MOBILE_VALIDATION_ERROR;
 
 
     Class<?>[] groups() default {};

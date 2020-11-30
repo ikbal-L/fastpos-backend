@@ -4,10 +4,10 @@ import com.softlines.fastpos.dto.OrderDto;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class ImplOrderValidationTotalGreaterThanNewTotal implements ConstraintValidator<OrderValidationTotalGreaterThanNewTotal, OrderDto> {
+public class ImplOrderDtoValidationDiscountAmountGreaterThanTotal implements ConstraintValidator<OrderDtoValidationDiscountAmountGreaterThanTotal, OrderDto> {
 
     public boolean isValid(OrderDto orderDto, ConstraintValidatorContext context) {
-        return orderDto.getTotal() >= orderDto.getNewTotal();
+        return orderDto.getTotal() >= orderDto.getDiscountAmount();
     }
 
 }

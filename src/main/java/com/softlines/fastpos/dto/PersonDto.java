@@ -1,6 +1,7 @@
 package com.softlines.fastpos.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.softlines.fastpos.constants.MessageKeyConstants;
 import com.softlines.fastpos.domain.Descriptor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class PersonDto {
     long id;
 
     @JsonProperty("Name")
-    @NotBlank
+    @NotBlank(message = MessageKeyConstants.PERSON_NAME_VALIDATION_ERROR)
     String name;
 
     @JsonProperty("PhoneNumber")

@@ -57,6 +57,6 @@ public class Order {
 
     @Builder.Default
     @NotNull
-    private boolean deleted=false;
+    private boolean deleted = false;
 }
 
