@@ -10,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/order")
@@ -28,7 +30,7 @@ public class OrderController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping(value = "/save", consumes = "application/json")
-    public ResponseEntity<OrderDto> addOrder(@Valid @RequestBody OrderDto orderDto) {
+    public ResponseEntity<Long> addOrder(@Valid @RequestBody OrderDto orderDto) {
 
         try {
             Optional<Order> foundOrder = orderRepository.findById(orderDto.getId());
@@ -39,12 +41,39 @@ public class OrderController {
                     Order order = dtoService.orderDtoToOrder(orderDto);
 
                     Order createdOder = orderRepository.save(order);
-                    OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
-                    return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);
+                    return ResponseEntity.status(HttpStatus.CREATED).body(createdOder.getId());
 
                 } else {
                     return ResponseEntity.noContent().build();
                 }
+
+            } else {
+                return ResponseEntity.status(HttpStatus.FOUND).build();
+            }
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+
+    }
+
+    @PostMapping(value = "/savemany", consumes = "application/json")
+    public ResponseEntity<List<Long>> addManyOrder(@Valid @RequestBody List<OrderDto> orderDtoList) {
+
+        try {
+            List<Long> ids = orderDtoList.parallelStream().map(OrderDto::getId).collect(Collectors.toList());
+            List<Order> foundOrder = orderRepository.findAllById(ids);
+
+
+            if (foundOrder.size() == 0) {
+
+                List<Order> order = dtoService.orderDtoListToOrderList(orderDtoList);
+
+                List<Order> createdOder = orderRepository.saveAll(order);
+                List<Long> savedIds = createdOder.parallelStream()
+                        .map(Order::getId).collect(Collectors.toList());
+
+                return ResponseEntity.status(HttpStatus.CREATED).body(savedIds);
 
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();
@@ -75,13 +104,32 @@ public class OrderController {
 
     }
 
+
+    @GetMapping("/getmany")
+    public ResponseEntity<List<OrderDto>> getManyOrders(@Valid @RequestBody List<Long> ids) {
+
+        try {
+
+            List<Order> orders = orderRepository.findManyOrderWithOrderItems(ids);
+
+            if (orders == null || orders.isEmpty())
+                return ResponseEntity.noContent().build();
+            else
+                return ResponseEntity.ok().body(orderMapper.toOrderDTOs(orders));
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+
+    }
+
     @GetMapping("/get/{id}")
     public ResponseEntity<OrderDto> getOrder(@Valid @PathVariable long id) {
         try {
 
             Order order = orderRepository.findByIdOrderWithOrderItems(id);
 
-            if (order!=null  && id != 0)
+            if (order != null && id != 0)
                 return ResponseEntity.ok().body(orderMapper.toOrderDto(order));
             else
                 return ResponseEntity.noContent().build();
@@ -112,6 +160,7 @@ public class OrderController {
         }
 
     }
+
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity deleteOrder(@Valid @PathVariable long id) {

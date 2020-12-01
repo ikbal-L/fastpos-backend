@@ -36,7 +36,7 @@ public class Category {
     String backgroundString;
     Integer rank;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY,orphanRemoval=true)
     @JoinColumn(name = "category_id")
     List<Product> products;
 

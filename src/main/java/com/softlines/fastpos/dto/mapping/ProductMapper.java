@@ -30,6 +30,7 @@ public interface ProductMapper {
             ,nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     Product toProduct(ProductDto productDTO);
 
+    List<Product> toProductList(List<ProductDto> productDtoList);
 
     @Named("AdditiveToId")
     public static long AdditiveToId(Additive additives) {

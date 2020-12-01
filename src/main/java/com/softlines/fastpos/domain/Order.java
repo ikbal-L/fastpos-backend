@@ -16,10 +16,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-
 @SQLDelete(sql = "UPDATE orders SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
-
 @javax.persistence.Table(name = "orders")
 public class Order {
 
@@ -48,7 +46,7 @@ public class Order {
     @Enumerated(EnumType.STRING)
     OrderType type;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order",orphanRemoval=true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<OrderItem> orderItems;
 
     @ManyToOne

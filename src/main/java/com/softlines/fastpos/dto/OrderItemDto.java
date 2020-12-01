@@ -49,8 +49,8 @@ public class OrderItemDto {
     @JsonProperty("IdAdditives")
     List<Long> idAdditives;
 
-    @JsonProperty("orderId")
-      Long orderId;
+    @JsonProperty("OrderId")
+    Long orderId;
 
     @JsonProperty("TimeStamp")
     Date timestamp;

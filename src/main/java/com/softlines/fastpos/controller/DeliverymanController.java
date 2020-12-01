@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/deliveryman")
+@RequestMapping("/deliveryman")
 public class DeliverymanController {
 
     @Autowired
@@ -31,7 +31,7 @@ public class DeliverymanController {
     DeliverymanMapper deliverymanMapper;
 
     @PostMapping("/save")
-    public ResponseEntity<DeliverymanDto> addDeliveryman(@Valid  @RequestBody DeliverymanDto deliverymanDto) {
+    public ResponseEntity<Long> addDeliveryman(@Valid  @RequestBody DeliverymanDto deliverymanDto) {
         try {
 
             Optional<Deliveryman> optionalDeliveryman = deliverymanRepository.findById(deliverymanDto.getId());
@@ -41,8 +41,7 @@ public class DeliverymanController {
                     Deliveryman deliveryman = dtoService.deliverymanDtoToDeliveryman(deliverymanDto, false);
                     Deliveryman createdDeliveryman = deliverymanRepository.save(deliveryman);
 
-                    return ResponseEntity.status(HttpStatus.CREATED)
-                            .body(deliverymanMapper.toDeliverymanDto(deliveryman));
+                    return ResponseEntity.status(HttpStatus.CREATED).body(deliveryman.getId());
                 } else {
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 

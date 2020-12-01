@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/additive")
+@RequestMapping("/additive")
 public class AdditiveController {
 
     @Autowired

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController()
-@RequestMapping("/api/waiter")
+@RequestMapping("/waiter")
 public class WaiterController {
 
     @Autowired
@@ -31,16 +31,17 @@ public class WaiterController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping("/save")
-    public ResponseEntity<WaiterDto> addWaiter(@Valid @RequestBody WaiterDto waiterDto) {
+    public ResponseEntity<Long> addWaiter(@Valid @RequestBody WaiterDto waiterDto) {
 
         try {
 
             Optional<Waiter> optionalWaiter = waiterRepository.findById(waiterDto.getId());
 
             if (optionalWaiter.isEmpty()) {
+
                 Waiter waiter = dtoService.waiterDtoToWaiter(waiterDto, false);
                 Waiter createdWaiter = waiterRepository.save(waiter);
-                return ResponseEntity.status(HttpStatus.CREATED).body(waiterMapper.toWaiterDto(createdWaiter));
+                return ResponseEntity.status(HttpStatus.CREATED).body(createdWaiter.getId());
 
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();
@@ -57,7 +58,7 @@ public class WaiterController {
 
             List<Waiter> waiters = waiterRepository.findAll();
 
-            if (waiters == null || waiters.isEmpty()) {
+            if (waiters.isEmpty()) {
                 return ResponseEntity.noContent().build();
 
             } else {
@@ -134,10 +135,10 @@ public class WaiterController {
     public ResponseEntity deleteWaiter(@Valid @PathVariable long id) {
 
         try {
-            Waiter waiterToDel = waiterRepository.findById(id).get();
-            if (waiterToDel != null) {
+            Optional<Waiter> waiterToDel = waiterRepository.findById(id);
+            if (waiterToDel.isPresent()) {
 
-                waiterRepository.delete(waiterToDel);
+                waiterRepository.delete(waiterToDel.get());
                 return ResponseEntity.ok().build();
 
             } else {

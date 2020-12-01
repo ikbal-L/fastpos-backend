@@ -27,6 +27,7 @@ public interface OrderMapper {
             ,nullValueCheckStrategy =NullValueCheckStrategy.ALWAYS)
     Order toOrder(OrderDto orderDto);
 
+    List<Order> toOrderList(List<OrderDto> orderDtoList);
 
     List<OrderDto> toOrderDTOs(List<Order> order);
 

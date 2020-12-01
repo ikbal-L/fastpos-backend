@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "localhost", maxAge = 3600)
 @RestController
@@ -39,13 +41,13 @@ public class ProductController {
     public ResponseEntity<Long> addProduct(@Valid @RequestBody ProductDto productDto) {
 
         try {
-           Optional<Product> optionalProduct = productRepository.findById(productDto.getId());
+            Optional<Product> optionalProduct = productRepository.findById(productDto.getId());
 
             if (optionalProduct.isEmpty()) {
 
-                    Product product = dtoService.productDtoToProduct(productDto, false);
-                    var created = productRepository.save(product);
-                    return ResponseEntity.status(HttpStatus.CREATED).body(created.getId());
+                Product product = dtoService.productDtoToProduct(productDto, false);
+                var created = productRepository.save(product);
+                return ResponseEntity.status(HttpStatus.CREATED).body(created.getId());
 //                    return ResponseEntity.status(HttpStatus.CREATED).body(productMapper.toProductDto(productRepository.save(product)));
 
             } else {
@@ -58,20 +60,41 @@ public class ProductController {
 
     }
 
-//    @PreAuthorize("hasAuthority('Read_Product')")
-    @GetMapping("/getall")
-    public ResponseEntity<List<ProductDto>> getProducts( ) {
+    @PostMapping(value = "/savemany", consumes = "application/json")
+    public ResponseEntity<List<Long>> addManyProduct(@Valid @RequestBody List<ProductDto> productDtoList) {
 
         try {
+            List<Long> Ids = productDtoList.parallelStream().map(ProductDto::getId).collect(Collectors.toList());
+            List<Product> productList = productRepository.findAllById(Ids);
 
+            if (productList.size() == 0) {
+
+                List<Product> products = dtoService.productDtoListToProductList(productDtoList, false);
+                List<Product> savedProductList = productRepository.saveAll(products);
+                List<Long> savedIds = savedProductList.parallelStream().map(Product::getId).collect(Collectors.toList());
+
+                return ResponseEntity.status(HttpStatus.CREATED).body(savedIds);
+
+            } else {
+                return ResponseEntity.status(HttpStatus.FOUND).build();
+            }
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+
+    }
+
+    //    @PreAuthorize("hasAuthority('Read_Product')")
+    @GetMapping("/getall")
+    public ResponseEntity<List<ProductDto>> getProducts() {
+        try {
             List<Product> products = productRepository.findAllProductsWithAdditives();
-//            List<Product> products = productRepository.findAll();
 
-            if (products == null || products.isEmpty() )
+            if (products == null || products.isEmpty())
                 return ResponseEntity.noContent().build();
 
             else {
-//                var productDtos = productMapper.toProductDTOsWithAdditives(products);
                 var productDtos = productMapper.toProductDTOs(products);
                 return ResponseEntity.ok().body(productDtos);
             }
@@ -87,7 +110,7 @@ public class ProductController {
 
             List<Product> products = productRepository.findManyProductsWithAdditives(ids);
 
-            if (ids!=null && products == null || products.isEmpty())
+            if (ids != null && products == null || products.isEmpty())
                 return ResponseEntity.noContent().build();
             else
                 return ResponseEntity.ok().body(productMapper.toProductDTOs(products));
@@ -135,16 +158,40 @@ public class ProductController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<ProductDto> editProduct(@Valid @PathVariable long id,@Valid @RequestBody ProductDto productDto) {
+    public ResponseEntity<ProductDto> editProduct(@Valid @PathVariable long id, @Valid @RequestBody ProductDto productDto) {
         try {
-            Product optionalProduct = productRepository.findByIdProductWithAdditives(id);
+            Optional<Product> optionalProduct = productRepository.findById(id);
 
-            if ( id != 0 && productDto.getName() != null) {
+            if (optionalProduct.isPresent()) {
 
                 Product product = dtoService.productDtoToProduct(productDto, false);
                 Product updatedProduct = productRepository.save(product);
-                ProductDto updatedProductDto= productMapper.toProductDto(updatedProduct);
+                ProductDto updatedProductDto = productMapper.toProductDto(updatedProduct);
                 return ResponseEntity.status(HttpStatus.OK).body(updatedProductDto);
+
+            } else {
+                return ResponseEntity.noContent().build();
+            }
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+
+    }
+
+    @PutMapping("/putmany")
+    public ResponseEntity<List<Long>> editManyProduct(@Valid @RequestBody List<ProductDto> productDtoList) {
+        try {
+
+            List<Long> ids = productDtoList.parallelStream().map(ProductDto::getId).collect(Collectors.toList());
+            List<Product> products = productRepository.findAllById(ids);
+
+            if (products.size() == productDtoList.size()) {
+
+                List<Product> savedProductList = dtoService.productDtoListToProductList(productDtoList, false);
+                List<Product> updatedProductList = productRepository.saveAll(savedProductList);
+
+                return ResponseEntity.status(HttpStatus.OK).build();
 
             } else {
                 return ResponseEntity.noContent().build();
@@ -162,7 +209,7 @@ public class ProductController {
         try {
             Product optionalProduct = productRepository.findByIdProductWithAdditives(id);
 
-            if (optionalProduct!=null) {
+            if (optionalProduct != null) {
                 productRepository.delete(optionalProduct);
                 return ResponseEntity.ok().build();
             } else {

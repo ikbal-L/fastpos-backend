@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/customer")
@@ -26,7 +28,7 @@ public class CustomerController {
     CustomerMapper customerMapper;
 
     @PostMapping("/save")
-    public ResponseEntity<CustomerDto> addCustomer(@Valid @RequestBody CustomerDto customerDto) {
+    public ResponseEntity<Long> addCustomer(@Valid @RequestBody CustomerDto customerDto) {
         try {
 
             Optional<Customer> optionalCustomer = customerRepository.findById(customerDto.getId());
@@ -34,8 +36,7 @@ public class CustomerController {
             if (optionalCustomer.isEmpty()) {
                 Customer customer = customerMapper.toCustomer(customerDto);
                 Customer savedCustomer = customerRepository.save(customer);
-                return ResponseEntity.status(HttpStatus.CREATED)
-                        .body(customerMapper.toCustomerDto(savedCustomer));
+                return ResponseEntity.status(HttpStatus.CREATED).body(savedCustomer.getId());
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();
             }
@@ -46,12 +47,39 @@ public class CustomerController {
         }
     }
 
+
+    @PostMapping("/savemany")
+    public ResponseEntity<List<Long>> addManyCustomer(@Valid @RequestBody List<CustomerDto> customerDtoList) {
+        try {
+
+            List<Long> Ids = customerDtoList.parallelStream().map(CustomerDto::getId).collect(Collectors.toList());
+
+            List<Customer> customerList = customerRepository.findAllById(Ids);
+
+            if (customerList.size() == 0) {
+                List<Customer> customers = customerMapper.toCustomerList(customerDtoList);
+                List<Customer> savedCustomerList = customerRepository.saveAll(customers);
+                List<Long> savedIds = savedCustomerList.parallelStream().map(Customer::getId)
+                        .collect(Collectors.toList());
+
+                return ResponseEntity.status(HttpStatus.CREATED).body(savedIds);
+            } else {
+                return ResponseEntity.status(HttpStatus.FOUND).build();
+            }
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+
+        }
+    }
+
+
     @GetMapping("/getall")
     public ResponseEntity<List<CustomerDto>> getCustomers() {
 
         try {
             List<Customer> customers = customerRepository.findAll();
-            if (customers==null || customers.isEmpty())
+            if (customers == null || customers.isEmpty())
                 return ResponseEntity.noContent().build();
             else
                 return ResponseEntity.ok().body(customerMapper.toCustomerDTOs(customers));
@@ -64,13 +92,14 @@ public class CustomerController {
 
 
     @GetMapping("/getmany")
+
     public ResponseEntity<List<CustomerDto>> getCustomers(@Valid @RequestBody List<Long> ids) {
 
         try {
 
             List<Customer> customers = customerRepository.findAllById(ids);
 
-            if (customers == null || customers.isEmpty())
+            if (customers.isEmpty())
                 return ResponseEntity.noContent().build();
             else
                 return ResponseEntity.ok().body(customerMapper.toCustomerDTOs(customers));

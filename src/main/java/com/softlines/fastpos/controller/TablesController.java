@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/table")
+@RequestMapping("/table")
 public class TablesController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
@@ -26,7 +26,7 @@ public class TablesController {
     private TableRepository tableRepository;
 
     @PostMapping("/save")
-    public ResponseEntity<TableDto> addTable(@Valid @RequestBody TableDto tableDto) {
+    public ResponseEntity<Long> addTable(@Valid @RequestBody TableDto tableDto) {
 
         try {
 
@@ -34,8 +34,9 @@ public class TablesController {
 
             if (table.isEmpty() && tableDto.getId() == 0) {
 
-                    Table tables = tableMapper.toTable(tableDto);
-                    return ResponseEntity.status(HttpStatus.CREATED).body(tableMapper.toTableDto(tableRepository.save(tables)));
+                Table tables = tableMapper.toTable(tableDto);
+                Table savedTable = tableRepository.save(tables);
+                return ResponseEntity.status(HttpStatus.CREATED).body(savedTable.getId());
 
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();
@@ -66,9 +67,9 @@ public class TablesController {
     public ResponseEntity<TableDto> getTable(@Valid @PathVariable long id) {
 
         try {
-           Table table = tableRepository.findByIdTable(id);
+            Table table = tableRepository.findByIdTable(id);
 
-            if (table!=null && id != 0)
+            if (table != null && id != 0)
                 return ResponseEntity.ok().body(tableMapper.toTableDto(table));
             else
                 return ResponseEntity.noContent().build();
@@ -84,7 +85,7 @@ public class TablesController {
         try {
             Table optionalTable = tableRepository.findByNumber(number);
 
-            if (optionalTable!=null && number != 0)
+            if (optionalTable != null && number != 0)
                 return ResponseEntity.ok().body(tableMapper.toTableDto(optionalTable));
             else
                 return ResponseEntity.noContent().build();
@@ -95,14 +96,14 @@ public class TablesController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<TableDto> editTable(@Valid @PathVariable long id,@Valid @RequestBody TableDto tableDto) {
+    public ResponseEntity<TableDto> editTable(@Valid @PathVariable long id, @Valid @RequestBody TableDto tableDto) {
 
         try {
             Optional<Table> optionalTable = tableRepository.findById(id);
 
             if (optionalTable.isPresent() && tableDto.getNumber() != 0) {
                 Table table = tableMapper.toTable(tableDto);
-                Table savedTable=  tableRepository.save(table);
+                Table savedTable = tableRepository.save(table);
                 return ResponseEntity.ok().body(tableMapper.toTableDto(savedTable));
             } else {
                 return ResponseEntity.noContent().build();

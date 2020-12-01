@@ -102,7 +102,6 @@ public class TablesControllerUnitTest {
 
         var res = tablesController.addTable(tableMapper.toTableDto(table));
         assertEquals(res.getStatusCode(), HttpStatus.CREATED);
-        assertEquals((res.getBody()), tableMapper.toTableDto(table));
 
     }
 

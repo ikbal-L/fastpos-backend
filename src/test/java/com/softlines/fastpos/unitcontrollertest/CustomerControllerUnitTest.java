@@ -110,7 +110,6 @@ public class CustomerControllerUnitTest {
         var res = customerController.addCustomer(customerDto);
 
         assertEquals(res.getStatusCode(), HttpStatus.CREATED);
-        assertEquals((res.getBody()), customerMapper.toCustomerDto(customer));
 
     }
 

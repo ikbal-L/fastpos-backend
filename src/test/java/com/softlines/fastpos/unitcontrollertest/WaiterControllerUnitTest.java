@@ -78,7 +78,7 @@ public class WaiterControllerUnitTest {
     @Order(3)
     public void WaiterController_getAll_WithNullWaitersList() {
 
-        when(waiterRepository.findAll()).thenReturn(null);
+        when(waiterRepository.findAll()).thenReturn(Arrays.asList());
 
         var res = waiterController.getWaiters();
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);

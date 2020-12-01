@@ -30,7 +30,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ModelApplication.class)
 @AutoConfigureMockMvc
@@ -173,7 +172,6 @@ public class CategoryControllerUnitTest {
 
         var res = categoryController.addCategory(categoryMapper.toCategoryDto(category));
         assertEquals(res.getStatusCode(), HttpStatus.CREATED);
-        assertEquals((res.getBody()), categoryMapper.toCategoryDto(category));
 
     }
 

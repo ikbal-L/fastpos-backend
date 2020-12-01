@@ -58,17 +58,26 @@ public class DtoServiceImpl implements DtoService {
         List<Additive> additives = new ArrayList<Additive>();
         Product p = productMapper.toProduct(pDto);
         if (getDataFromRepository) {
-            if (pDto.getIdAdditives()!=null && pDto.getIdAdditives().stream().count()>0) {
+            if (pDto.getIdAdditives() != null && pDto.getIdAdditives().stream().count() > 0) {
                 for (Long idAdditive : pDto.getIdAdditives()) {
                     additives.add(additiveRepository.findById(idAdditive).get());
                 }
                 p.setAdditives(additives);
             }
-            if (pDto.getCategoryId()!=null) {
+            if (pDto.getCategoryId() != null) {
                 p.setCategory(categoryRepository.findById(pDto.getCategoryId()).get());
             }
         }
         return p;
+
+    }
+
+    @Override
+    public List<Product> productDtoListToProductList(List<ProductDto> productDtoList, boolean getDataFromRepository) {
+        List<Additive> additives = new ArrayList<Additive>();
+        List<Product> productList = productMapper.toProductList(productDtoList);
+
+        return productList;
 
     }
 
@@ -159,6 +168,22 @@ public class DtoServiceImpl implements DtoService {
             orderItem.setOrder(order);
         }
         return order;
+    }
+
+    @Override
+    public List<Order> orderDtoListToOrderList(List<OrderDto> orderDtoList) {
+        List<Order> orderList = orderMapper.toOrderList(orderDtoList);
+
+        for (int i = 0; i < orderList.size(); i++) {
+            orderList.get(i)
+                    .setOrderItems(orderItemDtoListToOrderItemList(orderDtoList.get(i).getOrderItems(), false));
+
+            for (OrderItem orderItem : orderList.get(i).getOrderItems()) {
+                orderItem.setOrder(orderList.get(i));
+            }
+        }
+
+        return orderList;
     }
 
     @Override

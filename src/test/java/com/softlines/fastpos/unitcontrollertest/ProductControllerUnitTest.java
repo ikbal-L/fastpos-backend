@@ -24,6 +24,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
@@ -337,10 +339,10 @@ public class ProductControllerUnitTest {
                 .category(Category.builder().id(1).build())
                 .build();
 
-        when(productRepository.findByIdProductWithAdditives(product.getId())).thenReturn(product);
+        when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
         ResponseEntity<ProductDto> returned = productController.editProduct(2,productMapper.toProductDto(product));
 
-        verify(productRepository, times(1)).findByIdProductWithAdditives(product.getId());
+        verify(productRepository, times(1)).findById(product.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.OK);
 
     }
@@ -354,29 +356,15 @@ public class ProductControllerUnitTest {
                 .additives(Arrays.asList(Additive.builder().build()))
                 .build();
 
-        when(productRepository.findByIdProductWithAdditives(product.getId())).thenReturn(null);
+        when(productRepository.findById(product.getId())).thenReturn(Optional.empty());
         ResponseEntity<ProductDto> returned = productController.editProduct(0, productMapper.toProductDto( product));
 
-        verify(productRepository, times(1)).findByIdProductWithAdditives(product.getId());
+        verify(productRepository, times(1)).findById(product.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
 
     }
 
-    @Test
-    public void productController_Put_WithNullData() {
 
-        var product = Product.builder()
-                .id(1)
-                .category(Category.builder().build())
-                .build();
-
-        when(productRepository.findByIdProductWithAdditives(product.getId())).thenReturn(product);
-        ResponseEntity<ProductDto> returned = productController.editProduct(1, productMapper.toProductDto( product));
-
-        verify(productRepository, times(1)).findByIdProductWithAdditives(product.getId());
-        assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
-
-    }
 
     @Test
     public void productController_Put_WithNoDBConnection() {
