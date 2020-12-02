@@ -19,7 +19,7 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "localhost", maxAge = 3600)
+//@CrossOrigin(origins = "localhost", maxAge = 3600)
 @RestController
 @RequestMapping("/api/product")
 public class ProductController {

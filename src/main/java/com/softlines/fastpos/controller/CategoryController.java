@@ -30,7 +30,7 @@ public class CategoryController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping("/save")
-    public ResponseEntity<CategoryDto> addCategory(@Valid @RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<Long> addCategory(@Valid @RequestBody CategoryDto categoryDto) {
         try {
 
             Optional<Category> optionalCategory = categoryRepository.findById(categoryDto.getId());
@@ -38,7 +38,8 @@ public class CategoryController {
             if (optionalCategory.isEmpty()) {
                 Category category = dtoService.categoryDtoToCategory(categoryDto, false);
                 Category createdCategory = categoryRepository.save(category);
-                return ResponseEntity.status(HttpStatus.CREATED).body(categoryMapper.toCategoryDto(createdCategory));
+                //categoryMapper.toCategoryDto(createdCategory)
+                return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory.getId());
 
             } else {
 

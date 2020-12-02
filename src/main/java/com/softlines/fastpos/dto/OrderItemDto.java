@@ -1,9 +1,12 @@
 package com.softlines.fastpos.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.softlines.fastpos.domain.OrderItemState;
 import com.softlines.fastpos.validation.OrderDtoValidationDiscountAmountGreaterThanTotal;
 import lombok.*;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -46,6 +49,10 @@ public class OrderItemDto {
     @NotNull
     Long productId;
 
+    @JsonProperty("ProductName")
+    @NotNull
+    String productName;
+
     @JsonProperty("IdAdditives")
     List<Long> idAdditives;
 
@@ -54,6 +61,10 @@ public class OrderItemDto {
 
     @JsonProperty("TimeStamp")
     Date timestamp;
+
+    @NotNull
+    @JsonProperty("State")
+    OrderItemState state;
 
     private boolean deleted = false;
 

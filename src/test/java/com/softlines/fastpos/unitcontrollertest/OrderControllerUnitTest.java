@@ -50,7 +50,7 @@ public class OrderControllerUnitTest {
         var orders = Arrays.asList(
                 Order.builder()
                         .id(1L)
-                        .orderstate(OrderState.Payed)
+                        .state(OrderState.Payed)
                         .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
                                 .id(1).product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
@@ -64,7 +64,7 @@ public class OrderControllerUnitTest {
         var res = orderController.getOrders();
 
         assertEquals(res.getStatusCode(), HttpStatus.OK);
-        assertEquals(res.getBody().get(0).getOrderstate(), orders.get(0).getOrderstate());
+        assertEquals(res.getBody().get(0).getState(), orders.get(0).getState());
         assertEquals((res.getBody()).size(), 1);
         assertEquals((res.getBody()).get(0).getOrderItems().get(0).getId(), orders.get(0).getOrderItems().get(0).getId());
         assertEquals((res.getBody()).get(0).getOrderItems().size(), 1);
@@ -113,7 +113,7 @@ public class OrderControllerUnitTest {
         var orders =
                 Order.builder()
                         .id(1l)
-                        .orderstate(OrderState.Payed)
+                        .state(OrderState.Payed)
                         .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
                                 .id(1)
                                 .product(Product.builder().build())
@@ -179,7 +179,7 @@ public class OrderControllerUnitTest {
         var order =
                 Order.builder()
                         .id(1l)
-                        .orderstate(OrderState.Payed)
+                        .state(OrderState.Payed)
                         .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
                                 .id(1)
                                 .product(Product.builder().build())
@@ -310,7 +310,7 @@ public class OrderControllerUnitTest {
     public void orderController_Put_WithData() {
         var orders = Order.builder()
                 .id(1L)
-                .orderstate(OrderState.Payed)
+                .state(OrderState.Payed)
                 .orderItems(Arrays.asList(OrderItem.builder()
                         .id(1)
                         .additive(Arrays.asList(Additive.builder().build()))
@@ -334,7 +334,7 @@ public class OrderControllerUnitTest {
         var order =
                 Order.builder()
                         .id(0)
-                        .orderstate(OrderState.Payed)
+                        .state(OrderState.Payed)
                         .orderItems(Arrays.asList(OrderItem.builder()
                                 .additive(Arrays.asList(Additive.builder().build()))
                                 .product(Product.builder().build())

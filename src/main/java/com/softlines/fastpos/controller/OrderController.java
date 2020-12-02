@@ -1,6 +1,7 @@
 package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Order;
+import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.dto.OrderDto;
 import com.softlines.fastpos.dto.mapping.OrderMapper;
 import com.softlines.fastpos.dto.service.DtoServiceImpl;
@@ -10,12 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.annotation.RequestScope;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/order")
+@RequestMapping("/api/order")
 public class OrderController {
 
     @Autowired
@@ -28,7 +34,7 @@ public class OrderController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping(value = "/save", consumes = "application/json")
-    public ResponseEntity<OrderDto> addOrder(@Valid @RequestBody OrderDto orderDto) {
+    public ResponseEntity<Long> addOrder(@Valid @RequestBody OrderDto orderDto) {
 
         try {
             Optional<Order> foundOrder = orderRepository.findById(orderDto.getId());
@@ -40,7 +46,7 @@ public class OrderController {
 
                     Order createdOder = orderRepository.save(order);
                     OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
-                    return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);
+                    return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto.getId());
 
                 } else {
                     return ResponseEntity.noContent().build();
@@ -57,8 +63,8 @@ public class OrderController {
     }
 
 
-    @GetMapping("/getall")
-    public ResponseEntity<List<OrderDto>> getOrders() {
+    @GetMapping(value = {"/getall/","getall/unprocessed"})
+    public ResponseEntity<List<OrderDto>> getOrders(HttpServletRequest request) {
 
         try {
 
@@ -67,6 +73,11 @@ public class OrderController {
             if (orders == null || orders.isEmpty())
                 return ResponseEntity.noContent().build();
             else
+                if (request.getServletPath().endsWith("unprocessed")){
+                    List<OrderState> filteredStates = Arrays.asList(OrderState.Payed,OrderState.Removed,OrderState.Canceled);
+                    orders.removeIf(order -> filteredStates.contains(order.getState()));
+                }
+
                 return ResponseEntity.ok().body(orderMapper.toOrderDTOs(orders));
 
         } catch (Exception exception) {

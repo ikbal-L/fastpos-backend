@@ -10,6 +10,8 @@ import com.softlines.fastpos.validation.OrderValidationTotalGreaterThanNewTotal;
 import lombok.*;
 
 import org.hibernate.validator.constraints.Range;
+
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -69,7 +71,7 @@ public class OrderDto {
     Double givenAmount;
 
     @JsonProperty("ReturnedAmount")
-    @Min(value = 0, message = MessageKeyConstants.ORDER_TOTAL_VALIDATION_ERROR)
+    @Max(value = 0, message = MessageKeyConstants.ORDER_RETURNED_AMOUNT_VALIDATION_ERROR)
     Double returnedAmount;
 
     @JsonProperty("ProductsVisibility")
@@ -78,8 +80,8 @@ public class OrderDto {
     @JsonProperty("AdditivesVisibility")
     boolean additivesVisibility;
 
-    @JsonProperty("Orderstate")
-    OrderState orderstate;
+    @JsonProperty("State")
+    OrderState state;
 
     @JsonProperty("Type")
     OrderType type;
