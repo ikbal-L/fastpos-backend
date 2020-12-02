@@ -2,11 +2,15 @@ package com.softlines.fastpos.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softlines.fastpos.constants.MessageKeyConstants;
+import com.softlines.fastpos.domain.AdditiveSate;
 import lombok.*;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 
 @Data
@@ -31,6 +35,13 @@ public class AdditiveDto {
     @NotNull
     @Min(1)
     Integer rank;
+
+    @JsonProperty("TimeStamp")
+    Date timestamp;
+
+    @NotNull
+    @JsonProperty("State")
+    AdditiveSate sate;
 
     @Builder.Default
     boolean deleted = false;

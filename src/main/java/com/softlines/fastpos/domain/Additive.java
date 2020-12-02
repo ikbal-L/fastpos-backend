@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 
 @Data
@@ -34,6 +35,13 @@ public class Additive {
     @Column(nullable = false, unique = true)
     @Min(1)
     Integer rank;
+
+    @NotNull
+    Date timestamp;
+
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    AdditiveSate sate;
 
     @Builder.Default
     @NotNull

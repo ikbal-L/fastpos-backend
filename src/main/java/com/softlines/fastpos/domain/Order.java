@@ -26,22 +26,34 @@ public class Order {
     long id;
 
     String buyerId;
+
     Date orderTime;
+
     LocalTime elapsedTime;
 
     double total;
+
     int splittedFromId;
+
     double newTotal;
+
     double discountAmount;
+
     double totalDiscountAmount;
+
     double discountPercentage;
+
     double givenAmount;
+
     double returnedAmount;
+
     boolean productsVisibility;
+
     boolean additivesVisibility;
 
     @Enumerated(EnumType.STRING)
-    OrderState orderstate;
+    @NotNull
+    OrderState state;
 
     @Enumerated(EnumType.STRING)
     OrderType type;

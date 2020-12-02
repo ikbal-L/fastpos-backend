@@ -1,6 +1,7 @@
 package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Order;
+import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.dto.OrderDto;
 import com.softlines.fastpos.dto.mapping.OrderMapper;
 import com.softlines.fastpos.dto.service.DtoServiceImpl;
@@ -9,15 +10,22 @@ import com.softlines.fastpos.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.context.annotation.RequestScope;
+
+import javax.servlet.http.HttpServletRequest;
+
 import javax.validation.Valid;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/order")
+@RequestMapping("/api/order")
 public class OrderController {
 
     @Autowired
@@ -41,7 +49,10 @@ public class OrderController {
                     Order order = dtoService.orderDtoToOrder(orderDto);
 
                     Order createdOder = orderRepository.save(order);
-                    return ResponseEntity.status(HttpStatus.CREATED).body(createdOder.getId());
+
+                    OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
+                    return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto.getId());
+
 
                 } else {
                     return ResponseEntity.noContent().build();
@@ -86,8 +97,8 @@ public class OrderController {
     }
 
 
-    @GetMapping("/getall")
-    public ResponseEntity<List<OrderDto>> getOrders() {
+    @GetMapping("getall/{filterByState}")
+    public ResponseEntity<List<OrderDto>> getOrders(@PathVariable(required = false) String filterByState) {
 
         try {
 
@@ -96,6 +107,11 @@ public class OrderController {
             if (orders == null || orders.isEmpty())
                 return ResponseEntity.noContent().build();
             else
+                if (filterByState.equals("unprocessed")){
+                    List<OrderState> filteredStates = Arrays.asList(OrderState.Payed,OrderState.Removed,OrderState.Canceled);
+                    orders.removeIf(order -> filteredStates.contains(order.getState()));
+                }
+
                 return ResponseEntity.ok().body(orderMapper.toOrderDTOs(orders));
 
         } catch (Exception exception) {

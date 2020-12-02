@@ -50,7 +50,7 @@ public class OrderControllerUnitTest {
         var orders = Arrays.asList(
                 Order.builder()
                         .id(1L)
-                        .orderstate(OrderState.Payed)
+                        .state(OrderState.Payed)
                         .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
                                 .id(1).product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
@@ -61,10 +61,10 @@ public class OrderControllerUnitTest {
         );
 
         when(orderRepository.findAllOrdersWithOrderItems()).thenReturn(orders);
-        var res = orderController.getOrders();
+        var res = orderController.getOrders(null);
 
         assertEquals(res.getStatusCode(), HttpStatus.OK);
-        assertEquals(res.getBody().get(0).getOrderstate(), orders.get(0).getOrderstate());
+        assertEquals(res.getBody().get(0).getState(), orders.get(0).getState());
         assertEquals((res.getBody()).size(), 1);
         assertEquals((res.getBody()).get(0).getOrderItems().get(0).getId(), orders.get(0).getOrderItems().get(0).getId());
         assertEquals((res.getBody()).get(0).getOrderItems().size(), 1);
@@ -77,7 +77,7 @@ public class OrderControllerUnitTest {
     public void orderController_getAll_WithEmptyOrdersList() {
         var orders = new ArrayList<Order>();
         when(orderRepository.findAllOrdersWithOrderItems()).thenReturn(orders);
-        var res = orderController.getOrders();
+        var res = orderController.getOrders(null);
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
     }
 
@@ -86,7 +86,7 @@ public class OrderControllerUnitTest {
     public void orderController_getAll_WithNullOrdersList() {
         when(orderRepository.findAllOrdersWithOrderItems()).thenReturn(null);
 
-        var res = orderController.getOrders();
+        var res = orderController.getOrders(null);
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
     }
 
@@ -97,7 +97,7 @@ public class OrderControllerUnitTest {
         when(orderRepository.findAllOrdersWithOrderItems())
                 .thenThrow(DataAccessResourceFailureException.class);
 
-        var res = orderController.getOrders();
+        var res = orderController.getOrders(null);
 
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
 
@@ -112,8 +112,10 @@ public class OrderControllerUnitTest {
 
         var orders =
                 Order.builder()
-                        .id(1L)
-                        .orderstate(OrderState.Payed)
+
+                        .id(1l)
+                        .state(OrderState.Payed)
+
                         .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
                                 .id(1)
                                 .product(Product.builder().build())
@@ -176,7 +178,7 @@ public class OrderControllerUnitTest {
         var order =
                 Order.builder()
                         .id(1l)
-                        .orderstate(OrderState.Payed)
+                        .state(OrderState.Payed)
                         .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
                                 .id(1)
                                 .product(Product.builder().build())
@@ -205,7 +207,7 @@ public class OrderControllerUnitTest {
         var order =
                 Order.builder()
                         .id(1L)
-                        .orderstate(OrderState.Payed)
+                        .state(OrderState.Payed)
                         .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
                                 .id(1)
                                 .product(Product.builder().build())
@@ -307,7 +309,7 @@ public class OrderControllerUnitTest {
     public void orderController_Put_WithData() {
         var orders = Order.builder()
                 .id(1L)
-                .orderstate(OrderState.Payed)
+                .state(OrderState.Payed)
                 .orderItems(Arrays.asList(OrderItem.builder()
                         .id(1)
                         .additive(Arrays.asList(Additive.builder().build()))
@@ -331,7 +333,7 @@ public class OrderControllerUnitTest {
         var order =
                 Order.builder()
                         .id(0)
-                        .orderstate(OrderState.Payed)
+                        .state(OrderState.Payed)
                         .orderItems(Arrays.asList(OrderItem.builder()
                                 .additive(Arrays.asList(Additive.builder().build()))
                                 .product(Product.builder().build())

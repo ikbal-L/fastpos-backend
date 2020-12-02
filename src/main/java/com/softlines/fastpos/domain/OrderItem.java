@@ -26,11 +26,18 @@ public class OrderItem {
     long id;
 
     double unitPrice;
+
     int quantity;
+
     double total;
+
     double discountAmount;
+
     double totalDiscountAmount;
+
     double discountPercentage;
+
+    String productName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     Product product;
@@ -48,8 +55,15 @@ public class OrderItem {
 
     Date timestamp;
 
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    OrderItemState state;
+
     @Builder.Default
     @NotNull
     private boolean deleted=false;
+
+
+
 
 }

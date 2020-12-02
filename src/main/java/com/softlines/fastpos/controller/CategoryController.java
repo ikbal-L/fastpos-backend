@@ -38,6 +38,9 @@ public class CategoryController {
             if (optionalCategory.isEmpty()) {
                 Category category = dtoService.categoryDtoToCategory(categoryDto, false);
                 Category createdCategory = categoryRepository.save(category);
+
+                //categoryMapper.toCategoryDto(createdCategory)
+
                 return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory.getId());
 
             } else {
