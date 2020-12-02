@@ -9,6 +9,7 @@ import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
@@ -97,8 +98,8 @@ public class OrderController {
     }
 
 
-    @GetMapping("getall/{filterByState}")
-    public ResponseEntity<List<OrderDto>> getOrders(@PathVariable(required = false) String filterByState) {
+    @GetMapping(value = {"/getall", "/getall/{filterByState}"},produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<OrderDto>> getOrders(@PathVariable Optional<String> filterByState) {
 
         try {
 
@@ -107,7 +108,7 @@ public class OrderController {
             if (orders == null || orders.isEmpty())
                 return ResponseEntity.noContent().build();
             else
-                if (filterByState.equals("unprocessed")){
+                if (filterByState.isPresent() && filterByState.get().equals("unprocessed")){
                     List<OrderState> filteredStates = Arrays.asList(OrderState.Payed,OrderState.Removed,OrderState.Canceled);
                     orders.removeIf(order -> filteredStates.contains(order.getState()));
                 }
