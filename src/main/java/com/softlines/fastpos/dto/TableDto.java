@@ -25,6 +25,5 @@ public class TableDto {
     @JsonProperty("IsVirtual")
     boolean virtual;
 
-    private boolean deleted = false;
 
 }

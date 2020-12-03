@@ -3,6 +3,7 @@ package com.softlines.fastpos.jwtsecurity.securitydomain;
 
 import com.softlines.fastpos.domain.BaseEntity;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -19,7 +20,7 @@ import java.util.List;
 @SQLDelete(sql = "UPDATE JWTuser SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
 
-@Builder
+@SuperBuilder
 public class JWTuser extends BaseEntity {
 
     @Id
@@ -62,7 +63,7 @@ public class JWTuser extends BaseEntity {
     @ManyToMany(mappedBy = "users")
     private List<Annex> annexes;
 
-//    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     private Agent agent;
 
 

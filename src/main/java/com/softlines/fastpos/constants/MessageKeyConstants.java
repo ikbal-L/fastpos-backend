@@ -19,6 +19,7 @@ public class MessageKeyConstants {
     ///// ORDER VALIDATION
     public static final String ORDER_TOTAL_VALIDATION_ERROR = "validation.order.error.total";
     public static final String ORDER_RETURNED_AMOUNT_VALIDATION_ERROR = "validation.order.error.returnedAmount";
+    public static final String ORDER_TABLE_ID_EXIST_IF_ORDER_TYPE_EQUAL_ON_TABLE = "validation.order.error.tableId_must_exist_if_orderState_equal_onTable";
     public static final String ORDER_DISCOUNT_AMOUNT_GREATER_THAN_TOTAL_ERROR = "validation.order.error.discountAmount_greater_than_total";
     public static final String ORDER_TOTAL_GREATER_THAN_NEW_TOTAL_ERROR = "validation.order.error.total_greater_than_new_total";
     public static final String ORDER_ITEM_DISCOUNT_AMOUNT_GREATER_THAN_TOTAL_ERROR = "validation.order_item.error.discountAmount_greater_than_total";

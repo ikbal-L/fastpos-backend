@@ -40,6 +40,7 @@ import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstant
 public class ApiAuthorizationFilter extends BasicAuthenticationFilter {
 
     private SessionRepository sessionRepository;
+
     public ApiAuthorizationFilter(AuthenticationManager authManager, SessionRepository sessionRepository) {
         super(authManager);
         this.sessionRepository = sessionRepository;

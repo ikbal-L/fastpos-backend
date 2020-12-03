@@ -23,15 +23,18 @@ import java.util.stream.Collectors;
 
 //@CrossOrigin(origins = "localhost", maxAge = 3600)
 @RestController
-@RequestMapping("/product")
+@RequestMapping(value = "/product", produces = "application/json")
 public class ProductController {
 
     @Autowired
     private ProductRepository productRepository;
+
     @Autowired
     private DtoServiceImpl dtoService;
+
     @Autowired
     private ProductMapper productMapper;
+
     @Autowired
     private ProductService productService;
 
@@ -48,7 +51,6 @@ public class ProductController {
                 Product product = dtoService.productDtoToProduct(productDto, false);
                 var created = productRepository.save(product);
                 return ResponseEntity.status(HttpStatus.CREATED).body(created.getId());
-//                    return ResponseEntity.status(HttpStatus.CREATED).body(productMapper.toProductDto(productRepository.save(product)));
 
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();

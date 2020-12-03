@@ -1,8 +1,10 @@
 package com.softlines.fastpos.domain;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,15 +13,15 @@ import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Setter @Getter @AllArgsConstructor @NoArgsConstructor
+@SuperBuilder
+
 @Entity
 @SQLDelete(sql = "UPDATE orders SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
 @javax.persistence.Table(name = "orders")
-public class Order {
+
+public class Order extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

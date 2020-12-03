@@ -71,6 +71,7 @@ public class DbConfig {
     AuditorAware<String> auditorProvider() {
         return new AuditorAwareImpl();
     }
+
     @Bean
     @Profile("prod")
     public CustomRoutingDataSource customRoutingDataSource() throws Exception {

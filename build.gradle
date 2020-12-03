@@ -36,6 +36,7 @@ dependencies {
 
 	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
 	runtimeOnly 'mysql:mysql-connector-java'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	testImplementation group: 'org.springframework', name: 'spring-test', version: '5.2.9.RELEASE'
@@ -46,6 +47,7 @@ dependencies {
 	implementation group: 'org.hibernate', name: 'hibernate-validator-annotation-processor', version: '6.0.20.Final'
 	testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.17.1'
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.3.1.RELEASE'
+	implementation "org.springframework.boot:spring-boot-starter-actuator"
 
 }
 

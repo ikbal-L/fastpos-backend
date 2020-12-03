@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController()
-@RequestMapping("/waiter")
+@RequestMapping(value = "/waiter", produces = "application/json")
 public class WaiterController {
 
     @Autowired

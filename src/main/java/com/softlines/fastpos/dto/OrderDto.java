@@ -6,6 +6,7 @@ import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.domain.OrderType;
 import com.softlines.fastpos.validation.order.OrderItemValidationDiscountAmountGreaterThanTotal;
 import com.softlines.fastpos.validation.order.OrderDtoValidationDiscountAmountGreaterThanTotal;
+import com.softlines.fastpos.validation.order.OrderValidationTableIdExistIfOrderTypeEqualOnTable;
 import com.softlines.fastpos.validation.order.OrderValidationTotalGreaterThanNewTotal;
 import lombok.*;
 
@@ -22,7 +23,7 @@ import java.util.List;
 @Data
 @OrderDtoValidationDiscountAmountGreaterThanTotal
 @OrderItemValidationDiscountAmountGreaterThanTotal
-
+@OrderValidationTableIdExistIfOrderTypeEqualOnTable
 
 @OrderValidationTotalGreaterThanNewTotal
 public class OrderDto {
@@ -54,7 +55,6 @@ public class OrderDto {
 
     @JsonProperty("DiscountAmount")
     @Min(0)
-
     Double discountAmount;
 
     @JsonProperty("TotalDiscountAmount")
@@ -94,7 +94,6 @@ public class OrderDto {
     @JsonProperty("TableId")
     Long tableId;
 
-    private boolean deleted = false;
 
 }
 

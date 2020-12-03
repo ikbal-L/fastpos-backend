@@ -69,6 +69,5 @@ public class OrderItemDto {
     @JsonProperty("State")
     OrderItemState state;
 
-    private boolean deleted = false;
 
 }

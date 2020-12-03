@@ -26,6 +26,5 @@ public class CustomerDto {
     @CustomerValidationPhoneNumber
     String mobile;
 
-    private boolean deleted = false;
 
 }

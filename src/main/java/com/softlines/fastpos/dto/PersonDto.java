@@ -33,7 +33,6 @@ public class PersonDto {
     @JsonProperty("IsActive")
     boolean active=true;
 
-    private boolean deleted = false;
 
 
 }

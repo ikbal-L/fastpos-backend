@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/additive")
+@RequestMapping(value = "/api/additive", produces = "application/json")
 public class AdditiveController {
 
     @Autowired
@@ -154,9 +154,6 @@ public class AdditiveController {
             } else {
                 return ResponseEntity.noContent().build();
             }
-
-
-
 
     }
 

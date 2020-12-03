@@ -99,13 +99,10 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             } catch (DataIntegrityViolationException e) {
                 res.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
             }
+
             String token = createToken(auth.getName(), user.getId(),createdSession,auth);
             res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
         }
-
-
-
-
 
 
     }

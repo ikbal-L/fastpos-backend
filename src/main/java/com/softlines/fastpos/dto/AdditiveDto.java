@@ -43,7 +43,6 @@ public class AdditiveDto {
     @JsonProperty("State")
     AdditiveSate sate;
 
-    @Builder.Default
-    boolean deleted = false;
+
 
 }

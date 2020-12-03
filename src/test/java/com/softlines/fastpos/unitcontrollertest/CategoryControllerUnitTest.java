@@ -49,11 +49,12 @@ public class CategoryControllerUnitTest {
     @Order(1)
     public void categoryController_getAll_WithNotEmptyCategoriesList() {
 
+        Category tacos = Category.builder()
+                .id(1l)
+                .name("Tacos")
+                .build();
         var categories = Arrays.asList(
-                Category.builder()
-                        .id(1l)
-                        .name("Tacos")
-                        .build()
+                tacos
         );
 
         when(categoryRepository.findAllCategoriesWithProducts()).thenReturn(categories);

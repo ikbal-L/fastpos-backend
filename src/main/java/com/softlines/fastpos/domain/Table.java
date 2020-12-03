@@ -1,28 +1,25 @@
 package com.softlines.fastpos.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@SuperBuilder
+@Setter @Getter @AllArgsConstructor @NoArgsConstructor
 @Entity
 
 @SQLDelete(sql = "UPDATE Tables SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
 
 @javax.persistence.Table(name = "Tables")
-public class Table {
+public class Table extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

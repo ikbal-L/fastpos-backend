@@ -10,28 +10,23 @@ import com.softlines.fastpos.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
-
-import org.springframework.web.context.annotation.RequestScope;
-
-import javax.servlet.http.HttpServletRequest;
-
 import javax.validation.Valid;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/order")
+@RequestMapping(value = "/order", produces = "application/json")
 public class OrderController {
 
     @Autowired
     private OrderRepository orderRepository;
+
     @Autowired
     private DtoServiceImpl dtoService;
+
     @Autowired
     OrderMapper orderMapper;
 
@@ -98,7 +93,7 @@ public class OrderController {
 
 
     @GetMapping("getall/{filterByState}")
-    public ResponseEntity<List<OrderDto>> getOrders(@PathVariable(required = false) String filterByState) {
+    public ResponseEntity<List<OrderDto>> getOrders(@PathVariable Optional<String> filterByState) {
 
         try {
 
@@ -106,13 +101,12 @@ public class OrderController {
 
             if (orders == null || orders.isEmpty())
                 return ResponseEntity.noContent().build();
-            else
-                if (filterByState.equals("unprocessed")){
-                    List<OrderState> filteredStates = Arrays.asList(OrderState.Payed,OrderState.Removed,OrderState.Canceled);
-                    orders.removeIf(order -> filteredStates.contains(order.getState()));
-                }
+            else if (filterByState.isPresent() && filterByState.get().equals("unprocessed")) {
+                List<OrderState> filteredStates = Arrays.asList(OrderState.Payed, OrderState.Removed, OrderState.Canceled);
+                orders.removeIf(order -> filteredStates.contains(order.getState()));
+            }
 
-                return ResponseEntity.ok().body(orderMapper.toOrderDTOs(orders));
+            return ResponseEntity.ok().body(orderMapper.toOrderDTOs(orders));
 
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
