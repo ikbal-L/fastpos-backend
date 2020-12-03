@@ -56,8 +56,8 @@ public class OrderItemDto {
     @NotNull
     String productName;
 
-    @JsonProperty("IdAdditives")
-    List<Long> idAdditives;
+    @JsonProperty("AdditiveIds")
+    List<Long> additiveIds;
 
     @JsonProperty("OrderId")
     Long orderId;

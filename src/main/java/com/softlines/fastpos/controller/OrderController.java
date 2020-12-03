@@ -39,7 +39,7 @@ public class OrderController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping(value = "/save", consumes = "application/json")
-    public ResponseEntity<Long> addOrder(@Valid @RequestBody OrderDto orderDto) {
+    public ResponseEntity<OrderDto> addOrder(@Valid @RequestBody OrderDto orderDto) {
 
         try {
             Optional<Order> foundOrder = orderRepository.findById(orderDto.getId());
@@ -52,7 +52,8 @@ public class OrderController {
                     Order createdOder = orderRepository.save(order);
 
                     OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
-                    return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto.getId());
+                    return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);
+//                    return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto.getId());
 
 
                 } else {

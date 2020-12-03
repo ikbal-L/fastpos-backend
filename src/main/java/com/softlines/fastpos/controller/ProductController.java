@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 //@CrossOrigin(origins = "localhost", maxAge = 3600)
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/api/product")
 public class ProductController {
 
     @Autowired

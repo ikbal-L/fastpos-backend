@@ -14,13 +14,13 @@ public interface OrderItemMapper {
     OrderItemMapper INSTANCE = Mappers.getMapper(OrderItemMapper.class);
 
     @Mapping(source = "productId", target = "product", qualifiedByName = "IdToProduct")
-    @Mapping(source = "idAdditives", target = "additive", qualifiedByName = "IdToAdditive")
+    @Mapping(source = "additiveIds", target = "additive", qualifiedByName = "IdToAdditive")
     @Mapping(source = "orderId", target = "order", qualifiedByName = "IdToOrder")
     OrderItem toOrderItem(OrderItemDto orderItemDto);
 
     List<OrderItem> toOrderItemList(List<OrderItemDto> orderItemDtos);
 
-    @Mapping(source = "additive", target = "idAdditives", qualifiedByName = "AdditiveToId")
+    @Mapping(source = "additive", target = "additiveIds", qualifiedByName = "AdditiveToId")
     @Mapping(source = "product", target = "productId", qualifiedByName = "ProductToId")
     @Mapping(source = "order", target = "orderId", qualifiedByName = "OrderToId")
     OrderItemDto toOrderItemDto(OrderItem OrderItem);

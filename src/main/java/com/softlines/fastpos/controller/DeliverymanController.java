@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/deliveryman")
+@RequestMapping("/api/deliveryman")
 public class DeliverymanController {
 
     @Autowired

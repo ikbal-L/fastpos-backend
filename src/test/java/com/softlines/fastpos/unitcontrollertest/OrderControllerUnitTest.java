@@ -68,7 +68,7 @@ public class OrderControllerUnitTest {
         assertEquals((res.getBody()).size(), 1);
         assertEquals((res.getBody()).get(0).getOrderItems().get(0).getId(), orders.get(0).getOrderItems().get(0).getId());
         assertEquals((res.getBody()).get(0).getOrderItems().size(), 1);
-        assertEquals((res.getBody()).get(0).getOrderItems().get(0).getIdAdditives().size(), orders.get(0).getOrderItems().get(0).getAdditive().size());
+        assertEquals((res.getBody()).get(0).getOrderItems().get(0).getAdditiveIds().size(), orders.get(0).getOrderItems().get(0).getAdditive().size());
         assertEquals((res.getBody()).get(0).getOrderItems().get(0).getProductId(), orders.get(0).getOrderItems().get(0).getProduct().getId());
 
     }
