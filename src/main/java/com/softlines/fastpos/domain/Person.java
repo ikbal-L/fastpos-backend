@@ -14,7 +14,8 @@ import javax.validation.constraints.NotNull;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter @Getter
+@Setter
+@Getter
 @SQLDelete(sql = "UPDATE Person SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
 @DynamicUpdate

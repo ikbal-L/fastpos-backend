@@ -17,14 +17,17 @@ public interface OrderMapper {
     OrderMapper INSTANCE = Mappers.getMapper(OrderMapper.class);
 
 
-    @Mapping(source = "orderItems", target = "orderItems", qualifiedByName = "orderItemsToOrderItemsDto")
-    @Mapping(source = "table", target = "tableId", qualifiedByName = "TableToId"
+    @Mapping(source = "orderItems", target = "orderItems"
+            , qualifiedByName = "orderItemsToOrderItemsDto")
+    @Mapping(source = "table.id", target = "tableId"
             , nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     OrderDto toOrderDto(Order order);
 
-    @Mapping(source = "tableId", target = "table", qualifiedByName = "TableIdToTable")
-    @Mapping(source = "orderItems", target = "orderItems", qualifiedByName = "OrderItemsDtoToOrderItems"
-            ,nullValueCheckStrategy =NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "tableId", target = "table",
+            qualifiedByName = "TableIdToTable")
+    @Mapping(source = "orderItems", target = "orderItems"
+            , qualifiedByName = "OrderItemsDtoToOrderItems"
+            , nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     Order toOrder(OrderDto orderDto);
 
     List<Order> toOrderList(List<OrderDto> orderDtoList);
@@ -52,7 +55,8 @@ public interface OrderMapper {
     }
 
     @Named("TableIdToTable")
-    public static Table TableIdToTable(long id) {
+    public static Table TableIdToTable(Long id) {
+        if (id==null) return null;
         Table table = new Table();
         table.setId(id);
         return table;

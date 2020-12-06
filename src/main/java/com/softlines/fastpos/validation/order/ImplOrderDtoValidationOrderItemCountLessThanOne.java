@@ -1,0 +1,14 @@
+package com.softlines.fastpos.validation.order;
+
+import com.softlines.fastpos.dto.OrderDto;
+
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+
+public class ImplOrderDtoValidationOrderItemCountLessThanOne implements ConstraintValidator<OrderValidationOrderItemsCountLessThanOne, OrderDto> {
+
+    public boolean isValid(OrderDto orderDto, ConstraintValidatorContext context) {
+        return orderDto.getOrderItems().size() > 0;
+    }
+
+}

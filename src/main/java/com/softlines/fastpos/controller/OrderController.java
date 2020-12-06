@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/order", produces = "application/json")
+@RequestMapping(value = "/api/order", produces = "application/json")
 public class OrderController {
 
     @Autowired
@@ -36,6 +36,7 @@ public class OrderController {
     public ResponseEntity<Long> addOrder(@Valid @RequestBody OrderDto orderDto) {
 
         try {
+
             Optional<Order> foundOrder = orderRepository.findById(orderDto.getId());
 
             if (foundOrder.isEmpty()) {
@@ -47,7 +48,6 @@ public class OrderController {
 
                     OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
                     return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto.getId());
-
 
                 } else {
                     return ResponseEntity.noContent().build();
@@ -92,7 +92,7 @@ public class OrderController {
     }
 
 
-    @GetMapping("getall/{filterByState}")
+    @GetMapping("getall")
     public ResponseEntity<List<OrderDto>> getOrders(@PathVariable Optional<String> filterByState) {
 
         try {

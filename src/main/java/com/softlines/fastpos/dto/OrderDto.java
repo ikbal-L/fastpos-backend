@@ -4,18 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softlines.fastpos.constants.MessageKeyConstants;
 import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.domain.OrderType;
-import com.softlines.fastpos.validation.order.OrderItemValidationDiscountAmountGreaterThanTotal;
-import com.softlines.fastpos.validation.order.OrderDtoValidationDiscountAmountGreaterThanTotal;
-import com.softlines.fastpos.validation.order.OrderValidationTableIdExistIfOrderTypeEqualOnTable;
-import com.softlines.fastpos.validation.order.OrderValidationTotalGreaterThanNewTotal;
+import com.softlines.fastpos.validation.order.*;
 import lombok.*;
-
 import org.hibernate.validator.constraints.Range;
-
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
@@ -24,8 +18,12 @@ import java.util.List;
 @OrderDtoValidationDiscountAmountGreaterThanTotal
 @OrderItemValidationDiscountAmountGreaterThanTotal
 @OrderValidationTableIdExistIfOrderTypeEqualOnTable
-
+@OrderValidationOrderTypeNotEqualOnTable
 @OrderValidationTotalGreaterThanNewTotal
+@OrderValidationOrderItemsCountLessThanOne
+@OrderDtoValidationDiscountPercentageAndDiscountAmount
+@OrderItemsDtoValidationDiscountPercentageAndDiscountAmount
+@OrderValidationCalculationNewTotalNotCorrect
 public class OrderDto {
 
     @JsonProperty("Id")

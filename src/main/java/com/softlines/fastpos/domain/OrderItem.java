@@ -1,5 +1,6 @@
 package com.softlines.fastpos.domain;
 
+import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
@@ -19,7 +20,6 @@ import java.util.List;
 
 @SQLDelete(sql = "UPDATE OrderItem SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
-
 public class OrderItem extends BaseEntity{
 
     @Id
@@ -37,7 +37,6 @@ public class OrderItem extends BaseEntity{
     double totalDiscountAmount;
 
     double discountPercentage;
-
     String productName;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -63,8 +62,6 @@ public class OrderItem extends BaseEntity{
     @Builder.Default
     @NotNull
     private boolean deleted=false;
-
-
 
 
 }

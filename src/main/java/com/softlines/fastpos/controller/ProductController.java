@@ -21,9 +21,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-//@CrossOrigin(origins = "localhost", maxAge = 3600)
 @RestController
-@RequestMapping(value = "/product", produces = "application/json")
+@RequestMapping(value = "/api/product", produces = "application/json")
 public class ProductController {
 
     @Autowired

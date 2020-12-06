@@ -43,8 +43,6 @@ public class AdditiveController {
                 if (additiveDto.getDescription() != null &&
                         !additiveDto.getDescription().isEmpty()) {
                     Additive savedAdditve = additiveRepository.save(additiveMapper.toAdditive(additiveDto));
-//                    AdditiveDto savedAdditveDto = additiveMapper.toAdditiveDto(savedAdditve);
-//                    return ResponseEntity.status(HttpStatus.CREATED).body(savedAdditveDto);
                     return ResponseEntity.status(HttpStatus.CREATED).body(savedAdditve.getId());
                 } else
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -74,18 +72,16 @@ public class AdditiveController {
                 return ResponseEntity.status(HttpStatus.CREATED).body(savedAdditveDto);
 
 
-        } else{
-            return ResponseEntity.status(HttpStatus.FOUND).build();
+            } else {
+                return ResponseEntity.status(HttpStatus.FOUND).build();
+            }
+
+        } catch (
+                Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
-    } catch(
-    Exception exception)
-
-    {
-        return exceptionManagement.getResponseEntityAccordingToException(exception);
     }
-
-}
 
     @GetMapping("/getall")
     public ResponseEntity<List<AdditiveDto>> getAdditives() {
@@ -145,15 +141,15 @@ public class AdditiveController {
     public ResponseEntity<AdditiveDto> editAdditive(@Valid @PathVariable long id, @RequestBody AdditiveDto additiveDto) {
 
 
-            Optional<Additive> optionalAdditive = additiveRepository.findById(id);
+        Optional<Additive> optionalAdditive = additiveRepository.findById(id);
 
-            if (optionalAdditive.isPresent() && id != 0 && additiveDto.getDescription() != null) {
-                Additive additive = dtoService.additiveDtoToAdditive(additiveDto, false);
+        if (optionalAdditive.isPresent() && id != 0 && additiveDto.getDescription() != null) {
+            Additive additive = dtoService.additiveDtoToAdditive(additiveDto, false);
 
-                return ResponseEntity.ok().body(additiveMapper.toAdditiveDto(additiveRepository.save(additive)));
-            } else {
-                return ResponseEntity.noContent().build();
-            }
+            return ResponseEntity.ok().body(additiveMapper.toAdditiveDto(additiveRepository.save(additive)));
+        } else {
+            return ResponseEntity.noContent().build();
+        }
 
     }
 

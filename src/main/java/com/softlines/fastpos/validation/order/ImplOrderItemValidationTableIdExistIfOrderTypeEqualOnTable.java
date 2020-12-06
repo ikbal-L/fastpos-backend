@@ -11,9 +11,9 @@ public class ImplOrderItemValidationTableIdExistIfOrderTypeEqualOnTable implemen
     public boolean isValid(OrderDto orderDto, ConstraintValidatorContext context) {
         boolean TableIdExistIfOrderTypeEqualOnTable = true;
 
-        if (orderDto.getType() == OrderType.OnTable) {
+        if (orderDto.getTableId() == null) {
 
-            if (orderDto.getTableId() == null)
+            if (orderDto.getType() == OrderType.OnTable)
                 TableIdExistIfOrderTypeEqualOnTable = false;
 
         }

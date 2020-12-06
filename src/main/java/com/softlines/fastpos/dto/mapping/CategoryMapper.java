@@ -20,7 +20,7 @@ public interface CategoryMapper {
 
     List<CategoryDto> toCategoryDTOs(List<Category> category);
 
-    @Mapping(source = "productIds", target = "products", qualifiedByName = "ProductToId"
+    @Mapping(source = "productIds", target = "products", qualifiedByName = "IdToProduct"
             ,nullValueCheckStrategy =NullValueCheckStrategy.ALWAYS)
     Category toCategory(CategoryDto categoryDTO);
 
@@ -32,7 +32,8 @@ public interface CategoryMapper {
     }
 
     @Named("IdToProduct")
-    public static Product ProductToId(long productId) {
+    public static Product IdToProduct(Long productId) {
+        if (productId==null) return null;
         Product product = new Product();
         product.setId(productId);
         return product;

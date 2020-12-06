@@ -28,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ModelApplication.class)
 @AutoConfigureMockMvc
@@ -38,7 +37,6 @@ public class AdditiveControllerUnitTest {
 
     @MockBean
     AdditiveRepository additiveRepository;
-
 
     @Autowired
     AdditiveController additiveController;
@@ -50,9 +48,9 @@ public class AdditiveControllerUnitTest {
     @Order(1)
     public void AdditiveController_getAll_WithNotEmptyAdditivesList() {
 
-        var additives = Arrays.asList(
+        List<Additive> additives = Arrays.asList(
                 Additive.builder()
-                        .id(1)
+                        .id(1L)
                         .description("harrisa")
                         .build());
 
@@ -103,7 +101,7 @@ public class AdditiveControllerUnitTest {
     @Order(1)
     public void AdditiveController_getMany_WithNotEmptyAdditivesList() {
 
-        var additives = Arrays.asList(
+        List<Additive> additives = Arrays.asList(
                 Additive.builder()
                         .id(1)
                         .description("harrisa")
@@ -303,12 +301,12 @@ public class AdditiveControllerUnitTest {
 
         var additive =
                 Additive.builder()
-                        .id(1l)
+                        .id(1L)
                         .rank(5)
                         .description("harrisa")
                         .build();
 
-        when(additiveRepository.findById(1l)).thenReturn(Optional.ofNullable(additive));
+        when(additiveRepository.findById(1L)).thenReturn(Optional.ofNullable(additive));
         additiveController.deleteAdditive(1);
 
         verify(additiveRepository, times(1)).delete(additive);

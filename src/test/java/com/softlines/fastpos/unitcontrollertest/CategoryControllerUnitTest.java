@@ -24,6 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -105,7 +106,7 @@ public class CategoryControllerUnitTest {
     @Order(1)
     public void categoryController_getMany_WithNotEmptyCategoriesList() {
 
-        var categories = Arrays.asList(
+        List<Category> categories = Arrays.asList(
                 Category.builder()
                         .id(1l)
                         .name("Tacos")

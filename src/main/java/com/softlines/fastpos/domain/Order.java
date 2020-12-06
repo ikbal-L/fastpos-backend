@@ -1,7 +1,12 @@
 package com.softlines.fastpos.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -13,15 +18,17 @@ import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
-@Setter @Getter @AllArgsConstructor @NoArgsConstructor
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @SuperBuilder
 
 @Entity
 @SQLDelete(sql = "UPDATE orders SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
 @javax.persistence.Table(name = "orders")
-
-public class Order extends BaseEntity{
+public class Order extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,11 +67,11 @@ public class Order extends BaseEntity{
     @Enumerated(EnumType.STRING)
     OrderType type;
 
-    @OneToMany(mappedBy = "order",orphanRemoval=true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany( mappedBy = "order",orphanRemoval=true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<OrderItem> orderItems;
 
     @ManyToOne
-    @JoinColumn(name = "tables_id")
+    @JoinColumn(name = "tables_id",nullable = true)
     Table table;
 
     @Builder.Default

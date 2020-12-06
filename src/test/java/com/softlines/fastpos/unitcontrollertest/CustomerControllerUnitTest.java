@@ -22,6 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,7 +49,7 @@ public class CustomerControllerUnitTest {
     @Order(1)
     public void customerController_getAll_WithNotEmptyCustomersList() throws Exception {
 
-        var customers = Arrays.asList(
+        List<Customer> customers = Arrays.asList(
                 Customer.builder()
                         .id(1)
                         .name("harrisa")

@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-@OrderDtoValidationDiscountAmountGreaterThanTotal(message = "validation.student.password.match")
+@OrderDtoValidationDiscountAmountGreaterThanTotal
 public class OrderItemDto {
 
     @JsonProperty("Id")
@@ -37,15 +37,12 @@ public class OrderItemDto {
     Double total;
 
     @JsonProperty("DiscountAmount")
-
     Double discountAmount;
 
     @JsonProperty("TotalDiscountAmount")
-
     Double totalDiscountAmount;
 
     @JsonProperty("DiscountPercentage")
-
     Double discountPercentage;
 
     @JsonProperty("ProductId")

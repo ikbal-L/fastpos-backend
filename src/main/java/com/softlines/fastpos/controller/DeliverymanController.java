@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "/deliveryman", produces = "application/json")
+@RequestMapping(value = "/api/deliveryman", produces = "application/json")
 public class DeliverymanController {
 
     @Autowired

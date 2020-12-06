@@ -64,7 +64,7 @@ public class SecurityConfiguration {
                     .formLogin()
                     .successHandler(authSuccessHandler())
                     .failureHandler(authenticationFailureHandler()).and()
-                    .antMatcher("/**")
+                    .antMatcher("/api/**")
                     .cors().and().csrf().disable().authorizeRequests()
                     .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
 //                    .antMatchers(HttpMethod.POST, "/user/save").permitAll()

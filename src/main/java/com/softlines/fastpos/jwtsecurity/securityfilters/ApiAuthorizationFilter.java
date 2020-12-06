@@ -50,6 +50,7 @@ public class ApiAuthorizationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest req,
                                     HttpServletResponse res,
                                     FilterChain chain) throws IOException, ServletException {
+
         String header = req.getHeader(HEADER_STRING);
 
         if (header == null || !header.startsWith(TOKEN_PREFIX)) {
@@ -61,18 +62,18 @@ public class ApiAuthorizationFilter extends BasicAuthenticationFilter {
         }
         UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
 //        UsernamePasswordAuthenticationToken authentication = null;
-        if (authentication==null){
+        if (authentication == null) {
             res.setStatus(HttpStatus.UNAUTHORIZED.value());
             res.getOutputStream().print("Something happened");
             return;
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
         res.setStatus(HttpStatus.NO_CONTENT.value());
-        chain.doFilter(req, res);
+        chain.doFilter(req , res);
 
     }
-
 
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
@@ -84,25 +85,27 @@ public class ApiAuthorizationFilter extends BasicAuthenticationFilter {
             DecodedJWT decoded = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
                     .build()
                     .verify(token.replace(TOKEN_PREFIX, ""));
+
             String user = decoded.getSubject();
 
             if (user != null) {
 //                Claim dbID = decoded.getClaim("dbID");
 //                Claim annexId = decoded.getClaim("annexId");
                 Claim sessionId = decoded.getClaim("sessionId");
-                UUID sessionUUID  = sessionId.as(UUID.class);
+                UUID sessionUUID = sessionId.as(UUID.class);
 //                var sessionOptional = sessionRepository.findById(sessionId.as(UUID.class));
                 var sessionOptional = sessionRepository.findById(sessionUUID);
-                if (sessionOptional.isPresent()){
+
+                if (sessionOptional.isPresent()) {
                     var terminal = sessionOptional.get().getTerminal();
                     var annex = terminal.getAnnex();
                     var dbinfo = annex.getDbInfo();
 
                     Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-                    for (String authority: decoded.getClaim("grantedAuthorities").asList(String.class)) {
+                    for (String authority : decoded.getClaim("grantedAuthorities").asList(String.class)) {
                         grantedAuthorities.add(new SimpleGrantedAuthority(authority));
                     }
-                    if (dbinfo!=null){
+                    if (dbinfo != null) {
                         CustomContextHolder.clear();
                         CustomContextHolder.setId(dbinfo.getId());
                         return new UsernamePasswordAuthenticationToken(sessionId.asString(), null, grantedAuthorities);

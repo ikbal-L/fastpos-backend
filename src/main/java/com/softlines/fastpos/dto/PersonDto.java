@@ -3,6 +3,8 @@ package com.softlines.fastpos.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softlines.fastpos.constants.MessageKeyConstants;
 import com.softlines.fastpos.domain.Descriptor;
+import com.softlines.fastpos.validation.customer.CustomerValidationPhoneNumber;
+import com.softlines.fastpos.validation.person.PersonValidationPhoneNumber;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +26,7 @@ public class PersonDto {
     String name;
 
     @JsonProperty("PhoneNumber")
-    @Pattern(regexp = "^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$")
+    @PersonValidationPhoneNumber
     String phoneNumber;
 
     @JsonProperty("BackgroundString")
