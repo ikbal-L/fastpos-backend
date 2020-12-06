@@ -4,10 +4,12 @@ import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 
 @Data
@@ -42,12 +44,15 @@ public class OrderItem {
     @ManyToOne(fetch = FetchType.LAZY)
     Product product;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "orderItems_additives",
-            joinColumns = @JoinColumn(name = "orderItem_id"),
-            inverseJoinColumns = @JoinColumn(name = "additive_id"))
-    List<Additive> additive;
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    @JoinTable(
+//            name = "orderItems_additives",
+//            joinColumns = @JoinColumn(name = "orderItem_id"),
+//            inverseJoinColumns = @JoinColumn(name = "additive_id"))
+//    List<Additive> additive;
+
+    @OneToMany(mappedBy = "orderItem",cascade = {CascadeType.ALL})
+    List<OrderItemAdditive> orderItemAdditives;
 
     @ManyToOne
     @JoinColumn(name = "order_id")

@@ -31,4 +31,6 @@ public interface DtoService {
     Waiter waiterDtoToWaiter(WaiterDto waiterDto, boolean getDataFromRepository);
 
     Deliveryman deliverymanDtoToDeliveryman(DeliverymanDto deliverymanDto, boolean getDataFromRepository);
+
+    OrderItemAdditive orderItemAdditiveDtoToOrderItemAdditive(OrderItemAdditiveDto orderItemAdditiveDto,OrderItem orderItem,boolean getDataFromRepository);
 }

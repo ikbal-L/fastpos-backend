@@ -1,10 +1,12 @@
 package com.softlines.fastpos.dto.mapping;
 
 import com.softlines.fastpos.domain.*;
+import com.softlines.fastpos.dto.OrderItemAdditiveDto;
 import com.softlines.fastpos.dto.OrderItemDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 import java.util.List;
 
@@ -14,15 +16,22 @@ public interface OrderItemMapper {
     OrderItemMapper INSTANCE = Mappers.getMapper(OrderItemMapper.class);
 
     @Mapping(source = "productId", target = "product", qualifiedByName = "IdToProduct")
-    @Mapping(source = "additiveIds", target = "additive", qualifiedByName = "IdToAdditive")
+//    @Mapping(source = "additiveIds", target = "additive", qualifiedByName = "IdToAdditive")
     @Mapping(source = "orderId", target = "order", qualifiedByName = "IdToOrder")
     OrderItem toOrderItem(OrderItemDto orderItemDto);
 
     List<OrderItem> toOrderItemList(List<OrderItemDto> orderItemDtos);
 
-    @Mapping(source = "additive", target = "additiveIds", qualifiedByName = "AdditiveToId")
-    @Mapping(source = "product", target = "productId", qualifiedByName = "ProductToId")
+//    @Mapping(source = "additive", target = "additiveIds", qualifiedByName = "AdditiveToId")
+    @Mapping(source = "product",
+            target = "productId",
+            qualifiedByName = "ProductToId",
+            nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     @Mapping(source = "order", target = "orderId", qualifiedByName = "OrderToId")
+    @Mapping(source = "orderItemAdditives",
+            target = "orderItemAdditives",
+            qualifiedByName = "OrderItemAdditiveToOrderItemAdditiveDto",
+            nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     OrderItemDto toOrderItemDto(OrderItem OrderItem);
 
     List<OrderItemDto> toOrderItemDTOs(List<OrderItem> orderItem);
@@ -68,6 +77,12 @@ public interface OrderItemMapper {
         Order order = new Order();
         order.setId(orderId);
         return order;
+    }
+
+    @Named("OrderItemAdditiveToOrderItemAdditiveDto")
+    public static OrderItemAdditiveDto toOrderItemAdditiveDto(OrderItemAdditive orderItemAdditive){
+        OrderItemAdditiveMapper mapper = OrderItemAdditiveMapper.INSTANCE;
+        return mapper.toOrderItemAdditiveDto(orderItemAdditive);
     }
 
 

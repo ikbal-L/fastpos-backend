@@ -113,8 +113,8 @@ public class OrderController {
                     List<OrderState> filteredStates = Arrays.asList(OrderState.Payed,OrderState.Removed,OrderState.Canceled);
                     orders.removeIf(order -> filteredStates.contains(order.getState()));
                 }
-
-                return ResponseEntity.ok().body(orderMapper.toOrderDTOs(orders));
+                var orderDtos = orderMapper.toOrderDTOs(orders);
+                return ResponseEntity.ok().body(orderDtos);
 
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);

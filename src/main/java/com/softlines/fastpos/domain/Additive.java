@@ -10,6 +10,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 
 @Data
@@ -36,12 +38,15 @@ public class Additive {
     @Min(1)
     Integer rank;
 
-    @NotNull
-    Date timestamp;
+//    @NotNull
+//    Date timestamp;
+//
+//    @Enumerated(EnumType.STRING)
+//    @NotNull
+//    AdditiveSate sate;
 
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    AdditiveSate sate;
+    @OneToMany(mappedBy = "additive",cascade = {CascadeType.ALL})
+    List<OrderItemAdditive> orderItemAdditives;
 
     @Builder.Default
     @NotNull

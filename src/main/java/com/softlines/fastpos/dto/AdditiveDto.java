@@ -21,7 +21,7 @@ public class AdditiveDto {
 
     @JsonProperty("Id")
     @Min(0)
-    long id;
+    Long id;
 
     @JsonProperty("Description")
     @NotBlank(message = MessageKeyConstants.ADDITIVE_DESCRIPTION_VALIDATION_ERROR)

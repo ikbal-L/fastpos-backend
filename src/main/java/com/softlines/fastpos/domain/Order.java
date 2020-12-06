@@ -3,6 +3,7 @@ package com.softlines.fastpos.domain;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,6 +12,7 @@ import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @NoArgsConstructor
@@ -19,6 +21,7 @@ import java.util.List;
 @SQLDelete(sql = "UPDATE orders SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
 @javax.persistence.Table(name = "orders")
+@EntityListeners(AuditingEntityListener.class)
 public class Order extends BaseEntity {
 
     @Id

@@ -2,6 +2,7 @@ package com.softlines.fastpos.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.softlines.fastpos.domain.OrderItemAdditive;
 import com.softlines.fastpos.validation.order.OrderDtoValidationDiscountAmountGreaterThanTotal;
 
 import com.softlines.fastpos.domain.OrderItemState;
@@ -14,13 +15,14 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @OrderDtoValidationDiscountAmountGreaterThanTotal(message = "validation.student.password.match")
 public class OrderItemDto {
 
     @JsonProperty("Id")
-    long id;
+    Long id;
 
     @JsonProperty("UnitPrice")
     @Min(1)
@@ -56,7 +58,7 @@ public class OrderItemDto {
     @NotNull
     String productName;
 
-    @JsonProperty("AdditiveIds")
+
     List<Long> additiveIds;
 
     @JsonProperty("OrderId")
@@ -68,6 +70,8 @@ public class OrderItemDto {
     @NotNull
     @JsonProperty("State")
     OrderItemState state;
+    @JsonProperty("AdditiveIds")
+    Set<OrderItemAdditiveDto> orderItemAdditives;
 
     private boolean deleted = false;
 

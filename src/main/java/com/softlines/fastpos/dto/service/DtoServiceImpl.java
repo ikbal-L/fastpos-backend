@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class DtoServiceImpl implements DtoService {
@@ -136,7 +138,7 @@ public class DtoServiceImpl implements DtoService {
             for (Long idAdditive : oiDto.getAdditiveIds()) {
                 additives.add(additiveRepository.findById(idAdditive).get());
             }
-            orderItem.setAdditive(additives);
+//            orderItem.setAdditive(additives);
             orderItem.setProduct(productRepository.findById(oiDto.getProductId()).get());
         }
         return orderItem;
@@ -145,6 +147,7 @@ public class DtoServiceImpl implements DtoService {
     @Override
     public List<OrderItem> orderItemDtoListToOrderItemList(List<OrderItemDto> orderItemDtos, boolean getDataFromRepository) {
         List<Additive> additives = new ArrayList<Additive>();
+
         List<OrderItem> orderItems = orderItemMapper.toOrderItemList(orderItemDtos);
         if (getDataFromRepository) {
             for (int i = 0; i < orderItemDtos.size(); i++) {
@@ -152,10 +155,23 @@ public class DtoServiceImpl implements DtoService {
                 for (Long idAdditive : orderItemDtos.get(i).getAdditiveIds()) {
                     additives.add(additiveRepository.findById(idAdditive).get());
                 }
-                orderItems.get(i).setAdditive(additives);
+
+//                orderItems.get(i).setAdditive(additives);
+
                 orderItems.get(i).setProduct(productRepository.findById(orderItemDtos.get(i).getProductId()).get());
             }
         }
+
+
+        for (int i = 0; i < orderItems.size(); i++) {
+            var orderItemDto = orderItemDtos.get(i);
+            var orderItem = orderItems.get(i);
+            var orderItemAdditives =
+                    orderItemAdditiveDtosToOrderItemAdditives(orderItemDto, orderItem, true);
+            orderItem.setOrderItemAdditives(orderItemAdditives);
+        }
+
+
         return orderItems;
     }
 
@@ -199,4 +215,41 @@ public class DtoServiceImpl implements DtoService {
         return additiveList;
     }
 
+    @Override
+    public OrderItemAdditive orderItemAdditiveDtoToOrderItemAdditive(OrderItemAdditiveDto orderItemAdditiveDto, OrderItem orderItem, boolean getDataFromRepository) {
+        OrderItemAdditiveMapper mapper = OrderItemAdditiveMapper.INSTANCE;
+        OrderItemAdditive orderItemAdditive = mapper.toOrderItemAdditive(orderItemAdditiveDto);
+        Additive additive;
+        if (getDataFromRepository) {
+             additive = additiveRepository.findById(orderItemAdditiveDto.getAdditiveId()).get();
+
+
+//            additive.getOrderItemAdditives().add(orderItemAdditive);
+        }else {
+            additive = Additive.builder().id(orderItemAdditiveDto.getAdditiveId()).build();
+        }
+//        if (orderItemAdditiveDto.getOrderItemId() != null&& orderItemAdditiveDto.getAdditiveId()!=null) {
+//            OrderItemAdditiveKey key =
+//                    OrderItemAdditiveKey.builder().
+//                            additiveId(orderItemAdditiveDto.getAdditiveId()).
+//                            orderItemId(orderItemAdditiveDto.getOrderItemId()).build();
+//            orderItemAdditive.setId(key);
+//        }
+//        var key = new OrderItemAdditiveKey();
+//        orderItemAdditive.setId(key);
+        orderItemAdditive.setAdditive(additive);
+        orderItemAdditive.setOrderItem(orderItem);
+//        orderItemAdditive.setAdditive(additive);
+        return orderItemAdditive;
+    }
+
+    public List<OrderItemAdditive> orderItemAdditiveDtosToOrderItemAdditives(OrderItemDto orderItemDto, OrderItem orderItem, boolean getDataFromRepository) {
+        List<OrderItemAdditive> orderItemAdditives = new ArrayList<>();
+        for (OrderItemAdditiveDto orderItemAdditiveDto :
+                orderItemDto.getOrderItemAdditives()) {
+            var orderItemAdditive = orderItemAdditiveDtoToOrderItemAdditive(orderItemAdditiveDto, orderItem, getDataFromRepository);
+            orderItemAdditives.add(orderItemAdditive);
+        }
+        return orderItemAdditives;
+    }
 }
