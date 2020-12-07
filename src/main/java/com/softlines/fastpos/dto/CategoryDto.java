@@ -33,6 +33,5 @@ public class CategoryDto {
     @JsonProperty("ProductIds")
     List<Long> productIds;
 
-    private boolean deleted = false;
 
 }

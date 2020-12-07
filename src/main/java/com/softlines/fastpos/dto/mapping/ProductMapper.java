@@ -15,9 +15,9 @@ public interface ProductMapper {
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
     @Mapping(source = "additives", target = "idAdditives", qualifiedByName = "AdditiveToId"
-            ,nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    @Mapping(source = "category", target = "categoryId", qualifiedByName = "CategoryToId"
-            ,nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS )
+            , nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "category.id", target = "categoryId"
+            , nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     ProductDto toProductDto(Product product);
 
 
@@ -25,9 +25,9 @@ public interface ProductMapper {
 
 
     @Mapping(source = "idAdditives", target = "additives", qualifiedByName = "IdToAdditive"
-            ,nullValueCheckStrategy =NullValueCheckStrategy.ALWAYS)
-    @Mapping(source = "categoryId", target = "category", qualifiedByName = "IdToCategory"
-            ,nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+            , nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "categoryId", target = "category.id"
+            , nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     Product toProduct(ProductDto productDTO);
 
     List<Product> toProductList(List<ProductDto> productDtoList);
@@ -37,29 +37,13 @@ public interface ProductMapper {
         return additives.getId();
     }
 
-    @Named("CategoryToId")
-    public static long CategoryToId(Category category) {
-        if (category!=null){
-            return category.getId();
-        }
-        return  0;
-    }
-
 
     @Named("IdToAdditive")
-    public static Additive IdToAdditive(long idAdditive) {
+    public static Additive IdToAdditive(Long idAdditive) {
+        if (idAdditive==null)return null;
         Additive additive = new Additive();
         additive.setId(idAdditive);
         return additive;
-    }
-
-
-
-    @Named("IdToCategory")
-    public static Category IdToCategory(long categoryId) {
-        Category category = new Category();
-        category.setId(categoryId);
-        return category;
     }
 
 

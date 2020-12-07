@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,17 +44,17 @@ public class TablesControllerUnitTest {
     @Test
     public void tablesController_getAll_WithNotEmptyTablesList() {
 
-        var categories = Arrays.asList(
+        List<Table> tables = Arrays.asList(
                 Table.builder()
                         .id(1l)
                         .build()
         );
 
-        when(tableRepository.findAllTables()).thenReturn(categories);
+        when(tableRepository.findAllTables()).thenReturn(tables);
 
         var res = tablesController.getTables();
         assertEquals(res.getStatusCode(), HttpStatus.OK);
-        assertEquals((res.getBody()).get(0).getNumber(), categories.get(0).getNumber());
+        assertEquals((res.getBody()).get(0).getNumber(), tables.get(0).getNumber());
         assertEquals((res.getBody()).size(), 1);
 
     }

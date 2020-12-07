@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/orderitem")
+@RequestMapping(value = "/api/orderitem", produces = "application/json")
 public class OrderItemController {
 
     @Autowired

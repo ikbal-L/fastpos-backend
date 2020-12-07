@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 @Data
-@OrderDtoValidationDiscountAmountGreaterThanTotal(message = "validation.student.password.match")
+@OrderDtoValidationDiscountAmountGreaterThanTotal
 public class OrderItemDto {
 
     @JsonProperty("Id")
@@ -39,15 +39,12 @@ public class OrderItemDto {
     Double total;
 
     @JsonProperty("DiscountAmount")
-
     Double discountAmount;
 
     @JsonProperty("TotalDiscountAmount")
-
     Double totalDiscountAmount;
 
     @JsonProperty("DiscountPercentage")
-
     Double discountPercentage;
 
     @JsonProperty("ProductId")
@@ -73,6 +70,5 @@ public class OrderItemDto {
     @JsonProperty("AdditiveIds")
     Set<OrderItemAdditiveDto> orderItemAdditives;
 
-    private boolean deleted = false;
 
 }

@@ -61,7 +61,7 @@ public class OrderControllerUnitTest {
         );
 
         when(orderRepository.findAllOrdersWithOrderItems()).thenReturn(orders);
-        var res = orderController.getOrders(null);
+        var res = orderController.getOrders(Optional.empty());
 
         assertEquals(res.getStatusCode(), HttpStatus.OK);
         assertEquals(res.getBody().get(0).getState(), orders.get(0).getState());

@@ -11,28 +11,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.context.annotation.RequestScope;
-
-import javax.servlet.http.HttpServletRequest;
-
 import javax.validation.Valid;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/order")
+@RequestMapping(value = "/api/order", produces = "application/json")
 public class OrderController {
 
     @Autowired
     private OrderRepository orderRepository;
+
     @Autowired
     private DtoServiceImpl dtoService;
+
     @Autowired
     OrderMapper orderMapper;
 
@@ -42,6 +38,7 @@ public class OrderController {
     public ResponseEntity<OrderDto> addOrder(@Valid @RequestBody OrderDto orderDto) {
 
         try {
+
             Optional<Order> foundOrder = orderRepository.findById(orderDto.getId());
 
             if (foundOrder.isEmpty()) {
@@ -54,7 +51,6 @@ public class OrderController {
                     OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
                     return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);
 //                    return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto.getId());
-
 
                 } else {
                     return ResponseEntity.noContent().build();
@@ -99,7 +95,7 @@ public class OrderController {
     }
 
 
-    @GetMapping(value = {"/getall", "/getall/{filterByState}"},produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = {"/getall", "/getall/{filterByState}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<OrderDto>> getOrders(@PathVariable Optional<String> filterByState) {
 
         try {
@@ -108,13 +104,12 @@ public class OrderController {
 
             if (orders == null || orders.isEmpty())
                 return ResponseEntity.noContent().build();
-            else
-                if (filterByState.isPresent() && filterByState.get().equals("unprocessed")){
-                    List<OrderState> filteredStates = Arrays.asList(OrderState.Payed,OrderState.Removed,OrderState.Canceled);
-                    orders.removeIf(order -> filteredStates.contains(order.getState()));
-                }
-                var orderDtos = orderMapper.toOrderDTOs(orders);
-                return ResponseEntity.ok().body(orderDtos);
+            else if (filterByState.isPresent() && filterByState.get().equals("unprocessed")) {
+                List<OrderState> filteredStates = Arrays.asList(OrderState.Payed, OrderState.Removed, OrderState.Canceled);
+                orders.removeIf(order -> filteredStates.contains(order.getState()));
+            }
+            var orderDtos = orderMapper.toOrderDTOs(orders);
+            return ResponseEntity.ok().body(orderDtos);
 
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);

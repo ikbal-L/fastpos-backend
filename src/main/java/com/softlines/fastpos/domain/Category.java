@@ -1,29 +1,24 @@
 package com.softlines.fastpos.domain;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.softlines.fastpos.constants.MessageKeyConstants;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Setter @Getter @AllArgsConstructor @NoArgsConstructor
+@SuperBuilder
+
 @SQLDelete(sql = "UPDATE Category SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
-
 @Entity
-public class Category {
+public class Category extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

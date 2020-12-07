@@ -19,9 +19,19 @@ public class MessageKeyConstants {
     ///// ORDER VALIDATION
     public static final String ORDER_TOTAL_VALIDATION_ERROR = "validation.order.error.total";
     public static final String ORDER_RETURNED_AMOUNT_VALIDATION_ERROR = "validation.order.error.returnedAmount";
+    public static final String ORDER_TABLE_ID_EXIST_IF_ORDER_TYPE_EQUAL_ON_TABLE= "validation.order.error.tableId_must_equal_null";
+    public static final String ORDER_ORDER_ITEMS_COUNT_LESS_THAN_ONE = "validation.order.error.orderItems_count_less_than_one";
     public static final String ORDER_DISCOUNT_AMOUNT_GREATER_THAN_TOTAL_ERROR = "validation.order.error.discountAmount_greater_than_total";
+    public static final String ORDER_DISCOUNT_PERCENTAGE_NOT_EQUAL_DISCOUNT_AMOUNT_ERROR = "validation.order.error.discountPercentage_not_equal_discountAmount";
     public static final String ORDER_TOTAL_GREATER_THAN_NEW_TOTAL_ERROR = "validation.order.error.total_greater_than_new_total";
+    public static final String ORDER_NEW_TOTAL_CALCULATION_NOT_CORRECT_ERROR = "validation.order.error.new_total_calculation_not_correct";
+
+    /////  ORDER ITEMS VALIDATION
     public static final String ORDER_ITEM_DISCOUNT_AMOUNT_GREATER_THAN_TOTAL_ERROR = "validation.order_item.error.discountAmount_greater_than_total";
+    public static final String ORDER_ITEMS_DISCOUNT_PERCENTAGE_NOT_EQUAL_DISCOUNT_AMOUNT_ERROR = "validation.order_items.error.discountPercentage_not_equal_discountAmount";
+
+    ///// TABLE ITEMS VALIDATION
+    public static final String TABLE_ID_MUST_EQUAL_NULL= "validation.order.error.tableId_must_equal_null";
 
     //// PRODUCT VALIDATION
     public static final String PRODUCT_NAME_VALIDATION_ERROR = "validation.product.error.name";
@@ -38,6 +48,7 @@ public class MessageKeyConstants {
 
     //// PERSON VALIDATION
     public static final String PERSON_NAME_VALIDATION_ERROR = "validation.person.error.name";
+    public static final String PERSON_MOBILE_VALIDATION_ERROR = "validation.person.error.mobile";
 
 }
 

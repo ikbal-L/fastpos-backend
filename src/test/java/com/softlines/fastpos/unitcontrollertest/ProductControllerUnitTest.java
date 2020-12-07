@@ -21,6 +21,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,14 +51,14 @@ public class ProductControllerUnitTest {
 
         var products = Arrays.asList(
                 Product.builder()
-                        .id(1l)
+                        .id(1L)
                         .name("Pizza")
                         .additives(Arrays.asList(Additive.builder().id(1).description("harrisa").build()))
                         .category(Category.builder().build())
                         .build()
         );
 
-        when(productRepository.findAllProductsWithAdditives()).thenReturn(products);
+        when(productRepository.findAllProductsWithAdditives()).thenReturn((List<Product>) products);
 
         var res = productController.getProducts();
         assertEquals(res.getStatusCode(), HttpStatus.OK);
@@ -102,9 +103,9 @@ public class ProductControllerUnitTest {
      */
 
     @Test
-    public void productController_getMany_WithNotEmptyProductsList()  {
+    public void productController_getMany_WithNotEmptyProductsList() {
 
-        var products = Arrays.asList(
+        List<Product> products = Arrays.asList(
                 Product.builder()
                         .id(1l)
                         .name("Pizza")
@@ -174,10 +175,10 @@ public class ProductControllerUnitTest {
     public void productController_Save_WithData() {
 
         var product = Product.builder()
-                        .name("Pizza")
-                        .additives(Arrays.asList(Additive.builder().id(1).description("harrisa").build()))
-                        .category(Category.builder().build())
-                        .build();
+                .name("Pizza")
+                .additives(Arrays.asList(Additive.builder().id(1).description("harrisa").build()))
+                .category(Category.builder().build())
+                .build();
 
         when(productRepository.save(Mockito.any(Product.class))).thenReturn(product);
 
@@ -185,7 +186,6 @@ public class ProductControllerUnitTest {
         assertEquals(res.getStatusCode(), HttpStatus.CREATED);
 
     }
-
 
 
     @Test
@@ -198,7 +198,7 @@ public class ProductControllerUnitTest {
                 .additives(Arrays.asList(Additive.builder().build())).build();
 
         when(productRepository.findById(product.getId())).thenReturn(java.util.Optional.of(product));
-        var res = productController.addProduct(productMapper.toProductDto(product) );
+        var res = productController.addProduct(productMapper.toProductDto(product));
 
         assertEquals(res.getStatusCode(), HttpStatus.FOUND);
 
@@ -278,7 +278,6 @@ public class ProductControllerUnitTest {
     }
 
 
-
     /**
      * ------------------>  Delete Product Unit Test  <------------------------
      */
@@ -340,7 +339,7 @@ public class ProductControllerUnitTest {
                 .build();
 
         when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
-        ResponseEntity<ProductDto> returned = productController.editProduct(2,productMapper.toProductDto(product));
+        ResponseEntity<ProductDto> returned = productController.editProduct(2, productMapper.toProductDto(product));
 
         verify(productRepository, times(1)).findById(product.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.OK);
@@ -357,13 +356,12 @@ public class ProductControllerUnitTest {
                 .build();
 
         when(productRepository.findById(product.getId())).thenReturn(Optional.empty());
-        ResponseEntity<ProductDto> returned = productController.editProduct(0, productMapper.toProductDto( product));
+        ResponseEntity<ProductDto> returned = productController.editProduct(0, productMapper.toProductDto(product));
 
         verify(productRepository, times(1)).findById(product.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
 
     }
-
 
 
     @Test

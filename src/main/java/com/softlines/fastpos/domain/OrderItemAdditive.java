@@ -26,12 +26,12 @@ public class OrderItemAdditive {
     @Id
     private long additiveId;
 
-    @ManyToOne()
+    @ManyToOne
     @MapsId("orderItemId")
     @JoinColumn(name = "order_item_id")
     OrderItem orderItem;
 
-    @ManyToOne()
+    @ManyToOne
     @MapsId("additiveId")
     @JoinColumn(name = "additive_id")
     Additive additive;

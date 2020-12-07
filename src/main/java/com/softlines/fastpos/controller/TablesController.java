@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/table")
+@RequestMapping(value = "/api/table", produces = "application/json")
 public class TablesController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 

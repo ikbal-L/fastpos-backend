@@ -17,7 +17,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/category")
+
+@RequestMapping(value="/api/category", produces = "application/json")
 public class CategoryController {
 
     @Autowired
@@ -101,6 +102,7 @@ public class CategoryController {
 
     @GetMapping("/getmany")
     public ResponseEntity<List<CategoryDto>> getMany(@Valid @RequestBody List<Long> ids) {
+
         try {
 
             List<Category> categories = categoryRepository.findManyCategoriesWithProducts(ids);

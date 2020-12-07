@@ -16,7 +16,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/customer")
+
+@RequestMapping(value = "/api/customer", produces = "application/json")
 public class CustomerController {
 
     ExceptionManagement exceptionManagement = new ExceptionManagement();

@@ -2,6 +2,7 @@ package com.softlines.fastpos;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softlines.fastpos.domain.Order;
+import com.softlines.fastpos.domain.OrderItemState;
 import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.domain.OrderType;
 import com.softlines.fastpos.dto.OrderDto;
@@ -23,10 +24,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import javax.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -58,7 +64,7 @@ public class MappingOrderTest {
     @Test
     public void getorders() throws Exception {
 
-        var orders = orderRepository.findAll();
+        var orders = orderRepository.findAllOrdersWithOrderItems();
         mvc.perform(get("/order/getall")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -79,47 +85,45 @@ public class MappingOrderTest {
 
     }
 
-    // TODO Recursive problems when add order in test
 
-//    @Test
-//    public void addOrder() throws Exception {
-//
-//        List<OrderItemDto> orderItemsDto = new ArrayList();
-//        orderItemDto.setName("test add");
-//        orderItemDto.setIdAdditives(null);
-//        orderItemDto.setProductId(1);
-//        orderItemsDto.add(orderItemDto);
-//        //////////////////////////////////////////////////
-//        orderDto.setBuyerId("4");
-//        orderDto.setAdditivesVisibility(true);
-//        orderDto.setDiscountAmount(62);
-//        orderDto.setGivenAmount(54);
-//        orderDto.setDiscountPercentage(20);
-//        orderDto.setElapsedTime(Duration.ZERO);
-//        orderDto.setNewTotal(100);
-//        orderDto.setOrderTime(LocalDateTime.now());
-//        orderDto.setSplittedFromId(1);
-//        orderDto.setReturnedAmount(30);
-//        orderDto.setTableId(1);
-//        orderDto.setType(OrderType.Delivery);
-//        orderDto.setTotal(304);
-//        orderDto.setProductsVisibility(false);
-//        orderDto.setTotalDiscountAmount(350);
-//        orderDto.setOrderstate(OrderState.Payed);
-//
-//        orderDto.setOrderItems(orderItemsDto);
-//
-//
-//        Order order = dtoService.orderDtoToOrder(orderDto);
-//
-//        mvc.perform(post("/order/save")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(asJsonString(order)))
-//                .andDo(print())
-//                .andExpect(jsonPath("buyerId", is("4")))
-//                .andExpect(status().isCreated());
-//
-//    }
+    @Test
+    public void addOrder() throws Exception {
+
+        List<OrderItemDto> orderItemsDto = new ArrayList<>();
+        orderItemDto.setIdAdditives(Arrays.asList());
+        orderItemDto.setProductId(1L);
+        orderItemDto.setTimestamp(new Date());
+        orderItemDto.setState(OrderItemState.Added);
+        orderItemsDto.add(orderItemDto);
+        //////////////////////////////////////////
+        orderDto.setBuyerId("4");
+        orderDto.setAdditivesVisibility(true);
+        orderDto.setDiscountAmount(62.00);
+        orderDto.setGivenAmount(54.00);
+        orderDto.setDiscountPercentage(20.00);
+        orderDto.setElapsedTime(LocalTime.now());
+        orderDto.setNewTotal(100);
+        orderDto.setOrderTime(new Date());
+        orderDto.setSplittedFromId(1);
+        orderDto.setReturnedAmount(30.00);
+        orderDto.setTableId(1L);
+        orderDto.setType(OrderType.Delivery);
+        orderDto.setTotal(304.00);
+        orderDto.setProductsVisibility(false);
+        orderDto.setTotalDiscountAmount(350.00);
+        orderDto.setState(OrderState.Payed);
+        orderDto.setOrderItems(orderItemsDto);
+
+        Order order = dtoService.orderDtoToOrder(orderDto);
+
+        mvc.perform(post("/order/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(orderDto)))
+                .andDo(print())
+                .andExpect(status().isCreated())
+        ;
+
+    }
 
     @Test
     public void getOrderWithIdNotExist() throws Exception {
