@@ -135,9 +135,9 @@ public class DtoServiceImpl implements DtoService {
         List<Additive> additives = new ArrayList<Additive>();
         OrderItem orderItem = orderItemMapper.toOrderItem(oiDto);
         if (getDataFromRepository) {
-            for (Long idAdditive : oiDto.getAdditiveIds()) {
-                additives.add(additiveRepository.findById(idAdditive).get());
-            }
+//            for (Long idAdditive : oiDto.getAdditiveIds()) {
+//                additives.add(additiveRepository.findById(idAdditive).get());
+//            }
 //            orderItem.setAdditive(additives);
             orderItem.setProduct(productRepository.findById(oiDto.getProductId()).get());
         }
@@ -152,9 +152,9 @@ public class DtoServiceImpl implements DtoService {
         if (getDataFromRepository) {
             for (int i = 0; i < orderItemDtos.size(); i++) {
                 additives.clear();
-                for (Long idAdditive : orderItemDtos.get(i).getAdditiveIds()) {
-                    additives.add(additiveRepository.findById(idAdditive).get());
-                }
+//                for (Long idAdditive : orderItemDtos.get(i).getAdditiveIds()) {
+//                    additives.add(additiveRepository.findById(idAdditive).get());
+//                }
 
 //                orderItems.get(i).setAdditive(additives);
 

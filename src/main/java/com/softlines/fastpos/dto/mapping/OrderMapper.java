@@ -11,75 +11,23 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",uses = {OrderItemMapper.class})
 public interface OrderMapper {
 
     OrderMapper INSTANCE = Mappers.getMapper(OrderMapper.class);
 
 
-    @Mapping(source = "orderItems", target = "orderItems", qualifiedByName = "orderItemsToOrderItemsDto",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    @Mapping(source = "table", target = "tableId", qualifiedByName = "TableToId")
+    @Mapping(source = "table.id", target = "tableId",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     OrderDto toOrderDto(Order order);
 
-    @Mapping(source = "tableId", target = "table",
-            qualifiedByName = "TableIdToTable")
-    @Mapping(source = "orderItems", target = "orderItems"
-            , qualifiedByName = "OrderItemsDtoToOrderItems"
-            , nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    Order toOrder(OrderDto orderDto);
+    @Mapping(source = "dto.tableId", target = "table.id")
+    Order toOrder(OrderDto dto);
 
     List<Order> toOrderList(List<OrderDto> orderDtoList);
 
     List<OrderDto> toOrderDTOs(List<Order> order);
 
-    @Named("OrderItemToId")
-    public static long OrderToId(Order order) {
-        return order.getId();
-    }
 
-    @Named("AdditiveToId")
-    public static long AdditiveToId(Additive additives) {
-        return additives.getId();
-    }
-
-    @Named("OrderItemToId")
-    public static long OrderItemToId(OrderItem orderItem) {
-        return orderItem.getId();
-    }
-
-    @Named("TableToId")
-    public static long TableToId(Table table) {
-        return table.getId();
-    }
-
-    @Named("TableIdToTable")
-    public static Table TableIdToTable(Long id) {
-        if (id==null) return null;
-        Table table = new Table();
-        table.setId(id);
-        return table;
-    }
-
-    @Named("orderItemsToOrderItemsDto")
-    public static OrderItemDto orderItemsToOrderItemsDto(OrderItem orderItems) {
-        OrderItemMapper INSTANCE = Mappers.getMapper(OrderItemMapper.class);
-        return INSTANCE.toOrderItemDto(orderItems);
-
-    }
-
-    @Named("OrderItemsDtoToOrderItems")
-    public static OrderItem OrderItemsDtoToOrderItems(OrderItemDto orderItemsDto) {
-        OrderItemMapper INSTANCE = Mappers.getMapper(OrderItemMapper.class);
-        return INSTANCE.toOrderItem(orderItemsDto);
-
-    }
-
-    @Named("IdToProduct")
-    public static Product ProductToId(long productId) {
-        Product product = new Product();
-        product.setId(productId);
-        return product;
-    }
 
 
 }

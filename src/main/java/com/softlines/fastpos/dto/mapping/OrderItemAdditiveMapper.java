@@ -20,18 +20,11 @@ public interface OrderItemAdditiveMapper {
     @Mapping(source = "orderItemId", target = "orderItemId")
     OrderItemAdditiveDto toOrderItemAdditiveDto(OrderItemAdditive orderItemAdditive);
 
-//    @Mapping(source = "additiveId", target = "additive",qualifiedByName ="AdditiveIdToAdditive" )
-//    @Mapping(source = "orderItemId", target = "orderItem",qualifiedByName = "OrderItemIdToOrderItem")
+    @Mapping(source = "additiveId", target = "additive.id",qualifiedByName ="AdditiveIdToAdditive" )
     OrderItemAdditive toOrderItemAdditive(OrderItemAdditiveDto orderItemAdditive);
 
-    @Named("AdditiveIdToAdditive")
-    public  static Additive additiveIdToAdditive(long additiveId){
-        return Additive.builder().id(additiveId).build();
-    }
-
-    @Named("OrderItemIdToOrderItem")
-    public  static OrderItem OrderItemIdToOrderItem(long orderItemId){
-        return OrderItem.builder().id(orderItemId).build();
-    }
+    @Mapping(source = "additiveId", target = "additive.id",qualifiedByName ="AdditiveIdToAdditive" )
+    @Mapping(source = "orderItem", target = "orderItem")
+    OrderItemAdditive toOrderItemAdditive(OrderItemAdditiveDto orderItemAdditive,OrderItem orderItem);
 
 }
