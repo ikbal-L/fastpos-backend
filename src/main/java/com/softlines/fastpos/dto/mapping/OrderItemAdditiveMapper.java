@@ -23,8 +23,8 @@ public interface OrderItemAdditiveMapper {
     @Mapping(source = "additiveId", target = "additive.id",qualifiedByName ="AdditiveIdToAdditive" )
     OrderItemAdditive toOrderItemAdditive(OrderItemAdditiveDto orderItemAdditive);
 
-    @Mapping(source = "additiveId", target = "additive.id",qualifiedByName ="AdditiveIdToAdditive" )
-    @Mapping(source = "orderItem", target = "orderItem")
-    OrderItemAdditive toOrderItemAdditive(OrderItemAdditiveDto orderItemAdditive,OrderItem orderItem);
+//    @Mapping(source = "orderItemAdditive.additiveId", target = "additive.id",qualifiedByName ="AdditiveIdToAdditive" )
+//    @Mapping(source = "orderItem", target = "orderItem")
+//    OrderItemAdditive toOrderItemAdditive(OrderItemAdditiveDto orderItemAdditive,OrderItem orderItem);
 
 }
