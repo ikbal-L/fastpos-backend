@@ -3,11 +3,13 @@ package com.softlines.fastpos.domain;
 import com.softlines.fastpos.constants.MessageKeyConstants;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -16,15 +18,20 @@ import java.util.List;
 import java.util.Set;
 
 
-@Entity
 @SuperBuilder
-@Setter @Getter @AllArgsConstructor @NoArgsConstructor
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 
 @SQLDelete(sql = "UPDATE Additive SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
-@javax.persistence.Table(name = "additive")
 
-public class Additive extends BaseEntity{
+@NaturalIdCache
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@javax.persistence.Table(name = "additive")
+@Entity(name = "Additive")
+public class Additive extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,10 +54,14 @@ public class Additive extends BaseEntity{
 //    @NotNull
 //    AdditiveSate sate;
 
-    @OneToMany(mappedBy = "additive",cascade = {CascadeType.ALL})
+
+    @OneToMany(mappedBy = "additive", cascade = CascadeType.ALL, orphanRemoval = true)
     List<OrderItemAdditive> orderItemAdditives;
 
     @Builder.Default
     @NotNull
     private boolean deleted = false;
+
+
+
 }

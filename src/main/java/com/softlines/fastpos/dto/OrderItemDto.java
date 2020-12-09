@@ -56,7 +56,7 @@ public class OrderItemDto {
     String productName;
 
 
-    List<Long> additiveIds;
+//    List<Long> additiveIds;
 
     @JsonProperty("OrderId")
     Long orderId;
@@ -67,6 +67,7 @@ public class OrderItemDto {
     @NotNull
     @JsonProperty("State")
     OrderItemState state;
+
     @JsonProperty("AdditiveIds")
     Set<OrderItemAdditiveDto> orderItemAdditives;
 

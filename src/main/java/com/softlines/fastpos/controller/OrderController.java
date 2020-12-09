@@ -6,13 +6,18 @@ import com.softlines.fastpos.dto.OrderDto;
 import com.softlines.fastpos.dto.mapping.OrderMapper;
 import com.softlines.fastpos.dto.service.DtoServiceImpl;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
+import com.softlines.fastpos.repository.TestRepository;
 import com.softlines.fastpos.repository.OrderRepository;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +27,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/api/order", produces = "application/json")
 public class OrderController {
+
+
 
     @Autowired
     private OrderRepository orderRepository;
@@ -34,15 +41,15 @@ public class OrderController {
 
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
+
+
     @PostMapping(value = "/save", consumes = "application/json")
     public ResponseEntity<OrderDto> addOrder(@Valid @RequestBody OrderDto orderDto) {
 
         try {
 
             Optional<Order> foundOrder = orderRepository.findById(orderDto.getId());
-
             if (foundOrder.isEmpty()) {
-
                 if (orderDto.getOrderItems().size() > 0) {
                     Order order = dtoService.orderDtoToOrder(orderDto);
 
@@ -50,7 +57,6 @@ public class OrderController {
 
                     OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
                     return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);
-//                    return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto.getId());
 
                 } else {
                     return ResponseEntity.noContent().build();

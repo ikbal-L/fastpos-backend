@@ -8,8 +8,11 @@ import com.softlines.fastpos.repository.AdditiveRepository;
 import com.softlines.fastpos.repository.CategoryRepository;
 import com.softlines.fastpos.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -134,43 +137,48 @@ public class DtoServiceImpl implements DtoService {
     public OrderItem orderItemDtoToOrderItem(OrderItemDto oiDto, boolean getDataFromRepository) {
         List<Additive> additives = new ArrayList<Additive>();
         OrderItem orderItem = orderItemMapper.toOrderItem(oiDto);
-        if (getDataFromRepository) {
-            for (Long idAdditive : oiDto.getAdditiveIds()) {
-                additives.add(additiveRepository.findById(idAdditive).get());
-            }
-//            orderItem.setAdditive(additives);
-            orderItem.setProduct(productRepository.findById(oiDto.getProductId()).get());
-        }
+
         return orderItem;
     }
 
+
+
+    // Iqpal
     @Override
-    public List<OrderItem> orderItemDtoListToOrderItemList(List<OrderItemDto> orderItemDtos, boolean getDataFromRepository) {
+    public List<OrderItem> orderItemDtoListToOrderItemList(List<OrderItemDto> orderItemDtoList, boolean getDataFromRepository) {
         List<Additive> additives = new ArrayList<Additive>();
 
-        List<OrderItem> orderItems = orderItemMapper.toOrderItemList(orderItemDtos);
-        if (getDataFromRepository) {
-            for (int i = 0; i < orderItemDtos.size(); i++) {
-                additives.clear();
-                for (Long idAdditive : orderItemDtos.get(i).getAdditiveIds()) {
-                    additives.add(additiveRepository.findById(idAdditive).get());
-                }
-
-//                orderItems.get(i).setAdditive(additives);
-
-                orderItems.get(i).setProduct(productRepository.findById(orderItemDtos.get(i).getProductId()).get());
-            }
-        }
-
+        List<OrderItem> orderItems = orderItemMapper.toOrderItemList(orderItemDtoList);
 
         for (int i = 0; i < orderItems.size(); i++) {
-            var orderItemDto = orderItemDtos.get(i);
-            var orderItem = orderItems.get(i);
-            var orderItemAdditives =
-                    orderItemAdditiveDtosToOrderItemAdditives(orderItemDto, orderItem, true);
-            orderItem.setOrderItemAdditives(orderItemAdditives);
-        }
 
+            for (int j = 0; j < orderItems.get(i).getOrderItemAdditives().size(); j++) {
+                orderItems.get(i).getOrderItemAdditives()
+                        .get(j).setAdditive(Additive.builder()
+                        .id(3).build());
+
+                orderItems.get(i).getOrderItemAdditives().get(j)
+                        .setOrderItem(orderItems.get(i));
+
+                orderItems.get(i).getOrderItemAdditives().get(j).setOrderItem(orderItems.get(i));
+
+                orderItems.get(i).getOrderItemAdditives().get(j)
+                        .setId(OrderItemAdditiveId.builder().additiveId(3L).build() );
+
+                orderItems.get(i).getOrderItemAdditives().get(j)
+                        .setId(OrderItemAdditiveId.builder().orderItemId(0L).build() );
+
+            }
+
+
+            // Iqpal
+
+//            var orderItemDto = orderItemDtoList.get(i);
+//            var orderItem = orderItems.get(i);
+//            var orderItemAdditives =
+//                    orderItemAdditiveDtosToOrderItemAdditives(orderItemDto, orderItem, true);
+//            orderItem.setOrderItemAdditives(orderItemAdditives);
+        }
 
         return orderItems;
     }
@@ -183,6 +191,8 @@ public class DtoServiceImpl implements DtoService {
         for (OrderItem orderItem : order.getOrderItems()) {
             orderItem.setOrder(order);
         }
+
+//        addEmployee(order);
         return order;
     }
 
@@ -215,18 +225,46 @@ public class DtoServiceImpl implements DtoService {
         return additiveList;
     }
 
+//    @Override
+//    public OrderItemAdditive orderItemAdditiveDtoToOrderItemAdditive(OrderItemAdditiveDto orderItemAdditiveDto, OrderItem orderItem, boolean getDataFromRepository) {
+//        OrderItemAdditiveMapper mapper = OrderItemAdditiveMapper.INSTANCE;
+//        OrderItemAdditive orderItemAdditive = mapper.toOrderItemAdditive(orderItemAdditiveDto);
+//        Additive additive;
+//        if (getDataFromRepository) {
+//             additive = additiveRepository.findById(orderItemAdditiveDto.getAdditiveId()).get();
+//
+//
+////            additive.getOrderItemAdditives().add(orderItemAdditive);
+//        }else {
+//            additive = Additive.builder().id(orderItemAdditiveDto.getAdditiveId()).build();
+//        }
+////        if (orderItemAdditiveDto.getOrderItemId() != null&& orderItemAdditiveDto.getAdditiveId()!=null) {
+////            OrderItemAdditiveKey key =
+////                    OrderItemAdditiveKey.builder().
+////                            additiveId(orderItemAdditiveDto.getAdditiveId()).
+////                            orderItemId(orderItemAdditiveDto.getOrderItemId()).build();
+////            orderItemAdditive.setId(key);
+////        }
+////        var key = new OrderItemAdditiveKey();
+////        orderItemAdditive.setId(key);
+//        orderItemAdditive.setAdditive(additive);
+//        orderItemAdditive.setOrderItem(orderItem);
+////        orderItemAdditive.setAdditive(additive);
+//        return orderItemAdditive;
+//    }
+
     @Override
     public OrderItemAdditive orderItemAdditiveDtoToOrderItemAdditive(OrderItemAdditiveDto orderItemAdditiveDto, OrderItem orderItem, boolean getDataFromRepository) {
         OrderItemAdditiveMapper mapper = OrderItemAdditiveMapper.INSTANCE;
         OrderItemAdditive orderItemAdditive = mapper.toOrderItemAdditive(orderItemAdditiveDto);
         Additive additive;
         if (getDataFromRepository) {
-             additive = additiveRepository.findById(orderItemAdditiveDto.getAdditiveId()).get();
+//            additive = additiveRepository.findById(orderItemAdditiveDto.getAdditiveId()).get();
 
 
 //            additive.getOrderItemAdditives().add(orderItemAdditive);
-        }else {
-            additive = Additive.builder().id(orderItemAdditiveDto.getAdditiveId()).build();
+        } else {
+//            additive = Additive.builder().id(orderItemAdditiveDto.getAdditiveId()).build();
         }
 //        if (orderItemAdditiveDto.getOrderItemId() != null&& orderItemAdditiveDto.getAdditiveId()!=null) {
 //            OrderItemAdditiveKey key =
@@ -237,19 +275,23 @@ public class DtoServiceImpl implements DtoService {
 //        }
 //        var key = new OrderItemAdditiveKey();
 //        orderItemAdditive.setId(key);
-        orderItemAdditive.setAdditive(additive);
+//        orderItemAdditive.setAdditive(additive);
         orderItemAdditive.setOrderItem(orderItem);
 //        orderItemAdditive.setAdditive(additive);
         return orderItemAdditive;
     }
 
+
     public List<OrderItemAdditive> orderItemAdditiveDtosToOrderItemAdditives(OrderItemDto orderItemDto, OrderItem orderItem, boolean getDataFromRepository) {
         List<OrderItemAdditive> orderItemAdditives = new ArrayList<>();
+
         for (OrderItemAdditiveDto orderItemAdditiveDto :
                 orderItemDto.getOrderItemAdditives()) {
             var orderItemAdditive = orderItemAdditiveDtoToOrderItemAdditive(orderItemAdditiveDto, orderItem, getDataFromRepository);
             orderItemAdditives.add(orderItemAdditive);
+
         }
+
         return orderItemAdditives;
     }
 }

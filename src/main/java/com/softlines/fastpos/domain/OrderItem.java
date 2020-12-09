@@ -4,22 +4,24 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+
 import javax.persistence.*;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
 
 @SuperBuilder
-@Entity
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-
 @SQLDelete(sql = "UPDATE OrderItem SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
-public class OrderItem extends BaseEntity{
+@Entity(name = "OrderItem")
+@Table(name = "orderItem")
+public class OrderItem extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,7 +50,8 @@ public class OrderItem extends BaseEntity{
 //            inverseJoinColumns = @JoinColumn(name = "additive_id"))
 //    List<Additive> additive;
 
-    @OneToMany(mappedBy = "orderItem",cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL,
+            orphanRemoval = true, fetch = FetchType.EAGER)
     List<OrderItemAdditive> orderItemAdditives;
 
     @ManyToOne
@@ -63,7 +66,25 @@ public class OrderItem extends BaseEntity{
 
     @Builder.Default
     @NotNull
-    private boolean deleted=false;
+    private boolean deleted = false;
+
+//    @PersistenceContext
+//    EntityManager em;
+
+
+//    public void addEmployee(Additive employee, AdditiveSate additiveSate) {
+//        OrderItemAdditive association = new OrderItemAdditive();
+//        association.setAdditive(employee);
+//        association.setOrderItem(this);
+//
+//        association.setAdditiveId(employee.getId());
+//        association.setOrderItemId(this.getId());
+//        association.setState(additiveSate);
+//        em.persist(association);
+//
+//        this.orderItemAdditives.add(association);
+//        employee.getOrderItemAdditives().add(association);
+//    }
 
 
 }

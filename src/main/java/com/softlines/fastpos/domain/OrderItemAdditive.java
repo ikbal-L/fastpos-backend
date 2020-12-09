@@ -10,28 +10,26 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 @Table(name = "orderItems_additives")
-@IdClass(OrderItemAdditiveKey.class)
+@Entity(name = "OrderItemAdditive")
+//@IdClass(OrderItemAdditiveId.class)
 public class OrderItemAdditive {
 
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    long id;
-//    @EmbeddedId
-//    OrderItemAdditiveKey id = new OrderItemAdditiveKey() ;
+    @EmbeddedId
+    private OrderItemAdditiveId id;
 
-    @Id
-    private long orderItemId;
-    @Id
-    private long additiveId;
+//    @Id
+//    private Long additiveId;
+//
+//    @Id
+//    private Long orderItemId;
 
     @ManyToOne
     @MapsId("orderItemId")
     @JoinColumn(name = "order_item_id")
     OrderItem orderItem;
 
-    @ManyToOne
+    @ManyToOne()
     @MapsId("additiveId")
     @JoinColumn(name = "additive_id")
     Additive additive;
