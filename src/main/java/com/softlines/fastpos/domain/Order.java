@@ -81,5 +81,14 @@ public class Order extends BaseEntity {
     @Builder.Default
     @NotNull
     private boolean deleted = false;
+
+    @ManyToOne
+    @JoinColumn(name = "deliveryman_id",nullable = true)
+    Deliveryman deliveryman;
+
+    @ManyToOne
+    @JoinColumn(name = "waiter_id",nullable = true)
+    Waiter waiter;
+
 }
 
