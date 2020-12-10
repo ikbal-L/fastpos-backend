@@ -98,7 +98,7 @@ public class OrderDto {
     @JsonProperty("TableId")
     Long tableId;
 
-    @JsonProperty("DeliveryManId")
+    @JsonProperty("DeliverymanId")
     Long deliverymanId;
 
     @JsonProperty("WaiterId")
