@@ -50,6 +50,7 @@ public class OrderItemDto {
     String productName;
 
 
+
     @JsonProperty("OrderId")
     Long orderId;
 
@@ -60,8 +61,13 @@ public class OrderItemDto {
     @JsonProperty("State")
     OrderItemState state;
 
+//<<<<<<< HEAD
     @JsonProperty("OrderItemAdditives")
-    List<OrderItemAdditiveDto> orderItemAdditives;
+    Set<OrderItemAdditiveDto> orderItemAdditives;
+//=======
+//    @JsonProperty("OrderItemAdditive")
+//    Set<OrderItemAdditiveDto> orderItemAdditives;
+//>>>>>>> orderItemAdditive
 
 
 }
