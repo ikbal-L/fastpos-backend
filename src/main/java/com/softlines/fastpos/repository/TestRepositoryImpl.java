@@ -11,8 +11,9 @@ public class TestRepositoryImpl implements TestRepository {
     private EntityManager em;
 
     @Override
-//    @Transactional
+    @Transactional
     public void customMethod(Order order) {
+
         em.refresh(order);
     }
 
