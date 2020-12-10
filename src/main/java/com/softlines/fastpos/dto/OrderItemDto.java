@@ -68,7 +68,7 @@ public class OrderItemDto {
     @JsonProperty("State")
     OrderItemState state;
 
-    @JsonProperty("AdditiveIds")
+    @JsonProperty("OrderItemAdditive")
     Set<OrderItemAdditiveDto> orderItemAdditives;
 
 

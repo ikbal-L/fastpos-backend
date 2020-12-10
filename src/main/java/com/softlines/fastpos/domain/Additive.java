@@ -55,7 +55,7 @@ public class Additive extends BaseEntity {
 //    AdditiveSate sate;
 
 
-    @OneToMany(mappedBy = "additive", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "additive", cascade = CascadeType.MERGE, orphanRemoval = true)
     List<OrderItemAdditive> orderItemAdditives;
 
     @Builder.Default

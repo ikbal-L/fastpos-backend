@@ -1,11 +1,11 @@
 package com.softlines.fastpos.controller;
 
-import com.softlines.fastpos.domain.Order;
-import com.softlines.fastpos.domain.OrderState;
+import com.softlines.fastpos.domain.*;
 import com.softlines.fastpos.dto.OrderDto;
 import com.softlines.fastpos.dto.mapping.OrderMapper;
 import com.softlines.fastpos.dto.service.DtoServiceImpl;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
+import com.softlines.fastpos.repository.OrderItemAdditiveRepository;
 import com.softlines.fastpos.repository.TestRepository;
 import com.softlines.fastpos.repository.OrderRepository;
 import org.hibernate.Session;
@@ -20,6 +20,7 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,7 +29,8 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/api/order", produces = "application/json")
 public class OrderController {
 
-
+    @Autowired
+    OrderItemAdditiveRepository orderItemAdditiveRepository;
 
     @Autowired
     private OrderRepository orderRepository;
@@ -42,7 +44,6 @@ public class OrderController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
 
-
     @PostMapping(value = "/save", consumes = "application/json")
     public ResponseEntity<OrderDto> addOrder(@Valid @RequestBody OrderDto orderDto) {
 
@@ -54,6 +55,19 @@ public class OrderController {
                     Order order = dtoService.orderDtoToOrder(orderDto);
 
                     Order createdOder = orderRepository.save(order);
+
+                    for (int i = 0; i < createdOder.getOrderItems().size(); i++) {
+
+                        OrderItemAdditive orderItemAdditive = OrderItemAdditive.builder()
+                                .additive(createdOder.getOrderItems().get(i).getOrderItemAdditives().get(0).getAdditive())
+                                .orderItem(createdOder.getOrderItems().get(i))
+                                .state(AdditiveSate.Added)
+                                .timestamp(new Date())
+                                .id(OrderItemAdditiveId.builder().orderItemId(0L).additiveId(3L).build())
+                                .build();
+                        orderItemAdditiveRepository.save(orderItemAdditive);
+
+                    }
 
                     OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
                     return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);
@@ -168,7 +182,23 @@ public class OrderController {
             if (optionalOrder.isPresent() && id != 0 && orderDto.getOrderItems() != null && orderDto.getOrderItems().size() > 0) {
 
                 Order order = dtoService.orderDtoToOrder(orderDto);
-                return ResponseEntity.ok().body(orderMapper.toOrderDto(orderRepository.save(order)));
+
+                Order createdOder = orderRepository.save(order);
+
+                for (int i = 0; i < createdOder.getOrderItems().size(); i++) {
+
+                    OrderItemAdditive orderItemAdditive = OrderItemAdditive.builder()
+                            .additive(createdOder.getOrderItems().get(i).getOrderItemAdditives().get(0).getAdditive())
+                            .orderItem(createdOder.getOrderItems().get(i))
+                            .state(AdditiveSate.Added)
+                            .timestamp(new Date())
+                            .id(OrderItemAdditiveId.builder().orderItemId(0L).additiveId(3L).build())
+                            .build();
+                    orderItemAdditiveRepository.save(orderItemAdditive);
+
+                }
+
+                return ResponseEntity.ok().body(orderMapper.toOrderDto(createdOder));
 
             } else {
                 return ResponseEntity.noContent().build();

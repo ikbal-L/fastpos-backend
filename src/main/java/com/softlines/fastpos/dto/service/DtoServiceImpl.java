@@ -142,7 +142,6 @@ public class DtoServiceImpl implements DtoService {
     }
 
 
-
     // Iqpal
     @Override
     public List<OrderItem> orderItemDtoListToOrderItemList(List<OrderItemDto> orderItemDtoList, boolean getDataFromRepository) {
@@ -163,10 +162,10 @@ public class DtoServiceImpl implements DtoService {
                 orderItems.get(i).getOrderItemAdditives().get(j).setOrderItem(orderItems.get(i));
 
                 orderItems.get(i).getOrderItemAdditives().get(j)
-                        .setId(OrderItemAdditiveId.builder().additiveId(3L).build() );
+                        .setId(OrderItemAdditiveId.builder().additiveId(orderItems.get(i).getOrderItemAdditives().get(j).getAdditive().getId()).build());
 
                 orderItems.get(i).getOrderItemAdditives().get(j)
-                        .setId(OrderItemAdditiveId.builder().orderItemId(0L).build() );
+                        .setId(OrderItemAdditiveId.builder().orderItemId(0L).build());
 
             }
 

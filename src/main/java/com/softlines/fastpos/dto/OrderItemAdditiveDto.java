@@ -21,8 +21,8 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderItemAdditiveDto {
 
-    @JsonProperty("OrderItemAdditiveId")
-    private OrderItemAdditiveId id;
+//    @JsonProperty("OrderItemAdditiveId")
+//    private OrderItemAdditiveId id;
 
     //    @JsonProperty("OrderItemId")
 //    Long orderItemId;
