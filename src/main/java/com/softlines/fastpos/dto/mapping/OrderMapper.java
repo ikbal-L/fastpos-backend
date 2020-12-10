@@ -22,7 +22,6 @@ public interface OrderMapper {
     @Mapping(source = "tableId", target = "table",
             nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
             qualifiedByName = "tableIdToTable" )
-
     @Mapping(source = "waiterId", target = "waiter", qualifiedByName = "IdToWaiter",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     @Mapping(source = "deliverymanId", target = "deliveryman",qualifiedByName = "IdToDeliveryman",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     Order toOrder(OrderDto dto);

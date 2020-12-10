@@ -13,7 +13,7 @@ import org.mapstruct.factory.Mappers;
 public interface OrderItemAdditiveMapper {
     OrderItemAdditiveMapper INSTANCE = Mappers.getMapper(OrderItemAdditiveMapper.class);
 
-    @Mapping(source = "additive", target = "AdditiveId", qualifiedByName = "AdditiveToId")
+    @Mapping(source = "additive", target = "additiveId", qualifiedByName = "AdditiveToId")
     @Mapping(source = "orderItem.id", target = "orderItemId")
     OrderItemAdditiveDto toOrderItemAdditiveDto(OrderItemAdditive orderItemAdditive);
 

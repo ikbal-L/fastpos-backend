@@ -19,7 +19,7 @@ public class OrderItemAdditiveDto {
     Long orderItemId;
 
     @JsonProperty(value = "AdditiveId")
-    Long AdditiveId;
+    Long additiveId;
 
     @JsonProperty(value = "State", required = true)
     @NotNull
