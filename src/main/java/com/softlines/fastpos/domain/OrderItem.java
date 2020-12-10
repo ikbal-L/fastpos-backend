@@ -48,7 +48,7 @@ public class OrderItem extends BaseEntity{
 //            inverseJoinColumns = @JoinColumn(name = "additive_id"))
 //    List<Additive> additive;
 
-    @OneToMany(mappedBy = "orderItem",cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "orderItem",cascade = {CascadeType.ALL},fetch = FetchType.EAGER)
     List<OrderItemAdditive> orderItemAdditives;
 
     @ManyToOne

@@ -166,8 +166,11 @@ public class DtoServiceImpl implements DtoService {
         for (int i = 0; i < orderItems.size(); i++) {
             var orderItemDto = orderItemDtos.get(i);
             var orderItem = orderItems.get(i);
-            var orderItemAdditives =
-                    orderItemAdditiveDtosToOrderItemAdditives(orderItemDto, orderItem, true);
+            List<OrderItemAdditive> orderItemAdditives =
+                    null;
+            if (orderItemDto.getOrderItemAdditives()!=null) {
+                orderItemAdditives = orderItemAdditiveDtosToOrderItemAdditives(orderItemDto, orderItem, true);
+            }
             orderItem.setOrderItemAdditives(orderItemAdditives);
         }
 

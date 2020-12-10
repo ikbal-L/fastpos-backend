@@ -15,6 +15,7 @@ public class ImplOrderItemsDtoValidationDiscountPercentageAndDiscountAmount impl
             if (!(orderDto.getOrderItems().get(i).getDiscountAmount() * 100 / orderDto.getOrderItems().get(i).getTotal()
                     == orderDto.getOrderItems().get(i).getDiscountPercentage()))
                 orderItemsValidationPercentageDiscountAndDiscountAmount = false;
+                break;
 
         }
 

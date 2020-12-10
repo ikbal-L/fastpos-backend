@@ -156,13 +156,15 @@ public class OrderController {
     public ResponseEntity<OrderDto> editOrder(@Valid @PathVariable long id, @Valid @RequestBody OrderDto orderDto) {
 
         try {
-            Optional<Order> optionalOrder = orderRepository.findById(id);
+            var exists = orderRepository.existsById(id);
 
 
-            if (optionalOrder.isPresent() && id != 0 && orderDto.getOrderItems() != null && orderDto.getOrderItems().size() > 0) {
+            if (exists && id != 0 && orderDto.getOrderItems() != null && orderDto.getOrderItems().size() > 0) {
 
                 Order order = dtoService.orderDtoToOrder(orderDto);
-                return ResponseEntity.ok().body(orderMapper.toOrderDto(orderRepository.save(order)));
+                var updatedOrder = orderRepository.save(order);
+                var updatedOrderDto = orderMapper.toOrderDto(updatedOrder);
+                return ResponseEntity.ok().body(updatedOrderDto);
 
             } else {
                 return ResponseEntity.noContent().build();

@@ -5,37 +5,25 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.softlines.fastpos.dbconfig.configuration.CustomContextHolder;
-import com.softlines.fastpos.jwtsecurity.securityconfiguration.FilterResponseWrapper;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Annex;
-import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
-import com.softlines.fastpos.jwtsecurity.securityrepository.AnnexRepository;
-import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
 import com.softlines.fastpos.jwtsecurity.securityrepository.SessionRepository;
-import org.apache.catalina.connector.Response;
-import org.apache.catalina.connector.ResponseFacade;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.header.HeaderWriterFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.UUID;
 
-import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstants.SECRET;
-import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstants.HEADER_STRING;
-import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstants.TOKEN_PREFIX;
+import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstants.*;
 
 public class ApiAuthorizationFilter extends BasicAuthenticationFilter {
 

@@ -16,6 +16,7 @@ public interface OrderItemMapper {
 
     @Mapping(source = "dto.productId", target = "product.id")
     @Mapping(source = "dto.orderId", target = "order.id")
+    @Mapping(source = "orderItemAdditives",target = "orderItemAdditives",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     OrderItem toOrderItem(OrderItemDto dto);
 
     List<OrderItem> toOrderItemList(List<OrderItemDto> orderItemDtos);
@@ -26,6 +27,7 @@ public interface OrderItemMapper {
             nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     @Mapping(source = "order.id", target = "orderId",
             nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "orderItemAdditives",target = "orderItemAdditives",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     OrderItemDto toOrderItemDto(OrderItem OrderItem);
 
     List<OrderItemDto> toOrderItemDTOs(List<OrderItem> orderItem);
