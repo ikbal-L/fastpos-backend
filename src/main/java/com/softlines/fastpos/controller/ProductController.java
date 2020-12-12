@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/api/product", produces = "application/json")
+@RequestMapping(value = "/api/product", consumes = "application/json", produces = "application/json")
 public class ProductController {
 
     @Autowired
@@ -39,7 +39,7 @@ public class ProductController {
 
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
-    @PostMapping(value = "/save", consumes = "application/json")
+    @PostMapping(value = "/save")
     public ResponseEntity<Long> addProduct(@Valid @RequestBody ProductDto productDto) {
 
         try {
@@ -49,7 +49,8 @@ public class ProductController {
 
                 Product product = dtoService.productDtoToProduct(productDto, false);
                 var created = productRepository.save(product);
-                return ResponseEntity.status(HttpStatus.CREATED).body(created.getId());
+
+                return ResponseEntity.status(HttpStatus.CREATED).body(5L);
 
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();

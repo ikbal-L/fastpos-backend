@@ -1,6 +1,7 @@
 package com.softlines.fastpos.repository;
 
 import com.softlines.fastpos.domain.Order;
+import com.softlines.fastpos.repository.em.CustomOrderRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -12,10 +13,8 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, Long> {
+public interface OrderRepository extends JpaRepository<Order, Long> ,CustomOrderRepository{
     // oi LEFT JOIN FETCH oi.orderItemAdditives
-
-
 
     @Query(value = "select DISTINCT o from Order o LEFT JOIN FETCH o.orderItems oi LEFT JOIN FETCH o.table")
     List<Order> findAllOrdersWithOrderItems();

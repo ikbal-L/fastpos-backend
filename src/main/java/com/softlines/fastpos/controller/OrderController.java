@@ -10,6 +10,8 @@ import com.softlines.fastpos.repository.TestRepository;
 import com.softlines.fastpos.repository.OrderRepository;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,41 +46,19 @@ public class OrderController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
 
-    @PostMapping(value = "/save", consumes = "application/json")
+    @PostMapping(value = "/save", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OrderDto> addOrder(@Valid @RequestBody OrderDto orderDto) {
 
         try {
 
             if (orderDto.getId() == 0) {
-                if (orderDto.getOrderItems().size() > 0) {
-                    Order order = dtoService.orderDtoToOrder(orderDto);
+                Order order = dtoService.orderDtoToOrder(orderDto);
 
-                    Order createdOder = orderRepository.save(order);
+                Order createdOder = orderRepository.saveOrder(order);
 
-                    createdOder.getOrderItems().forEach(orderItem -> {
-                        orderItem.getOrderItemAdditives().forEach(
-                                orderItemAdditive -> {
-                                    OrderItemAdditive newOrderItemAdditive = OrderItemAdditive.builder()
-                                            .additive(orderItemAdditive.getAdditive())
-                                            .orderItem(orderItem)
-                                            .state(orderItemAdditive.getState())
-                                            .id(OrderItemAdditiveId.builder().orderItemId(0L)
-                                                    .additiveId(orderItemAdditive.getAdditive().getId())
-                                                    .build())
-                                            .timestamp(orderItemAdditive.getTimestamp())
-                                            .build();
+                OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
+                return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);
 
-                                    orderItemAdditiveRepository.save(newOrderItemAdditive);
-                                }
-                        );
-                    });
-
-                    OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
-                    return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);
-
-                } else {
-                    return ResponseEntity.noContent().build();
-                }
 
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();
@@ -90,7 +70,7 @@ public class OrderController {
 
     }
 
-    @PostMapping(value = "/savemany", consumes = "application/json")
+    @PostMapping(value = "/savemany")
     public ResponseEntity<List<Long>> addManyOrder(@Valid @RequestBody List<OrderDto> orderDtoList) {
 
         try {
@@ -102,31 +82,7 @@ public class OrderController {
 
                 List<Order> order = dtoService.orderDtoListToOrderList(orderDtoList);
 
-                List<Order> ListCreatedOder = orderRepository.saveAll(order);
-
-                ListCreatedOder.forEach(
-                        order1 -> {
-                            order1.getOrderItems().forEach(orderItem -> {
-                                orderItem.getOrderItemAdditives().forEach(
-                                        orderItemAdditive -> {
-
-                                            OrderItemAdditive newOrderItemAdditive = OrderItemAdditive.builder()
-                                                    .additive(orderItemAdditive.getAdditive())
-                                                    .orderItem(orderItem)
-                                                    .state(orderItemAdditive.getState())
-                                                    .id(OrderItemAdditiveId.builder().orderItemId(0L)
-                                                            .additiveId(orderItemAdditive.getAdditive().getId())
-                                                            .build())
-                                                    .timestamp(orderItemAdditive.getTimestamp())
-                                                    .build();
-
-                                            orderItemAdditiveRepository.save(newOrderItemAdditive);
-
-                                        });
-                            });
-
-                        });
-
+                List<Order> ListCreatedOder = orderRepository.saveListOrder(order);
 
                 List<Long> savedIds = ListCreatedOder.parallelStream()
                         .map(Order::getId).collect(Collectors.toList());
@@ -145,7 +101,7 @@ public class OrderController {
     }
 
 
-    @GetMapping(value = {"/getall", "/getall/{filterByState}"}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = {"/getall", "/getall/{filterByState}"})
     public ResponseEntity<List<OrderDto>> getOrders(@PathVariable Optional<String> filterByState) {
 
         try {
@@ -213,29 +169,9 @@ public class OrderController {
 
                 Order order = dtoService.orderDtoToOrder(orderDto);
 
-                Order createdOder = orderRepository.save(order);
+                Order createdOrder = orderRepository.saveOrder(order);
 
-//                createdOder.getOrderItems().forEach(orderItem -> {
-//                    orderItem.getOrderItemAdditives().forEach(
-//                            orderItemAdditive -> {
-//                                OrderItemAdditive newOrderItemAdditive = OrderItemAdditive.builder()
-//                                        .additive(orderItemAdditive.getAdditive())
-//                                        .orderItem(orderItem)
-//                                        .state(orderItemAdditive.getState())
-//                                        .id(OrderItemAdditiveId.builder().orderItemId(0L)
-//                                                .additiveId(orderItemAdditive.getAdditive().getId())
-//                                                .build())
-//                                        .timestamp(orderItemAdditive.getTimestamp())
-//                                        .build();
-//
-//                                orderItemAdditiveRepository.save(newOrderItemAdditive);
-//
-//                            }
-//                    );
-//                });
-
-
-                return ResponseEntity.ok().body(orderMapper.toOrderDto(createdOder));
+                return ResponseEntity.ok().body(orderMapper.toOrderDto(createdOrder));
 
             } else {
                 return ResponseEntity.noContent().build();
