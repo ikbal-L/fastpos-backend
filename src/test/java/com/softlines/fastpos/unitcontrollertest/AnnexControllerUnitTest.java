@@ -184,7 +184,7 @@ public class AnnexControllerUnitTest {
                         .name("name")
                         .build();
 
-        when(annexRepository.findById(1l)).thenReturn(Optional.ofNullable(annex));
+        when(annexRepository.findById(1L)).thenReturn(Optional.ofNullable(annex));
 
         var res = annexController.getAnnex(1);
         assertEquals(res.getStatusCode(), HttpStatus.OK);

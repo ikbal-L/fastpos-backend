@@ -17,12 +17,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
+
 import javax.validation.Valid;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,7 +44,7 @@ public class OrderController {
 
 
     @PostMapping(value = "/save", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<OrderDto> addOrder(@Valid @RequestBody OrderDto orderDto) {
+    public ResponseEntity<OrderDto> saveOrder(@Valid @RequestBody OrderDto orderDto) {
 
         try {
 
@@ -71,7 +68,7 @@ public class OrderController {
     }
 
     @PostMapping(value = "/savemany")
-    public ResponseEntity<List<Long>> addManyOrder(@Valid @RequestBody List<OrderDto> orderDtoList) {
+    public ResponseEntity<List<OrderDto>> saveManyOrder(@Valid @RequestBody List<OrderDto> orderDtoList) {
 
         try {
             List<Long> ids = orderDtoList.parallelStream().map(OrderDto::getId).collect(Collectors.toList());
@@ -84,29 +81,60 @@ public class OrderController {
 
                 List<Order> ListCreatedOder = orderRepository.saveListOrder(order);
 
-                List<Long> savedIds = ListCreatedOder.parallelStream()
-                        .map(Order::getId).collect(Collectors.toList());
+//                List<Long> savedIds = ListCreatedOder.parallelStream()
+//                        .map(Order::getId).collect(Collectors.toList());
 
-                return ResponseEntity.status(HttpStatus.CREATED).body(savedIds);
+                List<OrderDto> orderDtos = orderMapper.toOrderDTOs(ListCreatedOder);
+
+                return ResponseEntity.status(HttpStatus.CREATED).body(orderDtos);
 
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();
             }
 
-        } catch (
-                Exception exception) {
+        } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }
 
+    @PutMapping(value = "/updatemany")
+    public ResponseEntity<List<OrderDto>> updateManyOrder(@Valid @RequestBody List<OrderDto> orderDtoList) {
+
+        try {
+            List<Long> ids = orderDtoList.parallelStream().map(OrderDto::getId).collect(Collectors.toList());
+            List<Order> foundOrder = orderRepository.findAllById(ids);
+
+
+            if (foundOrder.size() == orderDtoList.size()) {
+
+                List<Order> order = dtoService.orderDtoListToOrderList(orderDtoList);
+
+                List<Order> ListCreatedOder = orderRepository.saveListOrder(order);
+
+//                List<Long> savedIds = ListCreatedOder.parallelStream()
+//                        .map(Order::getId).collect(Collectors.toList());
+
+                List<OrderDto> orderDtos = orderMapper.toOrderDTOs(ListCreatedOder);
+
+                return ResponseEntity.status(HttpStatus.CREATED).body(orderDtos);
+
+            } else {
+                return ResponseEntity.status(HttpStatus.FOUND).build();
+            }
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+
+    }
 
     @GetMapping(value = {"/getall", "/getall/{filterByState}"})
     public ResponseEntity<List<OrderDto>> getOrders(@PathVariable Optional<String> filterByState) {
 
         try {
 
-            List<Order> orders = orderRepository.findAllOrdersWithOrderItems();
+            List<Order> orders = orderRepository.getAllOrder();
 
             if (orders == null || orders.isEmpty())
                 return ResponseEntity.noContent().build();
@@ -146,7 +174,7 @@ public class OrderController {
     public ResponseEntity<OrderDto> getOrder(@Valid @PathVariable long id) {
         try {
 
-            Order order = orderRepository.findByIdOrderWithOrderItems(id);
+            Order order = orderRepository.getOrder(id);
 
             if (order != null && id != 0)
                 return ResponseEntity.ok().body(orderMapper.toOrderDto(order));
@@ -163,7 +191,6 @@ public class OrderController {
 
         try {
             var exists = orderRepository.existsById(id);
-
 
             if (exists && id != 0 && orderDto.getOrderItems() != null && orderDto.getOrderItems().size() > 0) {
 

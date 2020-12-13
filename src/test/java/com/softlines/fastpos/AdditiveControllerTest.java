@@ -94,7 +94,7 @@ public class AdditiveControllerTest {
     @Test
     public void putAdditives() throws Exception {
 
-        Additive.setId(1);
+        Additive.setId(1L);
         Additive.setBackgroundString("red");
         Additive.setDescription("may");
         Additive.setRank(4);

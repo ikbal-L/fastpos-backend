@@ -54,7 +54,7 @@ public class OrderItem extends BaseEntity {
 //    @OneToMany(mappedBy = "orderItem",cascade = {CascadeType.ALL},fetch = FetchType.EAGER)
 //=======
     @OneToMany(mappedBy = "orderItem", cascade = CascadeType.MERGE,
-            orphanRemoval = true, fetch = FetchType.EAGER)
+            orphanRemoval = true, fetch = FetchType.LAZY)
     List<OrderItemAdditive> orderItemAdditives;
 
     @ManyToOne
