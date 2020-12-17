@@ -9,12 +9,13 @@ public class ImplOrderItemValidationUnitPriceGreaterThanUnitPrice implements Con
 
     public boolean isValid(OrderDto orderDto, ConstraintValidatorContext context) {
         boolean validationDiscountAmountGreaterThanUnitPrice = true;
+
         for (int i = 0; i < orderDto.getOrderItems().size(); i++) {
             if (orderDto.getOrderItems().get(i).getDiscountAmount()
                     > orderDto.getOrderItems().get(i).getTotal()) {
                 validationDiscountAmountGreaterThanUnitPrice = false;
             }
-
+            break;
         }
 
         return validationDiscountAmountGreaterThanUnitPrice;

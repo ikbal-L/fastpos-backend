@@ -25,6 +25,7 @@ public class MessageKeyConstants {
     public static final String ORDER_DISCOUNT_PERCENTAGE_NOT_EQUAL_DISCOUNT_AMOUNT_ERROR = "validation.order.error.discountPercentage_not_equal_discountAmount";
     public static final String ORDER_TOTAL_GREATER_THAN_NEW_TOTAL_ERROR = "validation.order.error.total_greater_than_new_total";
     public static final String ORDER_NEW_TOTAL_CALCULATION_NOT_CORRECT_ERROR = "validation.order.error.new_total_calculation_not_correct";
+    public static final String ORDER_DISCOUNT_WITH_ORDER_ITEM_DISCOUNT = "validation.order.error.order_discount_with_orderItem_discount";
 
     /////  ORDER ITEMS VALIDATION
     public static final String ORDER_ITEM_DISCOUNT_AMOUNT_GREATER_THAN_TOTAL_ERROR = "validation.order_item.error.discountAmount_greater_than_total";

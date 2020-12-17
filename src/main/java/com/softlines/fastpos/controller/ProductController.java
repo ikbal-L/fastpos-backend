@@ -43,9 +43,8 @@ public class ProductController {
     public ResponseEntity<Long> addProduct(@Valid @RequestBody ProductDto productDto) {
 
         try {
-            Optional<Product> optionalProduct = productRepository.findById(productDto.getId());
 
-            if (optionalProduct.isEmpty()) {
+            if (productDto.getId()==0) {
 
                 Product product = dtoService.productDtoToProduct(productDto, false);
                 var created = productRepository.save(product);

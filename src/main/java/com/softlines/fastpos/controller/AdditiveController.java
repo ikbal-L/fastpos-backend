@@ -36,16 +36,10 @@ public class AdditiveController {
     public ResponseEntity<Long> addAdditive(@Valid @RequestBody AdditiveDto additiveDto) {
         try {
 
-            Optional<Additive> optionalAdditive = additiveRepository.findById(additiveDto.getId());
+            if (additiveDto.getId() == 0) {
 
-            if (!(optionalAdditive.isPresent()) && additiveDto.getId() == 0) {
-
-                if (additiveDto.getDescription() != null &&
-                        !additiveDto.getDescription().isEmpty()) {
                     Additive savedAdditve = additiveRepository.save(additiveMapper.toAdditive(additiveDto));
                     return ResponseEntity.status(HttpStatus.CREATED).body(savedAdditve.getId());
-                } else
-                    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();
@@ -59,6 +53,7 @@ public class AdditiveController {
 
     @PostMapping("/savemany")
     public ResponseEntity<List<AdditiveDto>> addManyAdditive(@Valid @RequestBody List<AdditiveDto> additiveDtoList) {
+
         try {
 
             List<Long> ids = additiveDtoList.parallelStream().map(AdditiveDto::getId)
@@ -90,7 +85,7 @@ public class AdditiveController {
 
             List<Additive> additives = additiveRepository.findAll();
 
-            if (additives == null || additives.isEmpty())
+            if (additives.isEmpty())
                 return ResponseEntity.noContent().build();
             else
                 return ResponseEntity.ok().body(additiveMapper.toAdditiveDTOs(additives));

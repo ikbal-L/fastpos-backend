@@ -34,9 +34,8 @@ public class CustomerController {
     public ResponseEntity<Long> addCustomer(@Valid @RequestBody CustomerDto customerDto) {
         try {
 
-            Optional<Customer> optionalCustomer = customerRepository.findById(customerDto.getId());
 
-            if (optionalCustomer.isEmpty()) {
+            if (customerDto.getId()==0) {
                 Customer customer = customerMapper.toCustomer(customerDto);
                 Customer savedCustomer = customerRepository.save(customer);
                 return ResponseEntity.status(HttpStatus.CREATED).body(savedCustomer.getId());

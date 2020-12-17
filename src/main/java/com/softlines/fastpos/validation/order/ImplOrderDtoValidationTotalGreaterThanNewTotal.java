@@ -7,6 +7,7 @@ import javax.validation.ConstraintValidatorContext;
 public class ImplOrderDtoValidationTotalGreaterThanNewTotal implements ConstraintValidator<OrderValidationTotalGreaterThanNewTotal, OrderDto> {
 
     public boolean isValid(OrderDto orderDto, ConstraintValidatorContext context) {
+
         return orderDto.getTotal() >= orderDto.getNewTotal();
     }
 

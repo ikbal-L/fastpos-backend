@@ -65,7 +65,9 @@ public class CustomOrderRepositoryImpl implements CustomOrderRepository {
         Order createdOrder = em.merge(order);
         em.flush();
         em.getTransaction().commit();
+
         return createdOrder;
+
     }
 
     @Override
@@ -83,6 +85,8 @@ public class CustomOrderRepositoryImpl implements CustomOrderRepository {
         );
 
         em.getTransaction().commit();
+
         return ListCreatedOrder;
     }
+
 }

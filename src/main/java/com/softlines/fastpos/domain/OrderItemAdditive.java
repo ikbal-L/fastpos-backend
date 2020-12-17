@@ -1,9 +1,12 @@
 package com.softlines.fastpos.domain;
 
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Data
@@ -12,6 +15,8 @@ import java.util.Date;
 @NoArgsConstructor
 @Table(name = "orderItems_additives")
 @Entity(name = "OrderItemAdditive")
+//@SQLDelete(sql = "UPDATE orderItems_additives SET deleted=true WHERE order_item_id=? AND additive_id=?")
+//@Where(clause = "deleted = false")
 //@IdClass(OrderItemAdditiveId.class)
 public class OrderItemAdditive {
 
@@ -38,5 +43,8 @@ public class OrderItemAdditive {
     AdditiveSate state;
 
     Date timestamp;
+
+//    @Builder.Default
+//    private boolean deleted = false;
 
 }

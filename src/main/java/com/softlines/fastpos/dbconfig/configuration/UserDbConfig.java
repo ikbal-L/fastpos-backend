@@ -58,7 +58,6 @@ public class UserDbConfig {
 
     @Bean
     @Primary
-
     public PlatformTransactionManager authTransactionManager() throws Exception {
         try{
             EntityManagerFactory factory = authEntityManagerFactory().getObject();

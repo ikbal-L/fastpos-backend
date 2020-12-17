@@ -98,7 +98,7 @@ public class OrderController {
 
     }
 
-    @PutMapping(value = "/updatemany")
+    @PutMapping(value = "/putmany")
     public ResponseEntity<List<OrderDto>> updateManyOrder(@Valid @RequestBody List<OrderDto> orderDtoList) {
 
         try {

@@ -14,7 +14,6 @@ public @interface OrderDtoValidationDiscountPercentageAndDiscountAmount {
 
     String message() default MessageKeyConstants.ORDER_DISCOUNT_PERCENTAGE_NOT_EQUAL_DISCOUNT_AMOUNT_ERROR;
 
-
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};

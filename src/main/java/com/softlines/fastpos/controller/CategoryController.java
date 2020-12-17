@@ -34,13 +34,10 @@ public class CategoryController {
     public ResponseEntity<Long> addCategory(@Valid @RequestBody CategoryDto categoryDto) {
         try {
 
-            Optional<Category> optionalCategory = categoryRepository.findById(categoryDto.getId());
 
-            if (optionalCategory.isEmpty()) {
+            if (categoryDto.getId()==0) {
                 Category category = dtoService.categoryDtoToCategory(categoryDto, false);
                 Category createdCategory = categoryRepository.save(category);
-
-                //categoryMapper.toCategoryDto(createdCategory)
 
                 return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory.getId());
 

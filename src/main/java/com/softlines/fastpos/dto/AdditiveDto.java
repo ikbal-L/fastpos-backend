@@ -21,7 +21,7 @@ public class AdditiveDto {
 
     @JsonProperty("Id")
     @Min(0)
-    Long id;
+    long id;
 
     @JsonProperty("Description")
     @NotBlank(message = MessageKeyConstants.ADDITIVE_DESCRIPTION_VALIDATION_ERROR)
@@ -36,12 +36,12 @@ public class AdditiveDto {
     @Min(1)
     Integer rank;
 
-    @JsonProperty("TimeStamp")
-    Date timestamp;
+//    @JsonProperty("TimeStamp")
+//    Date timestamp;
 
-    @NotNull
-    @JsonProperty("State")
-    AdditiveSate sate;
+//    @NotNull
+//    @JsonProperty("State")
+//    AdditiveSate sate;
 
 
 
