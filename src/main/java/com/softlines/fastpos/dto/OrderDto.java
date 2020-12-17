@@ -15,13 +15,14 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
 @Data
 @Builder
-@OrderDtoValidationDiscountAmountGreaterThanTotal
+@OrderDtoValidationDiscountAmountGreaterThanTotal()
 @OrderItemValidationDiscountAmountGreaterThanTotal
 @OrderValidationTableIdExistIfOrderTypeEqualOnTable
 @OrderValidationOrderTypeNotEqualOnTable
@@ -30,6 +31,7 @@ import java.util.List;
 @OrderDtoValidationDiscountPercentageAndDiscountAmount
 @OrderItemsDtoValidationDiscountPercentageAndDiscountAmount
 @OrderValidationCalculationNewTotalNotCorrect
+@ValidationOrderDtoDiscountWithOrderItemDiscount
 public class OrderDto {
 
     @JsonProperty("Id")
@@ -43,12 +45,13 @@ public class OrderDto {
     Date orderTime;
 
     @JsonProperty("ElapsedTime")
+    @NotNull
     LocalTime elapsedTime;
 
     @JsonProperty("Total")
     @Min(value = 0, message = MessageKeyConstants.ORDER_RETURNED_AMOUNT_VALIDATION_ERROR)
     @NotNull
-    Double total;
+    double total;
 
     @JsonProperty("SplittedFromId")
     int splittedFromId;
@@ -59,32 +62,24 @@ public class OrderDto {
 
     @JsonProperty("DiscountAmount")
     @Min(0)
-    Double discountAmount;
+    @NotNull
+    double discountAmount;
 
     @JsonProperty("TotalDiscountAmount")
     @Min(0)
-
-    Double totalDiscountAmount;
+    double totalDiscountAmount;
 
     @JsonProperty("DiscountPercentage")
     @Range(min = 0, max = 100)
-
-    Double discountPercentage;
+    double discountPercentage;
 
     @JsonProperty("GivenAmount")
     @Min(0)
-
-    Double givenAmount;
+    double givenAmount;
 
     @JsonProperty("ReturnedAmount")
     @Max(value = 0, message = MessageKeyConstants.ORDER_RETURNED_AMOUNT_VALIDATION_ERROR)
-    Double returnedAmount;
-
-    @JsonProperty("ProductsVisibility")
-    boolean productsVisibility;
-
-    @JsonProperty("AdditivesVisibility")
-    boolean additivesVisibility;
+    double returnedAmount;
 
     @JsonProperty("State")
     OrderState state;
@@ -93,6 +88,7 @@ public class OrderDto {
     OrderType type;
 
     @JsonProperty("OrderItems")
+    @Size(min = 1)
     List<OrderItemDto> orderItems;
 
     @JsonProperty("TableId")

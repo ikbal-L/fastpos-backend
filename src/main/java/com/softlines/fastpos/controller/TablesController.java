@@ -32,7 +32,7 @@ public class TablesController {
 
             Optional<Table> table = tableRepository.findById(tableDto.getId());
 
-            if (table.isEmpty() && tableDto.getId() == 0) {
+            if (tableDto.getId()==0) {
 
                 Table tables = tableMapper.toTable(tableDto);
                 Table savedTable = tableRepository.save(tables);

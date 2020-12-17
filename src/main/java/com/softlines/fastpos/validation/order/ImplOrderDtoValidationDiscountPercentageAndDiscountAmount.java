@@ -8,7 +8,7 @@ import javax.validation.ConstraintValidatorContext;
 public class ImplOrderDtoValidationDiscountPercentageAndDiscountAmount implements ConstraintValidator<OrderDtoValidationDiscountPercentageAndDiscountAmount, OrderDto> {
 
     public boolean isValid(OrderDto orderDto, ConstraintValidatorContext context) {
-        return  (orderDto.getDiscountAmount() * 100 / orderDto.getTotal()
+        return (orderDto.getDiscountAmount() * 100 / orderDto.getTotal()
                 == orderDto.getDiscountPercentage());
 
     }

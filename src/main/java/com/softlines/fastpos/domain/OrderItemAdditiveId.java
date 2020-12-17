@@ -1,15 +1,13 @@
 package com.softlines.fastpos.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Builder
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
@@ -34,4 +32,5 @@ public class OrderItemAdditiveId implements Serializable {
         }
         return false;
     }
+
 }

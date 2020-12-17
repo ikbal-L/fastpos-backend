@@ -35,9 +35,8 @@ public class WaiterController {
 
         try {
 
-            Optional<Waiter> optionalWaiter = waiterRepository.findById(waiterDto.getId());
 
-            if (optionalWaiter.isEmpty()) {
+            if (waiterDto.getId()==0) {
 
                 Waiter waiter = dtoService.waiterDtoToWaiter(waiterDto, false);
                 Waiter createdWaiter = waiterRepository.save(waiter);

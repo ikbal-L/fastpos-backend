@@ -9,6 +9,7 @@ import com.softlines.fastpos.validation.order.OrderDtoValidationDiscountAmountGr
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -50,6 +51,7 @@ public class ProductDto {
 
     @JsonProperty("Rank")
     @Min(1)
+    @NotNull
     Integer rank;
 
     @JsonProperty("CategoryId")

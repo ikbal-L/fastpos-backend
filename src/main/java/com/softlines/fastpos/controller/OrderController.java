@@ -10,17 +10,16 @@ import com.softlines.fastpos.repository.TestRepository;
 import com.softlines.fastpos.repository.OrderRepository;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
+
 import javax.validation.Valid;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,41 +43,19 @@ public class OrderController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
 
-    @PostMapping(value = "/save", consumes = "application/json")
-    public ResponseEntity<OrderDto> addOrder(@Valid @RequestBody OrderDto orderDto) {
+    @PostMapping(value = "/save", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<OrderDto> saveOrder(@Valid @RequestBody OrderDto orderDto) {
 
         try {
 
             if (orderDto.getId() == 0) {
-                if (orderDto.getOrderItems().size() > 0) {
-                    Order order = dtoService.orderDtoToOrder(orderDto);
+                Order order = dtoService.orderDtoToOrder(orderDto);
 
-                    Order createdOder = orderRepository.save(order);
+                Order createdOder = orderRepository.saveOrder(order);
 
-                    createdOder.getOrderItems().forEach(orderItem -> {
-                        orderItem.getOrderItemAdditives().forEach(
-                                orderItemAdditive -> {
-                                    OrderItemAdditive newOrderItemAdditive = OrderItemAdditive.builder()
-                                            .additive(orderItemAdditive.getAdditive())
-                                            .orderItem(orderItem)
-                                            .state(orderItemAdditive.getState())
-                                            .id(OrderItemAdditiveId.builder().orderItemId(0L)
-                                                    .additiveId(orderItemAdditive.getAdditive().getId())
-                                                    .build())
-                                            .timestamp(orderItemAdditive.getTimestamp())
-                                            .build();
+                OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
+                return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);
 
-                                    orderItemAdditiveRepository.save(newOrderItemAdditive);
-                                }
-                        );
-                    });
-
-                    OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
-                    return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);
-
-                } else {
-                    return ResponseEntity.noContent().build();
-                }
 
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();
@@ -90,8 +67,8 @@ public class OrderController {
 
     }
 
-    @PostMapping(value = "/savemany", consumes = "application/json")
-    public ResponseEntity<List<Long>> addManyOrder(@Valid @RequestBody List<OrderDto> orderDtoList) {
+    @PostMapping(value = "/savemany")
+    public ResponseEntity<List<OrderDto>> saveManyOrder(@Valid @RequestBody List<OrderDto> orderDtoList) {
 
         try {
             List<Long> ids = orderDtoList.parallelStream().map(OrderDto::getId).collect(Collectors.toList());
@@ -102,55 +79,62 @@ public class OrderController {
 
                 List<Order> order = dtoService.orderDtoListToOrderList(orderDtoList);
 
-                List<Order> ListCreatedOder = orderRepository.saveAll(order);
+                List<Order> ListCreatedOder = orderRepository.saveListOrder(order);
 
-                ListCreatedOder.forEach(
-                        order1 -> {
-                            order1.getOrderItems().forEach(orderItem -> {
-                                orderItem.getOrderItemAdditives().forEach(
-                                        orderItemAdditive -> {
+//                List<Long> savedIds = ListCreatedOder.parallelStream()
+//                        .map(Order::getId).collect(Collectors.toList());
 
-                                            OrderItemAdditive newOrderItemAdditive = OrderItemAdditive.builder()
-                                                    .additive(orderItemAdditive.getAdditive())
-                                                    .orderItem(orderItem)
-                                                    .state(orderItemAdditive.getState())
-                                                    .id(OrderItemAdditiveId.builder().orderItemId(0L)
-                                                            .additiveId(orderItemAdditive.getAdditive().getId())
-                                                            .build())
-                                                    .timestamp(orderItemAdditive.getTimestamp())
-                                                    .build();
+                List<OrderDto> orderDtos = orderMapper.toOrderDTOs(ListCreatedOder);
 
-                                            orderItemAdditiveRepository.save(newOrderItemAdditive);
-
-                                        });
-                            });
-
-                        });
-
-
-                List<Long> savedIds = ListCreatedOder.parallelStream()
-                        .map(Order::getId).collect(Collectors.toList());
-
-                return ResponseEntity.status(HttpStatus.CREATED).body(savedIds);
+                return ResponseEntity.status(HttpStatus.CREATED).body(orderDtos);
 
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();
             }
 
-        } catch (
-                Exception exception) {
+        } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
     }
 
+    @PutMapping(value = "/putmany")
+    public ResponseEntity<List<OrderDto>> updateManyOrder(@Valid @RequestBody List<OrderDto> orderDtoList) {
 
-    @GetMapping(value = {"/getall", "/getall/{filterByState}"}, produces = MediaType.APPLICATION_JSON_VALUE)
+        try {
+            List<Long> ids = orderDtoList.parallelStream().map(OrderDto::getId).collect(Collectors.toList());
+            List<Order> foundOrder = orderRepository.findAllById(ids);
+
+
+            if (foundOrder.size() == orderDtoList.size()) {
+
+                List<Order> order = dtoService.orderDtoListToOrderList(orderDtoList);
+
+                List<Order> ListCreatedOder = orderRepository.saveListOrder(order);
+
+//                List<Long> savedIds = ListCreatedOder.parallelStream()
+//                        .map(Order::getId).collect(Collectors.toList());
+
+                List<OrderDto> orderDtos = orderMapper.toOrderDTOs(ListCreatedOder);
+
+                return ResponseEntity.status(HttpStatus.CREATED).body(orderDtos);
+
+            } else {
+                return ResponseEntity.status(HttpStatus.FOUND).build();
+            }
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+
+    }
+
+    @GetMapping(value = {"/getall", "/getall/{filterByState}"})
     public ResponseEntity<List<OrderDto>> getOrders(@PathVariable Optional<String> filterByState) {
 
         try {
 
-            List<Order> orders = orderRepository.findAllOrdersWithOrderItems();
+            List<Order> orders = orderRepository.getAllOrder();
 
             if (orders == null || orders.isEmpty())
                 return ResponseEntity.noContent().build();
@@ -190,7 +174,7 @@ public class OrderController {
     public ResponseEntity<OrderDto> getOrder(@Valid @PathVariable long id) {
         try {
 
-            Order order = orderRepository.findByIdOrderWithOrderItems(id);
+            Order order = orderRepository.getOrder(id);
 
             if (order != null && id != 0)
                 return ResponseEntity.ok().body(orderMapper.toOrderDto(order));
@@ -208,34 +192,13 @@ public class OrderController {
         try {
             var exists = orderRepository.existsById(id);
 
-
             if (exists && id != 0 && orderDto.getOrderItems() != null && orderDto.getOrderItems().size() > 0) {
 
                 Order order = dtoService.orderDtoToOrder(orderDto);
 
-                Order createdOder = orderRepository.save(order);
+                Order createdOrder = orderRepository.saveOrder(order);
 
-//                createdOder.getOrderItems().forEach(orderItem -> {
-//                    orderItem.getOrderItemAdditives().forEach(
-//                            orderItemAdditive -> {
-//                                OrderItemAdditive newOrderItemAdditive = OrderItemAdditive.builder()
-//                                        .additive(orderItemAdditive.getAdditive())
-//                                        .orderItem(orderItem)
-//                                        .state(orderItemAdditive.getState())
-//                                        .id(OrderItemAdditiveId.builder().orderItemId(0L)
-//                                                .additiveId(orderItemAdditive.getAdditive().getId())
-//                                                .build())
-//                                        .timestamp(orderItemAdditive.getTimestamp())
-//                                        .build();
-//
-//                                orderItemAdditiveRepository.save(newOrderItemAdditive);
-//
-//                            }
-//                    );
-//                });
-
-
-                return ResponseEntity.ok().body(orderMapper.toOrderDto(createdOder));
+                return ResponseEntity.ok().body(orderMapper.toOrderDto(createdOrder));
 
             } else {
                 return ResponseEntity.noContent().build();

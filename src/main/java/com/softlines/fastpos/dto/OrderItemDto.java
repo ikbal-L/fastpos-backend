@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softlines.fastpos.domain.OrderItemState;
 import com.softlines.fastpos.validation.order.OrderDtoValidationDiscountAmountGreaterThanTotal;
 import lombok.Data;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -16,30 +17,35 @@ import java.util.Set;
 public class OrderItemDto {
 
     @JsonProperty("Id")
-    Long id;
+    long id;
 
     @JsonProperty("UnitPrice")
     @Min(1)
     @NotNull
-    Double unitPrice;
+    double unitPrice;
 
     @JsonProperty("Quantity")
-    @Min(1)
     @NotNull
-    Integer quantity;
+    @Min(1)
+    int quantity;
 
     @JsonProperty("Total")
     @NotNull
-    Double total;
+    @Min(1)
+    double total;
 
     @JsonProperty("DiscountAmount")
-    Double discountAmount;
+    @Min(0)
+    @NotNull
+    double discountAmount;
 
     @JsonProperty("TotalDiscountAmount")
-    Double totalDiscountAmount;
+    @Min(0)
+    double totalDiscountAmount;
 
     @JsonProperty("DiscountPercentage")
-    Double discountPercentage;
+    @Range(min = 0, max = 100)
+    double discountPercentage;
 
     @JsonProperty("ProductId")
     @NotNull
@@ -48,8 +54,6 @@ public class OrderItemDto {
     @JsonProperty("ProductName")
     @NotNull
     String productName;
-
-
 
     @JsonProperty("OrderId")
     Long orderId;
@@ -61,13 +65,7 @@ public class OrderItemDto {
     @JsonProperty("State")
     OrderItemState state;
 
-//<<<<<<< HEAD
     @JsonProperty("OrderItemAdditives")
     Set<OrderItemAdditiveDto> orderItemAdditives;
-//=======
-//    @JsonProperty("OrderItemAdditive")
-//    Set<OrderItemAdditiveDto> orderItemAdditives;
-//>>>>>>> orderItemAdditive
-
 
 }

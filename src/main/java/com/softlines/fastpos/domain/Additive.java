@@ -26,9 +26,9 @@ import java.util.Set;
 
 @SQLDelete(sql = "UPDATE Additive SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
-
-@NaturalIdCache
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+//
+//@NaturalIdCache
+//@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @javax.persistence.Table(name = "additive")
 @Entity(name = "Additive")
 public class Additive extends BaseEntity {

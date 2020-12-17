@@ -33,11 +33,10 @@ public class OrderItemController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping(value = "/save", consumes = "application/json")
-    public ResponseEntity<Long> addOrderItem(@Valid @RequestBody Data data, OrderItemDto orderItemDto) {
+    public ResponseEntity<Long> addOrderItem(@Valid @RequestBody OrderItemDto orderItemDto) {
         try {
 
-            Optional<OrderItem> optionalOrderItem = orderItemRepository.findById(orderItemDto.getId());
-            if (!optionalOrderItem.isPresent()) {
+            if (orderItemDto.getId()==0) {
 
                 OrderItem orderItem = dtoService.orderItemDtoToOrderItem(orderItemDto, false);
                 OrderItem savedOrderItem = orderItemRepository.save(orderItem);

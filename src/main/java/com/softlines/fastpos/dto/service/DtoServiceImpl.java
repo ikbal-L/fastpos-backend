@@ -179,9 +179,13 @@ public class DtoServiceImpl implements DtoService {
                         .setId(OrderItemAdditiveId.builder().additiveId(orderItems.get(i)
                                 .getOrderItemAdditives().get(j).getAdditive().getId())
                                 .orderItemId(orderItems.get(i)
+
                                         .getOrderItemAdditives().get(j).getOrderItem().getId())
                                 .build());
 
+
+//                orderItems.get(i).getOrderItemAdditives().get(j).setAdditiveId(orderItems.get(i).getOrderItemAdditives().get(j).getAdditive().getId());
+//                orderItems.get(i).getOrderItemAdditives().get(j).setOrderItemId(orderItems.get(i).getId());
 
             }
 

@@ -49,7 +49,7 @@ public class ProductControllerUnitTest {
     @Test
     public void productController_getAll_WithNotEmptyProductsList() throws Exception {
 
-        var products = Arrays.asList(
+        List<Product> products = Arrays.asList(
                 Product.builder()
                         .id(1L)
                         .name("Pizza")

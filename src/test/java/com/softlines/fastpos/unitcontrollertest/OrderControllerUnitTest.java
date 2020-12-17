@@ -19,15 +19,12 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ModelApplication.class)
@@ -47,11 +44,17 @@ public class OrderControllerUnitTest {
     @Test
     public void orderController_getAll_WithNotEmptyOrdersList() {
 
-        var orders = Arrays.asList(
+        List<Order> orders = Arrays.asList(
                 Order.builder()
                         .id(1L)
                         .state(OrderState.Payed)
-                        .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
+                        .orderItems(Arrays.asList(OrderItem.builder()
+                                .orderItemAdditives(Arrays.asList(OrderItemAdditive.builder()
+                                        .additive(Additive.builder().id(1L).build())
+                                        .orderItem(OrderItem.builder().build())
+                                        .timestamp(new Date())
+                                        .state(AdditiveSate.Added)
+                                        .build()))
                                 .id(1).product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
                         .elapsedTime(LocalTime.now())
@@ -60,7 +63,7 @@ public class OrderControllerUnitTest {
                         .build()
         );
 
-        when(orderRepository.findAllOrdersWithOrderItems()).thenReturn(orders);
+        when(orderRepository.getAllOrder()).thenReturn(orders);
         var res = orderController.getOrders(Optional.empty());
 
         assertEquals(res.getStatusCode(), HttpStatus.OK);
@@ -68,7 +71,7 @@ public class OrderControllerUnitTest {
         assertEquals((res.getBody()).size(), 1);
         assertEquals((res.getBody()).get(0).getOrderItems().get(0).getId(), orders.get(0).getOrderItems().get(0).getId());
         assertEquals((res.getBody()).get(0).getOrderItems().size(), 1);
-        assertEquals((res.getBody()).get(0).getOrderItems().get(0).getAdditiveIds().size(), orders.get(0).getOrderItems().get(0).getAdditive().size());
+        assertEquals((res.getBody()).get(0).getOrderItems().get(0).getOrderItemAdditives().size(), orders.get(0).getOrderItems().get(0).getOrderItemAdditives().size());
         assertEquals((res.getBody()).get(0).getOrderItems().get(0).getProductId(), orders.get(0).getOrderItems().get(0).getProduct().getId());
 
     }
@@ -76,7 +79,7 @@ public class OrderControllerUnitTest {
     @Test
     public void orderController_getAll_WithEmptyOrdersList() {
         var orders = new ArrayList<Order>();
-        when(orderRepository.findAllOrdersWithOrderItems()).thenReturn(orders);
+        when(orderRepository.getAllOrder()).thenReturn(orders);
         var res = orderController.getOrders(null);
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
     }
@@ -110,24 +113,38 @@ public class OrderControllerUnitTest {
     @Test
     public void orderController_Save_WithData() {
 
-        var orders =
+        Order order =
                 Order.builder()
 
-                        .id(1l)
+                        .id(1L)
                         .state(OrderState.Payed)
-
-                        .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
-                                .id(1)
+                        .orderItems(Arrays.asList(OrderItem.builder()
+                                .orderItemAdditives(Arrays.asList(
+                                        OrderItemAdditive.builder()
+                                                .additive(Additive.builder().build())
+                                                .orderItem(OrderItem.builder().build())
+                                                .state(AdditiveSate.Added)
+                                                .timestamp(new Date())
+                                                .build()
+                                ))
+                                .order(Order.builder().build())
+                                .productName("sd")
                                 .product(Product.builder().build())
-                                .order(Order.builder().build()).build()))
+                                .build()))
+                        .deliveryman(Deliveryman.builder().build())
+                        .waiter(Waiter.builder().id(1L).build())
+                        .table(Table.builder().number(2).build())
                         .elapsedTime(LocalTime.now())
-                        .orderTime(new Date())
-                        .table(Table.builder().build())
+                        .elapsedTime(LocalTime.now())
+                        .total(20)
+                        .newTotal(20)
+                        .discountAmount(0)
                         .build();
 
-        when(orderRepository.save(Mockito.any(Order.class))).thenReturn(orders);
 
-        var res = orderController.addOrder(orderMapper.toOrderDto(orders));
+        when(orderRepository.saveOrder(Mockito.any(Order.class))).thenReturn(order);
+
+        var res = orderController.saveOrder(orderMapper.toOrderDto(order));
         assertEquals(res.getStatusCode(), HttpStatus.CREATED);
 
 
@@ -143,7 +160,7 @@ public class OrderControllerUnitTest {
                 .build();
 
         when(orderRepository.save(Mockito.any(Order.class))).thenReturn(order);
-        var res = orderController.addOrder(orderMapper.toOrderDto(order));
+        var res = orderController.saveOrder(orderMapper.toOrderDto(order));
 
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
 
@@ -153,20 +170,30 @@ public class OrderControllerUnitTest {
     @Test
     public void orderController_Save_WithExistOrder() {
 
-        var order =
+        Order order =
                 Order.builder()
                         .id(1)
                         .orderItems(Arrays.asList(OrderItem.builder()
-                                .additive(Arrays.asList(Additive.builder().build()))
+                                .orderItemAdditives(Arrays.asList(OrderItemAdditive.builder()
+                                        .additive(Additive.builder().build())
+                                        .orderItem(OrderItem.builder().build())
+                                        .timestamp(new Date())
+                                        .state(AdditiveSate.Added).build()))
                                 .product(Product.builder().build())
                                 .order(Order.builder().id(1).build())
-                                .build()))
-
+                                .build()
+                        ))
                         .table(Table.builder().build())
+                        .deliveryman(Deliveryman.builder().build())
+                        .table(Table.builder().build())
+                        .waiter(Waiter.builder().build())
+                        .discountAmount(0)
+                        .total(50)
                         .build();
 
+
         when(orderRepository.findById(order.getId())).thenReturn(java.util.Optional.of(order));
-        var res = orderController.addOrder(orderMapper.toOrderDto(order));
+        var res = orderController.saveOrder(orderMapper.toOrderDto(order));
 
         assertEquals(res.getStatusCode(), HttpStatus.FOUND);
 
@@ -177,20 +204,25 @@ public class OrderControllerUnitTest {
 
         var order =
                 Order.builder()
-                        .id(1l)
+                        .id(1L)
                         .state(OrderState.Payed)
-                        .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
-                                .id(1)
+                        .orderItems(Arrays.asList(OrderItem.builder()
+                                .orderItemAdditives(Arrays.asList(OrderItemAdditive.builder()
+                                        .additive(Additive.builder().build())
+                                        .state(AdditiveSate.Added).orderItem(OrderItem.builder().build()
+                                        ).timestamp(new Date()).build()))
                                 .product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
                         .elapsedTime(LocalTime.now())
                         .orderTime(new Date())
                         .table(Table.builder().build())
+                        .deliveryman(Deliveryman.builder().build())
+                        .waiter(Waiter.builder().build())
                         .build();
 
 
         when(orderRepository.save(Mockito.any(Order.class))).thenThrow(DataAccessResourceFailureException.class);
-        var res = orderController.addOrder(orderMapper.toOrderDto(order));
+        var res = orderController.saveOrder(orderMapper.toOrderDto(order));
 
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
 
@@ -208,7 +240,12 @@ public class OrderControllerUnitTest {
                 Order.builder()
                         .id(1L)
                         .state(OrderState.Payed)
-                        .orderItems(Arrays.asList(OrderItem.builder().additive(Arrays.asList(Additive.builder().build()))
+                        .orderItems(Arrays.asList(OrderItem.builder()
+                                .orderItemAdditives(Arrays.asList(OrderItemAdditive.builder()
+                                        .additive(Additive.builder().build())
+                                        .orderItem(OrderItem.builder().build())
+                                        .timestamp(new Date()).state(AdditiveSate.Added)
+                                        .build()))
                                 .id(1)
                                 .product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
@@ -312,7 +349,13 @@ public class OrderControllerUnitTest {
                 .state(OrderState.Payed)
                 .orderItems(Arrays.asList(OrderItem.builder()
                         .id(1)
-                        .additive(Arrays.asList(Additive.builder().build()))
+                        .orderItemAdditives(Arrays.asList(OrderItemAdditive.builder()
+                                .additive(Additive.builder().build())
+                                .state(AdditiveSate.Added)
+                                .timestamp(new Date())
+                                .orderItem(OrderItem.builder().build())
+                                .build()))
+                        .id(2L)
                         .product(Product.builder().build())
                         .order(Order.builder().id(1).build()).build()))
                 .elapsedTime(LocalTime.now())
@@ -332,10 +375,14 @@ public class OrderControllerUnitTest {
 
         var order =
                 Order.builder()
-                        .id(0)
                         .state(OrderState.Payed)
                         .orderItems(Arrays.asList(OrderItem.builder()
-                                .additive(Arrays.asList(Additive.builder().build()))
+                                .orderItemAdditives(Arrays.asList(OrderItemAdditive.builder()
+                                        .additive(Additive.builder().build())
+                                        .state(AdditiveSate.Added)
+                                        .orderItem(OrderItem.builder().build())
+                                        .timestamp(new Date())
+                                        .build()))
                                 .product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
                         .elapsedTime(LocalTime.now())

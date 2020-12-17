@@ -37,7 +37,7 @@ public class DeliverymanController {
 
             Optional<Deliveryman> optionalDeliveryman = deliverymanRepository.findById(deliverymanDto.getId());
 
-            if (!optionalDeliveryman.isPresent()) {
+            if (deliverymanDto.getId()==0) {
                 if (deliverymanDto.getName() != null && !deliverymanDto.getName().isEmpty()) {
                     Deliveryman deliveryman = dtoService.deliverymanDtoToDeliveryman(deliverymanDto, false);
                     Deliveryman createdDeliveryman = deliverymanRepository.save(deliveryman);
