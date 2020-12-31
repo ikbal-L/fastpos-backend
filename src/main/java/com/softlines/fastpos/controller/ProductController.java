@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/api/product", consumes = "application/json", produces = "application/json")
+@RequestMapping(value = "/api/product",produces = "application/json")
 public class ProductController {
 
     @Autowired
