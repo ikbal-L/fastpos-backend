@@ -29,7 +29,7 @@ public class OrderItemAdditive {
 //    @Id
 //    private Long orderItemId;
 
-    @ManyToOne
+    @ManyToOne( )
     @MapsId("orderItemId")
     @JoinColumn(name = "order_item_id")
     OrderItem orderItem;
