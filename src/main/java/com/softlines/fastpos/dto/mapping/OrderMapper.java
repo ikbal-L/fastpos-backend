@@ -17,6 +17,7 @@ public interface OrderMapper {
     @Mapping(source = "table.id", target = "tableId",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     @Mapping(source = "waiter.id", target = "waiterId",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     @Mapping(source = "deliveryman.id", target = "deliverymanId",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "customer.id", target = "customerId",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     OrderDto toOrderDto(Order order);
 
     @Mapping(source = "tableId", target = "table",
@@ -24,6 +25,7 @@ public interface OrderMapper {
             qualifiedByName = "tableIdToTable" )
     @Mapping(source = "waiterId", target = "waiter", qualifiedByName = "IdToWaiter",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     @Mapping(source = "deliverymanId", target = "deliveryman",qualifiedByName = "IdToDeliveryman",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "customerId", target = "customer",qualifiedByName = "IdToCustomer",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     Order toOrder(OrderDto dto);
 
     List<Order> toOrderList(List<OrderDto> orderDtoList);
@@ -48,6 +50,12 @@ public interface OrderMapper {
         if(id == null|| id == 0) return null;
         return Deliveryman.builder().id(id).build();
 
+    }
+
+    @Named("IdToCustomer")
+    public static Customer IdToCustomer(Long id){
+        if(id == null|| id == 0) return null;
+        return Customer.builder().id(id).build();
     }
 
 

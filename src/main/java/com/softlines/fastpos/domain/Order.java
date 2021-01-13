@@ -37,8 +37,6 @@ public class Order extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
-    String buyerId;
-
     Date orderTime;
 
     LocalTime elapsedTime;
@@ -89,6 +87,10 @@ public class Order extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "waiter_id",nullable = true)
     Waiter waiter;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id",nullable = true)
+    Customer customer;
 
 }
 
