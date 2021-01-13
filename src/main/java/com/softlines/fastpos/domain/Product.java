@@ -34,7 +34,7 @@ public class Product extends BaseEntity {
     long id;
 
     @NotBlank(message = MessageKeyConstants.PRODUCT_NAME_VALIDATION_ERROR)
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false/*,unique = true*/)
     String name;
 
 

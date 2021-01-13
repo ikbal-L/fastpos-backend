@@ -38,8 +38,8 @@ public class OrderDto {
     @Min(0)
     long id;
 
-    @JsonProperty("BuyerId")
-    String buyerId;
+    @JsonProperty("CustomerId")
+    String customerId;
 
     @JsonProperty("OrderTime")
     Date orderTime;
