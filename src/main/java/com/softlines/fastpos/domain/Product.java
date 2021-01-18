@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -25,7 +26,11 @@ import java.util.List;
 
 @SQLDelete(sql = "UPDATE Product SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
-
+@Table(uniqueConstraints = {
+        @UniqueConstraint(columnNames = {
+                "category_id", "rank"
+        })
+})
 @Entity
 public class Product extends BaseEntity {
 
