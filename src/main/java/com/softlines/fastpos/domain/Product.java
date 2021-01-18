@@ -26,11 +26,11 @@ import java.util.List;
 
 @SQLDelete(sql = "UPDATE Product SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
-@Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = {
-                "category_id", "rank"
-        })
-})
+//@Table(uniqueConstraints = {
+//        @UniqueConstraint(columnNames = {
+//                "category_id", "rank"
+//        })
+//})
 @Entity
 public class Product extends BaseEntity {
 
