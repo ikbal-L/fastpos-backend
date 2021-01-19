@@ -24,7 +24,7 @@ import java.util.List;
 @DynamicUpdate
 @SelectBeforeUpdate
 
-@SQLDelete(sql = "UPDATE Product SET deleted=true WHERE id=?")
+@SQLDelete(sql = "UPDATE Product SET deleted=true ,rank=null WHERE id=?")
 @Where(clause = "deleted = false")
 //@Table(uniqueConstraints = {
 //        @UniqueConstraint(columnNames = {

@@ -15,7 +15,7 @@ import java.util.List;
 @Setter @Getter @AllArgsConstructor @NoArgsConstructor
 @SuperBuilder
 
-@SQLDelete(sql = "UPDATE Category SET deleted=true WHERE id=?")
+@SQLDelete(sql = "UPDATE Category SET deleted=true ,rank=null WHERE id=?")
 @Where(clause = "deleted = false")
 @Entity
 public class Category extends BaseEntity{

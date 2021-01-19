@@ -24,7 +24,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 
-@SQLDelete(sql = "UPDATE Additive SET deleted=true WHERE id=?")
+@SQLDelete(sql = "UPDATE Additive SET deleted=true ,rank=null WHERE id=?")
 @Where(clause = "deleted = false")
 //
 //@NaturalIdCache
@@ -43,7 +43,7 @@ public class Additive extends BaseEntity {
     @NotBlank(message = MessageKeyConstants.ADDITIVE_BACKGROUND_STRING_VALIDATION_ERROR)
     String backgroundString;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     @Min(1)
     Integer rank;
 
