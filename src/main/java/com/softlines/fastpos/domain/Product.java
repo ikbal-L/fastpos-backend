@@ -5,11 +5,11 @@ import com.softlines.fastpos.constants.MessageKeyConstants;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
+import org.hibernate.annotations.Table;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -23,7 +23,6 @@ import java.util.List;
 @DynamicInsert
 @DynamicUpdate
 @SelectBeforeUpdate
-
 @SQLDelete(sql = "UPDATE Product SET deleted=true ,rank=null WHERE id=?")
 @Where(clause = "deleted = false")
 //@Table(uniqueConstraints = {
@@ -66,10 +65,11 @@ public class Product extends BaseEntity {
     Integer rank;
 
     @ManyToMany(fetch = FetchType.LAZY)
+//    @NotFound(action = NotFoundAction.IGNORE)
     @JoinTable(
             name = "products_additives",
             joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "additive_id"))
+            inverseJoinColumns = @JoinColumn(name = "additive_id",nullable = true))
     List<Additive> additives;
 
     @ManyToOne(fetch = FetchType.LAZY)
