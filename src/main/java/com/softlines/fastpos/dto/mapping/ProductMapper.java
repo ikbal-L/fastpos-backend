@@ -26,8 +26,8 @@ public interface ProductMapper {
 
     @Mapping(source = "idAdditives", target = "additives", qualifiedByName = "IdToAdditive"
             , nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    @Mapping(source = "categoryId", target = "category.id"
-            , nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "categoryId", target = "category"
+            , nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,qualifiedByName = "categoryIdToCategory")
     Product toProduct(ProductDto productDTO);
 
     List<Product> toProductList(List<ProductDto> productDtoList);
@@ -44,6 +44,11 @@ public interface ProductMapper {
         Additive additive = new Additive();
         additive.setId(idAdditive);
         return additive;
+    }
+    @Named("categoryIdToCategory")
+    public static Category categoryIdToCategory(Long categoryId){
+        if (categoryId == null) return null;
+        return Category.builder().id(categoryId).build();
     }
 
 
