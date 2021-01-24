@@ -2,16 +2,13 @@ package com.softlines.fastpos.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softlines.fastpos.constants.MessageKeyConstants;
-import com.softlines.fastpos.domain.Deliveryman;
 import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.domain.OrderType;
-import com.softlines.fastpos.domain.Waiter;
 import com.softlines.fastpos.validation.order.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
