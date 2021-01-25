@@ -4,19 +4,17 @@ package com.softlines.fastpos.repository.em;
 //import com.querydsl.jpa.impl.JPAQuery;
 //import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.softlines.fastpos.domain.*;
+import com.softlines.fastpos.domain.Order;
+import org.javatuples.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +52,62 @@ public class CustomOrderRepositoryImpl implements CustomOrderRepository {
         TypedQuery<Order> q = em.createQuery(orderCriteriaQuery);
         Order order1 = q.getSingleResult();
         return order1;
+    }
+
+    @Override
+    public Pair<Long,List<Order>> getByState(OrderState state, long deliverymanId, int pageNumber, int pageSize) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+
+        /// select query
+
+        CriteriaQuery<Order> or = cb.createQuery(Order.class);
+        Root<Order> orderRoot = or.from(Order.class);
+        or = or.select(orderRoot);
+        var deliverymanJoinOrders=  orderRoot.join("deliveryman",JoinType.LEFT);
+        or = or.where(cb.and(cb.equal(deliverymanJoinOrders.get("id"),deliverymanId),cb.equal(orderRoot.get("state"),state)));;
+        TypedQuery<Order> query = em.createQuery(or);
+        CriteriaQuery<Long> CountQury = cb.createQuery(Long.class);
+
+
+        var countRoot = CountQury.from(Order.class);
+        var deliverymanJoinCountQury=  countRoot.join("deliveryman",JoinType.LEFT);
+        CountQury =    CountQury.select(cb.count(countRoot));
+        CountQury = CountQury.where(cb.and(cb.equal(deliverymanJoinCountQury.get("id"),deliverymanId),cb.equal(countRoot.get("state"),state)));;
+
+
+        return new Pair<>(em.createQuery(CountQury).getSingleResult(), query.setFirstResult(pageNumber * pageSize).setMaxResults(pageSize).getResultList());
+
+    }
+
+    @Override
+    public Pair<Long, List<Order>> getAllByDeliveryManPage(int pageNumber, int pageSize ,long deliverymanId) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+
+        /// select query
+
+        CriteriaQuery<Order> or = cb.createQuery(Order.class);
+        Root<Order> orderRoot = or.from(Order.class);
+        or = or.select(orderRoot);
+        var deliverymanJoinOrders=  orderRoot.join("deliveryman",JoinType.LEFT);
+        or = or.where(cb.equal(deliverymanJoinOrders.get("id"),deliverymanId));
+        TypedQuery<Order> query = em.createQuery(or);
+        CriteriaQuery<Long> CountQury = cb.createQuery(Long.class);
+
+
+        var countRoot = CountQury.from(Order.class);
+        var deliverymanJoinCountQury=  countRoot.join("deliveryman",JoinType.LEFT);
+        CountQury =    CountQury.select(cb.count(countRoot));
+        CountQury = CountQury.where(cb.equal(deliverymanJoinCountQury.get("id"),deliverymanId));
+
+
+
+        return new Pair<>(em.createQuery(CountQury).getSingleResult(), query.setFirstResult(pageNumber * pageSize).setMaxResults(pageSize).getResultList());
+
+
     }
 
     @Override

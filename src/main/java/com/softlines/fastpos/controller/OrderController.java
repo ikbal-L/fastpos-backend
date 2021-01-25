@@ -2,6 +2,7 @@ package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.*;
 import com.softlines.fastpos.dto.OrderDto;
+import com.softlines.fastpos.dto.PageList;
 import com.softlines.fastpos.dto.mapping.OrderMapper;
 import com.softlines.fastpos.dto.service.DtoServiceImpl;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
@@ -98,7 +99,7 @@ public class OrderController {
 
     }
 
-    @PutMapping(value = "/putmany")
+    @PutMapping(value = "/updatemany")
     public ResponseEntity<List<OrderDto>> updateManyOrder(@Valid @RequestBody List<OrderDto> orderDtoList) {
 
         try {
@@ -232,6 +233,20 @@ public class OrderController {
         }
 
     }
-
-
+    @GetMapping("/getByStatePage/{pageNumber}/{pageSize}/{deliverymanId}/{state}")
+    public ResponseEntity<PageList<OrderDto>> getNotPaidOrders(@PathVariable int pageNumber, @PathVariable int pageSize, @PathVariable  long deliverymanId, @PathVariable  OrderState state){
+        var orders= orderRepository.getByState(state,deliverymanId,pageNumber,pageSize);
+        if (!orders.getValue1().isEmpty()){
+            return  ResponseEntity.ok().body(new PageList<>(orderMapper.toOrderDTOs(orders.getValue1()),orders.getValue0()));
+        }
+        return  ResponseEntity.noContent().build();
+    }
+    @GetMapping("/getAllbydeliverymanPage/{pageNumber}/{pageSize}/{deliverymanId}")
+    public ResponseEntity<PageList<OrderDto>> getAllByDeliveryManPage(@PathVariable int pageNumber, @PathVariable int pageSize, @PathVariable  long deliverymanId){
+        var orders= orderRepository.getAllByDeliveryManPage(pageNumber,pageSize,deliverymanId);
+        if (!orders.getValue1().isEmpty()){
+            return  ResponseEntity.ok().body(new PageList<>(orderMapper.toOrderDTOs(orders.getValue1()),orders.getValue0()));
+        }
+        return  ResponseEntity.noContent().build();
+    }
 }

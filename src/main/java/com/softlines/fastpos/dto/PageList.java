@@ -1,0 +1,16 @@
+package com.softlines.fastpos.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class PageList<T> {
+    private List<T> page;
+    private long count;
+}
