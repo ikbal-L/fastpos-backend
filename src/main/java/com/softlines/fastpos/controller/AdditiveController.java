@@ -8,10 +8,15 @@ import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.AdditiveRepository;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +34,9 @@ public class AdditiveController {
 
     @Autowired
     DtoService dtoService;
+
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
 
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
@@ -149,14 +157,22 @@ public class AdditiveController {
     }
 
     @DeleteMapping("/delete/{id}")
+
     public ResponseEntity deleteAdditive(@Valid @PathVariable long id) {
         try {
+
 
             Optional<Additive> additiveToDel = additiveRepository.findById(id);
 
             if (additiveToDel.isPresent()) {
 
+                EntityManager em = entityManagerFactory.createEntityManager();
+                em.getTransaction().begin();
+
                 additiveRepository.delete(additiveToDel.get());
+                var q = em.createNativeQuery("delete  from products_additives where additive_id = :id").setParameter("id", id);
+                q.executeUpdate();
+                em.getTransaction().commit();
                 return ResponseEntity.ok().build();
 
             } else {

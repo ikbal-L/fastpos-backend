@@ -14,6 +14,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -58,10 +59,19 @@ public class Additive extends BaseEntity {
 //    @OneToMany(mappedBy = "additive", cascade = CascadeType.MERGE, orphanRemoval = true)
 //    List<OrderItemAdditive> orderItemAdditives;
 
+
+
     @Builder.Default
     @NotNull
     private boolean deleted = false;
 
-
+//    @PreRemove
+//    public void preRemove(){
+//        if (products!= null && products.size()>0){
+//            for (Product product: products){
+//                product.additives.removeIf(additive -> additive.id == this.id);
+//            }
+//        }
+//    }
 
 }

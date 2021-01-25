@@ -31,7 +31,7 @@ public class Category extends BaseEntity{
     String backgroundString;
     Integer rank;
 
-    @OneToMany(fetch = FetchType.LAZY,orphanRemoval=true)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     List<Product> products;
 

@@ -27,7 +27,7 @@ public class CategoryDto {
     String backgroundString;
 
     @JsonProperty("Rank")
-    @Min(1)
+//    @Min(1)
     Integer rank;
 
     @JsonProperty("ProductIds")
