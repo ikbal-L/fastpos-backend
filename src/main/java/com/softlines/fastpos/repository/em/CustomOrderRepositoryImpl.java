@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Repository
@@ -55,18 +56,17 @@ public class CustomOrderRepositoryImpl implements CustomOrderRepository {
     }
 
     @Override
-    public Pair<Long,List<Order>> getByState(OrderState state, long deliverymanId, int pageNumber, int pageSize) {
+    public Pair<Long,List<Order>> getByStates(OrderState[] states, long deliverymanId, int pageNumber, int pageSize) {
         EntityManager em = entityManagerFactory.createEntityManager();
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
-
         /// select query
 
         CriteriaQuery<Order> or = cb.createQuery(Order.class);
         Root<Order> orderRoot = or.from(Order.class);
         or = or.select(orderRoot);
         var deliverymanJoinOrders=  orderRoot.join("deliveryman",JoinType.LEFT);
-        or = or.where(cb.and(cb.equal(deliverymanJoinOrders.get("id"),deliverymanId),cb.equal(orderRoot.get("state"),state)));;
+        or = or.where(cb.and(cb.equal(deliverymanJoinOrders.get("id"),deliverymanId),orderRoot.get("state").in(states)));
         TypedQuery<Order> query = em.createQuery(or);
         CriteriaQuery<Long> CountQury = cb.createQuery(Long.class);
 
@@ -74,7 +74,7 @@ public class CustomOrderRepositoryImpl implements CustomOrderRepository {
         var countRoot = CountQury.from(Order.class);
         var deliverymanJoinCountQury=  countRoot.join("deliveryman",JoinType.LEFT);
         CountQury =    CountQury.select(cb.count(countRoot));
-        CountQury = CountQury.where(cb.and(cb.equal(deliverymanJoinCountQury.get("id"),deliverymanId),cb.equal(countRoot.get("state"),state)));;
+        CountQury = CountQury.where(cb.and(cb.equal(deliverymanJoinCountQury.get("id"),deliverymanId),orderRoot.get("state").in(states)));
 
 
         return new Pair<>(em.createQuery(CountQury).getSingleResult(), query.setFirstResult(pageNumber * pageSize).setMaxResults(pageSize).getResultList());
