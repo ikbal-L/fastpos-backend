@@ -1,16 +1,27 @@
 package com.softlines.fastpos.domain;
 
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import javax.persistence.Entity;
+
+import javax.persistence.*;
+import java.util.Set;
 
 @SuperBuilder
 @NoArgsConstructor
 @Entity
 @SQLDelete(sql = "UPDATE Deliveryman SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
-
+@Data
 public class Deliveryman extends  Person{
+
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="DPhoneNumbers", joinColumns=@JoinColumn(name="deliveryMan_id"))
+    @Column(name="DphoneNumber")
+    Set<String> phoneNumbers;
+    float debit;
+
 }

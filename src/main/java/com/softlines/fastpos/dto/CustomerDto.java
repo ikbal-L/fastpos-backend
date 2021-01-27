@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
-import  java.util.List;
+import  java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,7 +22,7 @@ public class CustomerDto {
     String name;
 
     @JsonProperty("PhoneNumbers")
-    List<String> phoneNumbers;
+    Set<String> phoneNumbers;
 
     @JsonProperty("Debit")
     float debit;

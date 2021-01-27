@@ -7,7 +7,7 @@ import org.hibernate.annotations.Where;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import  java.util.List;
+import  java.util.Set;
 
 @SuperBuilder
 @Setter @Getter @AllArgsConstructor @NoArgsConstructor
@@ -23,10 +23,12 @@ public class Customer extends BaseEntity{
 
     @Column(nullable = false)
     String name;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="PhoneNumbers", joinColumns=@JoinColumn(name="customer_id"))
     @Column(name="phoneNumber")
-    List<String> phoneNumbers;
+    Set<String> phoneNumbers;
+
     float debit;
     @Builder.Default
     @NotNull
