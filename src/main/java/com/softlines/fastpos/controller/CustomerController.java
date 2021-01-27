@@ -86,6 +86,7 @@ public class CustomerController {
             else
                 return ResponseEntity.ok().body(customerMapper.toCustomerDTOs(customers));
 
+
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
@@ -131,13 +132,13 @@ public class CustomerController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<CustomerDto> editCustomer(@Valid @PathVariable long id, @RequestBody Customer customer) {
+    public ResponseEntity<CustomerDto> editCustomer(@Valid @PathVariable long id, @RequestBody CustomerDto customerDto) {
 
         try {
             Optional<Customer> optionalCustomer = customerRepository.findById(id);
 
-            if (optionalCustomer.isPresent() && customer.getName() != null) {
-                Customer savedCustomer = customerRepository.save(customer);
+            if (optionalCustomer.isPresent() ) {
+                Customer savedCustomer = customerRepository.save(customerMapper.toCustomer(customerDto));
                 return ResponseEntity.ok().body(customerMapper.toCustomerDto(savedCustomer));
             } else {
                 return ResponseEntity.noContent().build();
