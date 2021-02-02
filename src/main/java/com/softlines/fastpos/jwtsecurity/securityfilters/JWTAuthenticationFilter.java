@@ -2,6 +2,7 @@ package com.softlines.fastpos.jwtsecurity.securityfilters;
 
 import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.net.HttpHeaders;
 import com.softlines.fastpos.jwtsecurity.securitydetails.CustomJWTuserDetails;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Session;
@@ -13,12 +14,14 @@ import com.softlines.fastpos.jwtsecurity.securityrepository.TerminalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.codec.Utf8;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +29,9 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sound.sampled.AudioFormat;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -102,6 +107,23 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
             String token = createToken(auth.getName(), user.getId(),createdSession,auth);
             res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+
+            List<String> grantedAuthorities = new ArrayList<>();
+            for (GrantedAuthority grantedAuthority : auth.getAuthorities()) {
+                grantedAuthorities.add(grantedAuthority.getAuthority());
+            }
+            var content = new ObjectMapper().writeValueAsString(grantedAuthorities);
+
+//            res.resetBuffer();
+//            res.setStatus(HttpStatus.OK.value());
+//            res.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+//            res.getOutputStream().print(content);
+//            res.flushBuffer();
+            PrintWriter writer = res.getWriter();
+            res.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            res.setCharacterEncoding("UTF-8");
+            writer.print(content);
+            writer.flush();
         }
 
 
