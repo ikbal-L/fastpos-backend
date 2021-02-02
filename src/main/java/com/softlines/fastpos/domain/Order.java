@@ -92,5 +92,7 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "customer_id",nullable = true)
     Customer customer;
 
+    @OneToOne
+    CashOperation cashOperation;
 }
 

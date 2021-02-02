@@ -12,9 +12,6 @@ import java.util.Set;
 @NoArgsConstructor
 public class DeliverymanDto extends PersonDto {
 
-    @JsonProperty("PhoneNumbers")
-    Set<String> phoneNumbers;
-
-    @JsonProperty("Debit")
-    float debit;
+    @JsonProperty("Balance")
+    float balance;
 }

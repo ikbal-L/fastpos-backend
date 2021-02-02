@@ -25,8 +25,8 @@ public class Customer extends BaseEntity{
     String name;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="PhoneNumbers", joinColumns=@JoinColumn(name="customer_id"))
-    @Column(name="phoneNumber")
+    @CollectionTable(name="customer_phone_numbers", joinColumns=@JoinColumn(name="customer_id"))
+    @Column(name="customer_phone_number")
     Set<String> phoneNumbers;
 
     float debit;

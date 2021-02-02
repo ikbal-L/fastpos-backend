@@ -9,5 +9,7 @@ public enum OrderState {
     Canceled,
     Removed,
     Served,
-    Changed
+    Changed,
+    DeliveredPaid,
+    DeliveredReturned
 }

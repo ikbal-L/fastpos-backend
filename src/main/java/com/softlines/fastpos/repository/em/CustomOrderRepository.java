@@ -11,6 +11,6 @@ public interface CustomOrderRepository {
     List<Order> saveListOrder(List<Order> orderList);
     List<Order> getAllOrder();
     Order getOrder(Long id);
-    Pair<Long,List<Order>> getByStates(OrderState[] states, long deliverymanId, int pageNumber, int pageSize);
+    List<Order> getByStates(OrderState[] states, long deliverymanId,boolean ascending);
     Pair<Long,List<Order>> getAllByDeliveryManPage(int pageNumber, int pageSize, long deliverymanId);
 }

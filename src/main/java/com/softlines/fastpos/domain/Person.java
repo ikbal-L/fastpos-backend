@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 @SuperBuilder
 @AllArgsConstructor
@@ -29,8 +30,10 @@ public class Person extends BaseEntity{
     @Column(nullable = false)
     String name;
 
-    String phoneNumber;
-
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="person_phone_numbers", joinColumns=@JoinColumn(name="person_id"))
+    @Column(name="person_phone_Number")
+    Set<String> phoneNumbers;
     String backgroundString;
 
     @Column(name="isActive")

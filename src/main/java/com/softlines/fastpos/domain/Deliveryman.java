@@ -17,11 +17,6 @@ import java.util.Set;
 @Data
 public class Deliveryman extends  Person{
 
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="DPhoneNumbers", joinColumns=@JoinColumn(name="deliveryMan_id"))
-    @Column(name="DphoneNumber")
-    Set<String> phoneNumbers;
-    float debit;
+    double balance;
 
 }

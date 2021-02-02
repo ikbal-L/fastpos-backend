@@ -8,6 +8,7 @@ import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.softlines.fastpos.domain.*;
 import com.softlines.fastpos.domain.Order;
+import org.hibernate.query.criteria.internal.OrderImpl;
 import org.javatuples.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -56,7 +57,7 @@ public class CustomOrderRepositoryImpl implements CustomOrderRepository {
     }
 
     @Override
-    public Pair<Long,List<Order>> getByStates(OrderState[] states, long deliverymanId, int pageNumber, int pageSize) {
+    public List<Order> getByStates(OrderState[] states, long deliverymanId,boolean ascending) {
         EntityManager em = entityManagerFactory.createEntityManager();
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -67,17 +68,10 @@ public class CustomOrderRepositoryImpl implements CustomOrderRepository {
         or = or.select(orderRoot);
         var deliverymanJoinOrders=  orderRoot.join("deliveryman",JoinType.LEFT);
         or = or.where(cb.and(cb.equal(deliverymanJoinOrders.get("id"),deliverymanId),orderRoot.get("state").in(states)));
+        or = or.orderBy(cb.desc(orderRoot.get("orderTime")));
         TypedQuery<Order> query = em.createQuery(or);
-        CriteriaQuery<Long> CountQury = cb.createQuery(Long.class);
 
-
-        var countRoot = CountQury.from(Order.class);
-        var deliverymanJoinCountQury=  countRoot.join("deliveryman",JoinType.LEFT);
-        CountQury =    CountQury.select(cb.count(countRoot));
-        CountQury = CountQury.where(cb.and(cb.equal(deliverymanJoinCountQury.get("id"),deliverymanId),orderRoot.get("state").in(states)));
-
-
-        return new Pair<>(em.createQuery(CountQury).getSingleResult(), query.setFirstResult(pageNumber * pageSize).setMaxResults(pageSize).getResultList());
+        return   query.getResultList();
 
     }
 
@@ -92,16 +86,15 @@ public class CustomOrderRepositoryImpl implements CustomOrderRepository {
         CriteriaQuery<Order> or = cb.createQuery(Order.class);
         Root<Order> orderRoot = or.from(Order.class);
         or = or.select(orderRoot);
-        var deliverymanJoinOrders=  orderRoot.join("deliveryman",JoinType.LEFT);
-        or = or.where(cb.equal(deliverymanJoinOrders.get("id"),deliverymanId));
+        or = or.where(cb.equal(orderRoot.get("deliveryman").get("id"),deliverymanId));
+        or = or.orderBy(cb.desc(orderRoot.get("orderTime")));
         TypedQuery<Order> query = em.createQuery(or);
         CriteriaQuery<Long> CountQury = cb.createQuery(Long.class);
 
 
         var countRoot = CountQury.from(Order.class);
-        var deliverymanJoinCountQury=  countRoot.join("deliveryman",JoinType.LEFT);
-        CountQury =    CountQury.select(cb.count(countRoot));
-        CountQury = CountQury.where(cb.equal(deliverymanJoinCountQury.get("id"),deliverymanId));
+        CountQury =  CountQury.select(cb.count(countRoot));
+        CountQury = CountQury.where(cb.equal(orderRoot.get("deliveryman").get("id"),deliverymanId));
 
 
 
