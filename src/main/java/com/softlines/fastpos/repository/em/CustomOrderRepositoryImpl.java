@@ -11,6 +11,7 @@ import com.softlines.fastpos.domain.Order;
 import org.hibernate.query.criteria.internal.OrderImpl;
 import org.javatuples.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Repository
-@Transactional
+@Transactional(transactionManager = "transactionManager")
 public class CustomOrderRepositoryImpl implements CustomOrderRepository {
 
     @Autowired
@@ -66,8 +67,7 @@ public class CustomOrderRepositoryImpl implements CustomOrderRepository {
         CriteriaQuery<Order> or = cb.createQuery(Order.class);
         Root<Order> orderRoot = or.from(Order.class);
         or = or.select(orderRoot);
-        var deliverymanJoinOrders=  orderRoot.join("deliveryman",JoinType.LEFT);
-        or = or.where(cb.and(cb.equal(deliverymanJoinOrders.get("id"),deliverymanId),orderRoot.get("state").in(states)));
+        or = or.where(cb.and(cb.equal(orderRoot.get("deliveryman").get("id"),deliverymanId),orderRoot.get("state").in(states)));
         or = or.orderBy(cb.desc(orderRoot.get("orderTime")));
         TypedQuery<Order> query = em.createQuery(or);
 
@@ -76,7 +76,7 @@ public class CustomOrderRepositoryImpl implements CustomOrderRepository {
     }
 
     @Override
-    public Pair<Long, List<Order>> getAllByDeliveryManPage(int pageNumber, int pageSize ,long deliverymanId) {
+    public Pair<Long, List<Order>> getAllByDeliveryManAndStatePage(int pageNumber, int pageSize ,long deliverymanId,OrderState[] states) {
         EntityManager em = entityManagerFactory.createEntityManager();
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -88,6 +88,7 @@ public class CustomOrderRepositoryImpl implements CustomOrderRepository {
         or = or.select(orderRoot);
         or = or.where(cb.equal(orderRoot.get("deliveryman").get("id"),deliverymanId));
         or = or.orderBy(cb.desc(orderRoot.get("orderTime")));
+        or = or.where(cb.and(cb.equal(orderRoot.get("deliveryman").get("id"),deliverymanId),orderRoot.get("state").in(states)));
         TypedQuery<Order> query = em.createQuery(or);
         CriteriaQuery<Long> CountQury = cb.createQuery(Long.class);
 

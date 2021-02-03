@@ -237,9 +237,9 @@ public class OrderController {
         }
         return  ResponseEntity.noContent().build();
     }
-    @GetMapping("/getAllbydeliverymanPage/{pageNumber}/{pageSize}/{deliverymanId}")
-    public ResponseEntity<PageList<OrderDto>> getAllByDeliveryManPage(@PathVariable int pageNumber, @PathVariable int pageSize, @PathVariable  long deliverymanId){
-        var orders= orderRepository.getAllByDeliveryManPage(pageNumber,pageSize,deliverymanId);
+    @PostMapping("/getAllbyDeliveryManAndStatePage/{pageNumber}/{pageSize}/{deliverymanId}")
+    public ResponseEntity<PageList<OrderDto>> getAllByDeliveryManAndStatePage(@PathVariable int pageNumber, @PathVariable int pageSize, @PathVariable  long deliverymanId, @RequestBody  OrderState[] states){
+        var orders= orderRepository.getAllByDeliveryManAndStatePage(pageNumber,pageSize,deliverymanId,states);
         if (!orders.getValue1().isEmpty()){
             return  ResponseEntity.ok().body(new PageList<>(orderMapper.toOrderDTOs(orders.getValue1()),orders.getValue0()));
         }

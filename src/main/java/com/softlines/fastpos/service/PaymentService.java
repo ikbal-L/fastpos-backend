@@ -4,7 +4,6 @@ import com.softlines.fastpos.domain.CashOperation;
 import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.dto.PaymentDto;
-import com.softlines.fastpos.dto.PaymentSavedDto;
 import com.softlines.fastpos.dto.mapping.DeliverymanMapper;
 import com.softlines.fastpos.dto.mapping.OrderMapper;
 import com.softlines.fastpos.dto.mapping.PaymentMapper;
@@ -12,16 +11,15 @@ import com.softlines.fastpos.repository.DeliverymanRepository;
 import com.softlines.fastpos.repository.OrderRepository;
 import com.softlines.fastpos.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.swing.text.html.parser.Entity;
-import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(transactionManager = "transactionManager")
 public class PaymentService {
     @Autowired
     PaymentRepository paymentRepository;
@@ -35,9 +33,7 @@ public class PaymentService {
     DeliverymanMapper deliverymanMapper;
     @Autowired
     OrderMapper orderMapper;
-
-    @Transactional
-    public PaymentSavedDto doPaymentDeliveryMan(PaymentDto paymentDto){
+    public PaymentDto doPaymentDeliveryMan(PaymentDto paymentDto){
         var payment=paymentMapper.toPayment(paymentDto);
         payment.setCashOperation(CashOperation.builder().amount(payment.getAmount()).payment(payment).build());
         var savedPayment=  paymentRepository.save(payment);
@@ -59,14 +55,9 @@ public class PaymentService {
             deliveryMan.setBalance(paymentAmount);
             deliverymanRepository.save(deliveryMan);
 
-        return PaymentSavedDto.builder()
-                .deliveryMan(deliverymanMapper.toDeliverymanDto(deliveryMan))
-                .paidOrders(orderMapper.toOrderDTOs(orders.stream().filter(x->x.getState()==OrderState.DeliveredPaid).collect(Collectors.toList())))
-                .payment(paymentMapper.toPaymentDto(savedPayment))
-                .build();
+        return paymentMapper.toPaymentDto(savedPayment);
     }
-    @Transactional(rollbackOn  = Exception.class)
-    public PaymentSavedDto editPaymentDeliveryMan(PaymentDto paymentDto){
+    public void editPaymentDeliveryMan(PaymentDto paymentDto){
         var  oldAmount=paymentRepository.findById(paymentDto.getId()).get().getAmount();
         var payment=paymentMapper.toPayment(paymentDto);
         payment.getCashOperation().setAmount(payment.getAmount());
@@ -108,23 +99,10 @@ public class PaymentService {
 
         deliveryMan.setBalance(paymentAmount);
         deliverymanRepository.save(deliveryMan);
-       var resBuilder= PaymentSavedDto.builder()
-               .payment(paymentMapper.toPaymentDto(savedPayment))
-               .deliveryMan(deliverymanMapper.toDeliverymanDto(deliveryMan));
-       if(orders!=null) {
-           var paidOrders = orders.stream().filter(x -> x.getState() == OrderState.DeliveredPaid);
-           if (paidOrders != null) {
-               resBuilder.paidOrders(orderMapper.toOrderDTOs(paidOrders.collect(Collectors.toList())));
-           }
-           var notPaidOrders = orders.stream().filter(x -> x.getState() == OrderState.Delivered);
-           if (notPaidOrders != null) {
-               resBuilder.notPaidOrders(orderMapper.toOrderDTOs(notPaidOrders.collect(Collectors.toList())));
-           }
-       }
-       return resBuilder.build();
+
 
     }
-    public PaymentSavedDto deletePayment(long Id){
+    public void deletePayment(long Id){
         var payment=paymentRepository.findById(Id).get();
         if(payment!=null) {
             paymentRepository.deleteById(Id);
@@ -147,11 +125,7 @@ public class PaymentService {
             deliveryMan.setBalance((-paymentAmount));
             deliverymanRepository.save(deliveryMan);
 
-        return PaymentSavedDto.builder()
-                    .deliveryMan(deliverymanMapper.toDeliverymanDto(deliveryMan))
-                    .notPaidOrders(orderMapper.toOrderDTOs(orders.stream().filter(x->x.getState()==OrderState.Delivered).collect(Collectors.toList())))
-                    .build();
+
         }
-        return null;
     }
 }

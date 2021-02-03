@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.*;
 import java.sql.SQLException;
 
 @RestController
@@ -33,7 +34,7 @@ public class PaymentController {
     @Autowired
     PaymentMapper  paymentMapper;
     @PostMapping(value = "/save", consumes = "application/json")
-    public ResponseEntity<PaymentSavedDto> save(@RequestBody PaymentDto paymentDto){
+    public ResponseEntity<PaymentDto> save(@RequestBody PaymentDto paymentDto){
       return ResponseEntity.ok().body(paymentService.doPaymentDeliveryMan(paymentDto));
     }
     @GetMapping("/getAllbydeliverymanPage/{pageNumber}/{pageSize}/{deliverymanId}")
@@ -45,14 +46,26 @@ public class PaymentController {
         return  ResponseEntity.noContent().build();
     }
     @PutMapping("/put/{id}")
-    public ResponseEntity<PaymentSavedDto> edit(@PathVariable long id, @RequestBody PaymentDto paymentDto) throws SQLException {
-        return ResponseEntity.ok().body(paymentService.editPaymentDeliveryMan(paymentDto));
+    public ResponseEntity edit(@PathVariable long id, @RequestBody PaymentDto paymentDto) throws SQLException {
+        paymentService.editPaymentDeliveryMan(paymentDto);
+        return ResponseEntity.ok().build();
 
     }
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<PaymentSavedDto> delete(@PathVariable long id){
-        return ResponseEntity.ok().body(paymentService.deletePayment(id));
+    public ResponseEntity delete(@PathVariable long id){
+        paymentService.deletePayment(id);
+        return ResponseEntity.ok().build();
 
+    }
+    @PostMapping("/getByDeliverymanAndDate/{deliverymanId}")
+    public ResponseEntity<List<PaymentDto>> getByDeliveryManAndDate(@PathVariable long deliverymanId,@RequestBody Date date){
+
+        var payments=paymentRepository.findByDeliveryMan_IdAndDate(deliverymanId,date);
+
+        if (!payments.isEmpty()){
+            return ResponseEntity.ok().body(paymentMapper.toPaymentDtos(payments));
+        }
+        return  ResponseEntity.noContent().build();
     }
 }
 

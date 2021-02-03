@@ -32,4 +32,5 @@ public class Payment extends BaseEntity{
     CashOperation cashOperation;
     @ManyToOne
     Deliveryman deliveryMan;
+
 }
