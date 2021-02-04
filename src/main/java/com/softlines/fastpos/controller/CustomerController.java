@@ -5,11 +5,13 @@ import com.softlines.fastpos.dto.CustomerDto;
 import com.softlines.fastpos.dto.mapping.CustomerMapper;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.CustomerRepository;
+import com.softlines.fastpos.repository.em.CustomRepositoryImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManagerFactory;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +29,9 @@ public class CustomerController {
 
     @Autowired
     CustomerMapper customerMapper;
+
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
 
 
 
@@ -152,10 +157,20 @@ public class CustomerController {
 
         try {
 
-            Optional<Customer> optionalCustomer = customerRepository.findById(id);
-            if (optionalCustomer.isPresent()) {
+            Optional<Customer> customerToDelete = customerRepository.findById(id);
+            if (customerToDelete.isPresent()) {
 
-                customerRepository.delete(optionalCustomer.get());
+//                EntityManager em = entityManagerFactory.createEntityManager();
+//                em.getTransaction().begin();
+//
+//                customerRepository.delete(customerToDelete.get());
+//                var q = em.createNativeQuery("update from `orders`set customer_id = NULL  where `customer_id` = :id").setParameter("id", id);
+//                q.executeUpdate();
+//                em.getTransaction().commit();
+                var repo = new CustomRepositoryImp<Customer,Long>(customerRepository, entityManagerFactory);
+                repo.delete(customerToDelete.get(),id,"customer_id");
+
+
                 return ResponseEntity.ok().build();
 
             } else {
