@@ -12,6 +12,7 @@ import lombok.Value;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -25,9 +26,8 @@ public class PersonDto {
     @NotBlank(message = MessageKeyConstants.PERSON_NAME_VALIDATION_ERROR)
     String name;
 
-    @JsonProperty("PhoneNumber")
-    @PersonValidationPhoneNumber
-    String phoneNumber;
+    @JsonProperty("PhoneNumbers")
+    Set<String> phoneNumbers;
 
     @JsonProperty("BackgroundString")
     String backgroundString;

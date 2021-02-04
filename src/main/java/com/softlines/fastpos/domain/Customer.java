@@ -24,8 +24,12 @@ public class Customer extends BaseEntity{
     @Column(nullable = false)
     String name;
 
-    String mobile;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="customer_phone_numbers", joinColumns=@JoinColumn(name="customer_id"))
+    @Column(name="customer_phone_number")
+    Set<String> phoneNumbers;
 
+    float debit;
     @Builder.Default
     @NotNull
     private boolean deleted=false;

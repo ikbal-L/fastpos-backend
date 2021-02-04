@@ -8,18 +8,21 @@ import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.softlines.fastpos.domain.*;
 import com.softlines.fastpos.domain.Order;
+import org.hibernate.query.criteria.internal.OrderImpl;
 import org.javatuples.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Repository
-@Transactional
+@Transactional(transactionManager = "transactionManager")
 public class CustomOrderRepositoryImpl implements CustomOrderRepository {
 
     @Autowired
@@ -55,34 +58,25 @@ public class CustomOrderRepositoryImpl implements CustomOrderRepository {
     }
 
     @Override
-    public Pair<Long,List<Order>> getByState(OrderState state, long deliverymanId, int pageNumber, int pageSize) {
+    public List<Order> getByStates(OrderState[] states, long deliverymanId,boolean ascending) {
         EntityManager em = entityManagerFactory.createEntityManager();
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
-
         /// select query
 
         CriteriaQuery<Order> or = cb.createQuery(Order.class);
         Root<Order> orderRoot = or.from(Order.class);
         or = or.select(orderRoot);
-        var deliverymanJoinOrders=  orderRoot.join("deliveryman",JoinType.LEFT);
-        or = or.where(cb.and(cb.equal(deliverymanJoinOrders.get("id"),deliverymanId),cb.equal(orderRoot.get("state"),state)));;
+        or = or.where(cb.and(cb.equal(orderRoot.get("deliveryman").get("id"),deliverymanId),orderRoot.get("state").in(states)));
+        or = or.orderBy(cb.desc(orderRoot.get("orderTime")));
         TypedQuery<Order> query = em.createQuery(or);
-        CriteriaQuery<Long> CountQury = cb.createQuery(Long.class);
 
-
-        var countRoot = CountQury.from(Order.class);
-        var deliverymanJoinCountQury=  countRoot.join("deliveryman",JoinType.LEFT);
-        CountQury =    CountQury.select(cb.count(countRoot));
-        CountQury = CountQury.where(cb.and(cb.equal(deliverymanJoinCountQury.get("id"),deliverymanId),cb.equal(countRoot.get("state"),state)));;
-
-
-        return new Pair<>(em.createQuery(CountQury).getSingleResult(), query.setFirstResult(pageNumber * pageSize).setMaxResults(pageSize).getResultList());
+        return   query.getResultList();
 
     }
 
     @Override
-    public Pair<Long, List<Order>> getAllByDeliveryManPage(int pageNumber, int pageSize ,long deliverymanId) {
+    public Pair<Long, List<Order>> getAllByDeliveryManAndStatePage(int pageNumber, int pageSize ,long deliverymanId,OrderState[] states) {
         EntityManager em = entityManagerFactory.createEntityManager();
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -92,16 +86,16 @@ public class CustomOrderRepositoryImpl implements CustomOrderRepository {
         CriteriaQuery<Order> or = cb.createQuery(Order.class);
         Root<Order> orderRoot = or.from(Order.class);
         or = or.select(orderRoot);
-        var deliverymanJoinOrders=  orderRoot.join("deliveryman",JoinType.LEFT);
-        or = or.where(cb.equal(deliverymanJoinOrders.get("id"),deliverymanId));
+        or = or.where(cb.equal(orderRoot.get("deliveryman").get("id"),deliverymanId));
+        or = or.orderBy(cb.desc(orderRoot.get("orderTime")));
+        or = or.where(cb.and(cb.equal(orderRoot.get("deliveryman").get("id"),deliverymanId),orderRoot.get("state").in(states)));
         TypedQuery<Order> query = em.createQuery(or);
         CriteriaQuery<Long> CountQury = cb.createQuery(Long.class);
 
 
         var countRoot = CountQury.from(Order.class);
-        var deliverymanJoinCountQury=  countRoot.join("deliveryman",JoinType.LEFT);
-        CountQury =    CountQury.select(cb.count(countRoot));
-        CountQury = CountQury.where(cb.equal(deliverymanJoinCountQury.get("id"),deliverymanId));
+        CountQury =  CountQury.select(cb.count(countRoot));
+        CountQury = CountQury.where(cb.equal(orderRoot.get("deliveryman").get("id"),deliverymanId));
 
 
 
@@ -109,6 +103,7 @@ public class CustomOrderRepositoryImpl implements CustomOrderRepository {
 
 
     }
+
 
     @Override
     public Order saveOrder(Order order) {

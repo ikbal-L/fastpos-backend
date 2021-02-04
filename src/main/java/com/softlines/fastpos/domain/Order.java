@@ -14,6 +14,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
@@ -92,5 +93,7 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "customer_id",nullable = true)
     Customer customer;
 
+    @OneToOne
+    CashOperation cashOperation;
 }
 
