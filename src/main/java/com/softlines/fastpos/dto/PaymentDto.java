@@ -16,7 +16,7 @@ public class PaymentDto {
     @JsonProperty("Date")
     Date date;
     @JsonProperty("Amount")
-    float amount;
+    double amount;
     @JsonProperty("CashOperationId")
     Long cashOperationId;
     @JsonProperty("DeliveryManId")

@@ -12,6 +12,7 @@ import com.softlines.fastpos.repository.OrderRepository;
 import com.softlines.fastpos.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +35,7 @@ public class PaymentService {
     @Autowired
     OrderMapper orderMapper;
     public PaymentDto doPaymentDeliveryMan(PaymentDto paymentDto){
-        var payment=paymentMapper.toPayment(paymentDto);
+         var payment=paymentMapper.toPayment(paymentDto);
         payment.setCashOperation(CashOperation.builder().amount(payment.getAmount()).payment(payment).build());
         var savedPayment=  paymentRepository.save(payment);
         var orders= orderRepository.getByStates(new OrderState[]{ OrderState.Delivered},savedPayment.getDeliveryMan().getId(),true);
@@ -47,7 +48,7 @@ public class PaymentService {
                 }
                else {
                     order.setState(OrderState.DeliveredPaid);
-                    orderRepository.saveOrder(order);
+                    orderRepository.save(order);
                     paymentAmount=paymentAmount-order.getTotal();
                 }
             }
@@ -65,10 +66,9 @@ public class PaymentService {
         var savedPayment=  paymentRepository.save(payment);
         var deliveryMan= deliverymanRepository.findById(payment.getDeliveryMan().getId()).get();
 
-       var paymentAmount=(payment.getAmount()+deliveryMan.getBalance())- oldAmount;
-       List<Order> orders=null;
+       var paymentAmount=payment.getAmount()+deliveryMan.getBalance()- oldAmount;
        if(paymentAmount>0){
-         orders= orderRepository.getByStates(new OrderState[]{ OrderState.Delivered},savedPayment.getDeliveryMan().getId(),true);
+     var         orders= orderRepository.getByStates(new OrderState[]{ OrderState.Delivered},savedPayment.getDeliveryMan().getId(),true);
         if (orders!=null&&!orders.isEmpty()){
             for (var order:orders) {
                 if (paymentAmount==0||order.getTotal()>paymentAmount){
@@ -76,26 +76,26 @@ public class PaymentService {
                 }
                 else {
                     order.setState(OrderState.DeliveredPaid);
-                    orderRepository.saveOrder(order);
+                    orderRepository.save(order);
                     paymentAmount=paymentAmount-order.getTotal();
                 }
             }
         }
        }else if (paymentAmount<0){
-            orders= orderRepository.getByStates(new OrderState[]{ OrderState.DeliveredPaid},savedPayment.getDeliveryMan().getId(),false);
-           if (orders!=null&&!orders.isEmpty()){
-               for (var order:orders) {
-                   if (paymentAmount>=0){
+           while (true)
+           {
+               var order = orderRepository.findFirstByStateAndDeliveryman(OrderState.DeliveredPaid,payment.getDeliveryMan(),Sort.by("orderTime").ascending());
+               if (paymentAmount>=0||order==null){
                        break;
                    }
                    else {
                        order.setState(OrderState.Delivered);
-                       orderRepository.saveOrder(order);
+                       orderRepository.save(order);
                        paymentAmount=paymentAmount+order.getTotal();
                    }
                }
            }
-       }
+
 
         deliveryMan.setBalance(paymentAmount);
         deliverymanRepository.save(deliveryMan);
@@ -108,17 +108,17 @@ public class PaymentService {
             paymentRepository.deleteById(Id);
             var deliveryMan = deliverymanRepository.findById(payment.getDeliveryMan().getId()).get();
             var paymentAmount = payment.getAmount() - deliveryMan.getBalance();
-            var orders = orderRepository.getByStates(new OrderState[]{OrderState.DeliveredPaid}, payment.getDeliveryMan().getId(), false);
-            if (orders != null && !orders.isEmpty()) {
-                for (var order : orders) {
-                    if (paymentAmount <= 0) {
+            Order order =null;
+            while (true)
+            {
+                order = orderRepository.findFirstByStateAndDeliveryman(OrderState.DeliveredPaid,payment.getDeliveryMan(),Sort.by("orderTime").ascending());
+                    if (paymentAmount <= 0||order==null) {
                         break;
                     } else {
                         order.setState(OrderState.Delivered);
-                        orderRepository.saveOrder(order);
+                        orderRepository.save(order);
                         paymentAmount = paymentAmount - order.getTotal();
                     }
-                }
             }
 
 
