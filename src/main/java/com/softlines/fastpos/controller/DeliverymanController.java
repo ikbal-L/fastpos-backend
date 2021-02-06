@@ -1,15 +1,19 @@
 package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Deliveryman;
+import com.softlines.fastpos.domain.Waiter;
 import com.softlines.fastpos.dto.DeliverymanDto;
 import com.softlines.fastpos.dto.mapping.DeliverymanMapper;
 import com.softlines.fastpos.dto.service.DtoService;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.DeliverymanRepository;
+import com.softlines.fastpos.repository.em.RepositoryDecoratorImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.persistence.EntityManagerFactory;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +34,8 @@ public class DeliverymanController {
 
     @Autowired
     DeliverymanMapper deliverymanMapper;
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
 
     @PostMapping("/save")
     public ResponseEntity<Long> addDeliveryman(@Valid  @RequestBody DeliverymanDto deliverymanDto) {
@@ -134,7 +140,9 @@ public class DeliverymanController {
             Deliveryman deliverymanToDel = deliverymanRepository.findById(id).get();
             if (deliverymanToDel != null) {
 
-                deliverymanRepository.delete(deliverymanToDel);
+                var em = entityManagerFactory.createEntityManager();
+                var repo = new RepositoryDecoratorImp<>(deliverymanRepository,em);
+                repo.deleteSetNull(deliverymanToDel,id);
                 return ResponseEntity.ok().build();
 
             } else {

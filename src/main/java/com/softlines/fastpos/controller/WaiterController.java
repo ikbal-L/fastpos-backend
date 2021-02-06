@@ -6,10 +6,13 @@ import com.softlines.fastpos.dto.mapping.WaiterMapper;
 import com.softlines.fastpos.dto.service.DtoService;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.WaiterRepository;
+import com.softlines.fastpos.repository.em.RepositoryDecoratorImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.persistence.EntityManagerFactory;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +32,8 @@ public class WaiterController {
 
 
     ExceptionManagement exceptionManagement = new ExceptionManagement();
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
 
     @PostMapping("/save")
     public ResponseEntity<Long> addWaiter(@Valid @RequestBody WaiterDto waiterDto) {
@@ -137,7 +142,9 @@ public class WaiterController {
             Optional<Waiter> waiterToDel = waiterRepository.findById(id);
             if (waiterToDel.isPresent()) {
 
-                waiterRepository.delete(waiterToDel.get());
+                var em = entityManagerFactory.createEntityManager();
+                var repo = new RepositoryDecoratorImp<Waiter,Long>(waiterRepository,em);
+                repo.deleteSetNull(waiterToDel.get(),id);
                 return ResponseEntity.ok().build();
 
             } else {

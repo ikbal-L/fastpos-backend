@@ -5,7 +5,7 @@ import com.softlines.fastpos.dto.CustomerDto;
 import com.softlines.fastpos.dto.mapping.CustomerMapper;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.CustomerRepository;
-import com.softlines.fastpos.repository.em.CustomRepositoryImp;
+import com.softlines.fastpos.repository.em.RepositoryDecoratorImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -167,8 +167,9 @@ public class CustomerController {
 //                var q = em.createNativeQuery("update from `orders`set customer_id = NULL  where `customer_id` = :id").setParameter("id", id);
 //                q.executeUpdate();
 //                em.getTransaction().commit();
-                var repo = new CustomRepositoryImp<Customer,Long>(customerRepository, entityManagerFactory);
-                repo.delete(customerToDelete.get(),id,"customer_id");
+                var em = entityManagerFactory.createEntityManager();
+                var repo = new RepositoryDecoratorImp<Customer,Long>(customerRepository,em );
+                repo.deleteSetNull(customerToDelete.get(),id);
 
 
                 return ResponseEntity.ok().build();
