@@ -18,7 +18,7 @@ public class CustomerDto {
     long id;
 
     @JsonProperty("Name")
-    @NotBlank(message = MessageKeyConstants.CUSTOMER_NAME_VALIDATION_ERROR)
+//    @NotBlank(message = MessageKeyConstants.CUSTOMER_NAME_VALIDATION_ERROR)
     String name;
 
     @JsonProperty("Mobile")

@@ -143,7 +143,7 @@ public class WaiterController {
             if (waiterToDel.isPresent()) {
 
                 var em = entityManagerFactory.createEntityManager();
-                var repo = new RepositoryDecoratorImp<Waiter,Long>(waiterRepository,em);
+                var repo = new RepositoryDecoratorImp<>(waiterRepository,em);
                 repo.deleteSetNull(waiterToDel.get(),id);
                 return ResponseEntity.ok().build();
 

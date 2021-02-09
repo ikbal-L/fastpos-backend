@@ -88,8 +88,11 @@ public class CustomerController {
             List<Customer> customers = customerRepository.findAll();
             if (customers == null || customers.isEmpty())
                 return ResponseEntity.noContent().build();
-            else
-                return ResponseEntity.ok().body(customerMapper.toCustomerDTOs(customers));
+            else{
+                var customerDTOs = customerMapper.toCustomerDTOs(customers);
+                return ResponseEntity.ok().body(customerDTOs);
+            }
+
 
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
