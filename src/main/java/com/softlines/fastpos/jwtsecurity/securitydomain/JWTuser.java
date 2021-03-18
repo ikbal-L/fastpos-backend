@@ -9,8 +9,8 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -60,11 +60,16 @@ public class JWTuser extends BaseEntity {
                     name = "role_id", referencedColumnName = "id"))
     private List<Role> roles;
 
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "users",fetch =  FetchType.EAGER)
     private List<Annex> annexes;
 
     @Enumerated(EnumType.STRING)
     private Agent agent;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_phone_numbers",joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "user_phone_number")
+    private Set<String> phoneNumbers;
 
 
     @Builder.Default

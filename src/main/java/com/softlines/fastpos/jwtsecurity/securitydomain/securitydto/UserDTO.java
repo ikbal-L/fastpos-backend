@@ -10,6 +10,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Set;
 
 
 @Builder
@@ -42,7 +43,7 @@ public class UserDTO {
     @Email
     private String email;
 
-    @NotNull
+    @NotNull(message = "Enabled must not be null")
     @JsonProperty("Enabled")
     private Boolean enabled;
 
@@ -61,8 +62,9 @@ public class UserDTO {
     @JsonProperty("Agent")
     private Agent agent;
 
-    @JsonProperty("Deleted")
-    @Builder.Default
-    boolean deleted = false;
+    @JsonProperty("PhoneNumbers")
+    private Set<String> phoneNumbers;
+
+
 
 }

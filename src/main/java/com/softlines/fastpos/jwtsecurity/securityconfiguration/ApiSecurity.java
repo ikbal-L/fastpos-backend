@@ -4,6 +4,7 @@ import com.softlines.fastpos.dbconfig.configuration.CustomContextHolder;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Session;
 import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
 import com.softlines.fastpos.jwtsecurity.securityrepository.PrivilegeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +34,9 @@ public class ApiSecurity {
         Assert.notNull(auth, "Authentication is null");
         Assert.notNull(auth, "privilege is null");
         Assert.isTrue(auth.isAuthenticated(), "User Not Authenticated");
-
-        var privileges = privilegeRepository.findUserPrivileges(auth.getName());
+        var session = (Session) auth.getPrincipal();
+        var user = session.getUser();
+        var privileges = privilegeRepository.findUserPrivileges(user.getUsername());
         grantedAuthorities = new ArrayList<>();
         for (Privilege privilege1: privileges) {
             grantedAuthorities.add(new SimpleGrantedAuthority(privilege1.getName()));

@@ -7,6 +7,7 @@ import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.RoleDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -16,14 +17,12 @@ public interface RoleMapper {
 
     RoleMapper INSTANCE = Mappers.getMapper(RoleMapper.class);
 
-    @Mapping(source = "privileges", target = "privilegeIds", qualifiedByName = "privilegesToIds")
-    @Mapping(source = "users", target = "userIds", qualifiedByName = "usersToIds")
+    @Mapping(source = "privileges", target = "privilegeIds", qualifiedByName = "privilegesToIds",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     RoleDTO toRoleDto(Role role);
 
     List<RoleDTO> toRoleDTOs(List<Role> roles);
 
     @Mapping(source = "privilegeIds", target = "privileges", qualifiedByName = "idsToPrivileges")
-    @Mapping(source = "userIds", target = "users", qualifiedByName = "IdsToUsers")
     Role toRole(RoleDTO roleDTO);
 
     @Named("privilegesToIds")

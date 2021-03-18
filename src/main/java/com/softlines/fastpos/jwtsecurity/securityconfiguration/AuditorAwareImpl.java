@@ -1,6 +1,7 @@
 package com.softlines.fastpos.jwtsecurity.securityconfiguration;
 
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
+import com.softlines.fastpos.jwtsecurity.securitydomain.Session;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,7 +19,18 @@ public class AuditorAwareImpl implements AuditorAware<String> {
             return Optional.empty();
         }
 
-        return Optional.of(((String) authentication.getPrincipal()));
+        String auditor =null;
+        if (authentication.getPrincipal() instanceof JWTuser){
+            var user =  ((JWTuser)authentication.getPrincipal());
+            auditor = user.getId()+"";
+        }else
+        if (authentication.getPrincipal() instanceof Session ){
+            var session = (Session) authentication.getPrincipal();
+            auditor = session.getId().toString();
+        }else {
+            auditor = (String) authentication.getPrincipal();
+        }
+        return Optional.of(auditor);
 
     }
 }

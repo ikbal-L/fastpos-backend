@@ -15,15 +15,25 @@ public interface PrivilegeRepository extends JpaRepository<Privilege, Long> {
     @Query(value= "SELECT p FROM Privilege p WHERE p.name= ?1")
     Privilege findByName(String name);
 
-    @Query(value= "SELECT p FROM Privilege p " +
-            "JOIN p.roles r " +
-            "JOIN r.users u " +
+//    @Query(value= "SELECT p FROM Privilege p " +
+//            "JOIN p.roles r " +
+//            "JOIN r.users u " +
+//            "WHERE u.username = ?1")
+//    Set<Privilege> findUserPrivileges(String username);
+
+
+    @Query(value= "SELECT p,u FROM JWTuser u " +
+            "JOIN u.roles r " +
+            "JOIN r.privileges p " +
             "WHERE u.username = ?1")
     Set<Privilege> findUserPrivileges(String username);
 
-    @Query(value= "SELECT p FROM Privilege p " +
-            "JOIN p.roles r " +
-            "JOIN r.users u " +
+
+
+
+    @Query(value= "SELECT p,u FROM JWTuser u " +
+            "JOIN u.roles r " +
+            "JOIN r.privileges p " +
             "WHERE u.id = ?1")
     Set<Privilege> getUserPrivileges(long userId);
 }

@@ -15,7 +15,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     @Query(value= "SELECT distinct r FROM Role r  JOIN FETCH r.privileges where r=?1")
     List<Role> finRole(Role r);
 
-    @Query(value = "SELECT distinct p FROM Role p JOIN FETCH p.privileges")
+    @Query(value = "SELECT distinct r FROM Role r JOIN FETCH r.privileges")
     List<Role> findAllRolesWithPrivileges();
 
 
@@ -25,8 +25,8 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     @Query(value= "SELECT distinct p FROM Role p JOIN FETCH p.privileges WHERE p.id= ?1")
     Optional<Role> findRoleById(long id);
 
-    @Query(value= "SELECT r FROM Role r " +
-            "JOIN r.users u " +
+    @Query(value= "SELECT r,u FROM JWTuser u " +
+            "JOIN u.roles r " +
             "WHERE u.id = ?1")
     Set<Role> getUserRoles(long userId);
 }

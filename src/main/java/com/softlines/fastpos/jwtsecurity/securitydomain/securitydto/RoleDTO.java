@@ -22,11 +22,7 @@ public class RoleDTO {
     @JsonProperty("PrivilegeIds")
     List<Long> privilegeIds;
 
-    @JsonProperty("Users")
-    List<Long> userIds;
 
-    @JsonProperty("Deleted")
-    @Builder.Default
-    boolean deleted = false;
+
 
 }

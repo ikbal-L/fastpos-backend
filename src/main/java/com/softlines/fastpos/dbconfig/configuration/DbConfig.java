@@ -122,6 +122,7 @@ public class DbConfig {
             Properties jpaProperties = new Properties();
             jpaProperties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
             jpaProperties.put("hibernate.show-sql", env.getProperty("hibernate.show-sql"));
+
             factory.setJpaProperties(jpaProperties);
             return factory;
         } catch (Exception e) {

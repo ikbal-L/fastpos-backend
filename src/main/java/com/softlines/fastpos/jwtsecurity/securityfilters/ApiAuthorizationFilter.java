@@ -96,7 +96,7 @@ public class ApiAuthorizationFilter extends BasicAuthenticationFilter {
                     if (dbinfo != null) {
                         CustomContextHolder.clear();
                         CustomContextHolder.setId(dbinfo.getId());
-                        return new UsernamePasswordAuthenticationToken(sessionId.asString(), null, grantedAuthorities);
+                        return new UsernamePasswordAuthenticationToken(sessionOptional.get(), null, grantedAuthorities);
                     }
                     return null;
                 }

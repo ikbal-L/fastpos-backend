@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Setter
@@ -35,8 +36,7 @@ public class Role {
                     name = "privilege_id", referencedColumnName = "id"))
     private List<Privilege> privileges;
 
-    @ManyToMany(mappedBy = "roles")
-    private List<JWTuser> users;
+
 
     @Builder.Default
     @NotNull

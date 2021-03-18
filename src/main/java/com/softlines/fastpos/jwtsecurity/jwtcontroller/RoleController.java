@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/role")
+@RequestMapping("/config/role")
 public class RoleController {
 
     @Autowired
@@ -91,7 +91,8 @@ public class RoleController {
 
             if (roles == null || roles.isEmpty())
                 return ResponseEntity.noContent().build();
-            return ResponseEntity.ok().body(roleMapper.toRoleDTOs(roles));
+            var roleDtos = roleMapper.toRoleDTOs(roles);
+            return ResponseEntity.ok().body(roleDtos);
         } catch (Exception exception) {
             return exceptionHandling.getResponseEntityAccordingToException(exception);
         }
