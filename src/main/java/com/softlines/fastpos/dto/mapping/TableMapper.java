@@ -1,7 +1,9 @@
 package com.softlines.fastpos.dto.mapping;
 
 import com.softlines.fastpos.domain.Order;
+import com.softlines.fastpos.domain.Product;
 import com.softlines.fastpos.domain.Table;
+import com.softlines.fastpos.dto.ProductDto;
 import com.softlines.fastpos.dto.TableDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -19,6 +21,8 @@ public interface TableMapper {
     List<TableDto> toTableDTOs(List<Table> tables);
 
     Table toTable(TableDto tableDto);
+
+    List<Table> toTableList(List<TableDto> tableDtoList);
 
     @Named("OrdersToId")
     public static long OrdersToId(Order order) {

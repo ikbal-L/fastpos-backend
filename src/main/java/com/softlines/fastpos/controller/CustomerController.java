@@ -171,7 +171,7 @@ public class CustomerController {
 //                q.executeUpdate();
 //                em.getTransaction().commit();
                 var em = entityManagerFactory.createEntityManager();
-                var repo = new RepositoryDecoratorImp<Customer,Long>(customerRepository,em );
+                var repo = new RepositoryDecoratorImp<Customer,Long>(customerRepository,em,Customer.class );
                 repo.deleteSetNull(customerToDelete.get(),id);
 
 

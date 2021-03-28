@@ -36,5 +36,5 @@ public class Customer extends BaseEntity{
     private boolean deleted=false;
 
     @OneToMany(mappedBy ="customer" ,fetch = FetchType.LAZY)
-    List<Order> orders;
+    Set<Order> orders;
 }

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Set;
 
 
 @SuperBuilder
@@ -34,5 +35,9 @@ public class Table extends BaseEntity{
     @Builder.Default
     @NotNull
     private boolean deleted=false;
+
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "table")
+    Set<Order> orders;
+
 
  }

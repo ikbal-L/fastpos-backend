@@ -1,6 +1,7 @@
 package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Deliveryman;
+import com.softlines.fastpos.domain.Table;
 import com.softlines.fastpos.domain.Waiter;
 import com.softlines.fastpos.dto.DeliverymanDto;
 import com.softlines.fastpos.dto.mapping.DeliverymanMapper;
@@ -141,7 +142,7 @@ public class DeliverymanController {
             if (deliverymanToDel != null) {
 
                 var em = entityManagerFactory.createEntityManager();
-                var repo = new RepositoryDecoratorImp<>(deliverymanRepository,em);
+                var repo = new RepositoryDecoratorImp<>(deliverymanRepository,em, Deliveryman.class);
                 repo.deleteSetNull(deliverymanToDel,id);
                 return ResponseEntity.ok().build();
 
