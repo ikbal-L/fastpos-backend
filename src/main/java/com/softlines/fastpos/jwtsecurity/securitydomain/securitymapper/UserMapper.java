@@ -23,6 +23,7 @@ public interface UserMapper {
     @Mapping(source = "annexes", target = "annexesIds", qualifiedByName = "annexesToIds"
             , nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     @Mapping(target = "terminalId", ignore = true)
+    @Mapping(target = "password", ignore = true)
     UserDTO toUserDto(JWTuser jwTuser);
 
 

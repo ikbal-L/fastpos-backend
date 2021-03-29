@@ -119,8 +119,15 @@ public class UserController {
                 String newPassword = userDTO.getPassword();
                 String oldPassword = existingUser.get().getPassword();
 
-                if(!newPassword.equals(oldPassword))
-                userDTO.setPassword(encoder.encode(newPassword));
+                if (newPassword!= null){
+                    var encodedNewPassword = encoder.encode(newPassword);
+                    if( !encodedNewPassword.equals(oldPassword)){
+                        userDTO.setPassword(encodedNewPassword);
+                    }
+                }else {
+                    userDTO.setPassword(oldPassword);
+                }
+
 
                 jwTuserRepository.save(userMapper.toJWTuser(userDTO));
                 return ResponseEntity.status(HttpStatus.ACCEPTED).body(userDTO);
