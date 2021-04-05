@@ -71,6 +71,9 @@ public class JWTuser extends BaseEntity {
     @Column(name = "user_phone_number")
     private Set<String> phoneNumbers;
 
+    @Column(nullable = false)
+    String backgroundString;
+
 
     @Builder.Default
     @NotNull

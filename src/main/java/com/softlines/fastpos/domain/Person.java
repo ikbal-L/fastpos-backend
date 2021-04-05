@@ -34,10 +34,16 @@ public class Person extends BaseEntity{
     @CollectionTable(name="person_phone_numbers", joinColumns=@JoinColumn(name="person_id"))
     @Column(name="person_phone_Number")
     Set<String> phoneNumbers;
+
+
+    @Column(nullable = false)
     String backgroundString;
 
     @Column(name="isActive")
     boolean active;
+
+
+
 
     @Builder.Default
     @NotNull

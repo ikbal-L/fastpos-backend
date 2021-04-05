@@ -30,6 +30,7 @@ public class PersonDto {
     Set<String> phoneNumbers;
 
     @JsonProperty("BackgroundString")
+    @NotBlank
     String backgroundString;
 
     @JsonProperty("IsActive")

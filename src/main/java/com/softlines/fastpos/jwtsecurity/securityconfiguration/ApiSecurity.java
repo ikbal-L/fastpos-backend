@@ -40,6 +40,7 @@ public class ApiSecurity {
         grantedAuthorities = new ArrayList<>();
         for (Privilege privilege1: privileges) {
             grantedAuthorities.add(new SimpleGrantedAuthority(privilege1.getName()));
+
         }
         //TODO Where to switch DB?
 //        CustomContextHolder.clear();

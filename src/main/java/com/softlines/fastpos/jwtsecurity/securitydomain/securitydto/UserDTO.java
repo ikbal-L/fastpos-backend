@@ -65,6 +65,10 @@ public class UserDTO {
     @JsonProperty("PhoneNumbers")
     private Set<String> phoneNumbers;
 
+    @JsonProperty("BackgroundString")
+    @NotBlank
+    String backgroundString;
+
 
 
 }
