@@ -12,7 +12,6 @@ import org.hibernate.validator.constraints.Range;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
@@ -24,11 +23,11 @@ import java.util.List;
 @OrderValidationTableIdExistIfOrderTypeEqualOnTable
 @OrderValidationOrderTypeNotEqualOnTable
 @OrderValidationTotalGreaterThanNewTotal
-@OrderValidationOrderItemsCountLessThanOne
 @OrderDtoValidationDiscountPercentageAndDiscountAmount
 @OrderItemsDtoValidationDiscountPercentageAndDiscountAmount
 @OrderValidationCalculationNewTotalNotCorrect
 @ValidationOrderDtoDiscountWithOrderItemDiscount
+@OrderDtoValidationOrderItemCountLessThanOne
 public class OrderDto {
 
     @JsonProperty("Id")
@@ -85,7 +84,6 @@ public class OrderDto {
     OrderType type;
 
     @JsonProperty("OrderItems")
-    @Size(min = 1)
     List<OrderItemDto> orderItems;
 
     @JsonProperty("TableId")

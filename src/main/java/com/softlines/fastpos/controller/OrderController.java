@@ -136,8 +136,9 @@ public class OrderController {
             if (orders == null || orders.isEmpty())
                 return ResponseEntity.noContent().build();
             else if (filterByState.isPresent() && filterByState.get().equals("unprocessed")) {
-                List<OrderState> filteredStates = Arrays.asList(OrderState.Payed, OrderState.Removed, OrderState.Canceled);
+                List<OrderState> filteredStates = Arrays.asList(OrderState.Payed, OrderState.Removed, OrderState.Canceled,OrderState.Delivered);
                 orders.removeIf(order -> filteredStates.contains(order.getState()));
+                orders.removeIf(order -> order.getState() == OrderState.Splitted && order.getOrderItems().isEmpty());
             }
             var orderDtos = orderMapper.toOrderDTOs(orders);
             return ResponseEntity.ok().body(orderDtos);
@@ -189,7 +190,7 @@ public class OrderController {
         try {
             var exists = orderRepository.existsById(id);
 
-            if (exists && id != 0 && orderDto.getOrderItems() != null && orderDto.getOrderItems().size() > 0) {
+            if (exists && id != 0 /*&& orderDto.getOrderItems() != null && orderDto.getOrderItems().size() > 0*/) {
 
                 Order order = dtoService.orderDtoToOrder(orderDto);
 

@@ -9,11 +9,10 @@ import java.lang.annotation.*;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {ImplOrderDtoValidationOrderItemCountLessThanOne.class})
-public @interface OrderValidationOrderItemsCountLessThanOne {
+@Constraint(validatedBy = {OrderDtoValidationOrderItemCountLessThanOneImpl.class})
+public @interface OrderDtoValidationOrderItemCountLessThanOne {
 
     String message() default MessageKeyConstants.ORDER_ORDER_ITEMS_COUNT_LESS_THAN_ONE;
-
 
     Class<?>[] groups() default {};
 
