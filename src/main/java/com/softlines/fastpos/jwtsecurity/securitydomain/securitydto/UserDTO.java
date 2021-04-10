@@ -1,5 +1,6 @@
 package com.softlines.fastpos.jwtsecurity.securitydomain.securitydto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softlines.fastpos.constants.MessageKeyConstants;
 
@@ -18,6 +19,7 @@ import java.util.Set;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class UserDTO {
     @JsonProperty("Id")
     long id;

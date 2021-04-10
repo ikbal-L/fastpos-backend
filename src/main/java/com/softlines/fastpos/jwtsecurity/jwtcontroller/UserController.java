@@ -130,7 +130,7 @@ public class UserController {
 
 
                 jwTuserRepository.save(userMapper.toJWTuser(userDTO));
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body(userDTO);
+                return ResponseEntity.ok(userDTO);
             }
             return ResponseEntity.noContent().build();
         }catch (Exception e){

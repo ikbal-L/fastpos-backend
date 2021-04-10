@@ -42,19 +42,13 @@ public class AdditiveController {
 
     @PostMapping("/save")
     public ResponseEntity<Long> addAdditive(@Valid @RequestBody AdditiveDto additiveDto) {
-        try {
+        if (additiveDto.getId() == 0) {
 
-            if (additiveDto.getId() == 0) {
+            Additive savedAdditve = additiveRepository.save(additiveMapper.toAdditive(additiveDto));
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedAdditve.getId());
 
-                    Additive savedAdditve = additiveRepository.save(additiveMapper.toAdditive(additiveDto));
-                    return ResponseEntity.status(HttpStatus.CREATED).body(savedAdditve.getId());
-
-            } else {
-                return ResponseEntity.status(HttpStatus.FOUND).build();
-            }
-
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        } else {
+            return ResponseEntity.status(HttpStatus.FOUND).build();
         }
     }
 

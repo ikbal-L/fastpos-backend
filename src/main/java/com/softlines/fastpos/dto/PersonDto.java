@@ -1,5 +1,6 @@
 package com.softlines.fastpos.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softlines.fastpos.constants.MessageKeyConstants;
 import com.softlines.fastpos.domain.Descriptor;
@@ -17,6 +18,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class PersonDto {
 
     @JsonProperty("Id")

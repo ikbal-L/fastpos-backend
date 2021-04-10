@@ -13,7 +13,7 @@ public class ImplCategoryValidationIfRankEqualNullProductIdsMustEqualNull implem
     public boolean isValid(CategoryDto categoryDto, ConstraintValidatorContext context) {
 
         return !(categoryDto.getRank() == null &&
-                (categoryDto.getProductIds() != null || categoryDto.getProductIds().size() > 0));
+                (categoryDto.getProductIds() != null && !categoryDto.getProductIds().isEmpty()));
     }
 
 }
