@@ -112,6 +112,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             for (GrantedAuthority grantedAuthority : auth.getAuthorities()) {
                 grantedAuthorities.add(grantedAuthority.getAuthority());
             }
+
             var content = new ObjectMapper().writeValueAsString(grantedAuthorities);
 
 //            res.resetBuffer();
@@ -122,6 +123,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             PrintWriter writer = res.getWriter();
             res.setContentType(MediaType.APPLICATION_JSON_VALUE);
             res.setCharacterEncoding("UTF-8");
+            res.addHeader("user-meta-background",user.getBackgroundString());
             writer.print(content);
             writer.flush();
         }
