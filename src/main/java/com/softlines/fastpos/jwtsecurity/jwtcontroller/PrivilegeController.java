@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/privilege")
+@RequestMapping("/config/privilege")
 public class PrivilegeController {
 
     @Autowired
@@ -90,8 +90,8 @@ public class PrivilegeController {
     public ResponseEntity<List<PrivilegeDTO>> getPrivileges() {
         try {
             List<Privilege> allPrivileges = privilegeRepository.findAll();
-
-            return ResponseEntity.ok().body(privilegeMapper.toPrivilegeDTOs(allPrivileges));
+            var privilegeDTOS = privilegeMapper.toPrivilegeDTOs(allPrivileges);
+            return ResponseEntity.ok().body(privilegeDTOS);
         } catch (Exception exception) {
             return exceptionHandling.getResponseEntityAccordingToException(exception);
         }

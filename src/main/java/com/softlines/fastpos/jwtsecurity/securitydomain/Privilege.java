@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Setter
@@ -28,8 +29,8 @@ public class Privilege {
     @Column(name = "name", unique = true)
     String name;
 
-    @ManyToMany(mappedBy = "privileges")
-    List<Role> roles;
+    @ManyToMany(fetch = FetchType.LAZY,mappedBy = "privileges")
+    Set<Role> roles;
 
     @Builder.Default
     @NotNull

@@ -32,16 +32,14 @@ import java.util.Set;
 //@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 
 @Entity(name = "Additive")
-@Table(name = "additive",uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"description","deleted"})
-})
+@Table(name = "additive")
 public class Additive extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true)
     String description;
 
     @NotBlank(message = MessageKeyConstants.ADDITIVE_BACKGROUND_STRING_VALIDATION_ERROR)

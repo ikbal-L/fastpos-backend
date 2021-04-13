@@ -4,10 +4,7 @@ import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
 import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.PrivilegeDTO;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -17,8 +14,7 @@ public interface PrivilegeMapper {
 
     PrivilegeMapper INSTANCE = Mappers.getMapper(PrivilegeMapper.class);
 
-    @Mapping(source = "roles", target = "roleIds", qualifiedByName = "rolesToIds"
-            , nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+
     PrivilegeDTO toPrivilegeDTO(Privilege privilege);
 
     List<PrivilegeDTO> toPrivilegeDTOs(List<Privilege> privileges);
