@@ -60,7 +60,7 @@ public class FastposExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public final ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException e) throws JsonProcessingException {
         var mapper = new ObjectMapper();
-        var message= mapper.writeValueAsString(String.format("%s",e.getCause().getMessage()));
+        var message= mapper.writeValueAsString(e.getCause().getMessage());
         return  new ResponseEntity<Object>(message,HttpStatus.CONFLICT);
     }
 

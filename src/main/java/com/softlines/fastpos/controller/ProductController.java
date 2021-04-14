@@ -42,21 +42,15 @@ public class ProductController {
     @PostMapping(value = "/save")
     public ResponseEntity<Long> addProduct(@Valid @RequestBody ProductDto productDto) {
 
-        try {
+        if (productDto.getId()==0) {
 
-            if (productDto.getId()==0) {
+            Product product = dtoService.productDtoToProduct(productDto, false);
+            var created = productRepository.save(product);
 
-                Product product = dtoService.productDtoToProduct(productDto, false);
-                var created = productRepository.save(product);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created.getId());
 
-                return ResponseEntity.status(HttpStatus.CREATED).body(5L);
-
-            } else {
-                return ResponseEntity.status(HttpStatus.FOUND).build();
-            }
-
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        } else {
+            return ResponseEntity.status(HttpStatus.FOUND).build();
         }
 
     }
