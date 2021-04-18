@@ -131,15 +131,18 @@ public class OrderController {
 
         try {
 
-            List<Order> orders = orderRepository.getAllOrder();
+            List<Order> orders ;
 
+
+            if (filterByState.isPresent() && filterByState.get().equals("unprocessed")) {
+                orders = orderRepository.findAllUnprocessedOrders();
+//
+            }else {
+                orders = orderRepository.getAllOrder();
+            }
             if (orders == null || orders.isEmpty())
                 return ResponseEntity.noContent().build();
-            else if (filterByState.isPresent() && filterByState.get().equals("unprocessed")) {
-                List<OrderState> filteredStates = Arrays.asList(OrderState.Payed, OrderState.Removed, OrderState.Canceled,OrderState.Delivered);
-                orders.removeIf(order -> filteredStates.contains(order.getState()));
-                orders.removeIf(order -> order.getState() == OrderState.Splitted && order.getOrderItems().isEmpty());
-            }
+
             var orderDtos = orderMapper.toOrderDTOs(orders);
             return ResponseEntity.ok().body(orderDtos);
 

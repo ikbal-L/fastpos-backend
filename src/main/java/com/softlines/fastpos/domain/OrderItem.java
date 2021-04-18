@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 
 @SuperBuilder
@@ -55,8 +56,8 @@ public class OrderItem extends BaseEntity {
 //    @OneToMany(mappedBy = "orderItem",cascade = {CascadeType.ALL},fetch = FetchType.EAGER)
 //=======
     @OneToMany(mappedBy = "orderItem", cascade = CascadeType.MERGE,
-             fetch = FetchType.LAZY)
-    List<OrderItemAdditive> orderItemAdditives;
+             fetch = FetchType.EAGER)
+List<OrderItemAdditive> orderItemAdditives;
 
     @ManyToOne
     @JoinColumn(name = "order_id")
