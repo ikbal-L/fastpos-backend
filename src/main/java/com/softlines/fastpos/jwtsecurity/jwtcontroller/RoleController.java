@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +34,7 @@ public class RoleController {
 
     //@PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
     @PostMapping(value = "/save", consumes = "application/json")
-    public ResponseEntity<RoleDTO> saveRole(@RequestBody RoleDTO roleDTO) {
+    public ResponseEntity<Long> saveRole(@RequestBody RoleDTO roleDTO) {
         try {
             String roleName = roleDTO.getName().toUpperCase();
             if (!roleName.matches("^ROLE_")) roleName = "ROLE_" + roleName;
@@ -43,7 +44,8 @@ public class RoleController {
                 return ResponseEntity.noContent().build();
             }
             Role createdRole = roleRepository.save(roleMapper.toRole(roleDTO));
-            return ResponseEntity.status(HttpStatus.CREATED).body(roleMapper.toRoleDto(createdRole));
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdRole.getId());
         } catch (Exception exception) {
             return exceptionHandling.getResponseEntityAccordingToException(exception);
         }
@@ -67,8 +69,8 @@ public class RoleController {
     }
 
     //@PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
-    @PutMapping("/put")
-    public ResponseEntity<RoleDTO> editRole(@RequestBody RoleDTO roleDTO) {
+    @PutMapping("/put/{id}")
+    public ResponseEntity<RoleDTO> editRole(@Valid @PathVariable long id, @RequestBody RoleDTO roleDTO) {
         try {
             Optional<Role> existingRole = roleRepository.findRoleById(roleDTO.getId());
             if (existingRole.isPresent()) {
