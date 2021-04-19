@@ -50,8 +50,6 @@ public class ProductDto {
     boolean platter;
 
     @JsonProperty("Rank")
-    @Min(1)
-    @NotNull
     Integer rank;
 
     @JsonProperty("CategoryId")
