@@ -38,7 +38,9 @@ public class Order extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
+    @Temporal(TemporalType.DATE)
     Date orderTime;
+
 
     LocalTime elapsedTime;
 
