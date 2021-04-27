@@ -54,7 +54,7 @@ public class DailyExpenseReport extends BaseEntity {
     double cashRegisterExpectedAmount ;
 
     double cashRegisterActualAmount ;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     List<EarningsCategoryGrouping> earningsByCategory;
 
     @Builder.Default

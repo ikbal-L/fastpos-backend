@@ -1,7 +1,9 @@
 package com.softlines.fastpos.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.softlines.fastpos.domain.EarningsCategoryGrouping;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +13,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,6 +32,8 @@ public class DailyExpenseReportDto {
     Map<String,Double> deliveryPayments;
 
     Map<String,Double> expenses;
+
+    List<EarningsCategoryGrouping> earningsByCategory;
 
     double cashRegisterInitialAmount ;
 
