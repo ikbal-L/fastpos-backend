@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -25,6 +26,9 @@ public class CustomerDto {
     @NotBlank(message = MessageKeyConstants.CUSTOMER_MOBILE_VALIDATION_ERROR)
     @CustomerValidationPhoneNumber
     String mobile;
+
+    @JsonProperty("PhoneNumbers")
+    Set<String> phoneNumbers;
 
 
 }
