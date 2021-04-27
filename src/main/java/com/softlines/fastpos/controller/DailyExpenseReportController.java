@@ -1,7 +1,9 @@
 package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.DailyExpenseReport;
+import com.softlines.fastpos.dto.DailyExpenseReportDto;
 import com.softlines.fastpos.dto.DailyExpenseReportInputDataDto;
+import com.softlines.fastpos.dto.mapping.DailyExpenseReportMapper;
 import com.softlines.fastpos.repository.DailyExpenseReportRepository;
 import com.softlines.fastpos.service.DailyExpenseReportService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,28 +13,37 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/dailyexpensereport", produces = "application/json")
 public class DailyExpenseReportController {
-    @Autowired
+
     DailyExpenseReportService dailyExpenseReportService;
 
-    @Autowired
     DailyExpenseReportRepository dailyExpenseReportRepository;
 
+    DailyExpenseReportMapper dailyExpenseReportMapper;
+
+    public DailyExpenseReportController(DailyExpenseReportService dailyExpenseReportService, DailyExpenseReportRepository dailyExpenseReportRepository, DailyExpenseReportMapper dailyExpenseReportMapper) {
+        this.dailyExpenseReportService = dailyExpenseReportService;
+        this.dailyExpenseReportRepository = dailyExpenseReportRepository;
+        this.dailyExpenseReportMapper = dailyExpenseReportMapper;
+    }
+
     @PostMapping("/save")
-    public ResponseEntity<DailyExpenseReport>createReport(@RequestBody DailyExpenseReportInputDataDto inputDataDto) {
+    public ResponseEntity<DailyExpenseReportDto> createReport(@RequestBody DailyExpenseReportInputDataDto inputDataDto) {
 
         var date = new Date();
         var simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         var dateString = simpleDateFormat.format(date);
         var report = dailyExpenseReportRepository.findByIssuedDate(dateString);
 
-        if (true) {
+        if (report.isEmpty()) {
             var generated = dailyExpenseReportService.generateDailyExpenseReport(inputDataDto);
             var createdReport = dailyExpenseReportRepository.save(generated);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdReport);
+            var createdReportDto = dailyExpenseReportMapper.toDailyExpenseReportDto(createdReport);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdReportDto);
         } else {
             return ResponseEntity.badRequest().build();
         }
@@ -41,22 +52,31 @@ public class DailyExpenseReportController {
     @GetMapping("/get/{id}")
     public ResponseEntity<DailyExpenseReport> getReport(@PathVariable Long id) {
         var report = dailyExpenseReportRepository.findById(id);
-        if (report.isPresent()){
+        if (report.isPresent()) {
             return ResponseEntity.ok(report.get());
-        }else {
+        } else {
             return ResponseEntity.noContent().build();
         }
     }
 
-    @GetMapping("/get/issued-date/{date}")
+    @GetMapping("/get/{issuedDate}")
     public ResponseEntity<DailyExpenseReport> getReportByIssuedDate(@PathVariable Date issuedDate) {
-        var date = new Date();
         var simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        var dateString = simpleDateFormat.format(date);
+        var dateString = simpleDateFormat.format(issuedDate);
         var report = dailyExpenseReportRepository.findByIssuedDate(dateString);
-        if (report.isPresent()){
+        if (report.isPresent()) {
             return ResponseEntity.ok(report.get());
-        }else {
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    @GetMapping("/getall")
+    public ResponseEntity<List<DailyExpenseReportDto>> getAllReports() {
+        var reports = dailyExpenseReportRepository.findAll();
+        if (!reports.isEmpty()) {
+            return ResponseEntity.ok(dailyExpenseReportMapper.toDailyExpenseReportDtos(reports));
+        } else {
             return ResponseEntity.noContent().build();
         }
     }

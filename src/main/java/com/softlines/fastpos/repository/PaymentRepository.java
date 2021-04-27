@@ -19,4 +19,7 @@ public interface PaymentRepository extends JpaRepository<Payment,Long> {
 
     @Query(value = "select DISTINCT p from Payment p where date_format(p.date,'%Y-%m-%d') = ?1")
     List<Payment> findAllByDate(String date);
+
+    @Query(value = "select DISTINCT p from Payment p where date_format(p.date,'%Y-%m-%d %H:I') = ?1")
+    List<Payment> findAllBetween(Date start, Date end);
 }

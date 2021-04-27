@@ -34,6 +34,9 @@ public class OrderDto {
     @Min(0)
     long id;
 
+    @JsonProperty("OrderNumber")
+    long orderNumber;
+
     @JsonProperty("CustomerId")
     String customerId;
 

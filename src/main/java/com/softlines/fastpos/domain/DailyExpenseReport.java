@@ -3,16 +3,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Setter
 @Getter
@@ -33,13 +32,18 @@ public class DailyExpenseReport extends BaseEntity {
     Date issuedDate;
 
     @ElementCollection(fetch = FetchType.EAGER)
+    @MapKeyColumn(name = "receipt_id")
+    @Column(name = "cash_payment_amount")
     Map<String,Double> CashPayments;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    Set<Double> deliveryPayments;
+    Map<String,Double> deliveryPayments;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    Set<Double> expenses;
+    @CollectionTable(name = "misc_expenses")
+    @MapKeyColumn(name = "expense_description")
+    @Column(name = "expense_amount")
+    Map<String,Double> expenses;
 
     double cashRegisterInitialAmount ;
 
@@ -50,5 +54,11 @@ public class DailyExpenseReport extends BaseEntity {
     double cashRegisterExpectedAmount ;
 
     double cashRegisterActualAmount ;
+    @OneToMany
+    List<EarningsCategoryGrouping> earningsByCategory;
+
+    @Builder.Default
+    @NotNull
+    private boolean deleted = false;
 
 }

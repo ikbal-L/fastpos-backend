@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -19,6 +20,6 @@ public class DailyExpenseReportInputDataDto {
     double cashRegisterActualAmount;
 
     @JsonProperty("Expenses")
-    Set<Double> expenses;
+    Map<String,Double> expenses;
 
 }
