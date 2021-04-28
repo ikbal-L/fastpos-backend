@@ -116,13 +116,14 @@ public class DeliverymanController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<DeliverymanDto> editDeliveryman(@Valid @PathVariable long id,@Valid @RequestBody Deliveryman deliveryman) {
+    public ResponseEntity<DeliverymanDto> editDeliveryman(@Valid @PathVariable long id,@Valid @RequestBody DeliverymanDto deliverymanDto) {
         try {
 
             Optional<Deliveryman> optionalDeliveryman = deliverymanRepository.findById(id);
 
-            if (optionalDeliveryman.isPresent() && id != 0 && deliveryman.getName() != null) {
-                Deliveryman updatedDeliveryman = deliverymanRepository.save(deliveryman);
+            if (optionalDeliveryman.isPresent() && id != 0 && deliverymanDto.getName() != null) {
+                var deliveryMan = deliverymanMapper.toDeliveryman(deliverymanDto);
+                Deliveryman updatedDeliveryman = deliverymanRepository.save(deliveryMan);
                 return ResponseEntity.ok().body(deliverymanMapper.toDeliverymanDto(updatedDeliveryman));
             } else {
                 return ResponseEntity.noContent().build();

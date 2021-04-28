@@ -2,6 +2,7 @@ package com.softlines.fastpos.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softlines.fastpos.constants.MessageKeyConstants;
+import com.softlines.fastpos.validation.PhoneNumberCollection;
 import com.softlines.fastpos.validation.customer.CustomerValidationPhoneNumber;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,12 +23,8 @@ public class CustomerDto {
 //    @NotBlank(message = MessageKeyConstants.CUSTOMER_NAME_VALIDATION_ERROR)
     String name;
 
-    @JsonProperty("Mobile")
-    @NotBlank(message = MessageKeyConstants.CUSTOMER_MOBILE_VALIDATION_ERROR)
-    @CustomerValidationPhoneNumber
-    String mobile;
-
     @JsonProperty("PhoneNumbers")
+    @PhoneNumberCollection
     Set<String> phoneNumbers;
 
 

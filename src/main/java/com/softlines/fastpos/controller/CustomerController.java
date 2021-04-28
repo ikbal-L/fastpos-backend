@@ -1,6 +1,7 @@
 package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Customer;
+
 import com.softlines.fastpos.dto.CustomerDto;
 import com.softlines.fastpos.dto.mapping.CustomerMapper;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
@@ -139,12 +140,13 @@ public class CustomerController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<CustomerDto> editCustomer(@Valid @PathVariable long id, @RequestBody Customer customer) {
+    public ResponseEntity<CustomerDto> editCustomer(@Valid @PathVariable long id, @RequestBody CustomerDto customerDto) {
 
         try {
             Optional<Customer> optionalCustomer = customerRepository.findById(id);
 
-            if (optionalCustomer.isPresent() && customer.getName() != null) {
+            if (optionalCustomer.isPresent() && customerDto.getName() != null) {
+               var customer= customerMapper.toCustomer(customerDto);
                 Customer savedCustomer = customerRepository.save(customer);
                 return ResponseEntity.ok().body(customerMapper.toCustomerDto(savedCustomer));
             } else {
