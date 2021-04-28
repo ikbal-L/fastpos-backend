@@ -16,8 +16,7 @@ public class PhoneNumberCollectionImpl implements ConstraintValidator<PhoneNumbe
         return value.stream().allMatch(s -> {
             Phonenumber.PhoneNumber phone = null;
             try {
-                phone = phoneNumberUtil.parse(s,
-                        Phonenumber.PhoneNumber.CountryCodeSource.UNSPECIFIED.name());
+                phone = phoneNumberUtil.parse(s, "DZ");
                 return phoneNumberUtil.isValidNumber(phone);
             } catch (NumberParseException e) {
                 e.printStackTrace();
