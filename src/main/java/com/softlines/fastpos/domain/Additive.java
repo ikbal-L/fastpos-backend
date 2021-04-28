@@ -39,7 +39,7 @@ public class Additive extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false)
     String description;
 
     @NotBlank(message = MessageKeyConstants.ADDITIVE_BACKGROUND_STRING_VALIDATION_ERROR)
