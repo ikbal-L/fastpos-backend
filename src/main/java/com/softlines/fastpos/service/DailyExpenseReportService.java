@@ -30,18 +30,19 @@ public class DailyExpenseReportService {
         var date = new Date();
         var simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         var dateString = simpleDateFormat.format(date);
-        var ordersOfTheDay = orderRepository.findAllByOrderTime(dateString).stream().filter(order -> order.getState() == OrderState.Payed).collect(Collectors.toList());
+        var ordersOfTheDay = orderRepository.findAllByOrderTime(dateString).stream().filter(order -> order.getState() == OrderState.Payed|| order.getState() == OrderState.DeliveredPaid).collect(Collectors.toList());
+        var payedOrdersOfTheDay = orderRepository.findAllByOrderTime(dateString).stream().filter(order -> order.getState() == OrderState.Payed).collect(Collectors.toList());
         var paymentsOfTheDay = paymentRepository.findAllByDate(dateString);
 
         Map<String, Double> cashPayments = new HashMap<>();
         Map<String,Double> deliveryPayments = new HashMap<>();
-        ordersOfTheDay.stream().forEach(order -> cashPayments.put(order.getId()+"" , order.getNewTotal()));
+        payedOrdersOfTheDay.stream().forEach(order -> cashPayments.put(order.getId()+"" , order.getNewTotal()));
         paymentsOfTheDay.stream().forEach(payment -> deliveryPayments.put(payment.getId()+"",payment.getAmount()));
-        var cashPaymentsSum = ordersOfTheDay.stream().mapToDouble(Order::getGivenAmount).sum();
+        var cashPaymentsSum = payedOrdersOfTheDay.stream().mapToDouble(Order::getGivenAmount).sum();
         var deliveryPaymentsSum = paymentsOfTheDay.stream().mapToDouble(Payment::getAmount).sum();
         var expensesSum = inputData.getExpenses().values().stream().mapToDouble(Double::doubleValue).sum();
         var cashRegisterDepositedAmount = cashPaymentsSum + deliveryPaymentsSum;
-        var cashRegisterWithDrawnAmount = ordersOfTheDay.stream().mapToDouble(Order::getReturnedAmount).sum();
+        var cashRegisterWithDrawnAmount = payedOrdersOfTheDay.stream().mapToDouble(Order::getReturnedAmount).sum();
         var cashRegisterExpectedAmount = inputData.
                 getCashRegisterInitialAmount()
                 + cashRegisterDepositedAmount
@@ -54,7 +55,7 @@ public class DailyExpenseReportService {
                 .flatMap(Collection::stream).collect(Collectors.groupingBy(orderItem -> orderItem.getProduct().getCategory()));
         List<EarningsCategoryGrouping> items =groupbycat.entrySet().stream().map(categoryListEntry -> {
            return EarningsCategoryGrouping.builder().category(categoryListEntry.getKey().getName())
-                    .quantityOfItems(categoryListEntry.getValue().size()).amount(categoryListEntry.getValue().stream().mapToDouble(OrderItem::getTotal).sum()).build();
+                    .quantityOfItems(categoryListEntry.getValue().stream().mapToInt(OrderItem::getQuantity).sum()).amount(categoryListEntry.getValue().stream().mapToDouble(OrderItem::getTotal).sum()).build();
         }).collect(Collectors.toList());
 
         var report = DailyExpenseReport.builder()

@@ -50,7 +50,7 @@ public class UserController {
 
     //@PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
     @PostMapping(value = "/save", headers = "Content-Type=application/json")
-    public ResponseEntity<UserDTO> addUser(@Valid @RequestBody UserDTO userDTO){
+    public ResponseEntity<Long> addUser(@Valid @RequestBody UserDTO userDTO){
         try {
             Optional<JWTuser> existingUser = jwTuserRepository.findById(userDTO.getId());
             if(existingUser.isPresent()){
@@ -60,8 +60,8 @@ public class UserController {
             JWTuser jwTuser = userMapper.toJWTuser(userDTO);
             jwTuser.setPassword(encoder.encode(jwTuser.getPassword()));
             JWTuser createdUser = jwTuserRepository.save(jwTuser);
-            userDTO.setId(createdUser.getId());
-            return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
+//            userDTO.setId(createdUser.getId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdUser.getId());
         }catch (Exception e){
             return exceptionManagement.getResponseEntityAccordingToException(e);
         }
