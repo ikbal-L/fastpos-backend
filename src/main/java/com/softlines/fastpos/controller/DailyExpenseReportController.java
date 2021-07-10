@@ -6,7 +6,6 @@ import com.softlines.fastpos.dto.DailyExpenseReportInputDataDto;
 import com.softlines.fastpos.dto.mapping.DailyExpenseReportMapper;
 import com.softlines.fastpos.repository.DailyExpenseReportRepository;
 import com.softlines.fastpos.service.DailyExpenseReportService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,16 +36,21 @@ public class DailyExpenseReportController {
         var date = new Date();
         var simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         var dateString = simpleDateFormat.format(date);
-        var report = dailyExpenseReportRepository.findByIssuedDate(dateString);
+//        var report = dailyExpenseReportRepository.findByIssuedDate(dateString);
 
-        if (report.isEmpty()) {
-            var generated = dailyExpenseReportService.generateDailyExpenseReport(inputDataDto);
-            var createdReport = dailyExpenseReportRepository.save(generated);
-            var createdReportDto = dailyExpenseReportMapper.toDailyExpenseReportDto(createdReport);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdReportDto);
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
+        var generated = dailyExpenseReportService.generateDailyExpenseReport(inputDataDto);
+        var createdReport = dailyExpenseReportRepository.save(generated);
+        var createdReportDto = dailyExpenseReportMapper.toDailyExpenseReportDto(createdReport);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdReportDto);
+
+//        if (report.isEmpty()) {
+//            var generated = dailyExpenseReportService.generateDailyExpenseReport(inputDataDto);
+//            var createdReport = dailyExpenseReportRepository.save(generated);
+//            var createdReportDto = dailyExpenseReportMapper.toDailyExpenseReportDto(createdReport);
+//            return ResponseEntity.status(HttpStatus.CREATED).body(createdReportDto);
+//        } else {
+//            return ResponseEntity.badRequest().build();
+//        }
     }
 
     @GetMapping("/get/{id}")
