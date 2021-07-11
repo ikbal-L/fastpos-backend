@@ -21,8 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.persistence.EntityManagerFactory;
+import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 
@@ -79,8 +79,9 @@ public class DbConfig {
     @Bean
     @Profile("prod")
     public CustomRoutingDataSource customRoutingDataSource() throws Exception {
-//        initiateDB();
-//            initRolesAndPrivileges();
+        var roles = initRolesAndPrivileges();
+        initiateUserDB(roles);
+
         try {
             List<DbInfo> dbInfos = dbInfoRepository.findAll();
             Map<Object, Object> map = new HashMap<>();
@@ -130,7 +131,7 @@ public class DbConfig {
         }
     }
 
-    public void initiateDB() {
+    public void initiateUserDB(List<Role> roles) {
         PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
         DbInfo dbInfo = new DbInfo();
@@ -154,9 +155,44 @@ public class DbConfig {
         dbInfo3.setUsername("root");
         dbInfo3.setPassword("");
 
-        var createdDbInfo1 = dbInfoRepository.save(createIfNotFound(dbInfo));
-        var createdDbInfo2 = dbInfoRepository.save(createIfNotFound(dbInfo2));
-        var createdDbInfo3 = dbInfoRepository.save(createIfNotFound(dbInfo3));
+        var db1 = createIfNotFound(dbInfo);
+        var db2 = createIfNotFound(dbInfo2);
+        var db3 = createIfNotFound(dbInfo3);
+
+        if (db1 != null && db2 != null && db3 != null) {
+            var createdDbInfo1 = dbInfoRepository.save(db1);
+            var createdDbInfo2 = dbInfoRepository.save(db2);
+            var createdDbInfo3 = dbInfoRepository.save(db3);
+
+            Annex annex1 = Annex.builder()
+                    .name("Annex1")
+                    .address("Address1")
+                    .serverLicenceKey(UUID.randomUUID().toString())
+                    .dbInfo(createdDbInfo1)
+                    .build();
+            Annex annex2 = Annex.builder()
+                    .name("Annex2")
+                    .address("Address2")
+                    .serverLicenceKey(UUID.randomUUID().toString())
+                    .dbInfo(createdDbInfo2)
+                    .build();
+            Annex annex3 = Annex.builder()
+                    .name("Annex2")
+                    .address("Address2")
+                    .serverLicenceKey(UUID.randomUUID().toString())
+                    .dbInfo(createdDbInfo3)
+                    .build();
+            Annex createdAnnex1 = annexRepository.save(annex1);
+            Annex createdAnnex2 = annexRepository.save(annex2);
+            Annex createdAnnex3 = annexRepository.save(annex3);
+            Terminal terminal1 = Terminal.builder().active(true).licenceKey(UUID.randomUUID().toString()).annex(createdAnnex1).build();
+            Terminal terminal2 = Terminal.builder().active(true).licenceKey(UUID.randomUUID().toString()).annex(createdAnnex2).build();
+            Terminal terminal3 = Terminal.builder().active(true).licenceKey(UUID.randomUUID().toString()).annex(createdAnnex3).build();
+            terminalRepository.save(terminal1);
+            terminalRepository.save(terminal2);
+            terminalRepository.save(terminal3);
+        }
+
 
         Privilege readPrivilege
                 = createPrivilegeIfNotFound("READ_PRIVILEGE");
@@ -177,7 +213,11 @@ public class DbConfig {
         admin.setEmail("admin@test.com");
         admin.setRoles(Arrays.asList(adminRole));
         admin.setEnabled(true);
-
+        admin.setCreatedDate(LocalDateTime.now());
+        admin.setModifiedDate(LocalDateTime.now());
+        admin.setCreationSessionId(UUID.randomUUID().toString());
+        admin.setModificationSessionId(UUID.randomUUID().toString());
+        admin.setBackgroundString("");
         dbInfo = dbInfoRepository.findByName("defaultDB");
         jwTuserRepository.save(admin);
 
@@ -190,35 +230,17 @@ public class DbConfig {
         user.setEmail("user@test.com");
         user.setRoles(Arrays.asList(userRole));
         user.setEnabled(true);
+
+        user.setCreatedDate(LocalDateTime.now());
+        user.setModifiedDate(LocalDateTime.now());
+        user.setCreationSessionId(UUID.randomUUID().toString());
+        user.setModificationSessionId(UUID.randomUUID().toString());
+        user.setBackgroundString("");
+
         dbInfo2 = dbInfoRepository.findByName("firstDB");
         jwTuserRepository.save(user);
-        Annex annex1 = Annex.builder()
-                .name("Annex1")
-                .address("Address1")
-                .serverLicenceKey(UUID.randomUUID().toString())
-                .dbInfo(createdDbInfo1)
-                .build();
-        Annex annex2 = Annex.builder()
-                .name("Annex2")
-                .address("Address2")
-                .serverLicenceKey(UUID.randomUUID().toString())
-                .dbInfo(createdDbInfo2)
-                .build();
-        Annex annex3 = Annex.builder()
-                .name("Annex2")
-                .address("Address2")
-                .serverLicenceKey(UUID.randomUUID().toString())
-                .dbInfo(createdDbInfo3)
-                .build();
-        Annex createdAnnex1 = annexRepository.save(annex1);
-        Annex createdAnnex2 = annexRepository.save(annex2);
-        Annex createdAnnex3 = annexRepository.save(annex3);
-        Terminal terminal1 = Terminal.builder().active(true).licenceKey(UUID.randomUUID().toString()).annex(createdAnnex1).build();
-        Terminal terminal2 = Terminal.builder().active(true).licenceKey(UUID.randomUUID().toString()).annex(createdAnnex2).build();
-        Terminal terminal3 = Terminal.builder().active(true).licenceKey(UUID.randomUUID().toString()).annex(createdAnnex3).build();
-        terminalRepository.save(terminal1);
-        terminalRepository.save(terminal2);
-        terminalRepository.save(terminal3);
+
+
     }
 
     Privilege createPrivilegeIfNotFound(String name) {
@@ -252,7 +274,7 @@ public class DbConfig {
         return null;
     }
 
-    private void initRolesAndPrivileges() {
+    private List<Role> initRolesAndPrivileges() {
         String[] entities = {"Product", "Additive", "Category", "Customer", "Order", "OrderItem", "Deliveryman", "Waiter"};
         List<Privilege> privileges = new ArrayList<>();
         for (String s : entities) {
@@ -269,9 +291,9 @@ public class DbConfig {
         Role clerk = Role.builder().name("ROLE_CLERK").privileges(orderPrivilegesCreateUpdate).build();
         roles.add(admin);
         roles.add(clerk);
-        roleRepository.saveAll(roles);
+        var savedRoles = roleRepository.saveAll(roles);
 
-
+return savedRoles;
     }
 
 

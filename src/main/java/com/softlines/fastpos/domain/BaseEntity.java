@@ -1,7 +1,9 @@
 package com.softlines.fastpos.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.annotation.CreatedBy;
@@ -18,6 +20,8 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class BaseEntity {
 
 
