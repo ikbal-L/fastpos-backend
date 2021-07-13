@@ -79,8 +79,8 @@ public class DbConfig {
     @Bean
     @Profile("prod")
     public CustomRoutingDataSource customRoutingDataSource() throws Exception {
-        var roles = initRolesAndPrivileges();
-        initiateUserDB(roles);
+//        var roles = initRolesAndPrivileges();
+//        initiateUserDB(roles);
 
         try {
             List<DbInfo> dbInfos = dbInfoRepository.findAll();

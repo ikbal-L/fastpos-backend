@@ -31,7 +31,10 @@ public class Person extends BaseEntity{
     String name;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="person_phone_numbers")
+//    @CollectionTable(name="person_phone_numbers",joinColumns = {
+//            @JoinColumn(name = "waiter_id",table = "Waiter",nullable = true,referencedColumnName = "id"),
+//            @JoinColumn(name = "deliveryman_id",table = "Deliveryman",nullable = true,referencedColumnName = "id"),
+//    })
     @Column(name="person_phone_Number")
     Set<String> phoneNumbers;
 

@@ -16,6 +16,7 @@ import java.util.Set;
 @SQLDelete(sql = "UPDATE Deliveryman SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
 @Data
+@PrimaryKeyJoinColumn(name = "deliveryman_id")
 public class Deliveryman extends  Person{
 
     double balance;
