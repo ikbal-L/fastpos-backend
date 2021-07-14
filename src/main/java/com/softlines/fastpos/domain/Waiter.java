@@ -13,7 +13,6 @@ import javax.persistence.*;
 @Entity
 @SQLDelete(sql = "UPDATE Waiter SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
-@PrimaryKeyJoinColumn(name = "waiter_id")
 public class Waiter extends  Person{
 
 

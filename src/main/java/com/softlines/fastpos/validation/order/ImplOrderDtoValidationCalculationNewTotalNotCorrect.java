@@ -8,7 +8,7 @@ import javax.validation.ConstraintValidatorContext;
 public class ImplOrderDtoValidationCalculationNewTotalNotCorrect implements ConstraintValidator<OrderValidationCalculationNewTotalNotCorrect, OrderDto> {
 
     public boolean isValid(OrderDto orderDto, ConstraintValidatorContext context) {
-        return (orderDto.getTotal() - orderDto.getDiscountAmount()) == orderDto.getNewTotal();
+        return (orderDto.getTotal() - orderDto.getTotalDiscountAmount()) == orderDto.getNewTotal();
     }
 
 }
