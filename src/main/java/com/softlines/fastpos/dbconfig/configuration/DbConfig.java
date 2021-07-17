@@ -58,7 +58,6 @@ public class DbConfig {
     private TerminalRepository terminalRepository;
 
 
-
     public DriverManagerDataSource createDataSources(DbInfo dbInfo) throws Exception {
         try {
             DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -79,8 +78,8 @@ public class DbConfig {
     @Bean
     @Profile("prod")
     public CustomRoutingDataSource customRoutingDataSource() throws Exception {
-//        var roles = initRolesAndPrivileges();
-//        initiateUserDB(roles);
+        var roles = initRolesAndPrivileges();
+        initiateUserDB(roles);
 
         try {
             List<DbInfo> dbInfos = dbInfoRepository.findAll();
@@ -164,45 +163,16 @@ public class DbConfig {
             var createdDbInfo2 = dbInfoRepository.save(db2);
             var createdDbInfo3 = dbInfoRepository.save(db3);
 
-            Annex annex1 = Annex.builder()
-                    .name("Annex1")
-                    .address("Address1")
-                    .serverLicenceKey(UUID.randomUUID().toString())
-                    .dbInfo(createdDbInfo1)
-                    .build();
-            Annex annex2 = Annex.builder()
-                    .name("Annex2")
-                    .address("Address2")
-                    .serverLicenceKey(UUID.randomUUID().toString())
-                    .dbInfo(createdDbInfo2)
-                    .build();
-            Annex annex3 = Annex.builder()
-                    .name("Annex2")
-                    .address("Address2")
-                    .serverLicenceKey(UUID.randomUUID().toString())
-                    .dbInfo(createdDbInfo3)
-                    .build();
-            Annex createdAnnex1 = annexRepository.save(annex1);
-            Annex createdAnnex2 = annexRepository.save(annex2);
-            Annex createdAnnex3 = annexRepository.save(annex3);
-            Terminal terminal1 = Terminal.builder().active(true).licenceKey(UUID.randomUUID().toString()).annex(createdAnnex1).build();
-            Terminal terminal2 = Terminal.builder().active(true).licenceKey(UUID.randomUUID().toString()).annex(createdAnnex2).build();
-            Terminal terminal3 = Terminal.builder().active(true).licenceKey(UUID.randomUUID().toString()).annex(createdAnnex3).build();
-            terminalRepository.save(terminal1);
-            terminalRepository.save(terminal2);
-            terminalRepository.save(terminal3);
+            Annex annex1 = createAnnexIfNotFound("Annex1",createdDbInfo1);
+            Annex annex2 = createAnnexIfNotFound("Annex2",createdDbInfo2);
+            Annex annex3 = createAnnexIfNotFound("Annex3",createdDbInfo3);
+
+
+            createTerminalIfNotFound(annex1);
+            createTerminalIfNotFound(annex2);
+            createTerminalIfNotFound(annex3);
         }
 
-
-        Privilege readPrivilege
-                = createPrivilegeIfNotFound("READ_PRIVILEGE");
-        Privilege writePrivilege
-                = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
-
-        List<Privilege> adminPrivileges = Arrays.asList(
-                readPrivilege, writePrivilege);
-        createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
-        createRoleIfNotFound("ROLE_USER", Arrays.asList(readPrivilege));
 
         Role adminRole = roleRepository.findByName("ROLE_ADMIN");
         JWTuser admin = new JWTuser();
@@ -211,7 +181,7 @@ public class DbConfig {
         admin.setLastName("Test");
         admin.setPassword(encoder.encode("admin"));
         admin.setEmail("admin@test.com");
-        admin.setRoles(Arrays.asList(adminRole));
+        admin.setRoles(roles);
         admin.setEnabled(true);
         admin.setCreatedDate(LocalDateTime.now());
         admin.setModifiedDate(LocalDateTime.now());
@@ -219,26 +189,31 @@ public class DbConfig {
         admin.setModificationSessionId(UUID.randomUUID().toString());
         admin.setBackgroundString("");
         dbInfo = dbInfoRepository.findByName("defaultDB");
-        jwTuserRepository.save(admin);
+        if (jwTuserRepository.findByUsername("admin") == null){
+            jwTuserRepository.save(admin);
+        }
 
-        Role userRole = roleRepository.findByName("ROLE_USER");
-        JWTuser user = new JWTuser();
-        user.setUsername("user");
-        user.setFirstName("Test");
-        user.setLastName("Test");
-        user.setPassword(encoder.encode("user"));
-        user.setEmail("user@test.com");
-        user.setRoles(Arrays.asList(userRole));
-        user.setEnabled(true);
 
-        user.setCreatedDate(LocalDateTime.now());
-        user.setModifiedDate(LocalDateTime.now());
-        user.setCreationSessionId(UUID.randomUUID().toString());
-        user.setModificationSessionId(UUID.randomUUID().toString());
-        user.setBackgroundString("");
-
-        dbInfo2 = dbInfoRepository.findByName("firstDB");
-        jwTuserRepository.save(user);
+//        Role userRole = roleRepository.findByName("ROLE_USER");
+//        JWTuser user = new JWTuser();
+//        user.setUsername("user");
+//        user.setFirstName("Test");
+//        user.setLastName("Test");
+//        user.setPassword(encoder.encode("user"));
+//        user.setEmail("user@test.com");
+//        user.setRoles(Arrays.asList(userRole));
+//        user.setEnabled(true);
+//
+//        user.setCreatedDate(LocalDateTime.now());
+//        user.setModifiedDate(LocalDateTime.now());
+//        user.setCreationSessionId(UUID.randomUUID().toString());
+//        user.setModificationSessionId(UUID.randomUUID().toString());
+//        user.setBackgroundString("");
+//
+//        dbInfo2 = dbInfoRepository.findByName("firstDB");
+//        if (jwTuserRepository.findByUsername("user") == null){
+//            jwTuserRepository.save(user);
+//        }
 
 
     }
@@ -249,9 +224,33 @@ public class DbConfig {
         if (privilege == null) {
             privilege = new Privilege();
             privilege.setName(name);
-            privilegeRepository.save(privilege);
+            return privilegeRepository.save(privilege);
         }
         return privilege;
+    }
+
+    Annex createAnnexIfNotFound(String name, DbInfo dbInfo) {
+        var annex = annexRepository.findByName(name);
+        if (annex == null) {
+            annex = Annex.builder()
+                    .name(name)
+                    .address("Address of " + name)
+                    .serverLicenceKey(UUID.randomUUID().toString())
+                    .dbInfo(dbInfo)
+                    .build();
+            return annexRepository.save(annex);
+        }
+
+        return annex;
+    }
+    Terminal createTerminalIfNotFound(Annex annex){
+
+//        var terminal = terminalRepository.findByAnnex(annex);
+//        if (terminal == null){
+            var terminal = Terminal.builder().active(true).licenceKey(UUID.randomUUID().toString()).annex(annex).build();
+            return terminalRepository.save(terminal);
+//        }
+//        return terminal;
     }
 
     Role createRoleIfNotFound(String name, List<Privilege> privileges) {
@@ -261,7 +260,7 @@ public class DbConfig {
             role = new Role();
             role.setName(name);
             role.setPrivileges(privileges);
-            roleRepository.save(role);
+            return roleRepository.save(role);
         }
         return role;
     }
@@ -278,22 +277,26 @@ public class DbConfig {
         String[] entities = {"Product", "Additive", "Category", "Customer", "Order", "OrderItem", "Deliveryman", "Waiter"};
         List<Privilege> privileges = new ArrayList<>();
         for (String s : entities) {
-            privileges.add(Privilege.builder().name("Create_" + s).build());
-            privileges.add(Privilege.builder().name("Read_" + s).build());
-            privileges.add(Privilege.builder().name("Update_" + s).build());
-            privileges.add(Privilege.builder().name("Delete_" + s).build());
+
+            var createTypePrivilege = createPrivilegeIfNotFound("Create_" + s);
+            var readTypePrivilege = createPrivilegeIfNotFound("Read_" + s);
+            var updateTypePrivilege = createPrivilegeIfNotFound("Update_" + s);
+            var deleteTypePrivilege = createPrivilegeIfNotFound("Delete_" + s);
+
+            if (createTypePrivilege != null) privileges.add(createTypePrivilege);
+            if (readTypePrivilege != null) privileges.add(readTypePrivilege);
+            if (updateTypePrivilege != null) privileges.add(updateTypePrivilege);
+            if (deleteTypePrivilege != null) privileges.add(deleteTypePrivilege);
         }
-        var createdPrivileges = privilegeRepository.saveAll(privileges);
         List<Role> roles = new ArrayList<>();
-        Role admin = Role.builder().name("ROLE_ADMIN").privileges(createdPrivileges).build();
-        var privilegeStream = createdPrivileges.stream().filter(p -> p.getName() == "Create_Order" || p.getName() == "Update_Order");
-        var orderPrivilegesCreateUpdate = privilegeStream.collect(Collectors.toList());
-        Role clerk = Role.builder().name("ROLE_CLERK").privileges(orderPrivilegesCreateUpdate).build();
+        Role admin = createRoleIfNotFound("ROLE_ADMIN", privileges);
+        var orderPrivilegesCreateUpdate = privileges.stream().filter(p -> p.getName() == "Create_Order" || p.getName() == "Update_Order").collect(Collectors.toList());
+
+        Role clerk = createRoleIfNotFound("ROLE_CLERK", orderPrivilegesCreateUpdate);
         roles.add(admin);
         roles.add(clerk);
-        var savedRoles = roleRepository.saveAll(roles);
 
-return savedRoles;
+        return roles;
     }
 
 
