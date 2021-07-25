@@ -45,7 +45,7 @@ public class Additive extends BaseEntity {
     @NotBlank(message = MessageKeyConstants.ADDITIVE_BACKGROUND_STRING_VALIDATION_ERROR)
     String backgroundString;
 
-    @Column(nullable = true, unique = true)
+    @Column(nullable = true)
     @Min(1)
     Integer rank;
 
