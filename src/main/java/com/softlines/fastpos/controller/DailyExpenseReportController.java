@@ -53,6 +53,27 @@ public class DailyExpenseReportController {
 //        }
     }
 
+    @PutMapping("/put/{id}")
+    public ResponseEntity<DailyExpenseReportDto> updateReport( @PathVariable long id,@RequestBody DailyExpenseReportInputDataDto inputDataDto ) {
+        var report = dailyExpenseReportRepository.findById(id);
+        if (report.isEmpty()) return ResponseEntity.noContent().build();
+        var date = new Date();
+        var simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        var currentDateString = simpleDateFormat.format(date);
+        var reportDateString = simpleDateFormat.format(report.get().getIssuedDate());
+        if (!currentDateString.equals(reportDateString)) return ResponseEntity.badRequest().build();
+
+
+
+        var generated = dailyExpenseReportService.updateDailyExpenseReport(report.get(),inputDataDto);
+        var createdReport = dailyExpenseReportRepository.save(generated);
+        var createdReportDto = dailyExpenseReportMapper.toDailyExpenseReportDto(createdReport);
+
+        return ResponseEntity.ok().body(createdReportDto);
+    }
+
+
     @GetMapping("/get/{id}")
     public ResponseEntity<DailyExpenseReport> getReport(@PathVariable Long id) {
         var report = dailyExpenseReportRepository.findById(id);

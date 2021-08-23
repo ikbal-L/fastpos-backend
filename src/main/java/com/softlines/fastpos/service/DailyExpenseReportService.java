@@ -24,37 +24,48 @@ public class DailyExpenseReportService {
         this.paymentRepository = paymentRepository;
     }
 
+    public DailyExpenseReportInputDataDto getInputData(DailyExpenseReport report) {
+
+        return DailyExpenseReportInputDataDto.builder()
+                .expenses(report.getExpenses())
+                .cashRegisterInitialAmount(report.getCashRegisterInitialAmount())
+                .cashRegisterActualAmount(report.getCashRegisterActualAmount()).build();
+    }
+
     public DailyExpenseReport generateDailyExpenseReport(DailyExpenseReportInputDataDto inputData) {
 
 
         var date = new Date();
         var simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         var dateString = simpleDateFormat.format(date);
-        var ordersOfTheDay = orderRepository.findAllByOrderTime(dateString).stream().filter(order -> order.getState() == OrderState.Payed|| order.getState() == OrderState.DeliveredPaid).collect(Collectors.toList());
+        var ordersOfTheDay = orderRepository.findAllByOrderTime(dateString).stream().filter(order -> order.getState() == OrderState.Payed || order.getState() == OrderState.DeliveredPaid).collect(Collectors.toList());
         var payedOrdersOfTheDay = orderRepository.findAllByOrderTime(dateString).stream().filter(order -> order.getState() == OrderState.Payed).collect(Collectors.toList());
         var paymentsOfTheDay = paymentRepository.findAllByDate(dateString);
 
         Map<String, Double> cashPayments = new HashMap<>();
-        Map<String,Double> deliveryPayments = new HashMap<>();
-        payedOrdersOfTheDay.stream().forEach(order -> cashPayments.put(order.getId()+"" , order.getNewTotal()));
-        paymentsOfTheDay.stream().forEach(payment -> deliveryPayments.put(payment.getId()+"",payment.getAmount()));
+        Map<String, Double> deliveryPayments = new HashMap<>();
+        payedOrdersOfTheDay.stream().forEach(order -> cashPayments.put(order.getId() + "", order.getNewTotal()));
+        paymentsOfTheDay.stream().forEach(payment -> deliveryPayments.put(payment.getId() + "", payment.getAmount()));
         var cashPaymentsSum = payedOrdersOfTheDay.stream().mapToDouble(Order::getGivenAmount).sum();
         var deliveryPaymentsSum = paymentsOfTheDay.stream().mapToDouble(Payment::getAmount).sum();
         var expensesSum = inputData.getExpenses().values().stream().mapToDouble(Double::doubleValue).sum();
+
         var cashRegisterDepositedAmount = cashPaymentsSum + deliveryPaymentsSum;
+
         var cashRegisterWithDrawnAmount = payedOrdersOfTheDay.stream().mapToDouble(Order::getReturnedAmount).sum();
+
         var cashRegisterExpectedAmount = inputData.
                 getCashRegisterInitialAmount()
                 + cashRegisterDepositedAmount
-                +deliveryPaymentsSum
+                + deliveryPaymentsSum
                 + cashRegisterWithDrawnAmount //negative value
                 - expensesSum;
         var groupbycat = ordersOfTheDay
                 .stream()
                 .map(Order::getOrderItems)
                 .flatMap(Collection::stream).collect(Collectors.groupingBy(orderItem -> orderItem.getProduct().getCategory()));
-        List<EarningsCategoryGrouping> items =groupbycat.entrySet().stream().map(categoryListEntry -> {
-           return EarningsCategoryGrouping.builder().category(categoryListEntry.getKey().getName())
+        List<EarningsCategoryGrouping> items = groupbycat.entrySet().stream().map(categoryListEntry -> {
+            return EarningsCategoryGrouping.builder().category(categoryListEntry.getKey().getName())
                     .quantityOfItems(categoryListEntry.getValue().stream().mapToInt(OrderItem::getQuantity).sum()).amount(categoryListEntry.getValue().stream().mapToDouble(OrderItem::getTotal).sum()).build();
         }).collect(Collectors.toList());
 
@@ -71,5 +82,18 @@ public class DailyExpenseReportService {
                 .earningsByCategory(items)
                 .build();
         return report;
+    }
+    public DailyExpenseReport updateDailyExpenseReport(DailyExpenseReport report,DailyExpenseReportInputDataDto inputData){
+        var generated = generateDailyExpenseReport(inputData);
+        report.setCashPayments(generated.getCashPayments());
+        report.setDeliveryPayments(generated.getDeliveryPayments());
+        report.setExpenses(generated.getExpenses());
+        report.setCashRegisterInitialAmount(generated.getCashRegisterInitialAmount());
+        report.setCashRegisterDepositedAmount(generated.getCashRegisterDepositedAmount());
+        report.setCashRegisterWithdrawnAmount(generated.getCashRegisterWithdrawnAmount());
+        report.setCashRegisterExpectedAmount(generated.getCashRegisterExpectedAmount());
+        report.setCashRegisterActualAmount(generated.getCashRegisterActualAmount());
+        report.setEarningsByCategory(generated.getEarningsByCategory());
+        return  report;
     }
 }
