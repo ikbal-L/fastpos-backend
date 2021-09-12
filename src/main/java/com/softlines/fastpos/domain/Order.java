@@ -74,8 +74,7 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     OrderType type;
 
-    @OneToMany( mappedBy = "order",orphanRemoval=true,
-            cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany( mappedBy = "order",orphanRemoval=true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<OrderItem> orderItems;
 
     @ManyToOne

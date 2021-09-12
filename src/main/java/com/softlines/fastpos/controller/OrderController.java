@@ -9,6 +9,10 @@ import com.softlines.fastpos.dto.service.DtoServiceImpl;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.OrderItemAdditiveRepository;
 import com.softlines.fastpos.repository.OrderRepository;
+import com.softlines.fastpos.service.OrderService;
+import com.softlines.fastpos.sse.model.EventDto;
+import com.softlines.fastpos.sse.model.SSEventType;
+import com.softlines.fastpos.sse.service.SseNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,11 +40,14 @@ public class OrderController {
     @Autowired
     OrderMapper orderMapper;
 
+    @Autowired
+    SseNotificationService sseNotificationService;
+
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
 
     @PostMapping(value = "/save", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<OrderDto> saveOrder(@Valid @RequestBody OrderDto orderDto) {
+    public ResponseEntity<OrderDto> saveOrder(@Valid @RequestBody OrderDto orderDto,@RequestHeader(name="Authorization") String token) {
 
         try {
 
@@ -51,6 +57,11 @@ public class OrderController {
                 Order createdOder = orderRepository.saveOrder(order);
 
                 OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
+
+                var eventDto = EventDto.builder().type(SSEventType.CREATE_ORDER).body(createdOderDto).build();
+                sseNotificationService.sendNotificationForAll(eventDto,token );
+
+
                 return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);
 
 
@@ -59,6 +70,7 @@ public class OrderController {
             }
 
         } catch (Exception exception) {
+
             return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
@@ -178,7 +190,9 @@ public class OrderController {
             Order order = orderRepository.getOrder(id);
 
             if (order != null && id != 0)
+
                 return ResponseEntity.ok().body(orderMapper.toOrderDto(order));
+
             else
                 return ResponseEntity.noContent().build();
 
@@ -188,18 +202,35 @@ public class OrderController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<OrderDto> editOrder(@Valid @PathVariable long id, @Valid @RequestBody OrderDto orderDto) {
+    public ResponseEntity<OrderDto> editOrder(@Valid @PathVariable long id, @Valid @RequestBody OrderDto orderDto,@RequestHeader(name="Authorization") String token) {
 
         try {
-            var exists = orderRepository.existsById(id);
+            var persisted = orderRepository.findById(id);
 
-            if (exists && id != 0 /*&& orderDto.getOrderItems() != null && orderDto.getOrderItems().size() > 0*/) {
+            if (persisted.isPresent() && id != 0 /*&& orderDto.getOrderItems() != null && orderDto.getOrderItems().size() > 0*/) {
 
                 Order order = dtoService.orderDtoToOrder(orderDto);
 
                 Order createdOrder = orderRepository.saveOrder(order);
 
-                return ResponseEntity.ok().body(orderMapper.toOrderDto(createdOrder));
+
+                var updatedOderDto = orderMapper.toOrderDto(createdOrder);
+                String eventType = "";
+                Object eventBody;
+                if (OrderService.IsActionPayment(persisted.get(), order)){
+                    eventType = SSEventType.PAY_ORDER;
+                    eventBody = createdOrder.getId();
+                }else if (OrderService.IsActionCancel(persisted.get(),order)){
+                    eventType = SSEventType.CANCEL_ORDER;
+                    eventBody = createdOrder.getId();
+                }else {
+                    eventType = SSEventType.UPDATE_ORDER;
+                    eventBody = updatedOderDto;
+                }
+                var eventDto = EventDto.builder().type(eventType).body(eventBody).build();
+                sseNotificationService.sendNotificationForAll(eventDto,token );
+
+                return ResponseEntity.ok().body(updatedOderDto);
 
             } else {
                 return ResponseEntity.noContent().build();
@@ -213,7 +244,7 @@ public class OrderController {
 
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleteOrder(@Valid @PathVariable long id) {
+    public ResponseEntity deleteOrder(@Valid @PathVariable long id,@RequestHeader(name="Authorization") String token) {
 
         try {
 
@@ -222,6 +253,10 @@ public class OrderController {
             if (optionalOrder.isPresent()) {
 
                 orderRepository.delete(optionalOrder.get());
+
+                var eventDto = EventDto.builder().type(SSEventType.DELETE_ORDER).body(id).build();
+                sseNotificationService.sendNotificationForAll(eventDto,token );
+
                 return ResponseEntity.ok().build();
 
             } else {
