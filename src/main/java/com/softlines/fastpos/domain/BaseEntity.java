@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 @Setter
 public class BaseEntity {
 
-
     @Column(name = "created_date", nullable = false, updatable = false)
     @CreatedDate
     private LocalDateTime createdDate;
@@ -41,7 +40,4 @@ public class BaseEntity {
     @LastModifiedBy
     @Column(name = "modification_session_id")
     private String modificationSessionId;
-
-
-
 }

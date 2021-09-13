@@ -32,7 +32,7 @@ import java.util.List;
 @javax.persistence.Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)
 
-public class Order extends BaseEntity {
+public class Order extends SyncEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

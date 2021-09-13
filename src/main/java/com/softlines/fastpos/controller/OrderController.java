@@ -4,6 +4,7 @@ import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.dto.OrderDto;
 import com.softlines.fastpos.dto.PageList;
+import com.softlines.fastpos.dto.SyncData;
 import com.softlines.fastpos.dto.mapping.OrderMapper;
 import com.softlines.fastpos.dto.service.DtoServiceImpl;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
@@ -47,7 +48,7 @@ public class OrderController {
 
 
     @PostMapping(value = "/save", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<OrderDto> saveOrder(@Valid @RequestBody OrderDto orderDto,@RequestHeader(name="Authorization") String token) {
+    public ResponseEntity<OrderDto> saveOrder(@Valid @RequestBody OrderDto orderDto, @RequestHeader(name = "Authorization") String token) {
 
         try {
 
@@ -59,7 +60,7 @@ public class OrderController {
                 OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
 
                 var eventDto = EventDto.builder().type(SSEventType.CREATE_ORDER).body(createdOderDto).build();
-                sseNotificationService.sendNotificationForAll(eventDto,token );
+                sseNotificationService.sendNotificationForAll(eventDto, token);
 
 
                 return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);
@@ -143,13 +144,13 @@ public class OrderController {
 
         try {
 
-            List<Order> orders ;
+            List<Order> orders;
 
 
             if (filterByState.isPresent() && filterByState.get().equals("unprocessed")) {
                 orders = orderRepository.findAllUnprocessedOrders();
 //
-            }else {
+            } else {
                 orders = orderRepository.getAllOrder();
             }
             if (orders == null || orders.isEmpty())
@@ -202,7 +203,7 @@ public class OrderController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<OrderDto> editOrder(@Valid @PathVariable long id, @Valid @RequestBody OrderDto orderDto,@RequestHeader(name="Authorization") String token) {
+    public ResponseEntity<OrderDto> editOrder(@Valid @PathVariable long id, @Valid @RequestBody OrderDto orderDto, @RequestHeader(name = "Authorization") String token) {
 
         try {
             var persisted = orderRepository.findById(id);
@@ -217,18 +218,18 @@ public class OrderController {
                 var updatedOderDto = orderMapper.toOrderDto(createdOrder);
                 String eventType = "";
                 Object eventBody;
-                if (OrderService.IsActionPayment(persisted.get(), order)){
+                if (OrderService.IsActionPayment(persisted.get(), order)) {
                     eventType = SSEventType.PAY_ORDER;
                     eventBody = createdOrder.getId();
-                }else if (OrderService.IsActionCancel(persisted.get(),order)){
+                } else if (OrderService.IsActionCancel(persisted.get(), order)) {
                     eventType = SSEventType.CANCEL_ORDER;
                     eventBody = createdOrder.getId();
-                }else {
+                } else {
                     eventType = SSEventType.UPDATE_ORDER;
                     eventBody = updatedOderDto;
                 }
                 var eventDto = EventDto.builder().type(eventType).body(eventBody).build();
-                sseNotificationService.sendNotificationForAll(eventDto,token );
+                sseNotificationService.sendNotificationForAll(eventDto, token);
 
                 return ResponseEntity.ok().body(updatedOderDto);
 
@@ -243,8 +244,45 @@ public class OrderController {
     }
 
 
+    @PutMapping("/lock/{id}")
+    public ResponseEntity<OrderDto> lockOrder(@Valid @PathVariable long id, @RequestBody boolean lockState, @RequestHeader(name = "Authorization") String token) {
+
+        try {
+            var persisted = orderRepository.findById(id);
+
+            if (persisted.isPresent() && id != 0 /*&& orderDto.getOrderItems() != null && orderDto.getOrderItems().size() > 0*/) {
+
+                persisted.get().setLocked(lockState);
+
+                Order updatedOrder = orderRepository.saveOrder(persisted.get());
+
+
+                var body = SyncData
+                        .builder()
+                        .type(Order.class.getSimpleName())
+                        .id(persisted.get().getId())
+                        .isLocked(lockState)
+                        .lockedBy(lockState?updatedOrder.getModificationSessionId():"")
+                        .build();
+
+                var eventDto = EventDto.builder().type(SSEventType.LOCK_ORDER).body(body).build();
+                sseNotificationService.sendNotificationForAll(eventDto, token);
+
+                return ResponseEntity.ok().build();
+
+            } else {
+                return ResponseEntity.noContent().build();
+            }
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+
+    }
+
+
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleteOrder(@Valid @PathVariable long id,@RequestHeader(name="Authorization") String token) {
+    public ResponseEntity deleteOrder(@Valid @PathVariable long id, @RequestHeader(name = "Authorization") String token) {
 
         try {
 
@@ -255,7 +293,7 @@ public class OrderController {
                 orderRepository.delete(optionalOrder.get());
 
                 var eventDto = EventDto.builder().type(SSEventType.DELETE_ORDER).body(id).build();
-                sseNotificationService.sendNotificationForAll(eventDto,token );
+                sseNotificationService.sendNotificationForAll(eventDto, token);
 
                 return ResponseEntity.ok().build();
 
@@ -268,20 +306,22 @@ public class OrderController {
         }
 
     }
+
     @PostMapping("/getByState/{deliverymanId}")
-    public ResponseEntity<List<OrderDto>> getByStates(@PathVariable  long deliverymanId, @RequestBody  OrderState[] states){
-        var orders= orderRepository.getByStates(states,deliverymanId,true);
-        if (!orders.isEmpty()){
-            return  ResponseEntity.ok().body(orderMapper.toOrderDTOs(orders));
+    public ResponseEntity<List<OrderDto>> getByStates(@PathVariable long deliverymanId, @RequestBody OrderState[] states) {
+        var orders = orderRepository.getByStates(states, deliverymanId, true);
+        if (!orders.isEmpty()) {
+            return ResponseEntity.ok().body(orderMapper.toOrderDTOs(orders));
         }
-        return  ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
     }
+
     @PostMapping("/getAllbyDeliveryManAndStatePage/{pageNumber}/{pageSize}/{deliverymanId}")
-    public ResponseEntity<PageList<OrderDto>> getAllByDeliveryManAndStatePage(@PathVariable int pageNumber, @PathVariable int pageSize, @PathVariable  long deliverymanId, @RequestBody  OrderState[] states){
-        var orders= orderRepository.getAllByDeliveryManAndStatePage(pageNumber,pageSize,deliverymanId,states);
-        if (!orders.getValue1().isEmpty()){
-            return  ResponseEntity.ok().body(new PageList<>(orderMapper.toOrderDTOs(orders.getValue1()),orders.getValue0()));
+    public ResponseEntity<PageList<OrderDto>> getAllByDeliveryManAndStatePage(@PathVariable int pageNumber, @PathVariable int pageSize, @PathVariable long deliverymanId, @RequestBody OrderState[] states) {
+        var orders = orderRepository.getAllByDeliveryManAndStatePage(pageNumber, pageSize, deliverymanId, states);
+        if (!orders.getValue1().isEmpty()) {
+            return ResponseEntity.ok().body(new PageList<>(orderMapper.toOrderDTOs(orders.getValue1()), orders.getValue0()));
         }
-        return  ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
     }
 }

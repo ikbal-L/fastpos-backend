@@ -28,7 +28,7 @@ import java.util.List;
 @OrderValidationCalculationNewTotalNotCorrect
 @ValidationOrderDtoDiscountWithOrderItemDiscount
 @OrderDtoValidationOrderItemCountLessThanOne
-public class OrderDto {
+public class OrderDto /*extends SyncDto*/ {
 
     @JsonProperty("Id")
     @Min(0)
@@ -97,6 +97,12 @@ public class OrderDto {
 
     @JsonProperty("WaiterId")
     Long waiterId;
+
+    @JsonProperty("IsLocked")
+    protected boolean isLocked;
+
+    @JsonProperty("LockedBy")
+    protected String lockedBy;
 
 
 }

@@ -6,4 +6,5 @@ public class SSEventType {
     public static final String DELETE_ORDER = "Delete.Order";
     public static final String PAY_ORDER = "Pay.Order";
     public static final String CANCEL_ORDER = "Cancel.Order";
+    public static final String LOCK_ORDER = "Lock.Order";
 }
