@@ -30,6 +30,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> ,CustomOrder
     @Query(value = "select DISTINCT o from Order o where date_format(o.orderTime,'%Y-%m-%d') = ?1")
     List<Order> findAllByOrderTime(String orderTime);
 
+    @Query(value = "select DISTINCT o from Order o where  o.state like ?1")
+    List<Order> findAllByState(OrderState state);
+
     @Query(value = "select DISTINCT o from Order o LEFT JOIN FETCH o.orderItems LEFT JOIN FETCH o.table WHERE o.id = ?1")
     Order findByIdOrderWithOrderItems(long id);
 

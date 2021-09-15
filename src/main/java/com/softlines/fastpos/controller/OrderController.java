@@ -2,6 +2,7 @@ package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderState;
+import com.softlines.fastpos.domain.OrderType;
 import com.softlines.fastpos.dto.OrderDto;
 import com.softlines.fastpos.dto.PageList;
 import com.softlines.fastpos.dto.SyncData;
@@ -18,10 +19,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.validation.Valid;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -45,6 +57,9 @@ public class OrderController {
     SseNotificationService sseNotificationService;
 
     ExceptionManagement exceptionManagement = new ExceptionManagement();
+
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
 
 
     @PostMapping(value = "/save", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -139,18 +154,53 @@ public class OrderController {
 
     }
 
-    @GetMapping(value = {"/getall", "/getall/{filterByState}"})
-    public ResponseEntity<List<OrderDto>> getOrders(@PathVariable Optional<String> filterByState) {
+    @PostMapping(value = {"/getallByCriterias"})
+    ResponseEntity<List<OrderDto>> getOrdersByCriteras(@RequestBody Map<String,String> criterias){
+        try {
+            if (criterias.isEmpty()) return ResponseEntity.noContent().build();
+
+            var em = entityManagerFactory.createEntityManager();
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Order> cq = cb.createQuery(Order.class);
+            List<Predicate> predicates=new ArrayList<>();
+            Root<Order> order = cq.from(Order.class);
+            for (var kv: criterias.entrySet()) {
+                var criteria = kv.getKey();
+                var value = kv.getValue();
+                Predicate predicate = cb.equal(order.get(criteria), value);
+                predicates.add(predicate);
+            }
+
+            cq.where(predicates.toArray(Predicate[]::new));
+
+            TypedQuery<Order> query = em.createQuery(cq);
+            var orders= query.getResultList();
+            var orderDtos = orderMapper.toOrderDTOs(orders);
+            return  ResponseEntity.ok(orderDtos);
+        }catch (Exception e){
+
+           return exceptionManagement.getResponseEntityAccordingToException(e);
+        }
+
+    }
+    @GetMapping(value = {"/getall","/getall/{filterByState}", "/getall/{filterByState}/{time}"})
+    public ResponseEntity<List<OrderDto>> getOrders(@PathVariable Optional<String> filterByState, @PathVariable Optional<LocalTime> time) {
 
         try {
 
             List<Order> orders;
 
 
-            if (filterByState.isPresent() && filterByState.get().equals("unprocessed")) {
-                orders = orderRepository.findAllUnprocessedOrders();
-//
-            } else {
+
+            if (filterByState.isPresent() ) {
+                var state = OrderState.valueOf( StringUtils.capitalize(filterByState.get()));
+
+                if (state.equals(OrderState.Unprocessed)){
+                    orders = orderRepository.findAllUnprocessedOrders();
+                }    orders = orderRepository.findAllByState(state);
+
+            }
+            else {
                 orders = orderRepository.getAllOrder();
             }
             if (orders == null || orders.isEmpty())
