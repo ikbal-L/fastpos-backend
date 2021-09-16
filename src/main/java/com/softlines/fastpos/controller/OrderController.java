@@ -75,7 +75,7 @@ public class OrderController {
                 OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
 
                 var eventDto = EventDto.builder().type(SSEventType.CREATE_ORDER).body(createdOderDto).build();
-                sseNotificationService.sendNotificationForAll(eventDto, token);
+//                sseNotificationService.sendNotificationForAll(eventDto, token);
 
 
                 return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);
@@ -137,8 +137,7 @@ public class OrderController {
 
                 List<Order> ListCreatedOder = orderRepository.saveListOrder(order);
 
-//                List<Long> savedIds = ListCreatedOder.parallelStream()
-//                        .map(Order::getId).collect(Collectors.toList());
+
 
                 List<OrderDto> orderDtos = orderMapper.toOrderDTOs(ListCreatedOder);
 
@@ -157,24 +156,14 @@ public class OrderController {
     @PostMapping(value = {"/getallbycriterias"})
     ResponseEntity<List<OrderDto>> getOrdersByCriteras(@RequestBody OrderFilter filter){
         try {
-            var criteria = filter.getCriteria();
-            if (criteria.isEmpty()) return ResponseEntity.noContent().build();
+//            var criteria = filter.getCriteria();
+//            if (criteria.isEmpty()) return ResponseEntity.noContent().build();
 
             var em = entityManagerFactory.createEntityManager();
             CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Order> cq = cb.createQuery(Order.class);
-            List<Predicate> predicates=new ArrayList<>();
-            Root<Order> order = cq.from(Order.class);
-            for (var kv: criteria.entrySet()) {
-                var prop = kv.getKey();
-                var value = kv.getValue();
-                Predicate predicate = cb.equal(order.get(prop), value);
-                predicates.add(predicate);
-            }
+            TypedQuery<Order> query = filter.getQuery(cb,em);
 
-            cq.where(predicates.toArray(Predicate[]::new));
 
-            TypedQuery<Order> query = em.createQuery(cq);
             var orders= query.getResultList();
             var orderDtos = orderMapper.toOrderDTOs(orders);
             return  ResponseEntity.ok(orderDtos);
@@ -184,8 +173,8 @@ public class OrderController {
         }
 
     }
-    @GetMapping(value = {"/getall","/getall/{filterByState}", "/getall/{filterByState}/{time}"})
-    public ResponseEntity<List<OrderDto>> getOrders(@PathVariable Optional<String> filterByState, @PathVariable Optional<LocalTime> time) {
+    @GetMapping(value = {"/getall","/getall/{filterByState}"})
+    public ResponseEntity<List<OrderDto>> getOrders(@PathVariable Optional<String> filterByState) {
 
         try {
 
@@ -198,7 +187,10 @@ public class OrderController {
 
                 if (state.equals(OrderState.Unprocessed)){
                     orders = orderRepository.findAllUnprocessedOrders();
-                }    orders = orderRepository.findAllByState(state);
+                }else{
+
+                    orders = orderRepository.findAllByState(state);
+                }
 
             }
             else {

@@ -41,7 +41,7 @@ public class Order extends SyncEntity {
     @Column(name = "order_number",nullable = false)
     long orderNumber;
 
-    @Temporal(TemporalType.DATE)
+//    @Temporal(TemporalType.DATE)
     Date orderTime;
 
 
