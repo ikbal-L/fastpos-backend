@@ -4,6 +4,7 @@ import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.domain.OrderType;
 import com.softlines.fastpos.dto.OrderDto;
+import com.softlines.fastpos.dto.OrderFilter;
 import com.softlines.fastpos.dto.PageList;
 import com.softlines.fastpos.dto.SyncData;
 import com.softlines.fastpos.dto.mapping.OrderMapper;
@@ -16,6 +17,7 @@ import com.softlines.fastpos.sse.model.EventDto;
 import com.softlines.fastpos.sse.model.SSEventType;
 import com.softlines.fastpos.sse.service.SseNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,11 +32,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
+import java.text.DateFormat;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -154,20 +154,21 @@ public class OrderController {
 
     }
 
-    @PostMapping(value = {"/getallByCriterias"})
-    ResponseEntity<List<OrderDto>> getOrdersByCriteras(@RequestBody Map<String,String> criterias){
+    @PostMapping(value = {"/getallbycriterias"})
+    ResponseEntity<List<OrderDto>> getOrdersByCriteras(@RequestBody OrderFilter filter){
         try {
-            if (criterias.isEmpty()) return ResponseEntity.noContent().build();
+            var criteria = filter.getCriteria();
+            if (criteria.isEmpty()) return ResponseEntity.noContent().build();
 
             var em = entityManagerFactory.createEntityManager();
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Order> cq = cb.createQuery(Order.class);
             List<Predicate> predicates=new ArrayList<>();
             Root<Order> order = cq.from(Order.class);
-            for (var kv: criterias.entrySet()) {
-                var criteria = kv.getKey();
+            for (var kv: criteria.entrySet()) {
+                var prop = kv.getKey();
                 var value = kv.getValue();
-                Predicate predicate = cb.equal(order.get(criteria), value);
+                Predicate predicate = cb.equal(order.get(prop), value);
                 predicates.add(predicate);
             }
 
