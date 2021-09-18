@@ -1,5 +1,6 @@
 package com.softlines.fastpos.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softlines.fastpos.domain.Deliveryman;
 import com.softlines.fastpos.domain.Order;
@@ -20,7 +21,8 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrderFilter {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class OrderFilter extends Filter<Order> {
     @JsonProperty("OrderTime")
     Optional<Date> orderTime;
 
@@ -37,54 +39,49 @@ public class OrderFilter {
     Optional<List<Long>> deliverymanIds;
 
 
-    public Map<String,Object> getCriteria(){
-        Map<String,Object> criteria = new HashMap<>();
-        orderTime.ifPresent(date -> criteria.put("orderTime", date));
-        state.ifPresent(orderState -> criteria.put("state", orderState));
-        return  criteria;
-    }
-
-    public TypedQuery<Order> buildQuery(CriteriaBuilder cb, EntityManager em) throws ParseException {
+    @Override
+    protected void  init(CriteriaBuilder cb, EntityManager em) throws ParseException {
         List<Predicate> predicates = new ArrayList<>();
-        CriteriaQuery<Order> cq = cb.createQuery(Order.class);
-        Root<Order> order = cq.from(Order.class);
+        this.root = criteriaQuery.from(Order.class);
 
         if (orderTime.isPresent()){
 
             var simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             var dateString = simpleDateFormat.format(orderTime.get());
             orderTime = Optional.ofNullable(simpleDateFormat.parse(dateString));
-            var exp = cb.function("date_format",String.class,order.get("orderTime"),cb.literal("%Y-%m-%d"));
+            var exp = cb.function("date_format",String.class,root.get("orderTime"),cb.literal("%Y-%m-%d"));
             Predicate orderTimePredicate = cb.equal(exp, dateString);
             predicates.add(orderTimePredicate);
         }
 
         if (state.isPresent()&& states.isEmpty()){
-            Predicate statePredicate = cb.equal(order.get("state"), state.get());
+            Predicate statePredicate = cb.equal(root.get("state"), state.get());
             predicates.add(statePredicate);
         }
 
         if (states.isPresent()&& state.isEmpty()){
 
-            var statesPredicate = cb.in(order.<OrderState>get("state"));
+            var statesPredicate = cb.in(root.<OrderState>get("state"));
             states.get().forEach(statesPredicate::value);
         }
 
         if (deliverymanId.isPresent()&& deliverymanIds.isEmpty()){
-            Predicate deliverymanIdPredicate = cb.equal(order.<Deliveryman>get("deliveryman").<Long>get("id"), deliverymanId.get());
+            Predicate deliverymanIdPredicate = cb.equal(root.<Deliveryman>get("deliveryman").<Long>get("id"), deliverymanId.get());
             predicates.add(deliverymanIdPredicate);
         }
 
         if (deliverymanIds.isPresent() && deliverymanId.isEmpty()){
-            var deliverymanIdsPredicate = cb.in(order.<Deliveryman>get("deliveryman").<Long>get("id"));
+            var deliverymanIdsPredicate = cb.in(root.<Deliveryman>get("deliveryman").<Long>get("id"));
             deliverymanIds.get().forEach(deliverymanIdsPredicate::value);
             predicates.add(deliverymanIdsPredicate);
         }
 
-        cq.where(predicates.toArray(Predicate[]::new));
-
-        TypedQuery<Order> query = em.createQuery(cq);
-
-        return  query;
+        criteriaQuery.where(predicates.toArray(Predicate[]::new));
     }
+
+    @Override
+    protected void CreateCriteriaQuery(CriteriaBuilder cb, EntityManager em) {
+        this.criteriaQuery = cb.createQuery(Order.class);
+    }
+
 }
