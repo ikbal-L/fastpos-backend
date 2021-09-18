@@ -2,7 +2,6 @@ package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderState;
-import com.softlines.fastpos.domain.OrderType;
 import com.softlines.fastpos.dto.OrderDto;
 import com.softlines.fastpos.dto.OrderFilter;
 import com.softlines.fastpos.dto.PageList;
@@ -17,23 +16,16 @@ import com.softlines.fastpos.sse.model.EventDto;
 import com.softlines.fastpos.sse.model.SSEventType;
 import com.softlines.fastpos.sse.service.SseNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import javax.validation.Valid;
-import java.text.DateFormat;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -161,7 +153,7 @@ public class OrderController {
 
             var em = entityManagerFactory.createEntityManager();
             CriteriaBuilder cb = em.getCriteriaBuilder();
-            TypedQuery<Order> query = filter.getQuery(cb,em);
+            TypedQuery<Order> query = filter.buildQuery(cb,em);
 
 
             var orders= query.getResultList();
