@@ -8,6 +8,7 @@ import com.softlines.fastpos.dto.PageList;
 import com.softlines.fastpos.dto.SyncData;
 import com.softlines.fastpos.dto.mapping.OrderMapper;
 import com.softlines.fastpos.dto.service.DtoServiceImpl;
+import com.softlines.fastpos.dto.service.OrderFilterService;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.OrderItemAdditiveRepository;
 import com.softlines.fastpos.repository.OrderRepository;
@@ -44,6 +45,9 @@ public class OrderController {
 
     @Autowired
     OrderMapper orderMapper;
+
+    @Autowired
+    OrderFilterService orderFilterService;
 
     @Autowired
     SseNotificationService sseNotificationService;
@@ -148,13 +152,12 @@ public class OrderController {
     @PostMapping(value = {"/getallbycriterias"})
     ResponseEntity<List<OrderDto>> getOrdersByCriteras(@RequestBody OrderFilter filter){
         try {
-//            var criteria = filter.getCriteria();
-//            if (criteria.isEmpty()) return ResponseEntity.noContent().build();
 
             var em = entityManagerFactory.createEntityManager();
             CriteriaBuilder cb = em.getCriteriaBuilder();
             TypedQuery<Order> query = filter.buildQuery(cb,em);
 
+//            TypedQuery<Order> query = orderFilterService.buildQuery(filter);
 
             var orders= query.getResultList();
             var orderDtos = orderMapper.toOrderDTOs(orders);

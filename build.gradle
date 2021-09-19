@@ -41,6 +41,9 @@ dependencies {
 
 
 	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jdk8
+	implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.12.5'
+
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 

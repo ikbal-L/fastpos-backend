@@ -1,8 +1,6 @@
 package com.softlines.fastpos.dto;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.EntityManager;
@@ -15,7 +13,7 @@ import java.util.Optional;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
+
 public abstract class Filter<T> {
 
     @JsonProperty("PageSize")
@@ -39,7 +37,7 @@ public abstract class Filter<T> {
 
     protected Root<T> root;
 
-    protected void checkSorting(CriteriaBuilder cb ){
+    protected void checkSortingCriteria(CriteriaBuilder cb ){
 
         if (orderBy.isPresent()&& !orderBy.get().isBlank()){
             if (ascendingOrder.isPresent()&& descendingOrder.isEmpty()&& ascendingOrder.get()){
@@ -50,7 +48,7 @@ public abstract class Filter<T> {
         }
     }
 
-    protected void checkPagination(){
+    protected void checkPaginationCriteria(){
         if (pageIndex.isPresent()&& pageSize.isPresent()){
             query.setFirstResult(pageIndex.get()*pageSize.get());
             query.setMaxResults(pageSize.get());
@@ -65,9 +63,9 @@ public abstract class Filter<T> {
     public TypedQuery<T> buildQuery(CriteriaBuilder cb, EntityManager em) throws ParseException {
         CreateCriteriaQuery(cb, em);
         init(cb,em);
-        checkSorting(cb);
+        checkSortingCriteria(cb);
         createQuery(em);
-        checkPagination();
+        checkPaginationCriteria();
         return query;
     }
 
