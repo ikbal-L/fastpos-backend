@@ -18,10 +18,10 @@ public interface PaymentMapper {
     PaymentMapper INSTANCE = Mappers.getMapper(PaymentMapper.class);
 
     @Mapping(source = "cashOperation.id", target = "cashOperationId",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    @Mapping(source = "deliveryMan.id", target = "deliveryManId",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "deliveryman.id", target = "deliveryManId",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     PaymentDto toPaymentDto(Payment  payment);
     List<PaymentDto> toPaymentDtos(List<Payment> payments);
-    @Mapping(source = "deliveryManId", target = "deliveryMan",qualifiedByName = "deliveryManIdToDeliveryMan",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "deliveryManId", target = "deliveryman",qualifiedByName = "deliveryManIdToDeliveryMan",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     @Mapping(source = "cashOperationId", target = "cashOperation",qualifiedByName = "cashOperationIdToCashOperation",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 
     Payment toPayment(PaymentDto paymentDto);

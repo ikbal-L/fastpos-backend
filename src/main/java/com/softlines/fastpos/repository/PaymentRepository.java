@@ -13,8 +13,8 @@ import java.util.*;
 
 public interface PaymentRepository extends JpaRepository<Payment,Long> {
 
-    Page<Payment> findByDeliveryMan_Id(Long deliveryMan_Id, Pageable pageable);
-    @Query("SELECT  p from Payment p where p.deliveryMan.id =?1 and CAST(p.date AS date) = CAST(?2 AS date)")
+    Page<Payment> findByDeliveryman_Id(Long deliveryman_Id, Pageable pageable);
+    @Query("SELECT  p from Payment p where p.deliveryman.id=?1 and CAST(p.date AS date) = CAST(?2 AS date)")
     List<Payment> findByDeliveryMan_IdAndDate(Long deliveryMan_Id,@Temporal() Date date);
 
     @Query(value = "select DISTINCT p from Payment p where date_format(p.date,'%Y-%m-%d') = ?1")

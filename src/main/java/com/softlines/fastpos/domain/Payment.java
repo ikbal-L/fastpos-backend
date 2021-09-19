@@ -32,6 +32,6 @@ public class Payment extends BaseEntity{
     @OneToOne(cascade = CascadeType.ALL)
     CashOperation cashOperation;
     @ManyToOne
-    Deliveryman deliveryMan;
+    Deliveryman deliveryman;
 
 }

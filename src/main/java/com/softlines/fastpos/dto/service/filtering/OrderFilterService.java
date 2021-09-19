@@ -1,11 +1,12 @@
-package com.softlines.fastpos.dto.service;
+package com.softlines.fastpos.dto.service.filtering;
 
 import com.softlines.fastpos.domain.Deliveryman;
 import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderState;
-import com.softlines.fastpos.dto.OrderFilter;
+import com.softlines.fastpos.dto.filters.OrderFilter;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.criteria.Predicate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,6 +16,10 @@ import java.util.Optional;
 
 @Service
 public class OrderFilterService extends FilterService<Order, OrderFilter>{
+    public OrderFilterService(EntityManagerFactory entityManagerFactory) {
+        super(entityManagerFactory);
+    }
+
     @Override
     protected void init() throws ParseException {
         List<Predicate> predicates = new ArrayList<>();

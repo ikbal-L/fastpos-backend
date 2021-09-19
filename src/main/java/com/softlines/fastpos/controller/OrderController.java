@@ -3,12 +3,12 @@ package com.softlines.fastpos.controller;
 import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.dto.OrderDto;
-import com.softlines.fastpos.dto.OrderFilter;
+import com.softlines.fastpos.dto.filters.OrderFilter;
 import com.softlines.fastpos.dto.PageList;
 import com.softlines.fastpos.dto.SyncData;
 import com.softlines.fastpos.dto.mapping.OrderMapper;
 import com.softlines.fastpos.dto.service.DtoServiceImpl;
-import com.softlines.fastpos.dto.service.OrderFilterService;
+import com.softlines.fastpos.dto.service.filtering.OrderFilterService;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.OrderItemAdditiveRepository;
 import com.softlines.fastpos.repository.OrderRepository;
@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -149,15 +148,11 @@ public class OrderController {
 
     }
 
-    @PostMapping(value = {"/getallbycriterias"})
-    ResponseEntity<List<OrderDto>> getOrdersByCriteras(@RequestBody OrderFilter filter){
+    @PostMapping(value = {"/getallbycriteria"})
+    ResponseEntity<List<OrderDto>> getOrdersByCriteria(@RequestBody OrderFilter filter){
         try {
 
-            var em = entityManagerFactory.createEntityManager();
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            TypedQuery<Order> query = filter.buildQuery(cb,em);
-
-//            TypedQuery<Order> query = orderFilterService.buildQuery(filter);
+            TypedQuery<Order> query = orderFilterService.buildQuery(filter);
 
             var orders= query.getResultList();
             var orderDtos = orderMapper.toOrderDTOs(orders);

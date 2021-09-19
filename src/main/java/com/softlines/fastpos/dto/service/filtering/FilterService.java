@@ -1,10 +1,10 @@
-package com.softlines.fastpos.dto.service;
+package com.softlines.fastpos.dto.service.filtering;
 
-import com.softlines.fastpos.dto.Filter;
+import com.softlines.fastpos.dto.filters.Filter;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -13,9 +13,12 @@ import java.text.ParseException;
 
 @Service
 public abstract class FilterService<T,F extends Filter<T>> {
-    @PersistenceContext
+
+//    @PersistenceContext
     protected EntityManager em;
+
     protected F filter;
+
     protected CriteriaBuilder criteriaBuilder;
 
     protected TypedQuery<T> query;
@@ -23,6 +26,10 @@ public abstract class FilterService<T,F extends Filter<T>> {
     protected CriteriaQuery<T> criteriaQuery;
 
     protected Root<T> root;
+
+    public FilterService(EntityManagerFactory entityManagerFactory) {
+        em = entityManagerFactory.createEntityManager();
+    }
 
     protected void checkSortingCriteria( ){
 
@@ -57,6 +64,7 @@ public abstract class FilterService<T,F extends Filter<T>> {
     public TypedQuery<T> buildQuery(F filter) throws ParseException {
         this.filter = filter;
         this.criteriaBuilder = em.getCriteriaBuilder();
+
         initCriteriaQuery();
         init();
         checkSortingCriteria();

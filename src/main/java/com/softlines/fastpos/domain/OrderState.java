@@ -12,6 +12,7 @@ public enum OrderState {
     Served,
     Changed,
     DeliveredPaid,
+    DeliveredPartiallyPaid,
     DeliveredReturned,
     Unprocessed
 }

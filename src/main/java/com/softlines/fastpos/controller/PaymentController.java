@@ -1,24 +1,21 @@
 package com.softlines.fastpos.controller;
 
-import com.softlines.fastpos.domain.CashOperation;
-import com.softlines.fastpos.domain.Deliveryman;
-import com.softlines.fastpos.domain.Order;
-import com.softlines.fastpos.domain.OrderState;
+import com.softlines.fastpos.domain.Payment;
 import com.softlines.fastpos.dto.*;
-import com.softlines.fastpos.dto.mapping.CashOperationMapper;
+import com.softlines.fastpos.dto.filters.PaymentFilter;
 import com.softlines.fastpos.dto.mapping.PaymentMapper;
-import com.softlines.fastpos.repository.CashOperationRepository;
-import com.softlines.fastpos.repository.OrderRepository;
+import com.softlines.fastpos.dto.service.filtering.PaymentFilterService;
 import com.softlines.fastpos.repository.PaymentRepository;
 import com.softlines.fastpos.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.TypedQuery;
+import java.text.ParseException;
 import java.util.*;
 import java.sql.SQLException;
 
@@ -33,13 +30,17 @@ public class PaymentController {
     PaymentRepository paymentRepository;
     @Autowired
     PaymentMapper  paymentMapper;
+    @Autowired
+    PaymentFilterService paymentFilterService;
+
     @PostMapping(value = "/save", consumes = "application/json")
     public ResponseEntity<PaymentDto> save(@RequestBody PaymentDto paymentDto){
-      return ResponseEntity.ok().body(paymentService.doPaymentDeliveryMan(paymentDto));
+        var dto = paymentService.doPaymentDeliveryMan(paymentDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
     @GetMapping("/getAllbydeliverymanPage/{pageNumber}/{pageSize}/{deliverymanId}")
     public ResponseEntity<PageList<PaymentDto>> getAllByDeliveryManPage(@PathVariable int pageNumber, @PathVariable int pageSize, @PathVariable  long deliverymanId){
-        var orders= paymentRepository.findByDeliveryMan_Id(deliverymanId, PageRequest.of(pageNumber, pageSize,Sort.by("date").descending()));
+        var orders= paymentRepository.findByDeliveryman_Id(deliverymanId, PageRequest.of(pageNumber, pageSize,Sort.by("date").descending()));
         if (!orders.isEmpty()){
             return  ResponseEntity.ok().body(new PageList<>(paymentMapper.toPaymentDtos(orders.getContent()),orders.getTotalElements()));
         }
@@ -66,6 +67,16 @@ public class PaymentController {
             return ResponseEntity.ok().body(paymentMapper.toPaymentDtos(payments));
         }
         return  ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = {"/getallbycriteria"})
+    ResponseEntity<List<PaymentDto>> getPaymentsByCriteria(@RequestBody PaymentFilter filter) throws ParseException {
+        TypedQuery<Payment> query = paymentFilterService.buildQuery(filter);
+
+        var payments= query.getResultList();
+        var paymentDTOs = paymentMapper.toPaymentDtos(payments);
+        return  ResponseEntity.ok(paymentDTOs);
+
     }
 }
 
