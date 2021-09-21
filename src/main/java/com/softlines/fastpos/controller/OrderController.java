@@ -22,7 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
 import javax.validation.Valid;
@@ -70,7 +69,7 @@ public class OrderController {
                 OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
 
                 var eventDto = EventDto.builder().type(SSEventType.CREATE_ORDER).body(createdOderDto).build();
-                sseNotificationService.sendNotificationForAll(eventDto, token);
+//                sseNotificationService.sendNotificationForAll(eventDto, token);
 
 
                 return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);

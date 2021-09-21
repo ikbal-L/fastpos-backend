@@ -7,6 +7,7 @@ import com.softlines.fastpos.dto.filters.OrderFilter;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,14 +17,18 @@ import java.util.Optional;
 
 @Service
 public class OrderFilterService extends FilterService<Order, OrderFilter>{
-    public OrderFilterService(EntityManagerFactory entityManagerFactory) {
-        super(entityManagerFactory);
-    }
+
+    //TODO: Figure out issue of using different entity managers and producing different result (db session not in sync?)
+
+//    public OrderFilterService(EntityManagerFactory entityManagerFactory) {
+//        super(entityManagerFactory);
+//    }
 
     @Override
     protected void init() throws ParseException {
         List<Predicate> predicates = new ArrayList<>();
         this.root = criteriaQuery.from(Order.class);
+        this.root.fetch("orderItems", JoinType.LEFT);
 
         var orderTime = this.filter.getOrderTime();
         var state = this.filter.getState();
@@ -63,8 +68,8 @@ public class OrderFilterService extends FilterService<Order, OrderFilter>{
             deliverymanIds.get().forEach(deliverymanIdsPredicate::value);
             predicates.add(deliverymanIdsPredicate);
         }
-
-        criteriaQuery.where(predicates.toArray(Predicate[]::new));
+        //TODO Fix Issue: LEFT JOIN returning multiple instances of the same entity
+        criteriaQuery.where(predicates.toArray(Predicate[]::new)).distinct(true);
     }
 
     @Override

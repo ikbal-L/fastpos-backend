@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -14,7 +15,7 @@ import java.text.ParseException;
 @Service
 public abstract class FilterService<T,F extends Filter<T>> {
 
-//    @PersistenceContext
+    @PersistenceContext
     protected EntityManager em;
 
     protected F filter;
@@ -27,9 +28,9 @@ public abstract class FilterService<T,F extends Filter<T>> {
 
     protected Root<T> root;
 
-    public FilterService(EntityManagerFactory entityManagerFactory) {
-        em = entityManagerFactory.createEntityManager();
-    }
+//    public FilterService(EntityManagerFactory entityManagerFactory) {
+//        em = entityManagerFactory.createEntityManager();
+//    }
 
     protected void checkSortingCriteria( ){
 

@@ -17,9 +17,9 @@ import java.util.Optional;
 public class PaymentFilterService extends FilterService<Payment, PaymentFilter> {
 
 
-    public PaymentFilterService(EntityManagerFactory entityManagerFactory) {
-        super(entityManagerFactory);
-    }
+//    public PaymentFilterService(EntityManagerFactory entityManagerFactory) {
+//        super(entityManagerFactory);
+//    }
 
     @Override
     protected void init() throws ParseException {

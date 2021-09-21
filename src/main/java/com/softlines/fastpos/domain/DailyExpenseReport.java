@@ -28,7 +28,7 @@ public class DailyExpenseReport extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Temporal(TemporalType.DATE)
+//    @Temporal(TemporalType.DATE)
     Date issuedDate;
 
     @ElementCollection(fetch = FetchType.EAGER)

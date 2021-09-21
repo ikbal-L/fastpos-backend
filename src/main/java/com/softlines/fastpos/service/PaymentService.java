@@ -11,11 +11,9 @@ import com.softlines.fastpos.repository.DeliverymanRepository;
 import com.softlines.fastpos.repository.OrderRepository;
 import com.softlines.fastpos.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +36,7 @@ public class PaymentService {
     public PaymentDto doPaymentDeliveryMan(PaymentDto paymentDto){
 
         List<Long> paidDeliveryOrdersIds = new ArrayList<>();
-         var payment=paymentMapper.toPayment(paymentDto);
+        var payment=paymentMapper.toPayment(paymentDto);
         payment.setCashOperation(CashOperation.builder().amount(payment.getAmount()).payment(payment).build());
         var savedPayment=  paymentRepository.save(payment);
         var orders= orderRepository.getByStates(new OrderState[]{ OrderState.Delivered},savedPayment.getDeliveryman().getId(),true);
@@ -73,7 +71,7 @@ public class PaymentService {
 
        var paymentAmount=payment.getAmount()+deliveryMan.getBalance()- oldAmount;
        if(paymentAmount>0){
-     var         orders= orderRepository.getByStates(new OrderState[]{ OrderState.Delivered},savedPayment.getDeliveryman().getId(),true);
+     var orders= orderRepository.getByStates(new OrderState[]{ OrderState.Delivered},savedPayment.getDeliveryman().getId(),true);
         if (orders!=null&&!orders.isEmpty()){
             for (var order:orders) {
                 if (paymentAmount==0||order.getTotal()>paymentAmount){
