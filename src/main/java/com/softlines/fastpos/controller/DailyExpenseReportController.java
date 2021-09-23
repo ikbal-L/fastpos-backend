@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -31,14 +32,12 @@ public class DailyExpenseReportController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<DailyExpenseReportDto> createReport(@RequestBody DailyExpenseReportInputDataDto inputDataDto) {
+    public ResponseEntity<DailyExpenseReportDto> createReport(@RequestBody DailyExpenseReportInputDataDto inputDataDto) throws ParseException {
 
-        var date = new Date();
-        var simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        var dateString = simpleDateFormat.format(date);
+
 //        var report = dailyExpenseReportRepository.findByIssuedDate(dateString);
 
-        var generated = dailyExpenseReportService.generateDailyExpenseReport(inputDataDto);
+        var generated = dailyExpenseReportService.generateDailyExpenseReport(inputDataDto,false);
         var createdReport = dailyExpenseReportRepository.save(generated);
         var createdReportDto = dailyExpenseReportMapper.toDailyExpenseReportDto(createdReport);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdReportDto);
@@ -54,7 +53,7 @@ public class DailyExpenseReportController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<DailyExpenseReportDto> updateReport( @PathVariable long id,@RequestBody DailyExpenseReportInputDataDto inputDataDto ) {
+    public ResponseEntity<DailyExpenseReportDto> updateReport( @PathVariable long id,@RequestBody DailyExpenseReportInputDataDto inputDataDto ) throws ParseException {
         var report = dailyExpenseReportRepository.findById(id);
         if (report.isEmpty()) return ResponseEntity.noContent().build();
         var date = new Date();

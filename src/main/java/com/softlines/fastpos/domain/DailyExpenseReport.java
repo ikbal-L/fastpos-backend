@@ -54,8 +54,15 @@ public class DailyExpenseReport extends BaseEntity {
     double cashRegisterExpectedAmount ;
 
     double cashRegisterActualAmount ;
+
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    List<EarningsCategoryGrouping> earningsByCategory;
+    Set<EarningsCategoryGrouping> earningsByCategory;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    Set<OrderRefund> refunds;
+
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "report")
+    Set<CashRegisterExpense> cashRegisterExpenses;
 
     @Builder.Default
     @NotNull

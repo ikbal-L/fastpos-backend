@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import java.util.Date;
 
 @Data
 @Builder
@@ -27,4 +28,7 @@ public class CashRegisterExpenseDto {
     @JsonProperty("Employee")
     @NotBlank
     String employeeName;
+
+    @JsonProperty("IssuedDate")
+    Date issuedDate;
 }
