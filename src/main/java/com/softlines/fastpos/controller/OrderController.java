@@ -261,7 +261,7 @@ public class OrderController {
                     eventBody = updatedOderDto;
                 }
                 var eventDto = EventDto.builder().type(eventType).body(eventBody).build();
-                sseNotificationService.sendNotificationForAll(eventDto, token);
+//                sseNotificationService.sendNotificationForAll(eventDto, token);
 
                 return ResponseEntity.ok().body(updatedOderDto);
 
@@ -325,7 +325,7 @@ public class OrderController {
                 orderRepository.delete(optionalOrder.get());
 
                 var eventDto = EventDto.builder().type(SSEventType.DELETE_ORDER).body(id).build();
-                sseNotificationService.sendNotificationForAll(eventDto, token);
+//                sseNotificationService.sendNotificationForAll(eventDto, token);
 
                 return ResponseEntity.ok().build();
 
