@@ -8,29 +8,34 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class OrderFilter extends Filter<Order> {
     @JsonProperty("OrderTime")
-    Optional<Date> orderTime;
+    @Builder.Default
+    Optional<Date> orderTime = Optional.empty();
 
     @JsonProperty("State")
-    Optional<OrderState> state;
+    Optional<OrderState> state = Optional.empty();
 
     @JsonProperty("States")
-    Optional<List<OrderState>> states;
+    @Builder.Default
+    Optional<List<OrderState>> states= Optional.empty();
 
     @JsonProperty("DeliverymanId")
-    Optional<Long> deliverymanId;
+    @Builder.Default
+    Optional<Long> deliverymanId= Optional.empty();
 
     @JsonProperty("DeliverymanIds")
-    Optional<List<Long>> deliverymanIds;
+    @Builder.Default
+    Optional<List<Long>> deliverymanIds= Optional.empty();
 
 
 }

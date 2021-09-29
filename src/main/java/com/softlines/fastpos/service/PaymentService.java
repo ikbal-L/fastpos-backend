@@ -39,23 +39,61 @@ public class PaymentService {
         var payment=paymentMapper.toPayment(paymentDto);
         payment.setCashOperation(CashOperation.builder().amount(payment.getAmount()).payment(payment).build());
         var savedPayment=  paymentRepository.save(payment);
-        var orders= orderRepository.getByStates(new OrderState[]{ OrderState.Delivered},savedPayment.getDeliveryman().getId(),true);
+
+
+        var orders= orderRepository.getByStates(new OrderState[]{ OrderState.Delivered,OrderState.DeliveredPartiallyPaid},savedPayment.getDeliveryman().getId(), new String[]{"state"}, true);
+
         var deliveryMan= deliverymanRepository.findById(savedPayment.getDeliveryman().getId()).get();
-        var paymentAmount= savedPayment.getAmount()+deliveryMan.getBalance();
+
+
+        var paymentAmount= savedPayment.getAmount();
         if (!orders.isEmpty()){
-            for (var order:orders) {
-                if (paymentAmount==0||order.getTotal()>paymentAmount){
+            for (var  order:orders) {
+
+                if (paymentAmount==0){
                     break;
                 }
-               else {
-                    order.setState(OrderState.DeliveredPaid);
-                    orderRepository.save(order);
-                    paidDeliveryOrdersIds.add(order.getId());
-                    paymentAmount=paymentAmount-order.getTotal();
+
+                if (order.getState() == OrderState.DeliveredPartiallyPaid){
+                    var remaining = order.getNewTotal() - order.getGivenAmount();
+                    if (paymentAmount>=remaining){
+                        order.setGivenAmount(order.getNewTotal());
+                        order.setState(OrderState.DeliveredPaid);
+                        orderRepository.save(order);
+                        paymentAmount-=remaining;
+                    }else {
+                        order.setGivenAmount( order.getGivenAmount()+paymentAmount);
+                        order.setState(OrderState.DeliveredPartiallyPaid);
+                        orderRepository.save(order);
+                        paymentAmount = 0;
+                    }
                 }
+
+                if (order.getState() == OrderState.Delivered){
+
+
+
+                    if (order.getTotal()>paymentAmount){
+                        order.setState(OrderState.DeliveredPartiallyPaid);
+                        order.setGivenAmount(paymentAmount);
+                        orderRepository.save(order);
+
+                        paymentAmount = 0;
+                    }
+                    else {
+                        order.setState(OrderState.DeliveredPaid);
+                        orderRepository.save(order);
+                        paidDeliveryOrdersIds.add(order.getId());
+                        paymentAmount=paymentAmount-order.getTotal();
+                    }
+
+                }
+
+
             }
         }
-            deliveryMan.setBalance(paymentAmount);
+
+
             deliverymanRepository.save(deliveryMan);
         var savedPaymentDTO = paymentMapper.toPaymentDto(savedPayment);
         savedPaymentDTO.setOrderIds(paidDeliveryOrdersIds);
@@ -71,7 +109,7 @@ public class PaymentService {
 
        var paymentAmount=payment.getAmount()+deliveryMan.getBalance()- oldAmount;
        if(paymentAmount>0){
-     var orders= orderRepository.getByStates(new OrderState[]{ OrderState.Delivered},savedPayment.getDeliveryman().getId(),true);
+     var orders= orderRepository.getByStates(new OrderState[]{ OrderState.Delivered},savedPayment.getDeliveryman().getId(), null, true);
         if (orders!=null&&!orders.isEmpty()){
             for (var order:orders) {
                 if (paymentAmount==0||order.getTotal()>paymentAmount){

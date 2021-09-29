@@ -1,11 +1,11 @@
 package com.softlines.fastpos.controller;
 
-import com.softlines.fastpos.domain.Deliveryman;
-import com.softlines.fastpos.domain.Table;
-import com.softlines.fastpos.domain.Waiter;
+import com.softlines.fastpos.domain.*;
 import com.softlines.fastpos.dto.DeliverymanDto;
+import com.softlines.fastpos.dto.filters.OrderFilter;
 import com.softlines.fastpos.dto.mapping.DeliverymanMapper;
 import com.softlines.fastpos.dto.service.DtoService;
+import com.softlines.fastpos.dto.service.filtering.OrderFilterService;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.DeliverymanRepository;
 import com.softlines.fastpos.repository.em.RepositoryDecoratorImp;
@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManagerFactory;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 
@@ -37,6 +39,9 @@ public class DeliverymanController {
     DeliverymanMapper deliverymanMapper;
     @Autowired
     private EntityManagerFactory entityManagerFactory;
+
+    @Autowired
+    OrderFilterService orderFilterService;
 
     @PostMapping("/save")
     public ResponseEntity<Long> addDeliveryman(@Valid  @RequestBody DeliverymanDto deliverymanDto) {
@@ -81,6 +86,46 @@ public class DeliverymanController {
 
     }
 
+    @GetMapping("/getallwithbalance")
+    public ResponseEntity<List<DeliverymanDto>> getDeliverymenWithBalance() {
+        try {
+
+            List<Deliveryman> deliverymanList = deliverymanRepository.findAll();
+            var states = new ArrayList<OrderState>();
+            states.add(OrderState.Delivered);
+            states.add(OrderState.DeliveredPartiallyPaid);
+
+            if (deliverymanList == null || deliverymanList.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            } else {
+                var ids = deliverymanList.stream().map(Deliveryman::getId).collect(Collectors.toList());
+                var filter = OrderFilter
+                        .builder()
+                        .states(Optional.of(states))
+                        .deliverymanIds(Optional.of(ids)).deliverymanId(Optional.empty())
+                        .orderTime(Optional.empty())
+                        .state(Optional.empty())
+                        .build();
+                var orders = orderFilterService.buildQuery(filter).getResultList();
+
+                for (Deliveryman deliveryman : deliverymanList) {
+
+                    var sumOfDelivered = orders.stream().filter(order -> order.getState() == OrderState.Delivered).mapToDouble(Order::getNewTotal).sum();
+                    var sumOfDeliveredPartiallyPaid = orders.stream().filter(order -> order.getState() == OrderState.DeliveredPartiallyPaid).mapToDouble(o->o.getNewTotal()-o.getGivenAmount()).sum();
+                    var balance = sumOfDelivered+sumOfDeliveredPartiallyPaid;
+
+                    deliveryman.setBalance(balance);
+                }
+                return ResponseEntity.ok().body(deliverymanMapper.toDeliverymanDTOs(deliverymanList));
+            }
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+
+    }
+
+
     @GetMapping("/get/{id}")
     public ResponseEntity<DeliverymanDto> getDeliveryman(@Valid @PathVariable long id) {
 
@@ -91,6 +136,42 @@ public class DeliverymanController {
             if (optionalDeliveryman.isPresent() && id != 0)
                 return ResponseEntity.ok().body(deliverymanMapper.toDeliverymanDto(optionalDeliveryman.get()));
             else
+                return ResponseEntity.noContent().build();
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+
+    }
+
+    @GetMapping("/getwithbalance/{id}")
+    public ResponseEntity<DeliverymanDto> getDeliverymanWith(@Valid @PathVariable long id) {
+
+        try {
+
+            Optional<Deliveryman> optionalDeliveryman = deliverymanRepository.findById(id);
+
+            if (optionalDeliveryman.isPresent() && id != 0) {
+                var deliveryman = optionalDeliveryman.get();
+                var states = new ArrayList<OrderState>();
+                states.add(OrderState.Delivered);
+                states.add(OrderState.DeliveredPartiallyPaid);
+                var filter = OrderFilter
+                        .builder()
+                        .states(Optional.of(states))
+                        .deliverymanId(Optional.of(deliveryman.getId()))
+                        .orderTime(Optional.empty())
+                        .state(Optional.empty())
+                        .build();
+                var orders = orderFilterService.buildQuery(filter).getResultList();
+                var sumOfDelivered = orders.stream().filter(order -> order.getState() == OrderState.Delivered).mapToDouble(Order::getNewTotal).sum();
+                var sumOfDeliveredPartiallyPaid = orders.stream().filter(order -> order.getState() == OrderState.DeliveredPartiallyPaid).mapToDouble(o->o.getNewTotal()-o.getGivenAmount()).sum();
+                var balance = sumOfDelivered+sumOfDeliveredPartiallyPaid;
+
+                deliveryman.setBalance(balance);
+
+                return ResponseEntity.ok().body(deliverymanMapper.toDeliverymanDto(deliveryman));
+            }else
                 return ResponseEntity.noContent().build();
 
         } catch (Exception exception) {

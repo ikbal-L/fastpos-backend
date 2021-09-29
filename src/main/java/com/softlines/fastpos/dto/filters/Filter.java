@@ -1,8 +1,11 @@
 package com.softlines.fastpos.dto.filters;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -13,23 +16,28 @@ import java.util.Optional;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
-public abstract class Filter<T> {
+@SuperBuilder
+public  class Filter<T> {
 
     @JsonProperty("PageSize")
-    protected Optional<Integer> pageSize;
+    @Builder.Default
+    Optional<Integer> pageSize = Optional.empty();
 
     @JsonProperty("PageIndex")
-    protected Optional<Integer> pageIndex;
+    @Builder.Default
+    Optional<Integer> pageIndex = Optional.empty();
 
     @JsonProperty("OrderBy")
-    protected Optional<String> orderBy;
+    @Builder.Default
+    Optional<String> orderBy = Optional.empty();
 
     @JsonProperty("AscendingOrder")
-    protected Optional<Boolean> ascendingOrder;
+    @Builder.Default
+    Optional<Boolean> ascendingOrder = Optional.empty();
 
     @JsonProperty("DescendingOrder")
-    protected Optional<Boolean> descendingOrder;
+    @Builder.Default
+    Optional<Boolean> descendingOrder = Optional.empty();
 
     protected TypedQuery<T> query;
 

@@ -8,10 +8,8 @@ import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.softlines.fastpos.domain.*;
 import com.softlines.fastpos.domain.Order;
-import org.hibernate.query.criteria.internal.OrderImpl;
 import org.javatuples.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +18,7 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @Transactional(transactionManager = "transactionManager")
@@ -58,7 +57,10 @@ public class CustomOrderRepositoryImpl implements CustomOrderRepository {
     }
 
     @Override
-    public List<Order> getByStates(OrderState[] states, long deliverymanId,boolean ascending) {
+    public List<Order> getByStates(OrderState[] states, long deliverymanId, String[] orderByColumns, boolean ascending) {
+        if (orderByColumns == null){
+            orderByColumns = new String[]{};
+        }
         EntityManager em = entityManagerFactory.createEntityManager();
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -68,7 +70,10 @@ public class CustomOrderRepositoryImpl implements CustomOrderRepository {
         Root<Order> orderRoot = or.from(Order.class);
         or = or.select(orderRoot);
         or = or.where(cb.and(cb.equal(orderRoot.get("deliveryman").get("id"),deliverymanId),orderRoot.get("state").in(states)));
-        or = or.orderBy(cb.desc(orderRoot.get("orderTime")));
+        CriteriaQuery<Order> finalOr = or;
+        var columns = Arrays.stream(orderByColumns).map(s -> cb.asc(orderRoot.get(s))).collect(Collectors.toList());
+        columns.add(cb.desc(orderRoot.get("orderTime")));
+        or = or.orderBy(columns);
         TypedQuery<Order> query = em.createQuery(or);
 
         return   query.getResultList();
