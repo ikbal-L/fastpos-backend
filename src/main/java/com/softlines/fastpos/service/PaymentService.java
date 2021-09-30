@@ -3,6 +3,7 @@ package com.softlines.fastpos.service;
 import com.softlines.fastpos.domain.CashOperation;
 import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderState;
+import com.softlines.fastpos.dto.OrderDto;
 import com.softlines.fastpos.dto.PaymentDto;
 import com.softlines.fastpos.dto.mapping.DeliverymanMapper;
 import com.softlines.fastpos.dto.mapping.OrderMapper;
@@ -25,6 +26,7 @@ public class PaymentService {
     PaymentRepository paymentRepository;
     @Autowired
     PaymentMapper paymentMapper;
+
     @Autowired
     OrderRepository orderRepository;
     @Autowired
@@ -35,13 +37,13 @@ public class PaymentService {
     OrderMapper orderMapper;
     public PaymentDto doPaymentDeliveryMan(PaymentDto paymentDto){
 
-        List<Long> paidDeliveryOrdersIds = new ArrayList<>();
+        List<OrderDto> paymentOrders = new ArrayList<>();
+
         var payment=paymentMapper.toPayment(paymentDto);
         payment.setCashOperation(CashOperation.builder().amount(payment.getAmount()).payment(payment).build());
         var savedPayment=  paymentRepository.save(payment);
 
-
-        var orders= orderRepository.getByStates(new OrderState[]{ OrderState.Delivered,OrderState.DeliveredPartiallyPaid},savedPayment.getDeliveryman().getId(), new String[]{"state"}, true);
+        var orders= orderRepository.getByStates(new OrderState[]{ OrderState.Delivered,OrderState.DeliveredPartiallyPaid},savedPayment.getDeliveryman().getId(),null, true);
 
         var deliveryMan= deliverymanRepository.findById(savedPayment.getDeliveryman().getId()).get();
 
@@ -59,6 +61,7 @@ public class PaymentService {
                     if (paymentAmount>=remaining){
                         order.setGivenAmount(order.getNewTotal());
                         order.setState(OrderState.DeliveredPaid);
+
                         orderRepository.save(order);
                         paymentAmount-=remaining;
                     }else {
@@ -67,6 +70,7 @@ public class PaymentService {
                         orderRepository.save(order);
                         paymentAmount = 0;
                     }
+
                 }
 
                 if (order.getState() == OrderState.Delivered){
@@ -83,12 +87,13 @@ public class PaymentService {
                     else {
                         order.setState(OrderState.DeliveredPaid);
                         orderRepository.save(order);
-                        paidDeliveryOrdersIds.add(order.getId());
+
                         paymentAmount=paymentAmount-order.getTotal();
                     }
 
                 }
-
+                var orderDto = orderMapper.toOrderDto(order);
+                paymentOrders.add(orderDto);
 
             }
         }
@@ -96,7 +101,7 @@ public class PaymentService {
 
             deliverymanRepository.save(deliveryMan);
         var savedPaymentDTO = paymentMapper.toPaymentDto(savedPayment);
-        savedPaymentDTO.setOrderIds(paidDeliveryOrdersIds);
+        savedPaymentDTO.setOrders(paymentOrders);
         return savedPaymentDTO;
     }
     public void editPaymentDeliveryMan(PaymentDto paymentDto){

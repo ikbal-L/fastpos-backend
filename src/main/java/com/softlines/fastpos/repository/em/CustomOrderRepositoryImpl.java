@@ -72,7 +72,7 @@ public class CustomOrderRepositoryImpl implements CustomOrderRepository {
         or = or.where(cb.and(cb.equal(orderRoot.get("deliveryman").get("id"),deliverymanId),orderRoot.get("state").in(states)));
         CriteriaQuery<Order> finalOr = or;
         var columns = Arrays.stream(orderByColumns).map(s -> cb.asc(orderRoot.get(s))).collect(Collectors.toList());
-        columns.add(cb.desc(orderRoot.get("orderTime")));
+        columns.add(cb.asc(orderRoot.get("orderTime")));
         or = or.orderBy(columns);
         TypedQuery<Order> query = em.createQuery(or);
 

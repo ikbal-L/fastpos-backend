@@ -25,6 +25,6 @@ public class PaymentDto {
     Long cashOperationId;
     @JsonProperty("DeliveryManId")
     Long  deliveryManId;
-    @JsonProperty("OrderIds")
-    List<Long> orderIds;
+    @JsonProperty("Orders")
+    List<OrderDto> orders;
 }

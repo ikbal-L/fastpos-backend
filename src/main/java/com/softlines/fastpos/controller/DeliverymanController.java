@@ -9,6 +9,7 @@ import com.softlines.fastpos.dto.service.filtering.OrderFilterService;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.DeliverymanRepository;
 import com.softlines.fastpos.repository.em.RepositoryDecoratorImp;
+import com.softlines.fastpos.service.DeliverymanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -110,12 +111,12 @@ public class DeliverymanController {
 
                 for (Deliveryman deliveryman : deliverymanList) {
 
-                    var sumOfDelivered = orders.stream().filter(order -> order.getState() == OrderState.Delivered).mapToDouble(Order::getNewTotal).sum();
-                    var sumOfDeliveredPartiallyPaid = orders.stream().filter(order -> order.getState() == OrderState.DeliveredPartiallyPaid).mapToDouble(o->o.getNewTotal()-o.getGivenAmount()).sum();
-                    var balance = sumOfDelivered+sumOfDeliveredPartiallyPaid;
+                    DeliverymanService.calculateBalance(deliveryman,orders);
 
-                    deliveryman.setBalance(balance);
                 }
+
+                deliverymanRepository.saveAll(deliverymanList);
+
                 return ResponseEntity.ok().body(deliverymanMapper.toDeliverymanDTOs(deliverymanList));
             }
 
@@ -164,12 +165,9 @@ public class DeliverymanController {
                         .state(Optional.empty())
                         .build();
                 var orders = orderFilterService.buildQuery(filter).getResultList();
-                var sumOfDelivered = orders.stream().filter(order -> order.getState() == OrderState.Delivered).mapToDouble(Order::getNewTotal).sum();
-                var sumOfDeliveredPartiallyPaid = orders.stream().filter(order -> order.getState() == OrderState.DeliveredPartiallyPaid).mapToDouble(o->o.getNewTotal()-o.getGivenAmount()).sum();
-                var balance = sumOfDelivered+sumOfDeliveredPartiallyPaid;
 
-                deliveryman.setBalance(balance);
-
+                DeliverymanService.calculateBalance(deliveryman,orders);
+                deliverymanRepository.save(deliveryman);
                 return ResponseEntity.ok().body(deliverymanMapper.toDeliverymanDto(deliveryman));
             }else
                 return ResponseEntity.noContent().build();
