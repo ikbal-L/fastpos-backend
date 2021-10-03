@@ -48,7 +48,12 @@ public class PaymentService {
         var deliveryMan= deliverymanRepository.findById(savedPayment.getDeliveryman().getId()).get();
 
 
-        var paymentAmount= savedPayment.getAmount();
+        double paymentAmount;
+        if (savedPayment.getDiscountAmount()!= null){
+            paymentAmount = savedPayment.getAmount()+ savedPayment.getDiscountAmount();
+        }else {
+            paymentAmount = savedPayment.getAmount();
+        }
         if (!orders.isEmpty()){
             for (var  order:orders) {
 
@@ -68,7 +73,7 @@ public class PaymentService {
                         order.setGivenAmount( order.getGivenAmount()+paymentAmount);
                         order.setState(OrderState.DeliveredPartiallyPaid);
                         orderRepository.save(order);
-                        paymentAmount = 0;
+                        paymentAmount = 0D;
                     }
 
                 }
@@ -82,7 +87,7 @@ public class PaymentService {
                         order.setGivenAmount(paymentAmount);
                         orderRepository.save(order);
 
-                        paymentAmount = 0;
+                        paymentAmount = 0D;
                     }
                     else {
                         order.setState(OrderState.DeliveredPaid);

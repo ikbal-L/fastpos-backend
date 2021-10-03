@@ -5,6 +5,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -25,6 +26,9 @@ public class Payment extends BaseEntity{
     Date date;
 
     double amount;
+
+    Double discountAmount;
+
     @Builder.Default
     @NotNull
     private boolean deleted=false;

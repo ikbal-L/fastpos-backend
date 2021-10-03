@@ -21,6 +21,8 @@ public class PaymentDto {
     Date date;
     @JsonProperty("Amount")
     double amount;
+    @JsonProperty("DiscountAmount")
+    Double discountAmount;
     @JsonProperty("CashOperationId")
     Long cashOperationId;
     @JsonProperty("DeliveryManId")
