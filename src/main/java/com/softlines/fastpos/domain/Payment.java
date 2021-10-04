@@ -12,13 +12,15 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @SuperBuilder
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @SQLDelete(sql = "UPDATE Payment SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
 @Entity
 public class Payment extends BaseEntity{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
@@ -35,7 +37,11 @@ public class Payment extends BaseEntity{
 
     @OneToOne(cascade = CascadeType.ALL)
     CashOperation cashOperation;
+
     @ManyToOne
     Deliveryman deliveryman;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    DailyExpenseReport dailyExpenseReport;
 
 }

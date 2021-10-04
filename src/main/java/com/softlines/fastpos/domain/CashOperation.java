@@ -1,9 +1,6 @@
 package com.softlines.fastpos.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -13,7 +10,8 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 @SuperBuilder
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @SQLDelete(sql = "UPDATE cashoperation SET deleted=true WHERE id=?")
@@ -30,7 +28,7 @@ public class CashOperation extends  BaseEntity{
     private boolean deleted=false;
 
 
-    @OneToOne
+    @OneToOne(mappedBy = "cashOperation")
     Payment payment;
 
     @OneToOne

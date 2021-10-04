@@ -57,17 +57,22 @@ public class DailyExpenseReportService {
         var ordersOfTheDay = orderRepository.findAllByOrderTime(dateString).stream().filter(order -> order.getState() == OrderState.Payed || order.getState() == OrderState.DeliveredPaid).collect(Collectors.toList());
         var payedOrdersOfTheDay = orderRepository.findAllByOrderTime(dateString).stream().filter(order -> order.getState() == OrderState.Payed).collect(Collectors.toList());
         var refundedOrdersOfTheDay = orderRepository.findAllByOrderTime(dateString).stream().filter(order -> order.getState() == OrderState.Refunded).collect(Collectors.toList());
-        var paymentsOfTheDay = paymentRepository.findAllByDate(dateString);
+        var paymentList = paymentRepository.findAllByDate(dateString);
+        HashSet<Payment> paymentsOfTheDay = new HashSet(paymentList) ;
+
 
 //        Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
 
         var cashRegisterExpenses = cashRegisterExpenseRepository.findAllByIssuedDate(dateString);
 
         Map<String, Double> cashPayments = new HashMap<>();
-        Map<String, Double> deliveryPayments = new HashMap<>();
+
+//        Map<String, Double> deliveryPayments = new HashMap<>();
 
         payedOrdersOfTheDay.stream().forEach(order -> cashPayments.put(order.getId() + "", order.getNewTotal()));
-        paymentsOfTheDay.stream().forEach(payment -> deliveryPayments.put(payment.getId() + "", payment.getAmount()));
+
+//        paymentsOfTheDay.stream().forEach(payment -> deliveryPayments.put(payment.getId() + "", payment.getAmount()));
+
         var cashPaymentsSum = payedOrdersOfTheDay.stream().mapToDouble(Order::getGivenAmount).sum();
         var deliveryPaymentsSum = paymentsOfTheDay.stream().mapToDouble(Payment::getAmount).sum();
         var expensesSum = cashRegisterExpenses.stream().mapToDouble(CashRegisterExpense::getAmount).sum();
@@ -91,7 +96,7 @@ public class DailyExpenseReportService {
         var report = DailyExpenseReport.builder()
                 .issuedDate(new Date())
                 .CashPayments(cashPayments)
-                .deliveryPayments(deliveryPayments)
+                .deliveryPayments(paymentsOfTheDay)
                 .expenses(inputData.getExpenses())
                 .cashRegisterInitialAmount(inputData.getCashRegisterInitialAmount())
                 .cashRegisterDepositedAmount(cashRegisterDepositedAmount)

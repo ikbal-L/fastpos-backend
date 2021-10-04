@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",uses = {PaymentMapper.class})
 public interface DailyExpenseReportMapper {
 
     DailyExpenseReportDto toDailyExpenseReportDto(DailyExpenseReport dailyExpenseReport);

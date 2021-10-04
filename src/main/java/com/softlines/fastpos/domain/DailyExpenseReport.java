@@ -36,8 +36,8 @@ public class DailyExpenseReport extends BaseEntity {
     @Column(name = "cash_payment_amount")
     Map<String,Double> CashPayments;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    Map<String,Double> deliveryPayments;
+    @OneToMany(fetch = FetchType.EAGER,mappedBy ="dailyExpenseReport")
+    Set<Payment> deliveryPayments;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "misc_expenses")

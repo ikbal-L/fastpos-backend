@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.softlines.fastpos.domain.CashRegisterExpense;
 import com.softlines.fastpos.domain.EarningsCategoryGrouping;
 import com.softlines.fastpos.domain.OrderRefund;
+import com.softlines.fastpos.domain.Payment;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,7 +32,7 @@ public class DailyExpenseReportDto {
 
     Map<String,Double> CashPayments;
 
-    Map<String,Double> deliveryPayments;
+    Set<PaymentDto> deliveryPayments;
 
     Map<String,Double> expenses;
 
