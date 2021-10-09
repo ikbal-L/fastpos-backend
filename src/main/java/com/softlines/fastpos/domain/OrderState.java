@@ -1,8 +1,6 @@
 package com.softlines.fastpos.domain;
 public enum OrderState {
-    Delivered,
-    Payed,
-    Refunded,
+
     Ordered,
     Prepared,
     Ready,
@@ -11,8 +9,14 @@ public enum OrderState {
     Removed,
     Served,
     Changed,
+    DeliveredReturned,
+    Unprocessed,
+    Payed,
+    Refunded,
+    Delivered,
     DeliveredPaid,
     DeliveredPartiallyPaid,
-    DeliveredReturned,
-    Unprocessed
+    Credit,
+    CreditRePaid,
+    CreditPartiallyRePaid
 }

@@ -28,6 +28,10 @@ public class PaymentFilterService extends FilterService<Payment, PaymentFilter> 
 
         var deliverymanId = this.filter.getDeliverymanId();
         var deliverymanIds = this.filter.getDeliverymanIds();
+
+        var customerId = this.filter.getCustomerId();
+        var customerIds = this.filter.getCustomerIds();
+
         var date = filter.getDate();
         if (date.isPresent()){
 
@@ -48,6 +52,17 @@ public class PaymentFilterService extends FilterService<Payment, PaymentFilter> 
             var deliverymanIdsPredicate = this.criteriaBuilder.in(root.<Deliveryman>get("deliveryman").<Long>get("id"));
             deliverymanIds.get().forEach(deliverymanIdsPredicate::value);
             predicates.add(deliverymanIdsPredicate);
+        }
+
+        if (customerId.isPresent()&& customerIds.isEmpty()){
+            Predicate customerIdPredicate = this.criteriaBuilder.equal(root.<Deliveryman>get("customer").<Long>get("id"), customerId.get());
+            predicates.add(customerIdPredicate);
+        }
+
+        if (customerIds.isPresent() && customerId.isEmpty()){
+            var customerIdsPredicate = this.criteriaBuilder.in(root.<Deliveryman>get("customer").<Long>get("id"));
+            customerIds.get().forEach(customerIdsPredicate::value);
+            predicates.add(customerIdsPredicate);
         }
 
         criteriaQuery.where(predicates.toArray(Predicate[]::new));

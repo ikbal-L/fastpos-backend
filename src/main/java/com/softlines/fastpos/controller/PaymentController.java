@@ -35,9 +35,11 @@ public class PaymentController {
 
     @PostMapping(value = "/save", consumes = "application/json")
     public ResponseEntity<PaymentDto> save(@RequestBody PaymentDto paymentDto){
-        var dto = paymentService.doPaymentDeliveryMan(paymentDto);
+        var dto = paymentService.processPayment(paymentDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
+
+
     @GetMapping("/getAllbydeliverymanPage/{pageNumber}/{pageSize}/{deliverymanId}")
     public ResponseEntity<PageList<PaymentDto>> getAllByDeliveryManPage(@PathVariable int pageNumber, @PathVariable int pageSize, @PathVariable  long deliverymanId){
         var orders= paymentRepository.findByDeliveryman_Id(deliverymanId, PageRequest.of(pageNumber, pageSize,Sort.by("date").descending()));

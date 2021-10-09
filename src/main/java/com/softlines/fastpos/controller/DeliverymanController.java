@@ -9,7 +9,7 @@ import com.softlines.fastpos.dto.service.filtering.OrderFilterService;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.DeliverymanRepository;
 import com.softlines.fastpos.repository.em.RepositoryDecoratorImp;
-import com.softlines.fastpos.service.DeliverymanService;
+import com.softlines.fastpos.service.CreditService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -111,7 +111,7 @@ public class DeliverymanController {
 
                 for (Deliveryman deliveryman : deliverymanList) {
 
-                    DeliverymanService.calculateBalance(deliveryman,orders);
+                    CreditService.calculateBalance(deliveryman,orders);
 
                 }
 
@@ -166,7 +166,7 @@ public class DeliverymanController {
                         .build();
                 var orders = orderFilterService.buildQuery(filter).getResultList();
 
-                DeliverymanService.calculateBalance(deliveryman,orders);
+                CreditService.calculateBalance(deliveryman,orders);
                 deliverymanRepository.save(deliveryman);
                 return ResponseEntity.ok().body(deliverymanMapper.toDeliverymanDto(deliveryman));
             }else

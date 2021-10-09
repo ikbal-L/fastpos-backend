@@ -57,19 +57,19 @@ public class CustomOrderRepositoryImpl implements CustomOrderRepository {
     }
 
     @Override
-    public List<Order> getByStates(OrderState[] states, long deliverymanId, String[] orderByColumns, boolean ascending) {
+    public List<Order> getByStates(OrderState[] states, long entityId,String mappedBy, String[] orderByColumns, boolean ascending) {
         if (orderByColumns == null){
             orderByColumns = new String[]{};
         }
         EntityManager em = entityManagerFactory.createEntityManager();
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        /// select query
+
 
         CriteriaQuery<Order> or = cb.createQuery(Order.class);
         Root<Order> orderRoot = or.from(Order.class);
         or = or.select(orderRoot);
-        or = or.where(cb.and(cb.equal(orderRoot.get("deliveryman").get("id"),deliverymanId),orderRoot.get("state").in(states)));
+        or = or.where(cb.and(cb.equal(orderRoot.get(mappedBy).get("id"), entityId),orderRoot.get("state").in(states)));
         CriteriaQuery<Order> finalOr = or;
         var columns = Arrays.stream(orderByColumns).map(s -> cb.asc(orderRoot.get(s))).collect(Collectors.toList());
         columns.add(cb.asc(orderRoot.get("orderTime")));

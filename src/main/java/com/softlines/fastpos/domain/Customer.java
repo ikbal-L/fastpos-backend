@@ -37,4 +37,5 @@ public class Customer extends BaseEntity{
 
     @OneToMany(mappedBy ="customer" ,fetch = FetchType.LAZY)
     Set<Order> orders;
+    double balance;
 }

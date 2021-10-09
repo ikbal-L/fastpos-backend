@@ -342,7 +342,7 @@ public class OrderController {
 
     @PostMapping("/getByState/{deliverymanId}")
     public ResponseEntity<List<OrderDto>> getByStates(@PathVariable long deliverymanId, @RequestBody OrderState[] states) {
-        var orders = orderRepository.getByStates(states, deliverymanId, null, true);
+        var orders = orderRepository.getByStates(states, deliverymanId, "deliveryman", null, true);
         if (!orders.isEmpty()) {
             return ResponseEntity.ok().body(orderMapper.toOrderDTOs(orders));
         }

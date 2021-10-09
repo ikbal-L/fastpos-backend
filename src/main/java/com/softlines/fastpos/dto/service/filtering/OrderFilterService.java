@@ -1,5 +1,6 @@
 package com.softlines.fastpos.dto.service.filtering;
 
+import com.softlines.fastpos.domain.Customer;
 import com.softlines.fastpos.domain.Deliveryman;
 import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderState;
@@ -35,6 +36,8 @@ public class OrderFilterService extends FilterService<Order, OrderFilter>{
         var states = this.filter.getStates();
         var deliverymanId = this.filter.getDeliverymanId();
         var deliverymanIds = this.filter.getDeliverymanIds();
+        var customerId = this.filter.getCustomerId();
+        var customerIds = this.filter.getCustomerIds();
 
 
         if (orderTime.isPresent()){
@@ -68,6 +71,18 @@ public class OrderFilterService extends FilterService<Order, OrderFilter>{
             deliverymanIds.get().forEach(deliverymanIdsPredicate::value);
             predicates.add(deliverymanIdsPredicate);
         }
+
+        if (customerId.isPresent()&& customerIds.isEmpty()){
+            Predicate customerIdPredicate = this.criteriaBuilder.equal(root.<Deliveryman>get("customer").<Long>get("id"), customerId.get());
+            predicates.add(customerIdPredicate);
+        }
+
+        if (customerIds.isPresent() && customerId.isEmpty()){
+            var customerIdsPredicate = this.criteriaBuilder.in(root.<Customer>get("customer").<Long>get("id"));
+            customerIds.get().forEach(customerIdsPredicate::value);
+            predicates.add(customerIdsPredicate);
+        }
+
         //TODO Fix Issue: LEFT JOIN returning multiple instances of the same entity
         criteriaQuery.where(predicates.toArray(Predicate[]::new)).distinct(true);
     }

@@ -41,6 +41,11 @@ public class Payment extends BaseEntity{
     @ManyToOne
     Deliveryman deliveryman;
 
+    @ManyToOne
+    Customer customer;
+
+    PaymentSource paymentSource;
+
     @ManyToOne(fetch = FetchType.LAZY)
     DailyExpenseReport dailyExpenseReport;
 

@@ -1,12 +1,13 @@
 package com.softlines.fastpos.service;
 
+import com.softlines.fastpos.domain.Customer;
 import com.softlines.fastpos.domain.Deliveryman;
 import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderState;
 
 import java.util.List;
 
-public class DeliverymanService {
+public class CreditService {
 
     public static void calculateBalance(Deliveryman deliveryman , List<Order> orders){
         var sumOfDelivered = orders.stream().filter(order -> order.getState() == OrderState.Delivered && order.getDeliveryman().getId() == deliveryman.getId()).mapToDouble(Order::getNewTotal).sum();
@@ -17,4 +18,15 @@ public class DeliverymanService {
         var balance = sumOfDelivered+sumOfDeliveredPartiallyPaid;
         deliveryman.setBalance(balance);
     }
+
+    public static void calculateBalance(Customer customer , List<Order> orders){
+        var sumOfCreditOrders = orders.stream().filter(order -> order.getState() == OrderState.Credit && order.getCustomer().getId() == customer.getId()).mapToDouble(Order::getNewTotal).sum();
+        var sumOfCreditPartiallyRePaid = orders.stream().filter(order ->
+                order.getState() == OrderState.CreditPartiallyRePaid
+                        && order.getCustomer().getId() == customer.getId()
+        ).mapToDouble(o->o.getNewTotal()-o.getGivenAmount()).sum();
+        var balance = sumOfCreditOrders+sumOfCreditPartiallyRePaid;
+        customer.setBalance(balance);
+    }
+
 }

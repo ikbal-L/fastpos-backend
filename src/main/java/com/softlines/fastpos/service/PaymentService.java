@@ -1,13 +1,13 @@
 package com.softlines.fastpos.service;
 
-import com.softlines.fastpos.domain.CashOperation;
-import com.softlines.fastpos.domain.Order;
-import com.softlines.fastpos.domain.OrderState;
+import com.softlines.fastpos.domain.*;
 import com.softlines.fastpos.dto.OrderDto;
 import com.softlines.fastpos.dto.PaymentDto;
+import com.softlines.fastpos.dto.mapping.CustomerMapper;
 import com.softlines.fastpos.dto.mapping.DeliverymanMapper;
 import com.softlines.fastpos.dto.mapping.OrderMapper;
 import com.softlines.fastpos.dto.mapping.PaymentMapper;
+import com.softlines.fastpos.repository.CustomerRepository;
 import com.softlines.fastpos.repository.DeliverymanRepository;
 import com.softlines.fastpos.repository.OrderRepository;
 import com.softlines.fastpos.repository.PaymentRepository;
@@ -32,20 +32,34 @@ public class PaymentService {
     @Autowired
     DeliverymanRepository deliverymanRepository;
     @Autowired
+    CustomerRepository customerRepository;
+    @Autowired
     DeliverymanMapper deliverymanMapper;
     @Autowired
+    CustomerMapper customerMapper;
+    @Autowired
     OrderMapper orderMapper;
-    public PaymentDto doPaymentDeliveryMan(PaymentDto paymentDto){
+    public PaymentDto processPayment(PaymentDto paymentDto){
 
+        Deliveryman deliveryman = null;
+        Customer customer = null;
+        List<Order> orders = null;
         List<OrderDto> paymentOrders = new ArrayList<>();
 
         var payment=paymentMapper.toPayment(paymentDto);
         payment.setCashOperation(CashOperation.builder().amount(payment.getAmount()).payment(payment).build());
         var savedPayment=  paymentRepository.save(payment);
 
-        var orders= orderRepository.getByStates(new OrderState[]{ OrderState.Delivered,OrderState.DeliveredPartiallyPaid},savedPayment.getDeliveryman().getId(),null, true);
+        if (paymentDto.getPaymentSource() == PaymentSource.Delivery){
+            orders= orderRepository.getByStates(new OrderState[]{ OrderState.Delivered,OrderState.DeliveredPartiallyPaid},savedPayment.getDeliveryman().getId(), "deliveryman", null, true);
+            deliveryman= deliverymanRepository.findById(savedPayment.getDeliveryman().getId()).get();
+        }
+        if (paymentDto.getPaymentSource() == PaymentSource.Customer){
+            orders= orderRepository.getByStates(new OrderState[]{ OrderState.Credit,OrderState.CreditPartiallyRePaid},savedPayment.getCustomer().getId(), "customer", null, true);
+            customer = customerRepository.findById(savedPayment.getCustomer().getId()).get();
+        }
 
-        var deliveryMan= deliverymanRepository.findById(savedPayment.getDeliveryman().getId()).get();
+
 
 
         double paymentAmount;
@@ -61,36 +75,61 @@ public class PaymentService {
                     break;
                 }
 
-                if (order.getState() == OrderState.DeliveredPartiallyPaid){
+                if (order.getState() == OrderState.DeliveredPartiallyPaid||order.getState() == OrderState.CreditPartiallyRePaid ){
                     var remaining = order.getNewTotal() - order.getGivenAmount();
                     if (paymentAmount>=remaining){
                         order.setGivenAmount(order.getNewTotal());
-                        order.setState(OrderState.DeliveredPaid);
+                        if (paymentDto.getPaymentSource() == PaymentSource.Delivery){
+                            order.setState(OrderState.DeliveredPaid);
+                        }
+                        if (paymentDto.getPaymentSource() == PaymentSource.Customer){
+                            order.setState(OrderState.CreditRePaid);
+                        }
 
                         orderRepository.save(order);
                         paymentAmount-=remaining;
                     }else {
                         order.setGivenAmount( order.getGivenAmount()+paymentAmount);
-                        order.setState(OrderState.DeliveredPartiallyPaid);
+
+
+                        if (paymentDto.getPaymentSource() == PaymentSource.Delivery){
+                            order.setState(OrderState.DeliveredPartiallyPaid);
+                        }
+                        if (paymentDto.getPaymentSource() == PaymentSource.Customer){
+                            order.setState(OrderState.CreditPartiallyRePaid);
+                        }
                         orderRepository.save(order);
                         paymentAmount = 0D;
                     }
 
                 }
 
-                if (order.getState() == OrderState.Delivered){
+                if (order.getState() == OrderState.Delivered|| order.getState() == OrderState.Credit){
 
 
 
                     if (order.getTotal()>paymentAmount){
-                        order.setState(OrderState.DeliveredPartiallyPaid);
+
+                        if (paymentDto.getPaymentSource() == PaymentSource.Delivery){
+                            order.setState(OrderState.DeliveredPartiallyPaid);
+                        }
+                        if (paymentDto.getPaymentSource() == PaymentSource.Customer){
+                            order.setState(OrderState.CreditPartiallyRePaid);
+                        }
                         order.setGivenAmount(paymentAmount);
                         orderRepository.save(order);
 
                         paymentAmount = 0D;
                     }
                     else {
-                        order.setState(OrderState.DeliveredPaid);
+
+                        if (paymentDto.getPaymentSource() == PaymentSource.Delivery){
+                            order.setState(OrderState.DeliveredPaid);
+                        }
+                        if (paymentDto.getPaymentSource() == PaymentSource.Customer){
+                            order.setState(OrderState.CreditRePaid);
+                        }
+
                         orderRepository.save(order);
 
                         paymentAmount=paymentAmount-order.getTotal();
@@ -104,7 +143,13 @@ public class PaymentService {
         }
 
 
-            deliverymanRepository.save(deliveryMan);
+        if (paymentDto.getPaymentSource() == PaymentSource.Delivery) {
+            deliverymanRepository.save(deliveryman);
+        }
+
+        if (paymentDto.getPaymentSource() == PaymentSource.Customer){
+            customerRepository.save(customer);
+        }
         var savedPaymentDTO = paymentMapper.toPaymentDto(savedPayment);
         savedPaymentDTO.setOrders(paymentOrders);
         return savedPaymentDTO;
@@ -119,7 +164,7 @@ public class PaymentService {
 
        var paymentAmount=payment.getAmount()+deliveryMan.getBalance()- oldAmount;
        if(paymentAmount>0){
-     var orders= orderRepository.getByStates(new OrderState[]{ OrderState.Delivered},savedPayment.getDeliveryman().getId(), null, true);
+     var orders= orderRepository.getByStates(new OrderState[]{ OrderState.Delivered},savedPayment.getDeliveryman().getId(), "deliveryman", null, true);
         if (orders!=null&&!orders.isEmpty()){
             for (var order:orders) {
                 if (paymentAmount==0||order.getTotal()>paymentAmount){

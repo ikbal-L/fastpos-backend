@@ -2,11 +2,17 @@ package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Customer;
 
+import com.softlines.fastpos.domain.Deliveryman;
+import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.dto.CustomerDto;
+import com.softlines.fastpos.dto.DeliverymanDto;
+import com.softlines.fastpos.dto.filters.OrderFilter;
 import com.softlines.fastpos.dto.mapping.CustomerMapper;
+import com.softlines.fastpos.dto.service.filtering.OrderFilterService;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.CustomerRepository;
 import com.softlines.fastpos.repository.em.RepositoryDecoratorImp;
+import com.softlines.fastpos.service.CreditService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManagerFactory;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,7 +40,8 @@ public class CustomerController {
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;
-
+    @Autowired
+    private OrderFilterService orderFilterService;
 
 
     @PostMapping("/save")
@@ -101,6 +109,47 @@ public class CustomerController {
 
     }
 
+    @GetMapping("/getallwithbalance")
+    public ResponseEntity<List<CustomerDto>> getCustomersWithBalance() {
+        try {
+
+            List<Customer> customerList = customerRepository.findAll();
+            var states = new ArrayList<OrderState>();
+            states.add(OrderState.Credit);
+            states.add(OrderState.CreditPartiallyRePaid);
+
+
+            if (customerList == null || customerList.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            } else {
+                var ids = customerList.stream().map(Customer::getId).collect(Collectors.toList());
+                var filter = OrderFilter
+                        .builder()
+                        .states(Optional.of(states))
+                        .customerIds(Optional.of(ids)).customerId(Optional.empty())
+                        .orderTime(Optional.empty())
+                        .state(Optional.empty())
+                        .build();
+
+                var orders = orderFilterService.buildQuery(filter).getResultList();
+
+                for (Customer customer : customerList) {
+
+                    CreditService.calculateBalance(customer,orders);
+
+                }
+
+                customerRepository.saveAll(customerList);
+
+                return ResponseEntity.ok().body(customerMapper.toCustomerDTOs(customerList));
+            }
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+
+    }
+
 
     @GetMapping("/getmany")
 
@@ -131,6 +180,41 @@ public class CustomerController {
             if (optionalCustomer.isPresent() && id != 0)
                 return ResponseEntity.ok().body(customerMapper.toCustomerDto(optionalCustomer.get()));
             else
+                return ResponseEntity.noContent().build();
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+
+    }
+
+
+    @GetMapping("/getwithbalance/{id}")
+    public ResponseEntity<CustomerDto> getCustomerWithBalance(@Valid @PathVariable long id) {
+
+        try {
+
+            Optional<Customer> optionalDeliveryman = customerRepository.findById(id);
+
+            if (optionalDeliveryman.isPresent() && id != 0) {
+                var customer = optionalDeliveryman.get();
+                var states = new ArrayList<OrderState>();
+                states.add(OrderState.Credit);
+                states.add(OrderState.CreditPartiallyRePaid);
+
+                var filter = OrderFilter
+                        .builder()
+                        .states(Optional.of(states))
+                        .customerId(Optional.of(customer.getId()))
+                        .orderTime(Optional.empty())
+                        .state(Optional.empty())
+                        .build();
+                var orders = orderFilterService.buildQuery(filter).getResultList();
+
+                CreditService.calculateBalance(customer,orders);
+                customerRepository.save(customer);
+                return ResponseEntity.ok().body(customerMapper.toCustomerDto(customer));
+            }else
                 return ResponseEntity.noContent().build();
 
         } catch (Exception exception) {

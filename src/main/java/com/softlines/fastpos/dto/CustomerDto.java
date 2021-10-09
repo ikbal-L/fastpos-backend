@@ -1,6 +1,8 @@
 package com.softlines.fastpos.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.softlines.fastpos.constants.MessageKeyConstants;
 import com.softlines.fastpos.validation.PhoneNumberCollection;
 import com.softlines.fastpos.validation.customer.CustomerValidationPhoneNumber;
@@ -14,18 +16,17 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 public class CustomerDto {
 
-    @JsonProperty("Id")
     long id;
 
-    @JsonProperty("Name")
-//    @NotBlank(message = MessageKeyConstants.CUSTOMER_NAME_VALIDATION_ERROR)
     String name;
 
-    @JsonProperty("PhoneNumbers")
     @PhoneNumberCollection
     Set<String> phoneNumbers;
+
+    double balance;
 
 
 }

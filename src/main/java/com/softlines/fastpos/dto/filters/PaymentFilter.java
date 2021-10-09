@@ -28,4 +28,11 @@ public class PaymentFilter extends Filter<Payment>{
 
     @JsonProperty("DeliverymanIds")
     Optional<List<Long>> deliverymanIds;
+
+
+    @JsonProperty("CustomerId")
+    Optional<Long> customerId;
+
+    @JsonProperty("CustomerIds")
+    Optional<List<Long>> customerIds;
 }
