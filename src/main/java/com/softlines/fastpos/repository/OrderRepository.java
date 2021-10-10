@@ -27,7 +27,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> ,CustomOrder
             "and not (o.state  like 'Splitted' and o.orderItems is  empty) ")
     List<Order> findAllUnprocessedOrders();
 
-    @Query(value = "select DISTINCT o from Order o where date_format(o.orderTime,'%Y-%m-%d') = ?1")
+    @Query(value = "select DISTINCT o from Order o where date_format(o.orderTime,'%Y-%m-%d') = ?1 order by o.orderTime")
     List<Order> findAllByOrderTime(String orderTime);
 
     @Query(value = "select DISTINCT o from Order o where  o.state like ?1")

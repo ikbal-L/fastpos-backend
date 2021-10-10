@@ -43,7 +43,7 @@ public class Payment extends BaseEntity{
 
     @ManyToOne
     Customer customer;
-
+    @Enumerated(EnumType.STRING)
     PaymentSource paymentSource;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -31,13 +31,14 @@ public class DailyExpenseReport extends BaseEntity {
 //    @Temporal(TemporalType.DATE)
     Date issuedDate;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @MapKeyColumn(name = "receipt_id")
-    @Column(name = "cash_payment_amount")
-    Map<String,Double> CashPayments;
+
+    @OneToMany(mappedBy = "report",fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST})
+    Set<OrderReportInfo> CashPayments;
 
     @OneToMany(fetch = FetchType.EAGER,mappedBy ="dailyExpenseReport")
-    Set<Payment> deliveryPayments;
+    Set<Payment> payments;
+
+
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "misc_expenses")

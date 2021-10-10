@@ -6,12 +6,12 @@ import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Session;
 import com.softlines.fastpos.jwtsecurity.securityrepository.SessionRepository;
 import com.softlines.fastpos.repository.CashRegisterExpenseRepository;
+import com.softlines.fastpos.repository.DailyExpenseReportRepository;
 import com.softlines.fastpos.repository.OrderRepository;
 import com.softlines.fastpos.repository.PaymentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -25,17 +25,16 @@ public class DailyExpenseReportService {
 
     PaymentRepository paymentRepository;
 
+    DailyExpenseReportRepository dailyExpenseReportRepository;
+
     SessionRepository sessionRepository;
 
     CashRegisterExpenseRepository cashRegisterExpenseRepository;
 
-    public DailyExpenseReportService(
-            OrderRepository orderRepository,
-            PaymentRepository paymentRepository,
-            SessionRepository sessionRepository,
-            CashRegisterExpenseRepository cashRegisterExpenseRepository) {
+    public DailyExpenseReportService(OrderRepository orderRepository, PaymentRepository paymentRepository, DailyExpenseReportRepository dailyExpenseReportRepository, SessionRepository sessionRepository, CashRegisterExpenseRepository cashRegisterExpenseRepository) {
         this.orderRepository = orderRepository;
         this.paymentRepository = paymentRepository;
+        this.dailyExpenseReportRepository = dailyExpenseReportRepository;
         this.sessionRepository = sessionRepository;
         this.cashRegisterExpenseRepository = cashRegisterExpenseRepository;
     }
@@ -48,7 +47,7 @@ public class DailyExpenseReportService {
                 .cashRegisterActualAmount(report.getCashRegisterActualAmount()).build();
     }
 
-    public DailyExpenseReport generateDailyExpenseReport(DailyExpenseReportInputDataDto inputData,boolean update) throws ParseException {
+    public DailyExpenseReport generateDailyExpenseReport(DailyExpenseReportInputDataDto inputData, boolean update) throws ParseException {
 
 
         var date = new Date();
@@ -58,20 +57,21 @@ public class DailyExpenseReportService {
         var payedOrdersOfTheDay = orderRepository.findAllByOrderTime(dateString).stream().filter(order -> order.getState() == OrderState.Payed).collect(Collectors.toList());
         var refundedOrdersOfTheDay = orderRepository.findAllByOrderTime(dateString).stream().filter(order -> order.getState() == OrderState.Refunded).collect(Collectors.toList());
         var paymentList = paymentRepository.findAllByDate(dateString);
-        HashSet<Payment> paymentsOfTheDay = new HashSet(paymentList) ;
-
-
-//        Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+        HashSet<Payment> paymentsOfTheDay = new HashSet(paymentList);
 
         var cashRegisterExpenses = cashRegisterExpenseRepository.findAllByIssuedDate(dateString);
 
-        Map<String, Double> cashPayments = new HashMap<>();
+;
+        Set<OrderReportInfo> cashPayments = payedOrdersOfTheDay.stream().map(order ->
+                OrderReportInfo
+                        .builder()
+                        .id(order.getId())
+                        .orderNumber(order.getOrderNumber())
+                        .date(order.getOrderTime())
+                        .total(order.getNewTotal())
+                        .build()).collect(Collectors.toSet());
 
-//        Map<String, Double> deliveryPayments = new HashMap<>();
 
-        payedOrdersOfTheDay.stream().forEach(order -> cashPayments.put(order.getId() + "", order.getNewTotal()));
-
-//        paymentsOfTheDay.stream().forEach(payment -> deliveryPayments.put(payment.getId() + "", payment.getAmount()));
 
         var cashPaymentsSum = payedOrdersOfTheDay.stream().mapToDouble(Order::getGivenAmount).sum();
         var deliveryPaymentsSum = paymentsOfTheDay.stream().mapToDouble(Payment::getAmount).sum();
@@ -96,7 +96,7 @@ public class DailyExpenseReportService {
         var report = DailyExpenseReport.builder()
                 .issuedDate(new Date())
                 .CashPayments(cashPayments)
-                .deliveryPayments(paymentsOfTheDay)
+                .payments(paymentsOfTheDay)
                 .expenses(inputData.getExpenses())
                 .cashRegisterInitialAmount(inputData.getCashRegisterInitialAmount())
                 .cashRegisterDepositedAmount(cashRegisterDepositedAmount)
@@ -107,16 +107,22 @@ public class DailyExpenseReportService {
                 .refunds(refunds)
                 .cashRegisterExpenses(Set.copyOf(cashRegisterExpenses))
                 .build();
-        if (!update){
-            cashRegisterExpenses.forEach(expense -> expense.setReport(report));
+
+        if (!update) {
+
+            report.getCashPayments().forEach(orderReportInfo -> orderReportInfo.setReport(report));
+            report.getCashRegisterExpenses().forEach(expense -> expense.setReport(report));
+            report.getPayments().forEach(payment -> payment.setDailyExpenseReport(report));
+            var saved = dailyExpenseReportRepository.save(report);
+            return saved;
         }
         return report;
     }
 
     public DailyExpenseReport updateDailyExpenseReport(DailyExpenseReport report, DailyExpenseReportInputDataDto inputData) throws ParseException {
-        var generated = generateDailyExpenseReport(inputData,true);
+        var generated = generateDailyExpenseReport(inputData, true);
         report.setCashPayments(generated.getCashPayments());
-        report.setDeliveryPayments(generated.getDeliveryPayments());
+        report.setPayments(generated.getPayments());
         report.setExpenses(generated.getExpenses());
         report.setCashRegisterInitialAmount(generated.getCashRegisterInitialAmount());
         report.setCashRegisterDepositedAmount(generated.getCashRegisterDepositedAmount());
@@ -126,7 +132,9 @@ public class DailyExpenseReportService {
         report.setEarningsByCategory(generated.getEarningsByCategory());
         report.setRefunds(generated.getRefunds());
         report.setCashRegisterExpenses(generated.getCashRegisterExpenses());
+        report.getCashPayments().forEach(orderReportInfo -> orderReportInfo.setReport(report));
         report.getCashRegisterExpenses().forEach(expense -> expense.setReport(report));
+        report.getPayments().forEach(payment -> payment.setDailyExpenseReport(report));
         return report;
     }
 
@@ -149,14 +157,14 @@ public class DailyExpenseReportService {
                         .issuedBy(getUserFullNameFromSession(order.getModificationSessionId())).build()).collect(Collectors.toList());
     }
 
-    public List<EarningsCategoryGrouping>  getGroupingByCategory(List<Order> orders) {
+    public List<EarningsCategoryGrouping> getGroupingByCategory(List<Order> orders) {
         return orders
                 .stream()
                 .map(Order::getOrderItems)
                 .flatMap(Collection::stream)
                 .collect(Collectors.groupingBy(orderItem -> orderItem.getProduct().getCategory()))
                 .entrySet().stream().map(categoryListEntry -> EarningsCategoryGrouping.builder().category(categoryListEntry.getKey().getName())
-                .quantityOfItems(categoryListEntry.getValue().stream().mapToInt(OrderItem::getQuantity).sum()).amount(categoryListEntry.getValue().stream().mapToDouble(OrderItem::getTotal).sum()).build()).collect(Collectors.toList());
+                        .quantityOfItems(categoryListEntry.getValue().stream().mapToInt(OrderItem::getQuantity).sum()).amount(categoryListEntry.getValue().stream().mapToDouble(OrderItem::getTotal).sum()).build()).collect(Collectors.toList());
 
     }
 }

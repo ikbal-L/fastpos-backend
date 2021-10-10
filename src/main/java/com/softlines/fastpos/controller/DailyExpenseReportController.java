@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/api/dailyexpensereport", produces = "application/json")
@@ -35,21 +38,12 @@ public class DailyExpenseReportController {
     public ResponseEntity<DailyExpenseReportDto> createReport(@RequestBody DailyExpenseReportInputDataDto inputDataDto) throws ParseException {
 
 
-//        var report = dailyExpenseReportRepository.findByIssuedDate(dateString);
-
         var generated = dailyExpenseReportService.generateDailyExpenseReport(inputDataDto,false);
-        var createdReport = dailyExpenseReportRepository.save(generated);
-        var createdReportDto = dailyExpenseReportMapper.toDailyExpenseReportDto(createdReport);
+
+        var createdReportDto = dailyExpenseReportMapper.toDailyExpenseReportDto(generated);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdReportDto);
 
-//        if (report.isEmpty()) {
-//            var generated = dailyExpenseReportService.generateDailyExpenseReport(inputDataDto);
-//            var createdReport = dailyExpenseReportRepository.save(generated);
-//            var createdReportDto = dailyExpenseReportMapper.toDailyExpenseReportDto(createdReport);
-//            return ResponseEntity.status(HttpStatus.CREATED).body(createdReportDto);
-//        } else {
-//            return ResponseEntity.badRequest().build();
-//        }
+
     }
 
     @PutMapping("/put/{id}")
@@ -68,6 +62,8 @@ public class DailyExpenseReportController {
         var generated = dailyExpenseReportService.updateDailyExpenseReport(report.get(),inputDataDto);
         var createdReport = dailyExpenseReportRepository.save(generated);
         var createdReportDto = dailyExpenseReportMapper.toDailyExpenseReportDto(createdReport);
+
+
 
         return ResponseEntity.ok().body(createdReportDto);
     }

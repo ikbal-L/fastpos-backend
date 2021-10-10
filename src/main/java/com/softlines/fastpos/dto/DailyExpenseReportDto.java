@@ -3,10 +3,7 @@ package com.softlines.fastpos.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.softlines.fastpos.domain.CashRegisterExpense;
-import com.softlines.fastpos.domain.EarningsCategoryGrouping;
-import com.softlines.fastpos.domain.OrderRefund;
-import com.softlines.fastpos.domain.Payment;
+import com.softlines.fastpos.domain.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,9 +27,11 @@ public class DailyExpenseReportDto {
 
     Date issuedDate;
 
-    Map<String,Double> CashPayments;
+    Set<OrderReportInfo> CashPayments;
 
     Set<PaymentDto> deliveryPayments;
+
+    Set<PaymentDto> creditRePayments;
 
     Map<String,Double> expenses;
 
