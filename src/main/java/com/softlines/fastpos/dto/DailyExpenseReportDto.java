@@ -12,10 +12,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.FetchType;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @AllArgsConstructor
@@ -27,7 +24,7 @@ public class DailyExpenseReportDto {
 
     Date issuedDate;
 
-    Set<OrderReportInfo> CashPayments;
+    Set<OrderDto> cashPayments = new LinkedHashSet<>();
 
     Set<PaymentDto> deliveryPayments;
 

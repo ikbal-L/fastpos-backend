@@ -22,7 +22,11 @@ public interface OrderMapper {
     @Mapping(source = "deliveryman.id", target = "deliverymanId", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     @Mapping(source = "customer.id", target = "customerId", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     @Mapping(source = "modificationSessionId", target = "lockedBy", qualifiedByName = "lockedBy", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Named("ToOrderDto")
     OrderDto toOrderDto(Order order);
+
+    @Mapping(source = "orderItems",target = "orderItems",ignore = true)
+    OrderDto DtoFromLazyOrder(Order order);
 
     @Mapping(source = "tableId", target = "table",
             nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
@@ -30,10 +34,12 @@ public interface OrderMapper {
     @Mapping(source = "waiterId", target = "waiter", qualifiedByName = "IdToWaiter", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     @Mapping(source = "deliverymanId", target = "deliveryman", qualifiedByName = "IdToDeliveryman", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     @Mapping(source = "customerId", target = "customer", qualifiedByName = "IdToCustomer", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+
     Order toOrder(OrderDto dto);
 
     List<Order> toOrderList(List<OrderDto> orderDtoList);
 
+    @IterableMapping(qualifiedByName ="ToOrderDto" )
     List<OrderDto> toOrderDTOs(List<Order> order);
 
     @Named("lockedBy")

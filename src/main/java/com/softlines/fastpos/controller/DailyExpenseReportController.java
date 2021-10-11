@@ -38,7 +38,7 @@ public class DailyExpenseReportController {
     public ResponseEntity<DailyExpenseReportDto> createReport(@RequestBody DailyExpenseReportInputDataDto inputDataDto) throws ParseException {
 
 
-        var generated = dailyExpenseReportService.generateDailyExpenseReport(inputDataDto,false);
+        var generated = dailyExpenseReportService.generateDailyExpenseReport(inputDataDto,false,null);
 
         var createdReportDto = dailyExpenseReportMapper.toDailyExpenseReportDto(generated);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdReportDto);
@@ -49,21 +49,14 @@ public class DailyExpenseReportController {
     @PutMapping("/put/{id}")
     public ResponseEntity<DailyExpenseReportDto> updateReport( @PathVariable long id,@RequestBody DailyExpenseReportInputDataDto inputDataDto ) throws ParseException {
         var report = dailyExpenseReportRepository.findById(id);
+
         if (report.isEmpty()) return ResponseEntity.noContent().build();
-        var date = new Date();
-        var simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-        var currentDateString = simpleDateFormat.format(date);
-        var reportDateString = simpleDateFormat.format(report.get().getIssuedDate());
-        if (!currentDateString.equals(reportDateString)) return ResponseEntity.badRequest().build();
-
-
 
         var generated = dailyExpenseReportService.updateDailyExpenseReport(report.get(),inputDataDto);
+
         var createdReport = dailyExpenseReportRepository.save(generated);
+
         var createdReportDto = dailyExpenseReportMapper.toDailyExpenseReportDto(createdReport);
-
-
 
         return ResponseEntity.ok().body(createdReportDto);
     }

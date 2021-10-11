@@ -32,8 +32,9 @@ public class DailyExpenseReport extends BaseEntity {
     Date issuedDate;
 
 
-    @OneToMany(mappedBy = "report",fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST})
-    Set<OrderReportInfo> CashPayments;
+    @OneToMany(mappedBy = "report",fetch = FetchType.EAGER)
+    @OrderBy("orderTime asc ")
+    Set<Order> cashPayments;
 
     @OneToMany(fetch = FetchType.EAGER,mappedBy ="dailyExpenseReport")
     Set<Payment> payments;

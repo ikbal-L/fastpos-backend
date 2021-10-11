@@ -99,5 +99,8 @@ public class Order extends SyncEntity {
 
     @OneToOne
     CashOperation cashOperation;
+
+    @ManyToOne
+    DailyExpenseReport report;
 }
 

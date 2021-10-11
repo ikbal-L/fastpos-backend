@@ -47,10 +47,15 @@ public class DailyExpenseReportService {
                 .cashRegisterActualAmount(report.getCashRegisterActualAmount()).build();
     }
 
-    public DailyExpenseReport generateDailyExpenseReport(DailyExpenseReportInputDataDto inputData, boolean update) throws ParseException {
+    public DailyExpenseReport generateDailyExpenseReport(DailyExpenseReportInputDataDto inputData, boolean update,Date issued) throws ParseException {
 
 
-        var date = new Date();
+        Date date = null;
+        if (update) {
+            date = issued;
+        }else {
+            date = new Date();
+        }
         var simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         var dateString = simpleDateFormat.format(date);
         var ordersOfTheDay = orderRepository.findAllByOrderTime(dateString).stream().filter(order -> order.getState() == OrderState.Payed || order.getState() == OrderState.DeliveredPaid).collect(Collectors.toList());
@@ -61,17 +66,7 @@ public class DailyExpenseReportService {
 
         var cashRegisterExpenses = cashRegisterExpenseRepository.findAllByIssuedDate(dateString);
 
-;
-        Set<OrderReportInfo> cashPayments = payedOrdersOfTheDay.stream().map(order ->
-                OrderReportInfo
-                        .builder()
-                        .id(order.getId())
-                        .orderNumber(order.getOrderNumber())
-                        .date(order.getOrderTime())
-                        .total(order.getNewTotal())
-                        .build()).collect(Collectors.toSet());
-
-
+        var cashPayments = Set.copyOf(payedOrdersOfTheDay);
 
         var cashPaymentsSum = payedOrdersOfTheDay.stream().mapToDouble(Order::getGivenAmount).sum();
         var deliveryPaymentsSum = paymentsOfTheDay.stream().mapToDouble(Payment::getAmount).sum();
@@ -95,7 +90,7 @@ public class DailyExpenseReportService {
 
         var report = DailyExpenseReport.builder()
                 .issuedDate(new Date())
-                .CashPayments(cashPayments)
+                .cashPayments(cashPayments)
                 .payments(paymentsOfTheDay)
                 .expenses(inputData.getExpenses())
                 .cashRegisterInitialAmount(inputData.getCashRegisterInitialAmount())
@@ -110,7 +105,7 @@ public class DailyExpenseReportService {
 
         if (!update) {
 
-            report.getCashPayments().forEach(orderReportInfo -> orderReportInfo.setReport(report));
+            report.getCashPayments().forEach(order -> order.setReport(report));
             report.getCashRegisterExpenses().forEach(expense -> expense.setReport(report));
             report.getPayments().forEach(payment -> payment.setDailyExpenseReport(report));
             var saved = dailyExpenseReportRepository.save(report);
@@ -120,7 +115,7 @@ public class DailyExpenseReportService {
     }
 
     public DailyExpenseReport updateDailyExpenseReport(DailyExpenseReport report, DailyExpenseReportInputDataDto inputData) throws ParseException {
-        var generated = generateDailyExpenseReport(inputData, true);
+        var generated = generateDailyExpenseReport(inputData, true,report.getIssuedDate());
         report.setCashPayments(generated.getCashPayments());
         report.setPayments(generated.getPayments());
         report.setExpenses(generated.getExpenses());
