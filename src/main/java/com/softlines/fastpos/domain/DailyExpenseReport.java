@@ -37,6 +37,7 @@ public class DailyExpenseReport extends BaseEntity {
     Set<Order> cashPayments;
 
     @OneToMany(fetch = FetchType.EAGER,mappedBy ="dailyExpenseReport")
+    @OrderBy("date asc ")
     Set<Payment> payments;
 
 

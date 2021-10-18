@@ -26,13 +26,13 @@ public interface DailyExpenseReportMapper {
 
     @Named("ToDeliveryPaymentDto")
     public static Set<PaymentDto> toDeliveryPaymentDTOs(Set<Payment> payments){
-        var deliveryPayments = payments.stream().filter(payment -> payment.getPaymentSource() == PaymentSource.Delivery).map(PaymentMapper.INSTANCE::toPaymentDto).collect(Collectors.toSet());
+        var deliveryPayments = payments.stream().filter(payment -> payment.getPaymentSource() == PaymentSource.Delivery).map(PaymentMapper.INSTANCE::toPaymentDto).collect(Collectors.toCollection(LinkedHashSet::new));
         return deliveryPayments;
     }
 
     @Named("ToCreditRePaymentDto")
     public static Set<PaymentDto> toCreditRePaymentDTOs(Set<Payment> payments){
-        var creditRePayments = payments.stream().filter(payment -> payment.getPaymentSource() == PaymentSource.Customer).map(PaymentMapper.INSTANCE::toPaymentDto).collect(Collectors.toSet());
+        var creditRePayments = payments.stream().filter(payment -> payment.getPaymentSource() == PaymentSource.Customer).map(PaymentMapper.INSTANCE::toPaymentDto).collect(Collectors.toCollection(LinkedHashSet::new));
         return creditRePayments;
     }
     @Named("ToCashPaymentDTOs")
