@@ -47,7 +47,8 @@ public class UserDbConfig {
         try{
             DataSourceProperties authDataSourceProperties = authDataSourceProperties();
             return DataSourceBuilder.create()
-                    .driverClassName("com.mysql.jdbc.Driver")
+//                    .driverClassName("com.mysql.jdbc.Driver")
+                    .driverClassName(authDataSourceProperties.getDriverClassName())
                     .url(authDataSourceProperties.getUrl())
                     .username(authDataSourceProperties.getUsername())
                     .password(authDataSourceProperties.getPassword())

@@ -78,7 +78,7 @@ public class CustomerControllerTest {
     public void addCustomer() throws Exception {
 
         customer.setName("ahmed");
-        customer.setMobile("red");
+
 
         mvc.perform(post("/customer/save")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -95,7 +95,7 @@ public class CustomerControllerTest {
 
         customer.setId(2);
         customer.setName("customer 2");
-        customer.setMobile("0751654135");
+
 
         mvc.perform(put("/customer/put/{id}", "2")
                 .contentType(MediaType.APPLICATION_JSON)

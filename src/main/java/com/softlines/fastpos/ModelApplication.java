@@ -28,4 +28,9 @@ public class ModelApplication implements WebMvcConfigurer {
 
     }
 
+    public static void stop()
+    {
+        System.exit(0);
+    }
+
 }
