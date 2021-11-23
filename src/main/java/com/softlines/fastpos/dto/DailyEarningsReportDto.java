@@ -12,17 +12,18 @@ import javax.persistence.ElementCollection;
 import javax.persistence.FetchType;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
-public class DailyExpenseReportDto {
+public class DailyEarningsReportDto {
 
     Long id;
 
-    Date issuedDate;
+    LocalDateTime issuedDate;
 
     Set<OrderDto> cashPayments = new LinkedHashSet<>();
 

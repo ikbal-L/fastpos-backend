@@ -5,6 +5,8 @@ import com.softlines.fastpos.jwtsecurity.securitydomain.*;
 import com.softlines.fastpos.jwtsecurity.securityrepository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -27,7 +29,8 @@ import java.util.stream.Collectors;
 
 
 @Configuration
-@Profile("prod")
+//@Profile("prod")
+@Profile("dev")
 @EnableJpaRepositories(
         basePackages = "com.softlines.fastpos.repository",
         entityManagerFactoryRef = "entityManagerFactory",
@@ -62,6 +65,17 @@ public class DbConfig {
 
     @Value("${com.softlines.fastpos.jwtsecurity.db.port}")
     private String dbPort;
+    @Value("${spring.datasource.driver-class-name}")
+    private String driverClassName ;
+
+
+    @Bean
+    @ConfigurationProperties(prefix = "spring.datasource")
+    public DataSourceProperties authDataSourceProperties() {
+        return new DataSourceProperties();
+    }
+
+
 
     public DriverManagerDataSource createDataSources(DbInfo dbInfo) throws Exception {
         try {
@@ -81,7 +95,8 @@ public class DbConfig {
     }
 
     @Bean
-    @Profile("prod")
+    //@Profile("prod")
+    @Profile("dev")
     public CustomRoutingDataSource customRoutingDataSource() throws Exception {
         var roles = initRolesAndPrivileges();
         initiateUserDB(roles);
@@ -104,7 +119,8 @@ public class DbConfig {
     }
 
     @Bean
-    @Profile("prod")
+    //@Profile("prod")
+    @Profile("dev")
     public PlatformTransactionManager transactionManager() throws Exception {
         try {
             EntityManagerFactory factory = entityManagerFactory().getObject();
@@ -116,7 +132,8 @@ public class DbConfig {
 
     @Bean
     @Primary
-    @Profile("prod")
+    //@Profile("prod")
+    @Profile("dev")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws Exception {
         try {
             LocalContainerEntityManagerFactoryBean factory =
@@ -137,39 +154,46 @@ public class DbConfig {
 
     public void initiateUserDB(List<Role> roles) {
         PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
+        DataSourceProperties dsp = authDataSourceProperties();
         DbInfo dbInfo = new DbInfo();
-        dbInfo.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dbInfo.setUrl("jdbc:mysql://localhost:$port/$db_name?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8"
+        DbInfo dbInfo2 = new DbInfo();
+        DbInfo dbInfo3 = new DbInfo();
+
+        dbInfo.setUsername(dsp.getUsername());
+        dbInfo.setPassword(dsp.getPassword());
+
+        dbInfo2.setUsername(dsp.getUsername());
+        dbInfo2.setPassword(dsp.getPassword());
+
+        dbInfo3.setUsername(dsp.getUsername());
+        dbInfo3.setPassword(dsp.getPassword());
+
+        dbInfo.setDriverClassName(driverClassName);
+        dbInfo.setUrl("jdbc:mariadb://localhost:$port/$db_name?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8"
                 .replace("$db_name",dbName)
                 .replace("$port",dbPort));
 
 
         dbInfo.setName("defaultDB");
-        dbInfo.setUsername("root");
-        dbInfo.setPassword("");
 
-        DbInfo dbInfo2 = new DbInfo();
-        dbInfo2.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dbInfo2.setUrl("jdbc:mysql://localhost:$port/$db_name2?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8"
+
+
+        dbInfo2.setDriverClassName(driverClassName);
+        dbInfo2.setUrl("jdbc:mariadb://localhost:$port/$db_name2?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8"
                 .replace("$db_name",dbName)
                 .replace("$port",dbPort));
 
 
         dbInfo2.setName("firstDB");
-        dbInfo2.setUsername("root");
-        dbInfo2.setPassword("");
 
-        DbInfo dbInfo3 = new DbInfo();
-        dbInfo3.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dbInfo3.setUrl("jdbc:mysql://localhost:$port/$db_name3?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8"
+
+        dbInfo3.setDriverClassName(driverClassName);
+        dbInfo3.setUrl("jdbc:mariadb://localhost:$port/$db_name3?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8"
                 .replace("$db_name",dbName)
                 .replace("$port",dbPort));
 
 
         dbInfo3.setName("secondDB");
-        dbInfo3.setUsername("root");
-        dbInfo3.setPassword("");
 
         var db1 = createIfNotFound(dbInfo);
         var db2 = createIfNotFound(dbInfo2);
@@ -194,10 +218,10 @@ public class DbConfig {
         Role adminRole = roleRepository.findByName("ROLE_ADMIN");
         JWTuser admin = new JWTuser();
         admin.setUsername("admin");
-        admin.setFirstName("Test");
-        admin.setLastName("Test");
-        admin.setPassword(encoder.encode("admin"));
-        admin.setEmail("admin@test.com");
+        admin.setFirstName("John");
+        admin.setLastName("Doe");
+        admin.setPassword(encoder.encode("666768"));
+        admin.setEmail("admin@admin.com");
         admin.setRoles(roles);
         admin.setEnabled(true);
         admin.setCreatedDate(LocalDateTime.now());
@@ -209,30 +233,6 @@ public class DbConfig {
         if (jwTuserRepository.findByUsername("admin") == null){
             jwTuserRepository.save(admin);
         }
-
-
-//        Role userRole = roleRepository.findByName("ROLE_USER");
-//        JWTuser user = new JWTuser();
-//        user.setUsername("user");
-//        user.setFirstName("Test");
-//        user.setLastName("Test");
-//        user.setPassword(encoder.encode("user"));
-//        user.setEmail("user@test.com");
-//        user.setRoles(Arrays.asList(userRole));
-//        user.setEnabled(true);
-//
-//        user.setCreatedDate(LocalDateTime.now());
-//        user.setModifiedDate(LocalDateTime.now());
-//        user.setCreationSessionId(UUID.randomUUID().toString());
-//        user.setModificationSessionId(UUID.randomUUID().toString());
-//        user.setBackgroundString("");
-//
-//        dbInfo2 = dbInfoRepository.findByName("firstDB");
-//        if (jwTuserRepository.findByUsername("user") == null){
-//            jwTuserRepository.save(user);
-//        }
-
-
     }
 
     Privilege createPrivilegeIfNotFound(String name) {

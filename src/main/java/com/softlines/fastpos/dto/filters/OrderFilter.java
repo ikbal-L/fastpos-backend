@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Data
@@ -23,7 +24,7 @@ import java.util.*;
 public class OrderFilter extends Filter<Order> {
 
     @Builder.Default
-    Optional<Date> orderTime = Optional.empty();
+    Optional<LocalDateTime> orderTime = Optional.empty();
 
     Optional<OrderState> state = Optional.empty();
 

@@ -1,14 +1,13 @@
 package com.softlines.fastpos.dto.mapping;
 
-import com.softlines.fastpos.domain.DailyExpenseReport;
+import com.softlines.fastpos.domain.DailyEarningsReport;
 import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.Payment;
 import com.softlines.fastpos.domain.PaymentSource;
-import com.softlines.fastpos.dto.DailyExpenseReportDto;
+import com.softlines.fastpos.dto.DailyEarningsReportDto;
 import com.softlines.fastpos.dto.OrderDto;
 import com.softlines.fastpos.dto.PaymentDto;
 import org.mapstruct.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -20,9 +19,9 @@ public interface DailyExpenseReportMapper {
     @Mapping(source = "payments",target = "deliveryPayments",qualifiedByName = "ToDeliveryPaymentDto",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     @Mapping(source = "payments",target = "creditRePayments",qualifiedByName = "ToCreditRePaymentDto",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     @Mapping(source = "cashPayments",target = "cashPayments",qualifiedByName = "ToCashPaymentDTOs",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    DailyExpenseReportDto toDailyExpenseReportDto(DailyExpenseReport dailyExpenseReport);
+    DailyEarningsReportDto toDailyExpenseReportDto(DailyEarningsReport dailyEarningsReport);
 
-    List<DailyExpenseReportDto> toDailyExpenseReportDtos(List<DailyExpenseReport> dailyExpenseReports);
+    List<DailyEarningsReportDto> toDailyExpenseReportDtos(List<DailyEarningsReport> dailyEarningsReports);
 
     @Named("ToDeliveryPaymentDto")
     public static Set<PaymentDto> toDeliveryPaymentDTOs(Set<Payment> payments){

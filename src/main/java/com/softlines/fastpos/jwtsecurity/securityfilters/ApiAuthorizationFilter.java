@@ -100,11 +100,7 @@ public class ApiAuthorizationFilter extends BasicAuthenticationFilter {
                     }
                     return null;
                 }
-//                Map<String, Long> claims = new HashMap<>();
-//                claims.put("dbID", dbID.asLong());
-//                claims.put("annexId", annexId.asLong());
-//                claims.put("terminalId", terminalId.asLong());
-//
+
 
                 return null;
             }

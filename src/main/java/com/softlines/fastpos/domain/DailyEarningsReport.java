@@ -1,4 +1,5 @@
 package com.softlines.fastpos.domain;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -22,31 +23,23 @@ import javax.validation.constraints.NotNull;
 @SQLDelete(sql = "UPDATE orders SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
 @EntityListeners(AuditingEntityListener.class)
-public class DailyExpenseReport extends BaseEntity {
+public class DailyEarningsReport extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
 //    @Temporal(TemporalType.DATE)
-    Date issuedDate;
+    LocalDateTime issuedDate;
 
 
-    @OneToMany(mappedBy = "report",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "dailyEarningsReport",fetch = FetchType.EAGER)
     @OrderBy("orderTime asc ")
     Set<Order> cashPayments;
 
-    @OneToMany(fetch = FetchType.EAGER,mappedBy ="dailyExpenseReport")
+    @OneToMany(fetch = FetchType.EAGER,mappedBy ="dailyEarningsReport")
     @OrderBy("date asc ")
     Set<Payment> payments;
-
-
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "misc_expenses")
-    @MapKeyColumn(name = "expense_description")
-    @Column(name = "expense_amount")
-    Map<String,Double> expenses;
 
     double cashRegisterInitialAmount ;
 

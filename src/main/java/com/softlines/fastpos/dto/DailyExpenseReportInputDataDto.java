@@ -16,10 +16,10 @@ import java.util.Set;
 public class DailyExpenseReportInputDataDto {
 
     @JsonProperty("CashRegisterInitialAmount")
-    double cashRegisterInitialAmount;
+    double cashRegisterInitialAmount =0;
 
     @JsonProperty("CashRegisterActualAmount")
-    double cashRegisterActualAmount;
+    double cashRegisterActualAmount = 0;
 
     @JsonProperty("Expenses")
     Map<String,Double> expenses;

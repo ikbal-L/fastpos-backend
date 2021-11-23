@@ -27,6 +27,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import static com.softlines.fastpos.jwtsecurity.securityfilters.SecurityConstants.SIGN_UP_URL;
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+
 @EnableWebSecurity
 @Configuration
 public class SecurityConfiguration {
@@ -64,8 +65,7 @@ public class SecurityConfiguration {
                     .formLogin()
                     .successHandler(authSuccessHandler())
                     .failureHandler(authenticationFailureHandler()).and()
-                    .antMatcher("/api/*" +
-                            "*")
+                    .antMatcher("/api/**")
                     .cors().and().csrf().disable().authorizeRequests()
                     .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
 //                    .antMatchers(HttpMethod.POST, "/user/save").permitAll()

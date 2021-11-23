@@ -44,7 +44,8 @@ public class OrderFilterService extends FilterService<Order, OrderFilter>{
 
             var simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             var dateString = simpleDateFormat.format(orderTime.get());
-            orderTime = Optional.ofNullable(simpleDateFormat.parse(dateString));
+//            orderTime = Optional.ofNullable(simpleDateFormat.parse(dateString));
+
             var exp = this.criteriaBuilder.function("date_format",String.class,root.get("orderTime"),this.criteriaBuilder.literal("%Y-%m-%d"));
             Predicate orderTimePredicate = this.criteriaBuilder.equal(exp, dateString);
             predicates.add(orderTimePredicate);

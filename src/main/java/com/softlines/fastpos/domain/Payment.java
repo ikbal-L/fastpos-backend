@@ -5,10 +5,9 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @SuperBuilder
@@ -25,7 +24,7 @@ public class Payment extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
-    Date date;
+    LocalDateTime date;
 
     double amount;
 
@@ -47,6 +46,6 @@ public class Payment extends BaseEntity{
     PaymentSource paymentSource;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    DailyExpenseReport dailyExpenseReport;
+    DailyEarningsReport dailyEarningsReport;
 
 }

@@ -262,7 +262,7 @@ public class OrderController {
                     eventBody = updatedOderDto;
                 }
                 var eventDto = EventDto.builder().type(eventType).body(eventBody).build();
-//                sseNotificationService.sendNotificationForAll(eventDto, token);
+                sseNotificationService.sendNotificationForAll(eventDto, token);
 
                 return ResponseEntity.ok().body(updatedOderDto);
 

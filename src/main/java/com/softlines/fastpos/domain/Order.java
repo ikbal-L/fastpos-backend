@@ -1,12 +1,7 @@
 package com.softlines.fastpos.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -14,7 +9,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
@@ -42,7 +38,7 @@ public class Order extends SyncEntity {
     long orderNumber;
 
 //    @Temporal(TemporalType.DATE)
-    Date orderTime;
+    LocalDateTime orderTime;
 
 
     LocalTime elapsedTime;
@@ -100,7 +96,11 @@ public class Order extends SyncEntity {
     @OneToOne
     CashOperation cashOperation;
 
-    @ManyToOne
-    DailyExpenseReport report;
+    @ManyToOne(fetch = FetchType.LAZY)
+    DailyEarningsReport dailyEarningsReport;
+
+    public LocalDate getOrderDate(){
+        return orderTime.toLocalDate();
+    }
 }
 

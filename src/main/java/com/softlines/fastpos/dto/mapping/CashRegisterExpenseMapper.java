@@ -1,9 +1,7 @@
 package com.softlines.fastpos.dto.mapping;
 
 import com.softlines.fastpos.domain.CashRegisterExpense;
-import com.softlines.fastpos.domain.DailyExpenseReport;
 import com.softlines.fastpos.dto.CashRegisterExpenseDto;
-import com.softlines.fastpos.dto.DailyExpenseReportDto;
 import org.mapstruct.Mapper;
 
 import java.util.List;

@@ -1,7 +1,6 @@
 package com.softlines.fastpos.service;
 
 import com.softlines.fastpos.domain.*;
-import com.softlines.fastpos.dto.DailyExpenseReportInputDataDto;
 import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
 import com.softlines.fastpos.jwtsecurity.securitydomain.Session;
 import com.softlines.fastpos.jwtsecurity.securityrepository.SessionRepository;
@@ -12,8 +11,8 @@ import com.softlines.fastpos.repository.PaymentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,6 +29,10 @@ public class DailyExpenseReportService {
     SessionRepository sessionRepository;
 
     CashRegisterExpenseRepository cashRegisterExpenseRepository;
+    private List<Order> payedOrdersOfTheDay;
+    private List<Order> refundedOrdersOfTheDay;
+    private HashSet<Payment> paymentsOfTheDay;
+    private List<CashRegisterExpense> cashRegisterExpenses;
 
     public DailyExpenseReportService(OrderRepository orderRepository, PaymentRepository paymentRepository, DailyExpenseReportRepository dailyExpenseReportRepository, SessionRepository sessionRepository, CashRegisterExpenseRepository cashRegisterExpenseRepository) {
         this.orderRepository = orderRepository;
@@ -39,32 +42,21 @@ public class DailyExpenseReportService {
         this.cashRegisterExpenseRepository = cashRegisterExpenseRepository;
     }
 
-    public DailyExpenseReportInputDataDto getInputData(DailyExpenseReport report) {
-
-        return DailyExpenseReportInputDataDto.builder()
-                .expenses(report.getExpenses())
-                .cashRegisterInitialAmount(report.getCashRegisterInitialAmount())
-                .cashRegisterActualAmount(report.getCashRegisterActualAmount()).build();
-    }
-
-    public DailyExpenseReport generateDailyExpenseReport(DailyExpenseReportInputDataDto inputData, boolean update,Date issued) throws ParseException {
 
 
-        Date date = null;
-        if (update) {
-            date = issued;
-        }else {
-            date = new Date();
-        }
-        var simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        var dateString = simpleDateFormat.format(date);
-        var ordersOfTheDay = orderRepository.findAllByOrderTime(dateString).stream().filter(order -> order.getState() == OrderState.Payed || order.getState() == OrderState.DeliveredPaid).collect(Collectors.toList());
-        var payedOrdersOfTheDay = orderRepository.findAllByOrderTime(dateString).stream().filter(order -> order.getState() == OrderState.Payed).collect(Collectors.toList());
-        var refundedOrdersOfTheDay = orderRepository.findAllByOrderTime(dateString).stream().filter(order -> order.getState() == OrderState.Refunded).collect(Collectors.toList());
-        var paymentList = paymentRepository.findAllByDate(dateString);
-        HashSet<Payment> paymentsOfTheDay = new HashSet(paymentList);
+    public DailyEarningsReport generateDailyExpenseReport( boolean update, LocalDate issued) {
 
-        var cashRegisterExpenses = cashRegisterExpenseRepository.findAllByIssuedDate(dateString);
+
+        LocalDate date;
+        date = Objects.requireNonNullElseGet(issued, LocalDate::now);
+
+        var ordersOfTheDay = orderRepository.findAllByOrderTime(date).stream().filter(order -> order.getState() == OrderState.Payed || order.getState() == OrderState.DeliveredPaid).collect(Collectors.toList());
+
+
+        setPayedOrdersOfTheDay(date);
+        setRefundedOrdersOfTheDay(date);
+        setPaymentsOfTheDay(date);
+        setCashRegisterExpenses(date);
 
         var cashPayments = Set.copyOf(payedOrdersOfTheDay);
 
@@ -76,8 +68,7 @@ public class DailyExpenseReportService {
 
         var cashRegisterWithDrawnAmount = payedOrdersOfTheDay.stream().mapToDouble(Order::getReturnedAmount).sum();
 
-        var cashRegisterExpectedAmount = inputData.
-                getCashRegisterInitialAmount()
+        var cashRegisterExpectedAmount =
                 + cashRegisterDepositedAmount
                 + deliveryPaymentsSum
                 + cashRegisterWithDrawnAmount //negative value
@@ -88,16 +79,15 @@ public class DailyExpenseReportService {
         var refunds = Set.copyOf(getOrderRefunds(refundedOrdersOfTheDay));
 
 
-        var report = DailyExpenseReport.builder()
-                .issuedDate(new Date())
+        var report = DailyEarningsReport.builder()
+                .issuedDate(date.atStartOfDay())
                 .cashPayments(cashPayments)
                 .payments(paymentsOfTheDay)
-                .expenses(inputData.getExpenses())
-                .cashRegisterInitialAmount(inputData.getCashRegisterInitialAmount())
+                .cashRegisterInitialAmount(0)
                 .cashRegisterDepositedAmount(cashRegisterDepositedAmount)
                 .cashRegisterWithdrawnAmount(cashRegisterWithDrawnAmount)
                 .cashRegisterExpectedAmount(cashRegisterExpectedAmount)
-                .cashRegisterActualAmount(inputData.getCashRegisterActualAmount())
+                .cashRegisterActualAmount(0)
                 .earningsByCategory(items)
                 .refunds(refunds)
                 .cashRegisterExpenses(Set.copyOf(cashRegisterExpenses))
@@ -105,20 +95,35 @@ public class DailyExpenseReportService {
 
         if (!update) {
 
-            report.getCashPayments().forEach(order -> order.setReport(report));
+            report.getCashPayments().forEach(order -> order.setDailyEarningsReport(report));
             report.getCashRegisterExpenses().forEach(expense -> expense.setReport(report));
-            report.getPayments().forEach(payment -> payment.setDailyExpenseReport(report));
-            var saved = dailyExpenseReportRepository.save(report);
-            return saved;
+            report.getPayments().forEach(payment -> payment.setDailyEarningsReport(report));
+            return dailyExpenseReportRepository.save(report);
         }
         return report;
     }
 
-    public DailyExpenseReport updateDailyExpenseReport(DailyExpenseReport report, DailyExpenseReportInputDataDto inputData) throws ParseException {
-        var generated = generateDailyExpenseReport(inputData, true,report.getIssuedDate());
+    private void setCashRegisterExpenses(LocalDate date) {
+        cashRegisterExpenses = cashRegisterExpenseRepository.findAllByIssuedDate(date);
+    }
+
+    private void setPayedOrdersOfTheDay(LocalDate date) {
+        payedOrdersOfTheDay = orderRepository.findAllByOrderTime(date).stream().filter(order -> order.getState() == OrderState.Payed).collect(Collectors.toList());
+    }
+
+    private void setRefundedOrdersOfTheDay(LocalDate date) {
+        refundedOrdersOfTheDay = orderRepository.findAllByOrderTime(date).stream().filter(order -> order.getState() == OrderState.Refunded).collect(Collectors.toList());
+    }
+
+    private void setPaymentsOfTheDay(LocalDate date) {
+        var paymentList = paymentRepository.findAllByDate(date);
+        paymentsOfTheDay = new HashSet<>(paymentList);
+    }
+
+    public DailyEarningsReport updateDailyExpenseReport(DailyEarningsReport report) {
+        var generated = generateDailyExpenseReport( true, report.getIssuedDate().toLocalDate());
         report.setCashPayments(generated.getCashPayments());
         report.setPayments(generated.getPayments());
-        report.setExpenses(generated.getExpenses());
         report.setCashRegisterInitialAmount(generated.getCashRegisterInitialAmount());
         report.setCashRegisterDepositedAmount(generated.getCashRegisterDepositedAmount());
         report.setCashRegisterWithdrawnAmount(generated.getCashRegisterWithdrawnAmount());
@@ -127,10 +132,11 @@ public class DailyExpenseReportService {
         report.setEarningsByCategory(generated.getEarningsByCategory());
         report.setRefunds(generated.getRefunds());
         report.setCashRegisterExpenses(generated.getCashRegisterExpenses());
-        report.getCashPayments().forEach(orderReportInfo -> orderReportInfo.setReport(report));
+        report.getCashPayments().forEach(orderReportInfo -> orderReportInfo.setDailyEarningsReport(report));
         report.getCashRegisterExpenses().forEach(expense -> expense.setReport(report));
-        report.getPayments().forEach(payment -> payment.setDailyExpenseReport(report));
-        return report;
+        report.getPayments().forEach(payment -> payment.setDailyEarningsReport(report));
+
+        return dailyExpenseReportRepository.save(report);
     }
 
     private Optional<JWTuser> getUserFromSession(String sessionUUID) {
@@ -161,5 +167,61 @@ public class DailyExpenseReportService {
                 .entrySet().stream().map(categoryListEntry -> EarningsCategoryGrouping.builder().category(categoryListEntry.getKey().getName())
                         .quantityOfItems(categoryListEntry.getValue().stream().mapToInt(OrderItem::getQuantity).sum()).amount(categoryListEntry.getValue().stream().mapToDouble(OrderItem::getTotal).sum()).build()).collect(Collectors.toList());
 
+    }
+
+    public boolean isReportUpToDate(DailyEarningsReport report, LocalDate date) {
+
+
+        setPayedOrdersOfTheDay(date);
+        setRefundedOrdersOfTheDay(date);
+        setPaymentsOfTheDay(date);
+        setCashRegisterExpenses(date);
+
+        var cashPaymentsCount = report.getCashPayments().size();
+        var currentPayedOrdersCount = payedOrdersOfTheDay.size();
+
+        var refundCount = report.getRefunds().size();
+        var currentRefundedOrdersCount = refundedOrdersOfTheDay.size();
+
+        var paymentCount = report.getPayments().size();
+        var currentPaymentCount = paymentsOfTheDay.size();
+
+        var cashRegisterExpensesCount = report.getCashRegisterExpenses().size();
+        var currentCashRegisterExpenses = cashRegisterExpenses.size();
+
+        var isCashPaymentsCountUpToDate = cashPaymentsCount == currentPayedOrdersCount;
+        var isRefundCountUpToDate = refundCount == currentRefundedOrdersCount;
+        var isPaymentCountUpToDate = paymentCount == currentPaymentCount;
+        var isCashRegisterExpensesCountUpToDate = cashRegisterExpensesCount == currentCashRegisterExpenses;
+        //noinspection UnnecessaryLocalVariable
+         var isReportUpToDate =
+                        isCashPaymentsCountUpToDate &&
+                        isRefundCountUpToDate &&
+                        isPaymentCountUpToDate &&
+                        isCashRegisterExpensesCountUpToDate;
+
+        return isReportUpToDate;
+
+    }
+
+    public void updateReportsInRange( ) {
+
+        var result = dailyExpenseReportRepository.findFirstByOrderByIssuedDateDesc();
+        if (result.isEmpty()) return;
+        var latestReport = result.get();
+        var latestDate = latestReport.getIssuedDate().toLocalDate();
+        if (isEveryReportGenerated(latestDate)) return;
+
+        var from = latestDate.plusDays(1);
+        var to = LocalDate.now();
+        while (from.isBefore(to)){
+            generateDailyExpenseReport(false,from);
+            from = from.plusDays(1);
+        }
+
+    }
+
+    public boolean isEveryReportGenerated(LocalDate latestDate){
+        return latestDate.isEqual(LocalDate.now())||latestDate.isEqual(LocalDate.now().minusDays(1));
     }
 }

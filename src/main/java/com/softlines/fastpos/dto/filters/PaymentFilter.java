@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +22,7 @@ import java.util.Optional;
 public class PaymentFilter extends Filter<Payment>{
 
     @JsonProperty("Date")
-    Optional<Date> date;
+    Optional<LocalDateTime> date;
 
     @JsonProperty("DeliverymanId")
     Optional<Long> deliverymanId;

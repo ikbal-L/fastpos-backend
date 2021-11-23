@@ -1,5 +1,4 @@
 package com.softlines.fastpos.controller;
-
 import com.softlines.fastpos.domain.Product;
 import com.softlines.fastpos.dto.ProductDto;
 import com.softlines.fastpos.dto.mapping.ProductMapper;
@@ -7,35 +6,28 @@ import com.softlines.fastpos.dto.service.DtoServiceImpl;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.ProductRepository;
 import com.softlines.fastpos.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-
 import javax.validation.Valid;
-
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/api/product",produces = "application/json")
+@RequiredArgsConstructor
 public class ProductController {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    private DtoServiceImpl dtoService;
+    private final DtoServiceImpl dtoService;
 
-    @Autowired
-    private ProductMapper productMapper;
+    private final ProductMapper productMapper;
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
 
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 

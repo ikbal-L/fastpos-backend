@@ -14,6 +14,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +30,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> ,CustomOrder
 
     @Query(value = "select DISTINCT o from Order o where date_format(o.orderTime,'%Y-%m-%d') = ?1 order by o.orderTime")
     List<Order> findAllByOrderTime(String orderTime);
+    @Query(value = "select DISTINCT o from Order o where CAST(o.orderTime as LocalDate) = ?1 order by o.orderTime")
+    List<Order> findAllByOrderTime(LocalDate date);
 
     @Query(value = "select DISTINCT o from Order o where  o.state like ?1")
     List<Order> findAllByState(OrderState state);

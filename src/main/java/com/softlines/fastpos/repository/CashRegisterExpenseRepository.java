@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -18,5 +19,8 @@ public interface CashRegisterExpenseRepository extends JpaRepository<CashRegiste
 
     @Query(value = "select  DISTINCT e from CashRegisterExpense as e where date_format(e.issuedDate,'%Y-%m-%d') = ?1")
     List<CashRegisterExpense> findAllByIssuedDate(String issuedDate);
-//    List<CashRegisterExpense> findAllByIssuedDate_Date(int issuedDate_date);
+
+    @Query(value = "select  DISTINCT e from CashRegisterExpense as e where Cast(e.issuedDate as LocalDate) = ?1")
+    List<CashRegisterExpense> findAllByIssuedDate(LocalDate date);
+
 }

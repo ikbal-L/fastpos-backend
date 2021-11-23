@@ -37,7 +37,7 @@ public class PaymentFilterService extends FilterService<Payment, PaymentFilter> 
 
             var simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             var dateString = simpleDateFormat.format(date.get());
-            date = Optional.ofNullable(simpleDateFormat.parse(dateString));
+//            date = Optional.ofNullable(simpleDateFormat.parse(dateString));
             var exp = this.criteriaBuilder.function("date_format",String.class,root.get("date"),this.criteriaBuilder.literal("%Y-%m-%d"));
             Predicate datePredicate = this.criteriaBuilder.equal(exp, dateString);
             predicates.add(datePredicate);

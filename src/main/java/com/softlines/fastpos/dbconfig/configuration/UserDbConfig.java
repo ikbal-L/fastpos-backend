@@ -3,6 +3,7 @@ package com.softlines.fastpos.dbconfig.configuration;
 
 import com.softlines.fastpos.jwtsecurity.securityconfiguration.AuditorAwareImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -22,7 +23,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
-@Profile("prod")
+//@Profile("prod")
+@Profile("dev")
 @Configuration
 @EnableJpaRepositories(
         basePackages = "com.softlines.fastpos.jwtsecurity.securityrepository",
@@ -42,13 +44,17 @@ public class UserDbConfig {
         return new DataSourceProperties();
     }
 
+    @Value("${spring.datasource.driver-class-name}")
+    private String driverClassName ;
+
+
     @Bean
     public DataSource authDataSource() throws Exception {
         try{
             DataSourceProperties authDataSourceProperties = authDataSourceProperties();
             return DataSourceBuilder.create()
 //                    .driverClassName("com.mysql.jdbc.Driver")
-                    .driverClassName(authDataSourceProperties.getDriverClassName())
+                    .driverClassName(driverClassName)
                     .url(authDataSourceProperties.getUrl())
                     .username(authDataSourceProperties.getUsername())
                     .password(authDataSourceProperties.getPassword())
