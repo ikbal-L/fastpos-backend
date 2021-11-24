@@ -149,18 +149,10 @@ public class OrderController {
 
     @PostMapping(value = {"/getallbycriteria"})
     ResponseEntity<List<OrderDto>> getOrdersByCriteria(@RequestBody OrderFilter filter){
-        try {
-
-            TypedQuery<Order> query = orderFilterService.buildQuery(filter);
-
-            var orders= query.getResultList();
-            var orderDtos = orderMapper.toOrderDTOs(orders);
-            return  ResponseEntity.ok(orderDtos);
-        }catch (Exception e){
-
-           return exceptionManagement.getResponseEntityAccordingToException(e);
-        }
-
+        TypedQuery<Order> query = orderFilterService.buildQuery(filter);
+        var orders= query.getResultList();
+        var orderDtos = orderMapper.toOrderDTOs(orders);
+        return  ResponseEntity.ok(orderDtos);
     }
 
     @GetMapping(value = {"/getall","/getall/{filterByState}"})

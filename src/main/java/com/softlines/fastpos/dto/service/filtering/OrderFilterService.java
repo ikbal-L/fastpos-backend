@@ -12,6 +12,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -42,12 +43,8 @@ public class OrderFilterService extends FilterService<Order, OrderFilter>{
 
         if (orderTime.isPresent()){
 
-            var simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            var dateString = simpleDateFormat.format(orderTime.get());
-//            orderTime = Optional.ofNullable(simpleDateFormat.parse(dateString));
 
-            var exp = this.criteriaBuilder.function("date_format",String.class,root.get("orderTime"),this.criteriaBuilder.literal("%Y-%m-%d"));
-            Predicate orderTimePredicate = this.criteriaBuilder.equal(exp, dateString);
+            Predicate orderTimePredicate = this.criteriaBuilder.equal(root.get("orderTime").as(LocalDate.class), orderTime.get().toLocalDate());
             predicates.add(orderTimePredicate);
         }
 

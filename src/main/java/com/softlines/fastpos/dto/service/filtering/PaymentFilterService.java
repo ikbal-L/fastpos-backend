@@ -9,6 +9,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.criteria.Predicate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,11 +36,7 @@ public class PaymentFilterService extends FilterService<Payment, PaymentFilter> 
         var date = filter.getDate();
         if (date.isPresent()){
 
-            var simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            var dateString = simpleDateFormat.format(date.get());
-//            date = Optional.ofNullable(simpleDateFormat.parse(dateString));
-            var exp = this.criteriaBuilder.function("date_format",String.class,root.get("date"),this.criteriaBuilder.literal("%Y-%m-%d"));
-            Predicate datePredicate = this.criteriaBuilder.equal(exp, dateString);
+            Predicate datePredicate = this.criteriaBuilder.equal(root.get("date").as(LocalDate.class), date.get().toLocalDate());
             predicates.add(datePredicate);
         }
 
