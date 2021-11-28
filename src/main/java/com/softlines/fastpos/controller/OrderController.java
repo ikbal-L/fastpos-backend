@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
 import javax.validation.Valid;
+import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -148,7 +149,7 @@ public class OrderController {
     }
 
     @PostMapping(value = {"/getallbycriteria"})
-    ResponseEntity<List<OrderDto>> getOrdersByCriteria(@RequestBody OrderFilter filter){
+    ResponseEntity<List<OrderDto>> getOrdersByCriteria(@RequestBody OrderFilter filter) throws ParseException {
         TypedQuery<Order> query = orderFilterService.buildQuery(filter);
         var orders= query.getResultList();
         var orderDtos = orderMapper.toOrderDTOs(orders);
