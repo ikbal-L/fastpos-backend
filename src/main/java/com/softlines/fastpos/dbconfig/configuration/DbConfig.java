@@ -3,6 +3,7 @@ package com.softlines.fastpos.dbconfig.configuration;
 import com.softlines.fastpos.jwtsecurity.securityconfiguration.AuditorAwareImpl;
 import com.softlines.fastpos.jwtsecurity.securitydomain.*;
 import com.softlines.fastpos.jwtsecurity.securityrepository.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
         transactionManagerRef = "transactionManager"
 )
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
+@Slf4j
 public class DbConfig {
 
     @Autowired
@@ -220,27 +222,42 @@ public class DbConfig {
         admin.setUsername("admin");
         admin.setFirstName("John");
         admin.setLastName("Doe");
-        admin.setPassword(encoder.encode("666768"));
+        admin.setPassword(encoder.encode("123123"));
         admin.setEmail("admin@admin.com");
-        admin.setRoles(roles);
+        admin.setRoles(List.of(adminRole));
         admin.setEnabled(true);
         admin.setCreatedDate(LocalDateTime.now());
         admin.setModifiedDate(LocalDateTime.now());
         admin.setCreationSessionId(UUID.randomUUID().toString());
         admin.setModificationSessionId(UUID.randomUUID().toString());
         admin.setBackgroundString("");
-        dbInfo = dbInfoRepository.findByName("defaultDB");
+
         if (jwTuserRepository.findByUsername("admin") == null){
             jwTuserRepository.save(admin);
         }
     }
 
-    Privilege createPrivilegeIfNotFound(String name) {
+    Privilege createCrudPrivilegeIfNotFound(String crudPrivilege, String entityType) {
 
+        var name = crudPrivilege+"_"+entityType;
         Privilege privilege = privilegeRepository.findByName(name);
         if (privilege == null) {
+            log.info("Creating Privilege {} for Entity {}",crudPrivilege,entityType);
             privilege = new Privilege();
             privilege.setName(name);
+            return privilegeRepository.save(privilege);
+        }
+        return privilege;
+    }
+
+    Privilege createPrivilegeIfNotFound(String privilegeName) {
+
+
+        Privilege privilege = privilegeRepository.findByName(privilegeName);
+        if (privilege == null) {
+            log.info("Creating Privilege {} ",privilegeName);
+            privilege = new Privilege();
+            privilege.setName(privilegeName);
             return privilegeRepository.save(privilege);
         }
         return privilege;
@@ -274,6 +291,7 @@ public class DbConfig {
 
         Role role = roleRepository.findByName(name);
         if (role == null) {
+            log.info("Creating Role {}",name);
             role = new Role();
             role.setName(name);
             role.setPrivileges(privileges);
@@ -291,27 +309,34 @@ public class DbConfig {
     }
 
     private List<Role> initRolesAndPrivileges() {
-        String[] entities = {"Product", "Additive", "Category", "Customer", "Order", "OrderItem", "Deliveryman", "Waiter"};
+        String[] entities = {"Product", "Additive", "Category", "Customer", "Order", "OrderItem", "Deliveryman", "Waiter","DailyEarningsReport","Role","User","Payment_Client","Payment_Deliveryman"};
+        String[] miscPrivileges = {"Modify_Global_Settings","Modify_Local_Settings","Refund_Order"};
         List<Privilege> privileges = new ArrayList<>();
+
+
         for (String s : entities) {
 
-            var createTypePrivilege = createPrivilegeIfNotFound("Create_" + s);
-            var readTypePrivilege = createPrivilegeIfNotFound("Read_" + s);
-            var updateTypePrivilege = createPrivilegeIfNotFound("Update_" + s);
-            var deleteTypePrivilege = createPrivilegeIfNotFound("Delete_" + s);
+            var createTypePrivilege = createCrudPrivilegeIfNotFound("Create",s);
+            var readTypePrivilege = createCrudPrivilegeIfNotFound("Read" , s);
+            var updateTypePrivilege = createCrudPrivilegeIfNotFound("Update" , s);
+            var deleteTypePrivilege = createCrudPrivilegeIfNotFound("Delete" , s);
 
             if (createTypePrivilege != null) privileges.add(createTypePrivilege);
             if (readTypePrivilege != null) privileges.add(readTypePrivilege);
             if (updateTypePrivilege != null) privileges.add(updateTypePrivilege);
             if (deleteTypePrivilege != null) privileges.add(deleteTypePrivilege);
         }
+        for (String miscPrivilege : miscPrivileges) {
+            var privilege = createPrivilegeIfNotFound(miscPrivilege);
+            if (privilege!= null) privileges.add(privilege);
+        }
+
         List<Role> roles = new ArrayList<>();
         Role admin = createRoleIfNotFound("ROLE_ADMIN", privileges);
         var orderPrivilegesCreateUpdate = privileges.stream().filter(p -> p.getName() == "Create_Order" || p.getName() == "Update_Order").collect(Collectors.toList());
 
-        Role clerk = createRoleIfNotFound("ROLE_CLERK", orderPrivilegesCreateUpdate);
         roles.add(admin);
-        roles.add(clerk);
+
 
         return roles;
     }

@@ -52,14 +52,14 @@ public class RoleController {
     }
 
     //@PreAuthorize("@apiAuth.checkRoles(authentication, 'ROLE_ADMIN')")
-    @DeleteMapping(value = "/delete", consumes = "application/json")
-    public ResponseEntity<RoleDTO> deleteRole(@RequestBody RoleDTO roleDTO) {
+    @DeleteMapping(value = "/delete/{id}")
+    public ResponseEntity<RoleDTO> deleteRole(@Valid @PathVariable long id) {
         try {
-            Optional<Role> roleToDelete = roleRepository.findRoleById(roleDTO.getId());
+            Optional<Role> roleToDelete = roleRepository.findRoleById(id);
             if (roleToDelete.isPresent()) {
-                Role role = roleToDelete.get();
-                roleRepository.delete(role);
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body(roleDTO);
+                roleRepository.deleteById(id);
+                var roleDTO = roleMapper.toRoleDto(roleToDelete.get());
+                return ResponseEntity.status(HttpStatus.OK).body(roleDTO);
             } else {
                 return ResponseEntity.noContent().build();
             }
