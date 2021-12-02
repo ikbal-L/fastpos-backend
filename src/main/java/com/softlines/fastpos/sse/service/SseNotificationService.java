@@ -6,6 +6,7 @@ import com.softlines.fastpos.sse.model.EventDto;
 import com.softlines.fastpos.sse.repository.EmitterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 

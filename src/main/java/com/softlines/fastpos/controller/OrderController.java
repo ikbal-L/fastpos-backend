@@ -69,7 +69,7 @@ public class OrderController {
 
                 OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
 
-                var eventDto = EventDto.builder().type(SSEventType.CREATE_ORDER).body(createdOderDto).build();
+                var eventDto = EventDto.builder().type(SSEventType.CREATE_ORDER).body(createdOderDto.getId()).build();
                 sseNotificationService.sendNotificationForAll(eventDto, token);
 
 
@@ -252,7 +252,7 @@ public class OrderController {
                     eventBody = createdOrder.getId();
                 } else {
                     eventType = SSEventType.UPDATE_ORDER;
-                    eventBody = updatedOderDto;
+                    eventBody = createdOrder.getId();
                 }
                 var eventDto = EventDto.builder().type(eventType).body(eventBody).build();
                 sseNotificationService.sendNotificationForAll(eventDto, token);

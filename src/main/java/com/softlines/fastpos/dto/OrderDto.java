@@ -106,7 +106,7 @@ public class OrderDto /*extends SyncDto*/ {
     Long waiterId;
 
     @JsonProperty("IsLocked")
-    protected boolean isLocked = false;
+    boolean locked;
 
     @JsonProperty("LockedBy")
     protected String lockedBy;

@@ -16,6 +16,8 @@ import javax.persistence.MappedSuperclass;
 public class SyncEntity  extends BaseEntity{
 
     @Column(name = "is_locked")
-    @Builder.Default
-    boolean isLocked = false;
+    
+    boolean locked ;
+    @Column(name = "locked_by")
+    String lockedBy;
 }

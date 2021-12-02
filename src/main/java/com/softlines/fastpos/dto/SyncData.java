@@ -14,7 +14,7 @@ public class SyncData {
     @JsonProperty("Id")
     protected Long id;
     @JsonProperty("IsLocked")
-    protected boolean isLocked;
+    boolean isLocked;
 
     @JsonProperty("LockedBy")
     protected String lockedBy;

@@ -22,6 +22,7 @@ public interface OrderMapper {
     @Mapping(source = "deliveryman.id", target = "deliverymanId", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     @Mapping(source = "customer.id", target = "customerId", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     @Mapping(source = "modificationSessionId", target = "lockedBy", qualifiedByName = "lockedBy", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "locked", target = "locked", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     @Named("ToOrderDto")
     OrderDto toOrderDto(Order order);
 

@@ -123,6 +123,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             res.setContentType(MediaType.APPLICATION_JSON_VALUE);
             res.setCharacterEncoding("UTF-8");
             res.addHeader("user-meta-background",user.getBackgroundString());
+            res.addHeader("user-meta-session-id",session.getId().toString());
             writer.print(content);
             writer.flush();
         }
