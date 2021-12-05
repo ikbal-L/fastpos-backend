@@ -1,9 +1,6 @@
 package com.softlines.fastpos.domain;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -36,6 +33,11 @@ public class DailyEarningsReport extends BaseEntity {
     @OneToMany(mappedBy = "dailyEarningsReport",fetch = FetchType.EAGER)
     @OrderBy("orderTime asc ")
     Set<Order> cashPayments;
+
+    @OneToMany(mappedBy = "dailyEarningsReport",fetch = FetchType.EAGER)
+    @OrderBy("orderTime asc ")
+    @Where(clause = "state = 'Canceled' ")
+    Set<Order> canceledOrders = new LinkedHashSet<>();
 
     @OneToMany(fetch = FetchType.EAGER,mappedBy ="dailyEarningsReport")
     @OrderBy("date asc ")

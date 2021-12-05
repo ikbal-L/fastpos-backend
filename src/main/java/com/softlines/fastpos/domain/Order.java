@@ -27,7 +27,6 @@ import java.util.List;
 @Where(clause = "deleted = false")
 @javax.persistence.Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)
-
 public class Order extends SyncEntity {
 
     @Id

@@ -33,6 +33,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> ,CustomOrder
     @Query(value = "select DISTINCT o from Order o where CAST(o.orderTime as LocalDate) = ?1 order by o.orderTime")
     List<Order> findAllByOrderTime(LocalDate date);
 
+
+
     @Query(value = "select DISTINCT o from Order o where  o.state like ?1")
     List<Order> findAllByState(OrderState state);
 

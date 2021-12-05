@@ -27,6 +27,8 @@ public class DailyEarningsReportDto {
 
     Set<OrderDto> cashPayments = new LinkedHashSet<>();
 
+    Set<ReportOrderData> canceledOrders = new LinkedHashSet<>();
+
     Set<PaymentDto> deliveryPayments;
 
     Set<PaymentDto> creditRePayments;

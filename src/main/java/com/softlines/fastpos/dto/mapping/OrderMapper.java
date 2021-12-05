@@ -3,6 +3,7 @@ package com.softlines.fastpos.dto.mapping;
 import com.softlines.fastpos.domain.*;
 import com.softlines.fastpos.dto.OrderDto;
 import com.softlines.fastpos.dto.OrderItemDto;
+import com.softlines.fastpos.dto.ReportOrderData;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -28,6 +29,8 @@ public interface OrderMapper {
 
     @Mapping(source = "orderItems",target = "orderItems",ignore = true)
     OrderDto DtoFromLazyOrder(Order order);
+
+    ReportOrderData toReportOrderData(Order order);
 
     @Mapping(source = "tableId", target = "table",
             nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
