@@ -1,13 +1,13 @@
 package com.softlines.fastpos.unitcontrollertest;
 
 import com.softlines.fastpos.ModelApplication;
-import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.RestaurentDto;
-import com.softlines.fastpos.jwtsecurity.securitydomain.securitymapper.RestaurentMapper;
+import com.softlines.fastpos.security.securitydomain.securitydto.RestaurentDto;
+import com.softlines.fastpos.security.securitydomain.securitymapper.RestaurentMapper;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
-import com.softlines.fastpos.jwtsecurity.jwtcontroller.RestaurentController;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Annex;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Restaurent;
-import com.softlines.fastpos.jwtsecurity.securityrepository.RestaurentRepository;
+import com.softlines.fastpos.security.controllers.RestaurentController;
+import com.softlines.fastpos.security.securitydomain.Annex;
+import com.softlines.fastpos.security.securitydomain.Restaurent;
+import com.softlines.fastpos.security.securityrepository.RestaurentRepository;
 import org.junit.Test;
 import org.junit.jupiter.api.Order;
 import org.junit.runner.RunWith;

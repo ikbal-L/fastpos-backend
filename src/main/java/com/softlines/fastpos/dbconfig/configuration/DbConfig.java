@@ -1,8 +1,8 @@
 package com.softlines.fastpos.dbconfig.configuration;
 
-import com.softlines.fastpos.jwtsecurity.securityconfiguration.AuditorAwareImpl;
-import com.softlines.fastpos.jwtsecurity.securitydomain.*;
-import com.softlines.fastpos.jwtsecurity.securityrepository.*;
+import com.softlines.fastpos.security.securityconfiguration.AuditorAwareImpl;
+import com.softlines.fastpos.security.securitydomain.*;
+import com.softlines.fastpos.security.securityrepository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,7 +45,7 @@ public class DbConfig {
     private Environment env;
 
     @Autowired
-    private JWTuserRepository jwTuserRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private DbInfoRepository dbInfoRepository;
@@ -62,10 +62,10 @@ public class DbConfig {
     @Autowired
     private TerminalRepository terminalRepository;
 
-    @Value("${com.softlines.fastpos.jwtsecurity.db.name}")
+    @Value("${com.softlines.fastpos.security.db.name}")
     private String dbName;
 
-    @Value("${com.softlines.fastpos.jwtsecurity.db.port}")
+    @Value("${com.softlines.fastpos.security.db.port}")
     private String dbPort;
     @Value("${spring.datasource.driver-class-name}")
     private String driverClassName ;
@@ -218,7 +218,7 @@ public class DbConfig {
 
 
         Role adminRole = roleRepository.findByName("ROLE_ADMIN");
-        JWTuser admin = new JWTuser();
+        User admin = new User();
         admin.setUsername("admin");
         admin.setFirstName("John");
         admin.setLastName("Doe");
@@ -232,8 +232,8 @@ public class DbConfig {
         admin.setModificationSessionId(UUID.randomUUID().toString());
         admin.setBackgroundString("");
 
-        if (jwTuserRepository.findByUsername("admin") == null){
-            jwTuserRepository.save(admin);
+        if (userRepository.findByUsername("admin") == null){
+            userRepository.save(admin);
         }
     }
 

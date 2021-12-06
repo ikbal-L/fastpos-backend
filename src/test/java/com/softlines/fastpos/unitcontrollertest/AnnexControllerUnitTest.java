@@ -1,9 +1,9 @@
 package com.softlines.fastpos.unitcontrollertest;
 
 import com.softlines.fastpos.ModelApplication;
-import com.softlines.fastpos.jwtsecurity.jwtcontroller.AnnexController;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Annex;
-import com.softlines.fastpos.jwtsecurity.securityrepository.AnnexRepository;
+import com.softlines.fastpos.security.controllers.AnnexController;
+import com.softlines.fastpos.security.securitydomain.Annex;
+import com.softlines.fastpos.security.securityrepository.AnnexRepository;
 import org.junit.Test;
 import org.junit.jupiter.api.Order;
 import org.junit.runner.RunWith;

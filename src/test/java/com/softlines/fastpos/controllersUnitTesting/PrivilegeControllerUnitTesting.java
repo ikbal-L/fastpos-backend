@@ -1,9 +1,9 @@
 package com.softlines.fastpos.controllersUnitTesting;
 
 import com.softlines.fastpos.ModelApplication;
-import com.softlines.fastpos.jwtsecurity.jwtcontroller.PrivilegeController;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
-import com.softlines.fastpos.jwtsecurity.securityrepository.PrivilegeRepository;
+import com.softlines.fastpos.security.controllers.PrivilegeController;
+import com.softlines.fastpos.security.securitydomain.Privilege;
+import com.softlines.fastpos.security.securityrepository.PrivilegeRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,7 @@
 package com.softlines.fastpos.dbconfig.dbTestController;
 
-import com.softlines.fastpos.dbconfig.configuration.CustomContextHolder;
-import com.softlines.fastpos.jwtsecurity.securityrepository.PrivilegeRepository;
-import com.softlines.fastpos.jwtsecurity.securityrepository.RoleRepository;
+import com.softlines.fastpos.security.securityrepository.PrivilegeRepository;
+import com.softlines.fastpos.security.securityrepository.RoleRepository;
 import com.softlines.fastpos.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;

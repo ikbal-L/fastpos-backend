@@ -3,20 +3,15 @@ package com.softlines.fastpos.dto.service;
 import com.softlines.fastpos.domain.*;
 import com.softlines.fastpos.dto.*;
 import com.softlines.fastpos.dto.mapping.*;
-import com.softlines.fastpos.jwtsecurity.securityrepository.RoleRepository;
+import com.softlines.fastpos.security.securityrepository.RoleRepository;
 import com.softlines.fastpos.repository.AdditiveRepository;
 import com.softlines.fastpos.repository.CategoryRepository;
 import com.softlines.fastpos.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class DtoServiceImpl implements DtoService {

@@ -1,12 +1,9 @@
 package com.softlines.fastpos.dto.mapping;
 
 import com.softlines.fastpos.domain.Person;
-import com.softlines.fastpos.domain.Person;
 import com.softlines.fastpos.dto.PersonDto;
-import com.softlines.fastpos.dto.PersonDto;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
+import com.softlines.fastpos.security.securitydomain.Role;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 

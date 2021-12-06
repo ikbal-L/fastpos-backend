@@ -1,12 +1,12 @@
 package com.softlines.fastpos.controllersUnitTesting;
 
 import com.softlines.fastpos.ModelApplication;
-import com.softlines.fastpos.jwtsecurity.jwtcontroller.RoleController;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
-import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.RoleDTO;
-import com.softlines.fastpos.jwtsecurity.securitydomain.securitymapper.RoleMapper;
-import com.softlines.fastpos.jwtsecurity.securityrepository.RoleRepository;
+import com.softlines.fastpos.security.controllers.RoleController;
+import com.softlines.fastpos.security.securitydomain.Privilege;
+import com.softlines.fastpos.security.securitydomain.Role;
+import com.softlines.fastpos.security.securitydomain.securitydto.RoleDTO;
+import com.softlines.fastpos.security.securitydomain.securitymapper.RoleMapper;
+import com.softlines.fastpos.security.securityrepository.RoleRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,7 +164,7 @@ public class RoleControllerUnitTesting {
         var role = Role.builder().build();
         var roleDTO = roleMapper.toRoleDto(role);
         Mockito.when(roleRepository.findRoleById(roleDTO.getId())).thenReturn(Optional.empty());
-        var res = roleController.deleteRole(roleDTO);
+        var res = roleController.deleteRole(roleDTO.getId());
         assertEquals(res.getStatusCode(), HttpStatus.NO_CONTENT);
     }
 
@@ -176,7 +176,7 @@ public class RoleControllerUnitTesting {
                 .build();
         var roleDTO = roleMapper.toRoleDto(role);
         Mockito.when(roleRepository.findRoleById(roleDTO.getId())).thenReturn(java.util.Optional.ofNullable(role));
-        var res = roleController.deleteRole(roleDTO);
+        var res = roleController.deleteRole(roleDTO.getId());
         assertEquals(res.getStatusCode(), HttpStatus.ACCEPTED);
         assertEquals(res.getBody(), roleDTO);
     }
@@ -189,7 +189,7 @@ public class RoleControllerUnitTesting {
             .build();
         var roleDTO = roleMapper.toRoleDto(role);
         Mockito.when(roleRepository.findRoleById(roleDTO.getId())).thenThrow(DataAccessResourceFailureException.class);
-        var res = roleController.deleteRole(roleDTO);
+        var res = roleController.deleteRole(roleDTO.getId());
         assertEquals(res.getStatusCode(), HttpStatus.BAD_GATEWAY);
     }
 

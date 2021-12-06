@@ -3,12 +3,12 @@ package com.softlines.fastpos;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softlines.fastpos.configuration.RoutingDatasourceTestProfileJPAConfig;
 import com.softlines.fastpos.configuration.TestSecurityJPAConfig;
-import com.softlines.fastpos.jwtsecurity.jwtcontroller.AnnexController;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Annex;
-import com.softlines.fastpos.jwtsecurity.jwtcontroller.UserController;
-import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.UserDTO;
-import com.softlines.fastpos.jwtsecurity.securityrepository.JWTuserRepository;
-import com.softlines.fastpos.jwtsecurity.securityrepository.AnnexRepository;
+import com.softlines.fastpos.security.controllers.AnnexController;
+import com.softlines.fastpos.security.securitydomain.Annex;
+import com.softlines.fastpos.security.controllers.UserController;
+import com.softlines.fastpos.security.securitydomain.securitydto.UserDTO;
+import com.softlines.fastpos.security.securityrepository.UserRepository;
+import com.softlines.fastpos.security.securityrepository.AnnexRepository;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
@@ -56,7 +56,7 @@ public class AnnexControllerTestExample {
     AnnexRepository annexRepository;
 
     @Autowired
-    JWTuserRepository userRepository;
+    UserRepository userRepository;
 
     @Autowired
     AnnexController annexController;

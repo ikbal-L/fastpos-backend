@@ -1,11 +1,11 @@
 package com.softlines.fastpos.mappingUnitTesting;
 
 import com.softlines.fastpos.ModelApplication;
-import com.softlines.fastpos.jwtsecurity.jwtcontroller.RoleController;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
-import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.RoleDTO;
-import com.softlines.fastpos.jwtsecurity.securitydomain.securitymapper.RoleMapper;
+import com.softlines.fastpos.security.controllers.RoleController;
+import com.softlines.fastpos.security.securitydomain.Privilege;
+import com.softlines.fastpos.security.securitydomain.Role;
+import com.softlines.fastpos.security.securitydomain.securitydto.RoleDTO;
+import com.softlines.fastpos.security.securitydomain.securitymapper.RoleMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

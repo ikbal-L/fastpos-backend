@@ -1,33 +1,39 @@
 package com.softlines.fastpos.service;
 
 import com.softlines.fastpos.domain.*;
-import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Session;
-import com.softlines.fastpos.jwtsecurity.securityrepository.SessionRepository;
+import com.softlines.fastpos.dto.mapping.DailyExpenseReportMapper;
+import com.softlines.fastpos.security.securitydomain.User;
+import com.softlines.fastpos.security.securitydomain.Session;
+import com.softlines.fastpos.security.securityrepository.SessionRepository;
 import com.softlines.fastpos.repository.CashRegisterExpenseRepository;
 import com.softlines.fastpos.repository.DailyExpenseReportRepository;
 import com.softlines.fastpos.repository.OrderRepository;
 import com.softlines.fastpos.repository.PaymentRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-
+@RequiredArgsConstructor
 @Service
 @Transactional(transactionManager = "transactionManager")
 public class DailyExpenseReportService {
 
-    OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
-    PaymentRepository paymentRepository;
+    private final PaymentRepository paymentRepository;
 
-    DailyExpenseReportRepository dailyExpenseReportRepository;
+    private  final DailyExpenseReportRepository dailyExpenseReportRepository;
 
-    SessionRepository sessionRepository;
+    private final SessionRepository sessionRepository;
 
-    CashRegisterExpenseRepository cashRegisterExpenseRepository;
+    private final CashRegisterExpenseRepository cashRegisterExpenseRepository;
+
+//    private final DailyExpenseReportMapper dailyExpenseReportMapper;
+
+
     private List<Order> allOrdersOfTheDay;
     private LinkedHashSet<Order> payedOrdersOfTheDay;
     private LinkedHashSet<Order> canceledOrdersOfTheDay;
@@ -35,12 +41,25 @@ public class DailyExpenseReportService {
     private HashSet<Payment> paymentsOfTheDay;
     private List<CashRegisterExpense> cashRegisterExpenses;
 
-    public DailyExpenseReportService(OrderRepository orderRepository, PaymentRepository paymentRepository, DailyExpenseReportRepository dailyExpenseReportRepository, SessionRepository sessionRepository, CashRegisterExpenseRepository cashRegisterExpenseRepository) {
-        this.orderRepository = orderRepository;
-        this.paymentRepository = paymentRepository;
-        this.dailyExpenseReportRepository = dailyExpenseReportRepository;
-        this.sessionRepository = sessionRepository;
-        this.cashRegisterExpenseRepository = cashRegisterExpenseRepository;
+    private void setCashRegisterExpenses(LocalDate date) {
+        cashRegisterExpenses = cashRegisterExpenseRepository.findAllByIssuedDate(date);
+    }
+
+    private void setPayedOrdersOfTheDay() {
+        payedOrdersOfTheDay = allOrdersOfTheDay.stream().filter(order -> order.getState() == OrderState.Payed).collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    private void setCanceledOrdersOfTheDay() {
+        canceledOrdersOfTheDay = allOrdersOfTheDay.stream().filter(order -> order.getState() == OrderState.Canceled).collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    private void setRefundedOrdersOfTheDay() {
+        refundedOrdersOfTheDay = allOrdersOfTheDay.stream().filter(order -> order.getState() == OrderState.Refunded).collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    private void setPaymentsOfTheDay(LocalDate date) {
+        var paymentList = paymentRepository.findAllByDate(date);
+        paymentsOfTheDay = new HashSet<>(paymentList);
     }
 
 
@@ -104,26 +123,7 @@ public class DailyExpenseReportService {
         return report;
     }
 
-    private void setCashRegisterExpenses(LocalDate date) {
-        cashRegisterExpenses = cashRegisterExpenseRepository.findAllByIssuedDate(date);
-    }
 
-    private void setPayedOrdersOfTheDay() {
-        payedOrdersOfTheDay = allOrdersOfTheDay.stream().filter(order -> order.getState() == OrderState.Payed).collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    private void setCanceledOrdersOfTheDay() {
-        canceledOrdersOfTheDay = allOrdersOfTheDay.stream().filter(order -> order.getState() == OrderState.Canceled).collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    private void setRefundedOrdersOfTheDay() {
-        refundedOrdersOfTheDay = allOrdersOfTheDay.stream().filter(order -> order.getState() == OrderState.Refunded).collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    private void setPaymentsOfTheDay(LocalDate date) {
-        var paymentList = paymentRepository.findAllByDate(date);
-        paymentsOfTheDay = new HashSet<>(paymentList);
-    }
 
     public DailyEarningsReport updateDailyExpenseReport(DailyEarningsReport report) {
 
@@ -143,11 +143,10 @@ public class DailyExpenseReportService {
         report.getCashPayments().forEach(orderReportInfo -> orderReportInfo.setDailyEarningsReport(report));
         report.getCashRegisterExpenses().forEach(expense -> expense.setReport(report));
         report.getPayments().forEach(payment -> payment.setDailyEarningsReport(report));
-
         return dailyExpenseReportRepository.save(report);
     }
 
-    private Optional<JWTuser> getUserFromSession(String sessionUUID) {
+    private Optional<User> getUserFromSession(String sessionUUID) {
         var session = sessionRepository.findById(UUID.fromString(sessionUUID));
         return session.map(Session::getUser);
     }

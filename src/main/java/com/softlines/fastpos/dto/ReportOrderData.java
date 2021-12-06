@@ -16,5 +16,5 @@ public class ReportOrderData {
     LocalDateTime orderTime;
     double total;
     double newTotal;
-    String modifiedBy;
+    String canceledBy;
 }

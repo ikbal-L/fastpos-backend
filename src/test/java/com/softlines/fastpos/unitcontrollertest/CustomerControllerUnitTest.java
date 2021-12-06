@@ -259,6 +259,7 @@ public class CustomerControllerUnitTest {
                 .build();
 
         when(customerRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
+
         ResponseEntity<CustomerDto> returned = customerController.editCustomer(1, customer);
 
         verify(customerRepository, times(1)).findById(customer.getId());

@@ -97,9 +97,18 @@ public class Order extends SyncEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     DailyEarningsReport dailyEarningsReport;
+    @Column(name = "canceled_by")
+    String canceledBy;
 
-    public LocalDate getOrderDate(){
-        return orderTime.toLocalDate();
+
+
+    public void setCanceledInfo(OrderState previousState,String canceledBy){
+        if (previousState!= OrderState.Canceled){
+            state = OrderState.Canceled;
+            this.canceledBy = canceledBy;
+        }
     }
+
+
 }
 

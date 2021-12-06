@@ -17,7 +17,7 @@ import javax.sql.DataSource;
 import java.util.Properties;
 @Configuration
 @EnableJpaRepositories(
-        basePackages = "com.softlines.fastpos.jwtsecurity.securityrepository",
+        basePackages = "com.softlines.fastpos.security.securityrepository",
         entityManagerFactoryRef = "authEntityManagerFactory",
         transactionManagerRef = "authTransactionManager"
 )
@@ -51,7 +51,7 @@ public class TestSecurityJPAConfig {
         LocalContainerEntityManagerFactoryBean factory =
                 new LocalContainerEntityManagerFactoryBean();
         factory.setDataSource(authDataSource());
-        factory.setPackagesToScan("com.softlines.fastpos.jwtsecurity.securitydomain");
+        factory.setPackagesToScan("com.softlines.fastpos.security.securitydomain");
         factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         Properties jpaProperties = new Properties();
         jpaProperties.put("hibernate.hbm2ddl.auto", "create-drop");

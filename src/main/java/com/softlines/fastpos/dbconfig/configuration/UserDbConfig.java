@@ -1,7 +1,7 @@
 package com.softlines.fastpos.dbconfig.configuration;
 
 
-import com.softlines.fastpos.jwtsecurity.securityconfiguration.AuditorAwareImpl;
+import com.softlines.fastpos.security.securityconfiguration.AuditorAwareImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -27,7 +27,7 @@ import java.util.Properties;
 @Profile("dev")
 @Configuration
 @EnableJpaRepositories(
-        basePackages = "com.softlines.fastpos.jwtsecurity.securityrepository",
+        basePackages = "com.softlines.fastpos.security.securityrepository",
         entityManagerFactoryRef = "authEntityManagerFactory",
         transactionManagerRef = "authTransactionManager"
 )
@@ -39,7 +39,7 @@ public class UserDbConfig {
 
     @Primary
     @Bean
-    @ConfigurationProperties(prefix = "com.softlines.fastpos.jwtsecurity")
+    @ConfigurationProperties(prefix = "com.softlines.fastpos.security")
     public DataSourceProperties authDataSourceProperties() {
         return new DataSourceProperties();
     }
@@ -81,7 +81,7 @@ public class UserDbConfig {
             LocalContainerEntityManagerFactoryBean factory =
                     new LocalContainerEntityManagerFactoryBean();
             factory.setDataSource(authDataSource());
-            factory.setPackagesToScan("com.softlines.fastpos.jwtsecurity.securitydomain");
+            factory.setPackagesToScan("com.softlines.fastpos.security.securitydomain");
             factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
             Properties jpaProperties = new Properties();
             jpaProperties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));

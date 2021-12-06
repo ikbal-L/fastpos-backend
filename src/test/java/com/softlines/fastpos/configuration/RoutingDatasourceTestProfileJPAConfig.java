@@ -1,8 +1,8 @@
 package com.softlines.fastpos.configuration;
 
 import com.softlines.fastpos.dbconfig.configuration.CustomRoutingDataSource;
-import com.softlines.fastpos.jwtsecurity.securitydomain.DbInfo;
-import com.softlines.fastpos.jwtsecurity.securityrepository.DbInfoRepository;
+import com.softlines.fastpos.security.securitydomain.DbInfo;
+import com.softlines.fastpos.security.securityrepository.DbInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

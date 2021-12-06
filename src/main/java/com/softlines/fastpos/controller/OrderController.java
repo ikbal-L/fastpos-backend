@@ -12,6 +12,7 @@ import com.softlines.fastpos.dto.service.filtering.OrderFilterService;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.OrderItemAdditiveRepository;
 import com.softlines.fastpos.repository.OrderRepository;
+import com.softlines.fastpos.security.securityservice.SessionService;
 import com.softlines.fastpos.service.OrderService;
 import com.softlines.fastpos.sse.model.EventDto;
 import com.softlines.fastpos.sse.model.SSEventType;
@@ -52,6 +53,8 @@ public class OrderController {
     SseNotificationService sseNotificationService;
 
     ExceptionManagement exceptionManagement = new ExceptionManagement();
+    @Autowired
+    SessionService sessionService;
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;
@@ -234,9 +237,17 @@ public class OrderController {
         try {
             var persisted = orderRepository.findById(id);
 
-            if (persisted.isPresent() && id != 0 /*&& orderDto.getOrderItems() != null && orderDto.getOrderItems().size() > 0*/) {
+            if (persisted.isPresent() && id != 0) {
 
                 Order order = dtoService.orderDtoToOrder(orderDto);
+
+                if (OrderService.IsActionCancel(persisted.get(), order)){
+                    var previousState = persisted.get().getState();
+                    order = orderRepository.saveOrder(order);
+//                    var sessionId = UUID.fromString(order.getModificationSessionId());
+                    var canceledBy = sessionService.getUserFullNameFromSession(order.getModificationSessionId());
+                    order.setCanceledInfo(previousState,canceledBy);
+                }
 
                 Order createdOrder = orderRepository.saveOrder(order);
 

@@ -5,7 +5,6 @@ import com.softlines.fastpos.dto.mapping.ProductMapper;
 import com.softlines.fastpos.dto.service.DtoServiceImpl;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
 import com.softlines.fastpos.repository.ProductRepository;
-import com.softlines.fastpos.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +26,7 @@ public class ProductController {
 
     private final ProductMapper productMapper;
 
-    private final ProductService productService;
+
 
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 

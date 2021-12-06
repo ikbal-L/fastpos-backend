@@ -1,12 +1,12 @@
 package com.softlines.fastpos.mappingUnitTesting;
 
 import com.softlines.fastpos.ModelApplication;
-import com.softlines.fastpos.jwtsecurity.jwtcontroller.UserController;
-import com.softlines.fastpos.jwtsecurity.securitydomain.JWTuser;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
+import com.softlines.fastpos.security.controllers.UserController;
+import com.softlines.fastpos.security.securitydomain.User;
+import com.softlines.fastpos.security.securitydomain.Role;
 
-import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.UserDTO;
-import com.softlines.fastpos.jwtsecurity.securitydomain.securitymapper.UserMapper;
+import com.softlines.fastpos.security.securitydomain.securitydto.UserDTO;
+import com.softlines.fastpos.security.securitydomain.securitymapper.UserMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,10 +28,10 @@ public class UserMappingUnitTesting {
     @Autowired
     UserMapper userMapper;
 
-    JWTuser jwTuser1, jwTuser2;
+    User user1, user2;
     Role role1, role2;
     UserDTO userDTO1, userDTO2;
-    List<JWTuser> jwTusers;
+    List<User> users;
     List<UserDTO> userDTOS;
 
     @BeforeEach
@@ -44,12 +44,12 @@ public class UserMappingUnitTesting {
                 .id(2l)
                 .name("ROLE_USER")
                 .build();
-        jwTuser1 = JWTuser.builder()
+        user1 = User.builder()
                 .id(1l)
                 .username("testAdmin")
                 .password(("password"))
                 .build();
-        jwTuser2 = JWTuser.builder()
+        user2 = User.builder()
                 .id(2l)
                 .username("testUser")
                 .password(("password"))
@@ -69,8 +69,8 @@ public class UserMappingUnitTesting {
     public void clear(){
         role1.setPrivileges(null);
         role2.setPrivileges(null);
-        jwTuser1.setRoles(null);
-        jwTuser2.setRoles(null);
+        user1.setRoles(null);
+        user2.setRoles(null);
         userDTO1.setRoleIds(null);
         userDTO2.setRoleIds(null);
     }
@@ -78,74 +78,74 @@ public class UserMappingUnitTesting {
     //User to DTO: Single user
     @Test
     public void userMapper_UserToDTO_rolesExist(){
-        jwTuser1.setRoles(Arrays.asList(role1, role2));
-        var userDTO = userMapper.toUserDto(jwTuser1);
-        assertEquals(jwTuser1.getId(), userDTO.getId());
-        assertEquals(jwTuser1.getUsername(), userDTO.getUsername());
-        assertEquals(jwTuser1.getPassword(), userDTO.getPassword());
-        assertEquals(jwTuser1.getRoles().size(), userDTO.getRoleIds().size());
+        user1.setRoles(Arrays.asList(role1, role2));
+        var userDTO = userMapper.toUserDto(user1);
+        assertEquals(user1.getId(), userDTO.getId());
+        assertEquals(user1.getUsername(), userDTO.getUsername());
+        assertEquals(user1.getPassword(), userDTO.getPassword());
+        assertEquals(user1.getRoles().size(), userDTO.getRoleIds().size());
     }
     @Test
     public void userMapper_UserToDTO_emptyRolesList(){
-        jwTuser1.setRoles(Arrays.asList());
-        var userDTO = userMapper.toUserDto(jwTuser1);
-        assertEquals(jwTuser1.getId(), userDTO.getId());
-        assertEquals(jwTuser1.getUsername(), userDTO.getUsername());
-        assertEquals(jwTuser1.getPassword(), userDTO.getPassword());
-        assertEquals(jwTuser1.getRoles().size(), userDTO.getRoleIds().size());
+        user1.setRoles(Arrays.asList());
+        var userDTO = userMapper.toUserDto(user1);
+        assertEquals(user1.getId(), userDTO.getId());
+        assertEquals(user1.getUsername(), userDTO.getUsername());
+        assertEquals(user1.getPassword(), userDTO.getPassword());
+        assertEquals(user1.getRoles().size(), userDTO.getRoleIds().size());
     }
     @Test
     public void userMapper_UserToDTO_nullRolesList(){
-        jwTuser1.setRoles(null);
-        var userDTO = userMapper.toUserDto(jwTuser1);
-        assertEquals(jwTuser1.getId(), userDTO.getId());
-        assertEquals(jwTuser1.getUsername(), userDTO.getUsername());
-        assertEquals(jwTuser1.getPassword(), userDTO.getPassword());
-        assertEquals(jwTuser1.getRoles(), userDTO.getRoleIds());
+        user1.setRoles(null);
+        var userDTO = userMapper.toUserDto(user1);
+        assertEquals(user1.getId(), userDTO.getId());
+        assertEquals(user1.getUsername(), userDTO.getUsername());
+        assertEquals(user1.getPassword(), userDTO.getPassword());
+        assertEquals(user1.getRoles(), userDTO.getRoleIds());
     }
 
     //User to DTO: list of users
     @Test
     public void userMapper_ListUserssToListUserDTOs_rolesExist(){
-        jwTuser1.setRoles(Arrays.asList(role1, role2));
-        jwTuser2.setRoles(Arrays.asList(role1));
-        jwTusers = Arrays.asList(jwTuser1, jwTuser2);
-        var userDtos = userMapper.toUserDTOs(jwTusers);
-        assertEquals(jwTusers.size(), userDtos.size());
-        assertEquals(jwTusers.get(0).getUsername(), userDtos.get(0).getUsername());
-        assertEquals(jwTusers.get(0).getPassword(), userDtos.get(0).getPassword());
-        assertEquals(jwTusers.get(0).getRoles().size(), userDtos.get(0).getRoleIds().size());
-        assertEquals(jwTusers.get(1).getUsername(), userDtos.get(1).getUsername());
-        assertEquals(jwTusers.get(1).getPassword(), userDtos.get(1).getPassword());
-        assertEquals(jwTusers.get(1).getRoles().size(), userDtos.get(1).getRoleIds().size());
+        user1.setRoles(Arrays.asList(role1, role2));
+        user2.setRoles(Arrays.asList(role1));
+        users = Arrays.asList(user1, user2);
+        var userDtos = userMapper.toUserDTOs(users);
+        assertEquals(users.size(), userDtos.size());
+        assertEquals(users.get(0).getUsername(), userDtos.get(0).getUsername());
+        assertEquals(users.get(0).getPassword(), userDtos.get(0).getPassword());
+        assertEquals(users.get(0).getRoles().size(), userDtos.get(0).getRoleIds().size());
+        assertEquals(users.get(1).getUsername(), userDtos.get(1).getUsername());
+        assertEquals(users.get(1).getPassword(), userDtos.get(1).getPassword());
+        assertEquals(users.get(1).getRoles().size(), userDtos.get(1).getRoleIds().size());
     }
     @Test
     public void userMapper_ListUserssToListUserDTOs_emptyRolesList(){
-        jwTuser1.setRoles(Arrays.asList());
-        jwTuser2.setRoles(Arrays.asList());
-        jwTusers = Arrays.asList(jwTuser1, jwTuser2);
-        var userDtos = userMapper.toUserDTOs(jwTusers);
-        assertEquals(jwTusers.size(), userDtos.size());
-        assertEquals(jwTusers.get(0).getUsername(), userDtos.get(0).getUsername());
-        assertEquals(jwTusers.get(0).getPassword(), userDtos.get(0).getPassword());
-        assertEquals(jwTusers.get(0).getRoles().size(), userDtos.get(0).getRoleIds().size());
-        assertEquals(jwTusers.get(1).getUsername(), userDtos.get(1).getUsername());
-        assertEquals(jwTusers.get(1).getPassword(), userDtos.get(1).getPassword());
-        assertEquals(jwTusers.get(1).getRoles().size(), userDtos.get(1).getRoleIds().size());
+        user1.setRoles(Arrays.asList());
+        user2.setRoles(Arrays.asList());
+        users = Arrays.asList(user1, user2);
+        var userDtos = userMapper.toUserDTOs(users);
+        assertEquals(users.size(), userDtos.size());
+        assertEquals(users.get(0).getUsername(), userDtos.get(0).getUsername());
+        assertEquals(users.get(0).getPassword(), userDtos.get(0).getPassword());
+        assertEquals(users.get(0).getRoles().size(), userDtos.get(0).getRoleIds().size());
+        assertEquals(users.get(1).getUsername(), userDtos.get(1).getUsername());
+        assertEquals(users.get(1).getPassword(), userDtos.get(1).getPassword());
+        assertEquals(users.get(1).getRoles().size(), userDtos.get(1).getRoleIds().size());
     }
     @Test
     public void userMapper_ListUserssToListUserDTOs_nullRolesList(){
-        jwTuser1.setRoles(null);
-        jwTuser2.setRoles(null);
-        jwTusers = Arrays.asList(jwTuser1, jwTuser2);
-        var userDtos = userMapper.toUserDTOs(jwTusers);
-        assertEquals(jwTusers.size(), userDtos.size());
-        assertEquals(jwTusers.get(0).getUsername(), userDtos.get(0).getUsername());
-        assertEquals(jwTusers.get(0).getPassword(), userDtos.get(0).getPassword());
-        assertEquals(jwTusers.get(0).getRoles(), userDtos.get(0).getRoleIds());
-        assertEquals(jwTusers.get(1).getUsername(), userDtos.get(1).getUsername());
-        assertEquals(jwTusers.get(1).getPassword(), userDtos.get(1).getPassword());
-        assertEquals(jwTusers.get(1).getRoles(), userDtos.get(1).getRoleIds());
+        user1.setRoles(null);
+        user2.setRoles(null);
+        users = Arrays.asList(user1, user2);
+        var userDtos = userMapper.toUserDTOs(users);
+        assertEquals(users.size(), userDtos.size());
+        assertEquals(users.get(0).getUsername(), userDtos.get(0).getUsername());
+        assertEquals(users.get(0).getPassword(), userDtos.get(0).getPassword());
+        assertEquals(users.get(0).getRoles(), userDtos.get(0).getRoleIds());
+        assertEquals(users.get(1).getUsername(), userDtos.get(1).getUsername());
+        assertEquals(users.get(1).getPassword(), userDtos.get(1).getPassword());
+        assertEquals(users.get(1).getRoles(), userDtos.get(1).getRoleIds());
     }
 
     //User to DTO: single user

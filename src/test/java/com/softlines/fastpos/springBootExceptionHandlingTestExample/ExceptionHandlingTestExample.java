@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softlines.fastpos.ModelApplication;
 import com.softlines.fastpos.configuration.RoutingDatasourceTestProfileJPAConfig;
 import com.softlines.fastpos.configuration.TestSecurityJPAConfig;
-import com.softlines.fastpos.jwtsecurity.securitydomain.securitydto.UserDTO;
+import com.softlines.fastpos.security.securitydomain.securitydto.UserDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

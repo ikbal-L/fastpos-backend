@@ -1,10 +1,10 @@
 package com.softlines.fastpos.lazyfetchTesting;
 
 import com.softlines.fastpos.ModelApplication;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Privilege;
-import com.softlines.fastpos.jwtsecurity.securitydomain.Role;
-import com.softlines.fastpos.jwtsecurity.securityrepository.PrivilegeRepository;
-import com.softlines.fastpos.jwtsecurity.securityrepository.RoleRepository;
+import com.softlines.fastpos.security.securitydomain.Privilege;
+import com.softlines.fastpos.security.securitydomain.Role;
+import com.softlines.fastpos.security.securityrepository.PrivilegeRepository;
+import com.softlines.fastpos.security.securityrepository.RoleRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
