@@ -37,7 +37,7 @@ public class RoleController {
     public ResponseEntity<Long> saveRole(@RequestBody RoleDTO roleDTO) {
         try {
             String roleName = roleDTO.getName().toUpperCase();
-            if (!roleName.matches("^ROLE_")) roleName = "ROLE_" + roleName;
+            if (!roleName.matches("^ROLE_\\w+")) roleName = "ROLE_" + roleName;
             roleDTO.setName(roleName);
             Optional<Role> existingRole = roleRepository.findRoleById(roleDTO.getId());
             if (existingRole.isPresent()) {
