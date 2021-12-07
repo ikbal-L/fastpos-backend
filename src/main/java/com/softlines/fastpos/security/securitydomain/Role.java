@@ -34,8 +34,8 @@ public class Role {
                     name = "privilege_id", referencedColumnName = "id"))
     private List<Privilege> privileges;
 
-
-
+    @Column(name = "is_predefined")
+    boolean predefined = false;
     @Builder.Default
     @NotNull
     private boolean deleted = false;

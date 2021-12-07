@@ -18,6 +18,7 @@ public interface RoleMapper {
     RoleMapper INSTANCE = Mappers.getMapper(RoleMapper.class);
 
     @Mapping(source = "privileges", target = "privilegeIds", qualifiedByName = "privilegesToIds",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(source = "predefined", target = "predefined",nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     RoleDTO toRoleDto(Role role);
 
     List<RoleDTO> toRoleDTOs(List<Role> roles);

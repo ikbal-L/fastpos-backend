@@ -287,7 +287,7 @@ public class DbConfig {
 //        return terminal;
     }
 
-    Role createRoleIfNotFound(String name, List<Privilege> privileges) {
+    Role createRoleIfNotFound(String name, List<Privilege> privileges ,boolean isPredefined) {
 
         Role role = roleRepository.findByName(name);
         if (role == null) {
@@ -295,6 +295,7 @@ public class DbConfig {
             role = new Role();
             role.setName(name);
             role.setPrivileges(privileges);
+            role.setPredefined(isPredefined);
             return roleRepository.save(role);
         }
         return role;
@@ -332,11 +333,31 @@ public class DbConfig {
         }
 
         List<Role> roles = new ArrayList<>();
-        Role admin = createRoleIfNotFound("ROLE_ADMIN", privileges);
-        var orderPrivilegesCreateUpdate = privileges.stream().filter(p -> p.getName() == "Create_Order" || p.getName() == "Update_Order").collect(Collectors.toList());
+        Role admin = createRoleIfNotFound("ROLE_ADMIN", privileges,true);
+
+        var employeeManagerPrivileges = privileges.stream().filter(p->(p.getName().contains("Deliveryman")&& !p.getName().contains("Payment"))|| p.getName().contains("Waiter")).collect(Collectors.toList());
+        var menuManagerPrivileges = privileges.stream().filter(p->p.getName().contains("Category")||p.getName().contains("Product")).collect(Collectors.toList());
+        var clientCreditManagerPrivileges = privileges.stream().filter(p->p.getName().contains("Payment_Client")).collect(Collectors.toList());
+        var deliveryManagerPrivileges = privileges.stream().filter(p->p.getName().contains("Payment_Deliveryman")).collect(Collectors.toList());
+        var refundManagerPrivileges =privileges.stream().filter(p->p.getName().contains("Refund_Order")).collect(Collectors.toList());
+        var globalSettingsManagerPrivileges =privileges.stream().filter(p->p.getName().contains("Modify_Global_Settings")).collect(Collectors.toList());
+        var localSettingsManagerPrivileges = privileges.stream().filter(p->p.getName().contains("Modify_Local_Settings")).collect(Collectors.toList());
+        Role  employeeManager = createRoleIfNotFound("ROLE_GESTION_DELIVERYMAN_WAITER",employeeManagerPrivileges,true);
+        Role  menuManager = createRoleIfNotFound("ROLE_GESTION_MENU",menuManagerPrivileges,true);
+        Role clientCreditManager  = createRoleIfNotFound("ROLE_GESTION_CREDIT_CLIENT",clientCreditManagerPrivileges,true);
+        Role deliveryManager  = createRoleIfNotFound("ROLE_GESTION_DELIVERY",deliveryManagerPrivileges,true);
+        Role refundManager  = createRoleIfNotFound("ROLE_GESTION_REMBOURSEMENT",refundManagerPrivileges,true);
+        Role globalSettingsManager = createRoleIfNotFound("ROLE_GESTION_PARAMETERES_GLOBAUX",globalSettingsManagerPrivileges,true);
+        Role localSettingsManager = createRoleIfNotFound("ROLE_GESTION_PARAMETERES_LOCAUX",localSettingsManagerPrivileges,true);
 
         roles.add(admin);
-
+        roles.add(employeeManager);
+        roles.add(menuManager);
+        roles.add(clientCreditManager);
+        roles.add(deliveryManager);
+        roles.add(refundManager);
+        roles.add(globalSettingsManager);
+        roles.add(localSettingsManager);
 
         return roles;
     }
