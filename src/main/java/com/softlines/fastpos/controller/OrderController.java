@@ -57,6 +57,9 @@ public class OrderController {
     SessionService sessionService;
 
     @Autowired
+    OrderService orderService;
+
+    @Autowired
     private EntityManagerFactory entityManagerFactory;
 
 
@@ -68,10 +71,8 @@ public class OrderController {
             if (orderDto.getId() == 0) {
                 Order order = dtoService.orderDtoToOrder(orderDto);
 
-                Order createdOder = orderRepository.saveOrder(order);
-
+                Order createdOder = orderService.saveOrder(order);
                 OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
-
                 var eventDto = EventDto.builder().type(SSEventType.CREATE_ORDER).body(createdOderDto.getId()).build();
                 sseNotificationService.sendNotificationForAll(eventDto, token);
 

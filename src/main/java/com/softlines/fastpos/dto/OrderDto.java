@@ -39,7 +39,10 @@ public class OrderDto /*extends SyncDto*/ {
     long id;
 
     @JsonProperty("OrderNumber")
-    long orderNumber;
+    Integer orderNumber;
+
+    @JsonProperty("OrderCode")
+    String orderCode;
 
     @JsonProperty("CustomerId")
     String customerId;

@@ -71,7 +71,9 @@ public class ProductController {
 
     }
 
-        @PreAuthorize("@apiAuth.checkGrants(authentication, 'Read_Product')")
+
+
+    @PreAuthorize("@apiAuth.checkGrants(authentication, 'Read_Product')")
     @GetMapping("/getall")
     public ResponseEntity<List<ProductDto>> getProducts() {
         try {
@@ -142,6 +144,7 @@ public class ProductController {
 
         }
     }
+
 
     @PutMapping("/put/{id}")
     public ResponseEntity<ProductDto> editProduct(@Valid @PathVariable long id, @Valid @RequestBody ProductDto productDto) {

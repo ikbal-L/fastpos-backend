@@ -23,8 +23,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
-//@Profile("prod")
-@Profile("dev")
+
 @Configuration
 @EnableJpaRepositories(
         basePackages = "com.softlines.fastpos.security.securityrepository",

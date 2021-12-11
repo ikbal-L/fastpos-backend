@@ -34,9 +34,11 @@ public class Order extends SyncEntity {
     long id;
 
     @Column(name = "order_number",nullable = false)
-    long orderNumber;
+    Integer orderNumber;
 
-//    @Temporal(TemporalType.DATE)
+    @Column(name = "order_code")
+    String orderCode;
+
     LocalDateTime orderTime;
 
 
@@ -73,7 +75,7 @@ public class Order extends SyncEntity {
     List<OrderItem> orderItems;
 
     @ManyToOne
-    @JoinColumn(name = "tables_id",nullable = true)
+    @JoinColumn(name = "tables_id")
     Table table;
 
     @Builder.Default
@@ -81,15 +83,15 @@ public class Order extends SyncEntity {
     private boolean deleted = false;
 
     @ManyToOne
-    @JoinColumn(name = "deliveryman_id",nullable = true)
+    @JoinColumn(name = "deliveryman_id")
     Deliveryman deliveryman;
 
     @ManyToOne
-    @JoinColumn(name = "waiter_id",nullable = true)
+    @JoinColumn(name = "waiter_id")
     Waiter waiter;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id",nullable = true)
+    @JoinColumn(name = "customer_id")
     Customer customer;
 
     @OneToOne

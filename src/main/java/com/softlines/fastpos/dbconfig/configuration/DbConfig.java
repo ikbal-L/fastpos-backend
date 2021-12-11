@@ -30,8 +30,6 @@ import java.util.stream.Collectors;
 
 
 @Configuration
-//@Profile("prod")
-@Profile("dev")
 @EnableJpaRepositories(
         basePackages = "com.softlines.fastpos.repository",
         entityManagerFactoryRef = "entityManagerFactory",
@@ -97,8 +95,6 @@ public class DbConfig {
     }
 
     @Bean
-    //@Profile("prod")
-    @Profile("dev")
     public CustomRoutingDataSource customRoutingDataSource() throws Exception {
         var roles = initRolesAndPrivileges();
         initiateUserDB(roles);
@@ -121,8 +117,6 @@ public class DbConfig {
     }
 
     @Bean
-    //@Profile("prod")
-    @Profile("dev")
     public PlatformTransactionManager transactionManager() throws Exception {
         try {
             EntityManagerFactory factory = entityManagerFactory().getObject();
@@ -134,8 +128,7 @@ public class DbConfig {
 
     @Bean
     @Primary
-    //@Profile("prod")
-    @Profile("dev")
+
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws Exception {
         try {
             LocalContainerEntityManagerFactoryBean factory =
