@@ -245,7 +245,7 @@ public class OrderController {
                 if (OrderService.IsActionCancel(persisted.get(), order)){
                     var previousState = persisted.get().getState();
                     order = orderRepository.saveOrder(order);
-//                    var sessionId = UUID.fromString(order.getModificationSessionId());
+
                     var canceledBy = sessionService.getUserFullNameFromSession(order.getModificationSessionId());
                     order.setCanceledInfo(previousState,canceledBy);
                 }

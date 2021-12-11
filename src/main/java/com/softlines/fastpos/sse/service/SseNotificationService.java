@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.softlines.fastpos.sse.model.EventDto;
 import com.softlines.fastpos.sse.repository.EmitterRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.MediaType;
@@ -13,27 +14,38 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+@RequiredArgsConstructor
 @Service
 public class SseNotificationService implements NotificationService {
-    @Autowired
-    EmitterRepository emitterRepository;
-    @Autowired
-    private ObjectMapper jacksonObjectMapper;
+
+    private final EmitterRepository emitterRepository;
+
+    private final ObjectMapper jacksonObjectMapper;
+
+    private ExecutorService executor = Executors.newCachedThreadPool();
 
     public void sendNotification(String identifier, EventDto event) throws IOException {
         if (event == null) {
             return;
         }
-        doSendNotification(identifier, event);
+
+        executor.execute(()->{
+            doSendNotification(identifier, event);
+        });
+
     }
 
     @Override
     public void sendNotificationForAll(EventDto event, String senderId) throws IOException {
-       var emitters = emitterRepository.getAllExcept(clientEmitter -> clientEmitter.getIdentifier().equals(senderId));
-        for (var emitter: emitters) {
-            sendData(event,emitter);
-        }
+      executor.execute(()->{
+          var emitters = emitterRepository.getAllExcept(clientEmitter -> clientEmitter.getIdentifier().equals(senderId));
+          for (var emitter: emitters) {
+              sendData(event,emitter);
+          }
+      });
     }
 
     private void doSendNotification(String identifier, EventDto event) {

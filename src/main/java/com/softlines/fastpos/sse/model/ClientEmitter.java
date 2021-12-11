@@ -14,7 +14,7 @@ public class ClientEmitter {
 
     public ClientEmitter(String identifier) {
         this.identifier = identifier;
-        this.emitter = new SseEmitter((long) (60*60*24));
+        this.emitter = new SseEmitter(60*60_000L);
     }
 
     public ClientEmitter(String identifier, SseEmitter emitter) {

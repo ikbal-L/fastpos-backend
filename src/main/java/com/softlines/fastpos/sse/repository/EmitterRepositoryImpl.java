@@ -38,9 +38,9 @@ public class EmitterRepositoryImpl implements EmitterRepository {
                     emitters.remove(ce);
                 }
             });
-//            ce.getEmitter().onTimeout(() -> {
-//                ce.getEmitter().complete();
-//            });
+            ce.getEmitter().onTimeout(() -> {
+                emitters.remove(ce);
+            });
             emitters.add(ce);
 
             return ce.getEmitter();
