@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/api/additive", produces = "application/json")
+@RequestMapping(value = "/api/additive", produces = "application/json; charset=UTF-8")
 public class AdditiveController {
 
     @Autowired

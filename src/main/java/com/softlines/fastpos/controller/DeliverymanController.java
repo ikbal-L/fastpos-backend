@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @RestController
 
-@RequestMapping(value = "/api/deliveryman", produces = "application/json")
+@RequestMapping(value = "/api/deliveryman", produces = "application/json; charset=UTF-8")
 public class DeliverymanController {
 
     @Autowired

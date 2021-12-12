@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/api/product",produces = "application/json")
+@RequestMapping(value = "/api/product",produces = "application/json; charset=UTF-8")
 @RequiredArgsConstructor
 public class ProductController {
 

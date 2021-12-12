@@ -45,7 +45,7 @@ public class OrderDto /*extends SyncDto*/ {
     String orderCode;
 
     @JsonProperty("CustomerId")
-    String customerId;
+    Long customerId;
 
     @JsonProperty("OrderTime")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

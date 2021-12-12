@@ -17,7 +17,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/cashregisterexpense", produces = "application/json")
+@RequestMapping(value = "/api/cashregisterexpense", produces = "application/json; charset=UTF-8")
 public class CashRegisterExpenseController {
 
     private CashRegisterExpenseRepository cashRegisterExpenseRepository;

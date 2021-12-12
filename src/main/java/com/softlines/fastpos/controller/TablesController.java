@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "/api/table", produces = "application/json")
+@RequestMapping(value = "/api/table", produces = "application/json; charset=UTF-8")
 public class TablesController {
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 

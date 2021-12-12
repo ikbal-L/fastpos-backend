@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @RestController
 
-@RequestMapping(value="/api/category", produces = "application/json")
+@RequestMapping(value="/api/category", produces = "application/json; charset=UTF-8")
 public class CategoryController {
 
     @Autowired

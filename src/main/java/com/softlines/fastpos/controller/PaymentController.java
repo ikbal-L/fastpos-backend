@@ -20,7 +20,7 @@ import java.util.*;
 import java.sql.SQLException;
 
 @RestController
-@RequestMapping(value = "/api/payment", produces = "application/json")
+@RequestMapping(value = "/api/payment", produces = "application/json; charset=UTF-8")
 public class PaymentController {
 
 

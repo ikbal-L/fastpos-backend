@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/api/cashoperation", produces = "application/json")
+@RequestMapping(value = "/api/cashoperation", produces = "application/json; charset=UTF-8")
 public class CashOperationController {
 
     @Autowired

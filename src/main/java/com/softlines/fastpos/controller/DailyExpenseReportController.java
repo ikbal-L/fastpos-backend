@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/daily-earnings-report", produces = "application/json")
+@RequestMapping(value = "/api/daily-earnings-report", produces = "application/json; charset=UTF-8")
 
 public class DailyExpenseReportController {
 
