@@ -2,6 +2,7 @@ package com.softlines.fastpos.security.controllers;
 
 import com.softlines.fastpos.security.securitydomain.Annex;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
+import com.softlines.fastpos.security.securitydomain.AnnexConfiguration;
 import com.softlines.fastpos.security.securityrepository.AnnexRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -109,4 +110,5 @@ public class AnnexController {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
+
 }

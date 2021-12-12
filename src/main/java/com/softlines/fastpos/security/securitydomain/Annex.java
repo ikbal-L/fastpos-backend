@@ -32,7 +32,7 @@ public class Annex {
     String serverLicenceKey;
     @OneToOne
     private DbInfo dbInfo;
-//    @OneToMany//(mappedBy = "annex")
+//    @OneToMany(mappedBy = "annex")
 //    List<Terminal> terminals;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -45,4 +45,7 @@ public class Annex {
     @Builder.Default
     @NotNull
     private boolean deleted = false;
+
+    @OneToOne
+    AnnexConfiguration configuration;
 }

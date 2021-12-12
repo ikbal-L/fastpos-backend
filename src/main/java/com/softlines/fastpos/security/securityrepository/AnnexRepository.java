@@ -8,4 +8,6 @@ public interface AnnexRepository extends JpaRepository<Annex,Long> {
 
     @Query(value= "SELECT a FROM Annex a WHERE a.name= ?1")
     Annex findByName(String name);
+
+
 }
