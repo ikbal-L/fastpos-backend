@@ -41,7 +41,7 @@ public class SseNotificationService implements NotificationService {
     @Override
     public void sendNotificationForAll(EventDto event, String senderId) throws IOException {
       executor.execute(()->{
-          var emitters = emitterRepository.getAll();
+          var emitters = emitterRepository.getAllExcept(c->c.getIdentifier().equals(senderId));
 //          (clientEmitter -> clientEmitter.getIdentifier().equals(senderId));
           for (var emitter: emitters) {
               sendData(event,emitter);
