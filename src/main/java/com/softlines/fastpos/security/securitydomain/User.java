@@ -79,5 +79,7 @@ public class User extends BaseEntity {
     @NotNull
     private boolean deleted = false;
 
+    private  boolean signedIn = false;
+
 
 }

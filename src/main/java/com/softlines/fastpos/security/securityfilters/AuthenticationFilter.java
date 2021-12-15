@@ -24,10 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 
@@ -51,12 +48,11 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
         try {
-            creds = new ObjectMapper()
-                    .readValue(req.getInputStream(), UserDTO.class);
+            creds = new ObjectMapper().readValue(req.getInputStream(), UserDTO.class);
             var auth = new UsernamePasswordAuthenticationToken(
                     creds.getUsername(),
                     creds.getPassword(),
-                    Arrays.asList());
+                    Collections.emptyList());
 
             return getAuthenticationManager().authenticate(auth);
         } catch (IOException e) {
@@ -75,7 +71,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         var optionalTerminal = terminalRepository.findById(creds.getTerminalId());
         if (optionalTerminal.isPresent()){
             var terminal  = optionalTerminal.get();
-            var dbId =terminal.getAnnex().getDbInfo().getId();
+
             Session session = Session.builder()
                     .date(new Date())
                     .user(user)
@@ -100,11 +96,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
             var content = new ObjectMapper().writeValueAsString(grantedAuthorities);
 
-//            res.resetBuffer();
-//            res.setStatus(HttpStatus.OK.value());
-//            res.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
-//            res.getOutputStream().print(content);
-//            res.flushBuffer();
             PrintWriter writer = res.getWriter();
             res.setContentType(MediaType.APPLICATION_JSON_VALUE);
             res.setCharacterEncoding("UTF-8");
@@ -124,14 +115,13 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             grantedAuthorities.add(grantedAuthority.getAuthority());
         }
 
-        String token = JWT.create()
+        return JWT.create()
                 .withSubject(name)
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .withClaim("sessionId", session==null?"":session.getId().toString())
                 .withClaim("grantedAuthorities", grantedAuthorities)
 //                .withClaim("userId",userId)
                 .sign(HMAC512(SECRET.getBytes()));
-        return token;
     }
 
     @Override

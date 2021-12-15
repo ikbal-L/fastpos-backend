@@ -73,8 +73,10 @@ public class OrderController {
 
                 Order createdOder = orderService.saveOrder(order);
                 OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
-                var eventDto = EventDto.builder().type(SSEventType.CREATE_ORDER).body(createdOderDto.getId()).build();
-                sseNotificationService.sendNotificationForAll(eventDto, token);
+                if (createdOder.getState() == OrderState.Ordered) {
+                    var eventDto = EventDto.builder().type(SSEventType.CREATE_ORDER).body(createdOderDto.getId()).build();
+                    sseNotificationService.sendNotificationForAll(eventDto, token);
+                }
 
 
                 return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);
@@ -288,25 +290,27 @@ public class OrderController {
         try {
             var persisted = orderRepository.findById(id);
 
-            if (persisted.isPresent() && id != 0 /*&& orderDto.getOrderItems() != null && orderDto.getOrderItems().size() > 0*/) {
+            if (persisted.isPresent()) {
 
                 persisted.get().setLocked(lockState);
 
                 Order updatedOrder = orderRepository.saveOrder(persisted.get());
 
-
-                var body = SyncData
+                var lockedBy = lockState?updatedOrder.getModificationSessionId():"";
+                var body = 
+                        SyncData
                         .builder()
                         .type(Order.class.getSimpleName())
                         .id(persisted.get().getId())
                         .isLocked(lockState)
-                        .lockedBy(lockState?updatedOrder.getModificationSessionId():"")
+                        .lockedBy(lockedBy)
                         .build();
 
                 var eventDto = EventDto.builder().type(SSEventType.LOCK_ORDER).body(body).build();
                 sseNotificationService.sendNotificationForAll(eventDto, token);
-
-                return ResponseEntity.ok().build();
+                updatedOrder.setLockedBy(lockedBy);
+                var result = orderMapper.toOrderDto(updatedOrder);
+                return ResponseEntity.ok(result);
 
             } else {
                 return ResponseEntity.noContent().build();
