@@ -1,13 +1,13 @@
 package com.softlines.fastpos.security.securityconfiguration;
 
-import com.softlines.fastpos.security.securityfilters.ConfigAuthorizationFilter;
-import com.softlines.fastpos.security.securityfilters.AuthenticationFilter;
 import com.softlines.fastpos.security.securityfilters.ApiAuthorizationFilter;
+import com.softlines.fastpos.security.securityfilters.AuthenticationFilter;
+import com.softlines.fastpos.security.securityfilters.ConfigAuthorizationFilter;
+import com.softlines.fastpos.security.securityfilters.LicenseActivationFilter;
 import com.softlines.fastpos.security.securityrepository.AnnexRepository;
 import com.softlines.fastpos.security.securityrepository.SessionRepository;
 import com.softlines.fastpos.security.securityservice.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -19,7 +19,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -44,6 +43,8 @@ public class SecurityConfiguration {
         private SessionRepository sessionRepository;
         @Autowired
         private AuthenticationFilter authenticationFilter;
+        @Autowired
+        private LicenseActivationFilter licenseActivationFilter;
 
         @Override
         protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -66,10 +67,11 @@ public class SecurityConfiguration {
                     .formLogin()
                     .successHandler(authSuccessHandler())
                     .failureHandler(authenticationFailureHandler()).and()
+                    .antMatcher("/**")
+                    .addFilterBefore(licenseActivationFilter,AuthenticationFilter.class)
                     .antMatcher("/api/**")
                     .cors().and().csrf().disable().authorizeRequests()
                     .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
-//                    .antMatchers(HttpMethod.POST, "/user/save").permitAll()
                     .antMatchers(HttpMethod.POST, "/login").permitAll()
                     .anyRequest()
 //                .permitAll()

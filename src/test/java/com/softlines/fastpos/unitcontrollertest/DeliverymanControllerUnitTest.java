@@ -24,10 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -112,7 +109,7 @@ public class DeliverymanControllerUnitTest {
 
         deliveryman.setName("fatiha");
         deliveryman.setBackgroundString("red");
-        deliveryman.setPhoneNumber("0464150");
+        deliveryman.setPhoneNumbers(Set.of("0464150"));
 
         when(deliverymanRepository.save(any(Deliveryman.class))).thenReturn(deliveryman);
         var res = deliverymanController.addDeliveryman(deliverymanMapper.toDeliverymanDto(deliveryman));
@@ -165,7 +162,7 @@ public class DeliverymanControllerUnitTest {
 
         deliveryman.setName("fatiha");
         deliveryman.setBackgroundString("red");
-        deliveryman.setPhoneNumber("072064150");
+        deliveryman.setPhoneNumbers(Set.of("0464150"));
 
         when(deliverymanRepository.save(any(Deliveryman.class))).thenThrow(DataAccessResourceFailureException.class);
         var res = deliverymanController.addDeliveryman(deliverymanMapper.toDeliverymanDto(deliveryman));
@@ -187,7 +184,7 @@ public class DeliverymanControllerUnitTest {
 
         deliveryman.setName("fatiha");
         deliveryman.setBackgroundString("red");
-        deliveryman.setPhoneNumber("072064150");
+        deliveryman.setPhoneNumbers(Set.of("0464150"));
 
         when(deliverymanRepository.findById(1l)).thenReturn(Optional.ofNullable(deliveryman));
         var res = deliverymanController.getDeliveryman(1);
@@ -243,7 +240,7 @@ public class DeliverymanControllerUnitTest {
 
         deliveryman.setName("fatiha");
         deliveryman.setBackgroundString("red");
-        deliveryman.setPhoneNumber("072064150");
+        deliveryman.setPhoneNumbers(Set.of("0464150"));
 
         when(deliverymanRepository.findById(1l)).thenReturn(Optional.ofNullable(deliveryman));
         deliverymanController.deleteDeliveryman(1);
@@ -293,10 +290,11 @@ public class DeliverymanControllerUnitTest {
 
         deliveryman.setName("fatiha");
         deliveryman.setBackgroundString("red");
-        deliveryman.setPhoneNumber("072064150");
+        deliveryman.setPhoneNumbers(Set.of("0464150"));
 
         when(deliverymanRepository.findById(deliveryman.getId())).thenReturn(Optional.of(deliveryman));
-        ResponseEntity<DeliverymanDto> returned = deliverymanController.editDeliveryman(1, deliveryman);
+        var dto = deliverymanMapper.toDeliverymanDto(deliveryman);
+        ResponseEntity<DeliverymanDto> returned = deliverymanController.editDeliveryman(1, dto);
 
         verify(deliverymanRepository, times(1)).findById(deliveryman.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.OK);
@@ -309,10 +307,11 @@ public class DeliverymanControllerUnitTest {
         Deliveryman deliveryman = new Deliveryman();
         deliveryman.setName("fatiha");
         deliveryman.setBackgroundString("red");
-        deliveryman.setPhoneNumber("072064150");
+        deliveryman.setPhoneNumbers(Set.of("0464150"));
 
         when(deliverymanRepository.findById(deliveryman.getId())).thenReturn(Optional.empty());
-        ResponseEntity<DeliverymanDto> returned = deliverymanController.editDeliveryman(0, deliveryman);
+        var dto = deliverymanMapper.toDeliverymanDto(deliveryman);
+        ResponseEntity<DeliverymanDto> returned = deliverymanController.editDeliveryman(0, dto);
 
         verify(deliverymanRepository, times(1)).findById(deliveryman.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
@@ -328,7 +327,8 @@ public class DeliverymanControllerUnitTest {
 
 
         when(deliverymanRepository.findById(deliveryman.getId())).thenReturn(Optional.of(deliveryman));
-        ResponseEntity<DeliverymanDto> returned = deliverymanController.editDeliveryman(1, deliveryman);
+        var dto = deliverymanMapper.toDeliverymanDto(deliveryman);
+        ResponseEntity<DeliverymanDto> returned = deliverymanController.editDeliveryman(1, dto);
 
         verify(deliverymanRepository, times(1)).findById(deliveryman.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);

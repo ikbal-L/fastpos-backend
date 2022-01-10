@@ -257,10 +257,10 @@ public class CustomerControllerUnitTest {
                 .id(1l)
                 .name("harrisa")
                 .build();
-
+        var dto = customerMapper.toCustomerDto(customer);
         when(customerRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
 
-        ResponseEntity<CustomerDto> returned = customerController.editCustomer(1, customer);
+        ResponseEntity<CustomerDto> returned = customerController.editCustomer(1, dto);
 
         verify(customerRepository, times(1)).findById(customer.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.OK);
@@ -276,7 +276,8 @@ public class CustomerControllerUnitTest {
                 .build();
 
         when(customerRepository.findById(customer.getId())).thenReturn(Optional.empty());
-        ResponseEntity<CustomerDto> returned = customerController.editCustomer(10, customer);
+        var dto = customerMapper.toCustomerDto(customer);
+        ResponseEntity<CustomerDto> returned = customerController.editCustomer(10, dto);
 
         verify(customerRepository, times(1)).findById(customer.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);
@@ -289,7 +290,8 @@ public class CustomerControllerUnitTest {
         var customer = Customer.builder().id(1).build();
 
         when(customerRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
-        ResponseEntity<CustomerDto> returned = customerController.editCustomer(1, customer);
+        var dto = customerMapper.toCustomerDto(customer);
+        ResponseEntity<CustomerDto> returned = customerController.editCustomer(1, dto);
 
         verify(customerRepository, times(1)).findById(customer.getId());
         assertEquals(returned.getStatusCode(), HttpStatus.NO_CONTENT);

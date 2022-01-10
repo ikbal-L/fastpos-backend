@@ -49,6 +49,10 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
 	implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.11.3'
 
+	implementation files("lib/License-Manager-Client-0.1-jar-with-dependencies.jar")
+	implementation files("lib/License-Manager-Commons-0.1-jar-with-dependencies.jar")
+	implementation files("lib/ProductKeyGen-1.0-jar-with-dependencies.jar")
+
 
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 

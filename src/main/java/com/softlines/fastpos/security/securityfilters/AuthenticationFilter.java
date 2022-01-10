@@ -127,6 +127,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     @Autowired
     public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+
         super.setAuthenticationManager(authenticationManager);
     }
 }
