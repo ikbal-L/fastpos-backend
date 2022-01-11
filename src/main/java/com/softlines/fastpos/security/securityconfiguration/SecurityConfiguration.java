@@ -3,7 +3,7 @@ package com.softlines.fastpos.security.securityconfiguration;
 import com.softlines.fastpos.security.securityfilters.ApiAuthorizationFilter;
 import com.softlines.fastpos.security.securityfilters.AuthenticationFilter;
 import com.softlines.fastpos.security.securityfilters.ConfigAuthorizationFilter;
-import com.softlines.fastpos.security.securityfilters.LicenseActivationFilter;
+import com.softlines.fastpos.licensing.LicenseActivationFilter;
 import com.softlines.fastpos.security.securityrepository.AnnexRepository;
 import com.softlines.fastpos.security.securityrepository.SessionRepository;
 import com.softlines.fastpos.security.securityservice.UserDetailsServiceImpl;
@@ -23,6 +23,8 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+
+import javax.servlet.Filter;
 
 import static com.softlines.fastpos.security.securityfilters.SecurityConstants.SIGN_UP_URL;
 
@@ -67,16 +69,11 @@ public class SecurityConfiguration {
                     .formLogin()
                     .successHandler(authSuccessHandler())
                     .failureHandler(authenticationFailureHandler()).and()
-                    .antMatcher("/**")
-                    .addFilterBefore(licenseActivationFilter,AuthenticationFilter.class)
-                    .antMatcher("/api/**")
+
+                    .antMatcher("/api/**").addFilterBefore(licenseActivationFilter,AuthenticationFilter.class)
                     .cors().and().csrf().disable().authorizeRequests()
                     .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
                     .antMatchers(HttpMethod.POST, "/login").permitAll()
-                    .anyRequest()
-//                .permitAll()
-                    .authenticated()
-                    .and().formLogin().failureHandler(authenticationFailureHandler())
                     .and()
                     .addFilter(authenticationFilter)
                     .addFilter(new ApiAuthorizationFilter(authenticationManager(), sessionRepository))
@@ -114,6 +111,8 @@ public class SecurityConfiguration {
         private AnnexRepository annexRepository;
         @Autowired
         private AuthenticationFilter authenticationFilter;
+        @Autowired
+        private LicenseActivationFilter licenseActivationFilter;
 
         @Override
         protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -134,6 +133,7 @@ public class SecurityConfiguration {
 
             http
                     .antMatcher("/config/**")
+                    .addFilterBefore(licenseActivationFilter,AuthenticationFilter.class)
                     .cors().and().csrf().disable().authorizeRequests()
                     //.antMatchers(HttpMethod.POST, "/user/save").permitAll()
                     .anyRequest()
