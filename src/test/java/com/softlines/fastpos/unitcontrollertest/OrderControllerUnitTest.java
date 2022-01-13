@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -386,7 +387,7 @@ public class OrderControllerUnitTest {
                                 .product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
                         .elapsedTime(LocalTime.now())
-                        .orderTime(new Date())
+                        .orderTime(new LocalDateTime())
                         .table(Table.builder().build())
                         .build();
 

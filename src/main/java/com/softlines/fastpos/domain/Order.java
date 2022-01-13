@@ -27,7 +27,7 @@ import java.util.List;
 @Where(clause = "deleted = false")
 @javax.persistence.Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)
-public class Order extends SyncEntity {
+public class Order extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -102,6 +102,11 @@ public class Order extends SyncEntity {
     @Column(name = "canceled_by")
     String canceledBy;
 
+    @Column(name = "is_locked")
+    boolean locked;
+
+    @Column(name = "locked_by")
+    String lockedBy;
 
 
     public void setCanceledInfo(OrderState previousState,String canceledBy){

@@ -2,6 +2,7 @@ package com.softlines.fastpos.domain;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -52,12 +53,12 @@ public class OrderItem extends BaseEntity {
 //            inverseJoinColumns = @JoinColumn(name = "additive_id"))
 //    List<Additive> additive;
 
-//<<<<<<< HEAD
+    //<<<<<<< HEAD
 //    @OneToMany(mappedBy = "orderItem",cascade = {CascadeType.ALL},fetch = FetchType.EAGER)
 //=======
-    @OneToMany(mappedBy = "orderItem", cascade = CascadeType.MERGE,
-             fetch = FetchType.EAGER)
-List<OrderItemAdditive> orderItemAdditives;
+    @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER)
+    List<OrderItemAdditive> orderItemAdditives;
 
     @ManyToOne
     @JoinColumn(name = "order_id")

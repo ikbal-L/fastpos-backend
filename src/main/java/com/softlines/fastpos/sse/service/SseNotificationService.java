@@ -32,21 +32,23 @@ public class SseNotificationService implements NotificationService {
             return;
         }
 
-        executor.execute(()->{
+        executor.execute(() -> {
             doSendNotification(identifier, event);
         });
 
     }
 
     @Override
-    public void sendNotificationForAll(EventDto event, String senderId) throws IOException {
-      executor.execute(()->{
-          var emitters = emitterRepository.getAll();
-//          (clientEmitter -> clientEmitter.getIdentifier().equals(senderId));
-          for (var emitter: emitters) {
-              sendData(event,emitter);
-          }
-      });
+    public void sendNotificationForAll(EventDto event, String senderId) {
+
+        executor.execute(() -> {
+            var emitters = emitterRepository.
+                    getAllExcept(c->c.getIdentifier().equals(senderId));
+
+            for (var emitter : emitters) {
+                sendData(event, emitter);
+            }
+        });
     }
 
     private void doSendNotification(String identifier, EventDto event) {
@@ -59,7 +61,7 @@ public class SseNotificationService implements NotificationService {
     private void sendData(EventDto event, SseEmitter emitter) {
         try {
 
-            var data =jacksonObjectMapper.writeValueAsString(event.getBody());
+            var data = jacksonObjectMapper.writeValueAsString(event.getBody());
 
             emitter.send(
                     SseEmitter.event()

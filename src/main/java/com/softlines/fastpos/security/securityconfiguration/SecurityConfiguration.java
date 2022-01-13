@@ -71,6 +71,7 @@ public class SecurityConfiguration {
                     .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
 //                    .antMatchers(HttpMethod.POST, "/user/save").permitAll()
                     .antMatchers(HttpMethod.POST, "/login").permitAll()
+//                    .antMatchers("/chat/**").permitAll()
                     .anyRequest()
 //                .permitAll()
                     .authenticated()

@@ -9,6 +9,7 @@ import org.hibernate.annotations.Table;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -69,7 +70,7 @@ public class Product extends BaseEntity {
     @JoinTable(
             name = "products_additives",
             joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "additive_id",nullable = true))
+            inverseJoinColumns = @JoinColumn(name = "additive_id", nullable = true))
     List<Additive> additives;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -77,6 +78,6 @@ public class Product extends BaseEntity {
 
     @Builder.Default
     @NotNull
-    boolean deleted=false;
+    boolean deleted = false;
 
 }

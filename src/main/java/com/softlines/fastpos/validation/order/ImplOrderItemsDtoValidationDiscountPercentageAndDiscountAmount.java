@@ -11,12 +11,10 @@ public class ImplOrderItemsDtoValidationDiscountPercentageAndDiscountAmount impl
         boolean orderItemsValidationPercentageDiscountAndDiscountAmount = true;
 
         for (int i = 0; i < orderDto.getOrderItems().size(); i++) {
-
             if (!(orderDto.getOrderItems().get(i).getDiscountAmount() * 100 / orderDto.getOrderItems().get(i).getTotal()
                     == orderDto.getOrderItems().get(i).getDiscountPercentage()))
                 orderItemsValidationPercentageDiscountAndDiscountAmount = false;
-                break;
-
+            break;
         }
 
         return orderItemsValidationPercentageDiscountAndDiscountAmount;

@@ -34,7 +34,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> ,CustomOrder
     List<Order> findAllByOrderTime(LocalDate date);
 
 
-
     @Query(value = "select DISTINCT o from Order o where  o.state like ?1")
     List<Order> findAllByState(OrderState state);
 
@@ -46,4 +45,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> ,CustomOrder
     List<Order> findByStateAndDeliveryman(OrderState state, Deliveryman deliveryman, Sort sort);
     Order findFirstByStateAndDeliveryman(OrderState state, Deliveryman deliveryman ,Sort sort);
 
+    @Query(value = "select DISTINCT o from Order o where o.locked=true and o.lockedBy like ?1")
+    List<Order> findLockedOrdersBySessionId(String  sessionId);
 }
