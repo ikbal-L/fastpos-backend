@@ -6,6 +6,7 @@ import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
+import org.hibernate.mapping.Collection;
 import org.intellij.lang.annotations.Language;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -17,6 +18,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,8 +34,6 @@ public class OrderService {
     String selectOrderInfoQuery = "select info from OrderInfo  info where info.date = :date";
 
 
-//    @Autowired
-//    private SimpMessagingTemplate simpMessagingTemplate;
 
 
     private final NumerationService numerationService;
@@ -92,6 +92,17 @@ public class OrderService {
         var created = orderRepository.saveOrder(order);
         SaveOrderInfo(orderInfo);
         return created;
+    }
+
+    public List<Long> getAndUnlockOrdersLockedBy(String source){
+        var orders = orderRepository.findLockedOrdersBySessionId(source);
+        var ids = orders.stream().map(Order::getId).collect(Collectors.toList());
+        orders.forEach(o-> {
+            o.setLocked(false);
+            o.setLockedBy(null);
+        });
+        orderRepository.saveAll(orders);
+        return  ids;
     }
 
 

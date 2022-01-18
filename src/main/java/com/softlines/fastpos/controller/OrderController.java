@@ -87,13 +87,7 @@ public class OrderController {
 
                 Order createdOder = orderService.saveOrder(order);
                 OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
-                var message = Message.builder()
-                        .type(SSEventType.CREATE_ORDER)
-                        .content(createdOderDto)
-                        .source(createdOder.getModificationSessionId())
-                        .build();
-
-                notificationService.publish(this,message);
+                sendCreateOrderMessage(createdOder, createdOderDto);
 
                 return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);
 
@@ -105,6 +99,22 @@ public class OrderController {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
+    }
+
+    private void sendCreateOrderMessage(Order createdOder, OrderDto createdOderDto) {
+        List<OrderState> states = new ArrayList<>();
+        states.add(OrderState.Payed);
+        states.add(OrderState.Delivered);
+        states.add(OrderState.Credit);
+        if (!states.contains(createdOderDto.getState())) {
+            var message = Message.builder()
+                    .type(SSEventType.CREATE_ORDER)
+                    .content(createdOderDto)
+                    .source(createdOder.getModificationSessionId())
+                    .build();
+
+            notificationService.publish(this,message);
+        }
     }
 
     @PostMapping(value = "/savemany")
@@ -121,8 +131,7 @@ public class OrderController {
 
                 List<Order> ListCreatedOder = orderRepository.saveListOrder(order);
 
-//                List<Long> savedIds = ListCreatedOder.parallelStream()
-//                        .map(Order::getId).collect(Collectors.toList());
+
 
                 List<OrderDto> orderDtos = orderMapper.toOrderDTOs(ListCreatedOder);
 
@@ -253,38 +262,20 @@ public class OrderController {
 
             if (orderOptional.isPresent() && id != 0) {
 
-                Order orderDTO = dtoService.orderDtoToOrder(orderDto);
+                Order order = dtoService.orderDtoToOrder(orderDto);
 
-                if (OrderService.IsActionCancel(orderOptional.get(), orderDTO)) {
+                if (OrderService.IsActionCancel(orderOptional.get(), order)) {
                     var previousState = orderOptional.get().getState();
-                    orderDTO = orderRepository.saveOrder(orderDTO);
+                    order = orderRepository.saveOrder(order);
 
-                    var canceledBy = sessionService.getUserFullNameFromSession(orderDTO.getModificationSessionId());
-                    orderDTO.setCanceledInfo(previousState, canceledBy);
+                    var canceledBy = sessionService.getUserFullNameFromSession(order.getModificationSessionId());
+                    order.setCanceledInfo(previousState, canceledBy);
                 }
 
-                Order updatedOrder = orderRepository.saveOrder(orderDTO);
+                Order updatedOrder = orderRepository.saveOrder(order);
 
                 var updatedOderDto = orderMapper.toOrderDto(updatedOrder);
-                String eventType = "";
-                if (OrderService.IsActionPayment(orderOptional.get(), orderDTO)) {
-                    eventType = SSEventType.PAY_ORDER;
-
-                } else if (OrderService.IsActionCancel(orderOptional.get(), orderDTO)) {
-                    eventType = SSEventType.CANCEL_ORDER;
-
-                } else {
-                    eventType = SSEventType.UPDATE_ORDER;
-
-                }
-
-
-                var message = Message.builder()
-                        .type(eventType)
-                        .content(updatedOderDto)
-                        .source(updatedOrder.getModificationSessionId())
-                        .build();
-                notificationService.publish(this,message);
+                sendOrderMessage(orderOptional, order, updatedOrder, updatedOderDto);
 
                 return ResponseEntity.ok().body(updatedOderDto);
 
@@ -298,33 +289,27 @@ public class OrderController {
 
     }
 
-    //    @MessageMapping("/lock")
-//    @SendTo("/topic/messages")
-    @PutMapping("/lock/{id}")
-    public ResponseEntity<OrderDto> lockOrder(@Valid @PathVariable long id, @RequestBody boolean lockState, @RequestHeader(name = "Authorization") String token) {
+    private void sendOrderMessage(Optional<Order> orderOptional, Order incomingOrder, Order updatedOrder, OrderDto updatedOderDto) {
+        String eventType;
+        if (OrderService.IsActionPayment(orderOptional.get(), incomingOrder)) {
+            eventType = SSEventType.PAY_ORDER;
 
-        try {
+        } else if (OrderService.IsActionCancel(orderOptional.get(), incomingOrder)) {
+            eventType = SSEventType.CANCEL_ORDER;
 
-            var persisted = orderRepository.findById(id);
+        } else {
+            eventType = SSEventType.UPDATE_ORDER;
 
-            if (persisted.isPresent() && id != 0 /*&& orderDto.getOrderItems() != null && orderDto.getOrderItems().size() > 0*/) {
-
-                persisted.get().setLocked(lockState);
-
-                Order updatedOrder = orderRepository.saveOrder(persisted.get());
-
-                return ResponseEntity.ok().build();
-
-            } else {
-                return ResponseEntity.noContent().build();
-            }
-
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 
-    }
 
+        var message = Message.builder()
+                .type(eventType)
+                .content(updatedOderDto)
+                .source(updatedOrder.getModificationSessionId())
+                .build();
+        notificationService.publish(this,message);
+    }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity deleteOrder(@Valid @PathVariable long id, @RequestHeader(name = "Authorization") String token) {
@@ -336,6 +321,8 @@ public class OrderController {
             if (optionalOrder.isPresent()) {
 
                 orderRepository.delete(optionalOrder.get());
+
+
 
                 return ResponseEntity.ok().build();
 

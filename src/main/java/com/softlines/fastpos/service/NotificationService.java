@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,11 +31,16 @@ public class NotificationService {
 
 
     public void sendUnlockOrderMessage(String sessionId,List<Long> ids) {
+        if (ids.isEmpty()) return;
         simpMessagingTemplate.setDefaultDestination("/app");
         simpMessagingTemplate.setUserDestinationPrefix("/app");
 
-//
-        simpMessagingTemplate.convertAndSend("/topic/unlock",ids);
+        var message = Message.builder()
+                .type("Unlock.Order")
+                .content(ids)
+                .source(sessionId)
+                .build();
+        simpMessagingTemplate.convertAndSend("/topic/messages/locks",message);
 
     }
 }

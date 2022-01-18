@@ -28,8 +28,10 @@ import java.util.List;
 @javax.persistence.Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)
 @NamedQueries({
-        @NamedQuery(name = "Order.lock",query = "update Order set locked = true where id = :id"),
-        @NamedQuery(name = "Order.unlock",query = "update Order set locked = false where id = :id")
+        @NamedQuery(name = "Order.lock",query = "update Order set locked = true , lockedBy = :source  where id = :id"),
+        @NamedQuery(name = "Order.unlock",query = "update Order set locked = false where id = :id"),
+        @NamedQuery(name = "Order.findAllLockedBySourceIds",query = "select  o.id from Order o where o.lockedBy like :source"),
+        @NamedQuery(name = "Order.unlockAllLockedBySource",query = "update Order set locked = false where lockedBy like :source"),
 })
 public class Order extends BaseEntity {
 

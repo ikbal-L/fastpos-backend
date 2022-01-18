@@ -1,6 +1,8 @@
 package com.softlines.fastpos.socket;
 
+import com.softlines.fastpos.repository.OrderRepository;
 import com.softlines.fastpos.service.NotificationService;
+import com.softlines.fastpos.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
@@ -25,6 +27,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Autowired
     NotificationService notificationService;
+    @Autowired
+    OrderService orderService;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -45,10 +49,18 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.interceptors(new ChannelInterceptor() {
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
+
                 StompHeaderAccessor accessor =
                         MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+                assert accessor != null;
                 if (accessor.getCommand() != null && StompCommand.DISCONNECT.equals(accessor.getCommand())) {
-                    notificationService.sendUnlockOrderMessage(accessor.getSessionAttributes().get("sessionId").toString(), List.of());
+
+                    var sessionId = accessor.getSessionAttributes().get("sessionId");
+                    if (sessionId!= null){
+                        var ids = orderService.getAndUnlockOrdersLockedBy(sessionId.toString());
+                        notificationService.sendUnlockOrderMessage(sessionId.toString(), ids);
+                    }
+
                 }
                 return message;
             }
