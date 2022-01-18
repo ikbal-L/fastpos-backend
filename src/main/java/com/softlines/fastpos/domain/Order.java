@@ -27,6 +27,10 @@ import java.util.List;
 @Where(clause = "deleted = false")
 @javax.persistence.Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)
+@NamedQueries({
+        @NamedQuery(name = "Order.lock",query = "update Order set locked = true where id = :id"),
+        @NamedQuery(name = "Order.unlock",query = "update Order set locked = false where id = :id")
+})
 public class Order extends BaseEntity {
 
     @Id

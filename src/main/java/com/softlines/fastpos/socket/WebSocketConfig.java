@@ -1,8 +1,6 @@
 package com.softlines.fastpos.socket;
 
-import com.softlines.fastpos.domain.Order;
-import com.softlines.fastpos.repository.OrderRepository;
-import com.softlines.fastpos.service.OrderService;
+import com.softlines.fastpos.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
@@ -18,13 +16,15 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import java.util.List;
+
 
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Autowired
-    OrderService orderService;
+    NotificationService notificationService;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -48,7 +48,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 StompHeaderAccessor accessor =
                         MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
                 if (accessor.getCommand() != null && StompCommand.DISCONNECT.equals(accessor.getCommand())) {
-                    orderService.sendUnlockOrderMessage(accessor.getSessionAttributes().get("sessionId").toString());
+                    notificationService.sendUnlockOrderMessage(accessor.getSessionAttributes().get("sessionId").toString(), List.of());
                 }
                 return message;
             }

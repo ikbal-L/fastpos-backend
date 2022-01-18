@@ -13,14 +13,21 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
+@MessageMapping("/chat")
 public class ChatController {
 
 //    @Autowired
 //    private SimpMessagingTemplate simpMessagingTemplate;
 
-    @MessageMapping("/chat")
+
     @SendTo("/topic/messages")
     public String send(@Payload String data) {
+        return data;
+    }
+
+
+    @SendTo("/topic/messages/locks")
+    public String sendLockMessages(@Payload String data) {
         return data;
     }
 

@@ -1,6 +1,5 @@
 package com.softlines.fastpos.controller;
 
-import com.softlines.fastpos.domain.Additive;
 import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.dto.*;
@@ -13,35 +12,20 @@ import com.softlines.fastpos.repository.AdditiveRepository;
 import com.softlines.fastpos.repository.OrderItemAdditiveRepository;
 import com.softlines.fastpos.repository.OrderRepository;
 import com.softlines.fastpos.security.securityservice.SessionService;
+import com.softlines.fastpos.service.NotificationService;
 import com.softlines.fastpos.service.OrderService;
 import com.softlines.fastpos.sse.model.EventDto;
 import com.softlines.fastpos.sse.model.SSEventType;
 import com.softlines.fastpos.sse.service.SseNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.messaging.simp.stomp.StompSessionHandler;
-import org.springframework.messaging.simp.user.SimpUser;
-import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.socket.client.WebSocketClient;
-import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -86,16 +70,11 @@ public class OrderController {
     @Autowired
     AdditiveRepository additiveRepository;
 
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
-
-//
-//    @Autowired
-//    private SimpUserRegistry simpUserRegistry;
-//
-//    public Set<SimpUser> getUsers() {
-//        return simpUserRegistry.getUsers();
-//    }
+    private final NotificationService notificationService;
+    public OrderController(NotificationService notificationService) {
+        this.notificationService = notificationService;
+        notificationService.registerPublisher(this,"/topic/messages");
+    }
 
     @PostMapping(value = "/save")
     public ResponseEntity<OrderDto> saveOrder(@Valid @RequestBody OrderDto orderDto, @RequestHeader(name = "Authorization") String token) {
@@ -108,6 +87,13 @@ public class OrderController {
 
                 Order createdOder = orderService.saveOrder(order);
                 OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
+                var message = Message.builder()
+                        .type(SSEventType.CREATE_ORDER)
+                        .content(createdOderDto)
+                        .source(createdOder.getModificationSessionId())
+                        .build();
+
+                notificationService.publish(this,message);
 
                 return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);
 
@@ -263,37 +249,42 @@ public class OrderController {
     public ResponseEntity<OrderDto> editOrder(@Valid @PathVariable long id, @Valid @RequestBody OrderDto orderDto, @RequestHeader(name = "Authorization") String token) {
 
         try {
-            var persisted = orderRepository.findById(id);
+            var orderOptional = orderRepository.findById(id);
 
-            if (persisted.isPresent() && id != 0) {
+            if (orderOptional.isPresent() && id != 0) {
 
-                Order order = dtoService.orderDtoToOrder(orderDto);
+                Order orderDTO = dtoService.orderDtoToOrder(orderDto);
 
-                if (OrderService.IsActionCancel(persisted.get(), order)) {
-                    var previousState = persisted.get().getState();
-                    order = orderRepository.saveOrder(order);
+                if (OrderService.IsActionCancel(orderOptional.get(), orderDTO)) {
+                    var previousState = orderOptional.get().getState();
+                    orderDTO = orderRepository.saveOrder(orderDTO);
 
-                    var canceledBy = sessionService.getUserFullNameFromSession(order.getModificationSessionId());
-                    order.setCanceledInfo(previousState, canceledBy);
+                    var canceledBy = sessionService.getUserFullNameFromSession(orderDTO.getModificationSessionId());
+                    orderDTO.setCanceledInfo(previousState, canceledBy);
                 }
 
-                Order createdOrder = orderRepository.saveOrder(order);
+                Order updatedOrder = orderRepository.saveOrder(orderDTO);
 
-                var updatedOderDto = orderMapper.toOrderDto(createdOrder);
+                var updatedOderDto = orderMapper.toOrderDto(updatedOrder);
                 String eventType = "";
-                Object eventBody;
-                if (OrderService.IsActionPayment(persisted.get(), order)) {
+                if (OrderService.IsActionPayment(orderOptional.get(), orderDTO)) {
                     eventType = SSEventType.PAY_ORDER;
-                    eventBody = createdOrder.getId();
-                } else if (OrderService.IsActionCancel(persisted.get(), order)) {
+
+                } else if (OrderService.IsActionCancel(orderOptional.get(), orderDTO)) {
                     eventType = SSEventType.CANCEL_ORDER;
-                    eventBody = createdOrder.getId();
+
                 } else {
                     eventType = SSEventType.UPDATE_ORDER;
-                    eventBody = createdOrder.getId();
+
                 }
-                var eventDto = EventDto.builder().type(eventType).body(eventBody).build();
-                sseNotificationService.sendNotificationForAll(eventDto, token);
+
+
+                var message = Message.builder()
+                        .type(eventType)
+                        .content(updatedOderDto)
+                        .source(updatedOrder.getModificationSessionId())
+                        .build();
+                notificationService.publish(this,message);
 
                 return ResponseEntity.ok().body(updatedOderDto);
 

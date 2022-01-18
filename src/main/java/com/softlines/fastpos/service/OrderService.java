@@ -32,8 +32,8 @@ public class OrderService {
     String selectOrderInfoQuery = "select info from OrderInfo  info where info.date = :date";
 
 
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+//    @Autowired
+//    private SimpMessagingTemplate simpMessagingTemplate;
 
 
     private final NumerationService numerationService;
@@ -94,18 +94,5 @@ public class OrderService {
         return created;
     }
 
-    public void sendUnlockOrderMessage(String sessionId) {
-        simpMessagingTemplate.setDefaultDestination("/app");
-        simpMessagingTemplate.setUserDestinationPrefix("/app");
 
-        List<Order> listOrdersLocked = orderRepository.findLockedOrdersBySessionId(sessionId);
-        listOrdersLocked.forEach(order ->
-        {
-            order.setLocked(false);
-            order.setLockedBy(null);
-            orderRepository.saveOrder(order);
-            simpMessagingTemplate.convertAndSend("/topic/unlock", order.getId());
-        });
-
-    }
 }
