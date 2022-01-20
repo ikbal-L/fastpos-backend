@@ -119,30 +119,26 @@ public class CustomerController {
             states.add(OrderState.CreditPartiallyRePaid);
 
 
-            if (customerList == null || customerList.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            } else {
-                var ids = customerList.stream().map(Customer::getId).collect(Collectors.toList());
-                var filter = OrderFilter
-                        .builder()
-                        .states(Optional.of(states))
-                        .customerIds(Optional.of(ids)).customerId(Optional.empty())
-                        .orderTime(Optional.empty())
-                        .state(Optional.empty())
-                        .build();
+            if (customerList.isEmpty())   return ResponseEntity.noContent().build();
+            var ids = customerList.stream().map(Customer::getId).collect(Collectors.toList());
+            var filter = OrderFilter
+                    .builder()
+                    .states(Optional.of(states))
+                    .customerIds(Optional.of(ids))
+                    .orderTime(Optional.empty())
+                    .build();
 
-                var orders = orderFilterService.buildQuery(filter).getResultList();
+            var orders = orderFilterService.buildQuery(filter).getResultList();
 
-                for (Customer customer : customerList) {
+            for (Customer customer : customerList) {
 
-                    CreditService.calculateBalance(customer,orders);
+                CreditService.calculateBalance(customer,orders);
 
-                }
-
-                customerRepository.saveAll(customerList);
-
-                return ResponseEntity.ok().body(customerMapper.toCustomerDTOs(customerList));
             }
+
+            customerRepository.saveAll(customerList);
+
+            return ResponseEntity.ok().body(customerMapper.toCustomerDTOs(customerList));
 
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
@@ -205,9 +201,9 @@ public class CustomerController {
                 var filter = OrderFilter
                         .builder()
                         .states(Optional.of(states))
-                        .customerId(Optional.of(customer.getId()))
+                        .customerIds(Optional.of(List.of(customer.getId())))
                         .orderTime(Optional.empty())
-                        .state(Optional.empty())
+
                         .build();
                 var orders = orderFilterService.buildQuery(filter).getResultList();
 

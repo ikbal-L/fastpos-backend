@@ -68,6 +68,7 @@ public class PaymentService {
         }else {
             paymentAmount = savedPayment.getAmount();
         }
+        assert orders != null;
         if (!orders.isEmpty()){
             for (var  order:orders) {
 
@@ -144,10 +145,12 @@ public class PaymentService {
 
 
         if (paymentDto.getPaymentSource() == PaymentSource.Delivery) {
+            assert deliveryman != null;
             deliverymanRepository.save(deliveryman);
         }
 
         if (paymentDto.getPaymentSource() == PaymentSource.Customer){
+            assert customer != null;
             customerRepository.save(customer);
         }
         var savedPaymentDTO = paymentMapper.toPaymentDto(savedPayment);

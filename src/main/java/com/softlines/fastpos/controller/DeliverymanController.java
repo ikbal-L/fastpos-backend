@@ -103,9 +103,8 @@ public class DeliverymanController {
                 var filter = OrderFilter
                         .builder()
                         .states(Optional.of(states))
-                        .deliverymanIds(Optional.of(ids)).deliverymanId(Optional.empty())
+                        .deliverymanIds(Optional.of(ids))
                         .orderTime(Optional.empty())
-                        .state(Optional.empty())
                         .build();
                 var orders = orderFilterService.buildQuery(filter).getResultList();
 
@@ -160,9 +159,8 @@ public class DeliverymanController {
                 var filter = OrderFilter
                         .builder()
                         .states(Optional.of(states))
-                        .deliverymanId(Optional.of(deliveryman.getId()))
+                        .deliverymanIds(Optional.of(List.of(deliveryman.getId())))
                         .orderTime(Optional.empty())
-                        .state(Optional.empty())
                         .build();
                 var orders = orderFilterService.buildQuery(filter).getResultList();
 

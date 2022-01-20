@@ -18,6 +18,8 @@ import com.softlines.fastpos.sse.model.EventDto;
 import com.softlines.fastpos.sse.model.SSEventType;
 import com.softlines.fastpos.sse.service.SseNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.support.PagedListHolder;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -181,6 +183,7 @@ public class OrderController {
         TypedQuery<Order> query = orderFilterService.buildQuery(filter);
         var orders = query.getResultList();
         var orderDtos = orderMapper.toOrderDTOs(orders);
+
         return ResponseEntity.ok(orderDtos);
     }
 

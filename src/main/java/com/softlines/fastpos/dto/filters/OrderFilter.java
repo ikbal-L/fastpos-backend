@@ -26,16 +26,8 @@ public class OrderFilter extends Filter<Order> {
     @Builder.Default
     Optional<LocalDateTime> orderTime = Optional.empty();
 
-    Optional<OrderState> state = Optional.empty();
-
     @Builder.Default
     Optional<List<OrderState>> states= Optional.empty();
-
-    @Builder.Default
-    Optional<Long> deliverymanId= Optional.empty();
-
-    @Builder.Default
-    Optional<Long> customerId= Optional.empty();
 
     @Builder.Default
     Optional<List<Long>> deliverymanIds= Optional.empty();

@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Builder
 @Setter
@@ -20,17 +21,17 @@ public class OrderItemAdditiveId implements Serializable {
     @Column(name = "orderItem_id")
     private Long orderItemId;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderItemAdditiveId that = (OrderItemAdditiveId) o;
+        return additiveId.equals(that.additiveId) &&
+                orderItemId.equals(that.orderItemId);
+    }
+
+    @Override
     public int hashCode() {
-        return (int)(orderItemId + additiveId);
+        return Objects.hash(additiveId, orderItemId);
     }
-
-    public boolean equals(Object object) {
-        if (object instanceof OrderItemAdditiveId) {
-            OrderItemAdditiveId otherId = (OrderItemAdditiveId) object;
-            return (otherId.orderItemId == this.orderItemId)
-                    && (otherId.additiveId == this.additiveId);
-        }
-        return false;
-    }
-
 }

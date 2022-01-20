@@ -1,6 +1,8 @@
 package com.softlines.fastpos.dto.service.filtering;
 
 import com.softlines.fastpos.dto.filters.Filter;
+import com.softlines.fastpos.dto.filters.Page;
+import com.softlines.fastpos.dto.filters.SortOrder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -35,15 +37,12 @@ public abstract class FilterService<T,F extends Filter<T>> {
     protected void checkSortingCriteria( ){
 
         var orderBy = filter.getOrderBy();
-        var ascendingOrder = filter.getAscendingOrder();
-        var descendingOrder = filter.getDescendingOrder();
+        var sortOrder = filter.getSortOrder();
 
-        if (orderBy.isPresent()&& !orderBy.get().isBlank()){
-            if (ascendingOrder.isPresent()&& descendingOrder.isEmpty()&& ascendingOrder.get()){
-                criteriaQuery.orderBy(criteriaBuilder.asc(root.get(orderBy.get())));
-            }else if(descendingOrder.isPresent()&& ascendingOrder.isEmpty()&& descendingOrder.get()){
-                criteriaQuery.orderBy(criteriaBuilder.desc(root.get(orderBy.get())));
-            }
+
+        if (orderBy.isPresent()&& !orderBy.get().isBlank()&& sortOrder.isPresent()){
+            if (sortOrder.get() == SortOrder.Asc)criteriaQuery.orderBy(criteriaBuilder.asc(root.get(orderBy.get())));
+            if (sortOrder.get() == SortOrder.Desc)criteriaQuery.orderBy(criteriaBuilder.desc(root.get(orderBy.get())));
         }
     }
 
@@ -73,4 +72,5 @@ public abstract class FilterService<T,F extends Filter<T>> {
         checkPaginationCriteria();
         return query;
     }
+
 }

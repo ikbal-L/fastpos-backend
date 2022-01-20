@@ -10,8 +10,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
+import javax.swing.*;
 import java.text.ParseException;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 @Data
 @AllArgsConstructor
@@ -31,19 +35,25 @@ public  class Filter<T> {
     @Builder.Default
     Optional<String> orderBy = Optional.empty();
 
-    @JsonProperty("AscendingOrder")
+    @JsonProperty("SortOrder")
     @Builder.Default
-    Optional<Boolean> ascendingOrder = Optional.empty();
+    Optional<SortOrder> sortOrder = Optional.empty();
 
-    @JsonProperty("DescendingOrder")
+
     @Builder.Default
-    Optional<Boolean> descendingOrder = Optional.empty();
+    Optional<Map<String, Collection>> in = Optional.empty();
+
+
 
     protected TypedQuery<T> query;
 
     protected CriteriaQuery<T> criteriaQuery;
 
     protected Root<T> root;
+
+    public boolean isPaginationRequested(){
+        return pageIndex.isPresent()&& pageSize.isPresent();
+    }
 
 
 

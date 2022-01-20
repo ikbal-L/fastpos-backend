@@ -8,8 +8,10 @@ import javax.persistence.*;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.Objects;
 
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,11 +25,7 @@ public class OrderItemAdditive {
     @EmbeddedId
     private OrderItemAdditiveId id;
 
-//    @Id
-//    private Long additiveId;
-//
-//    @Id
-//    private Long orderItemId;
+
 
     @ManyToOne( )
     @MapsId("orderItemId")
@@ -44,7 +42,18 @@ public class OrderItemAdditive {
 
     Date timestamp;
 
-//    @Builder.Default
-//    private boolean deleted = false;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderItemAdditive that = (OrderItemAdditive) o;
+        return id.equals(that.id) &&
+                state == that.state &&
+                timestamp.equals(that.timestamp);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, state, timestamp);
+    }
 }
