@@ -106,11 +106,11 @@ public class DeliverymanController {
                         .deliverymanIds(Optional.of(ids))
                         .orderTime(Optional.empty())
                         .build();
-                var orders = orderFilterService.buildQuery(filter).getResultList();
+                var orderPage = orderFilterService.buildQuery(filter);
 
                 for (Deliveryman deliveryman : deliverymanList) {
 
-                    CreditService.calculateBalance(deliveryman,orders);
+                    CreditService.calculateBalance(deliveryman,orderPage.getElements());
 
                 }
 
@@ -162,9 +162,9 @@ public class DeliverymanController {
                         .deliverymanIds(Optional.of(List.of(deliveryman.getId())))
                         .orderTime(Optional.empty())
                         .build();
-                var orders = orderFilterService.buildQuery(filter).getResultList();
+                var orderPage = orderFilterService.buildQuery(filter);
 
-                CreditService.calculateBalance(deliveryman,orders);
+                CreditService.calculateBalance(deliveryman,orderPage.getElements());
                 deliverymanRepository.save(deliveryman);
                 return ResponseEntity.ok().body(deliverymanMapper.toDeliverymanDto(deliveryman));
             }else

@@ -23,10 +23,10 @@ public class PaymentFilterService extends FilterService<Payment, PaymentFilter> 
 //    }
 
     @Override
-    protected void init() throws ParseException {
-        List<Predicate> predicates = new ArrayList<>();
+    protected void initializePredicates() throws ParseException {
+        predicates = new ArrayList<>();
         this.root = criteriaQuery.from(Payment.class);
-
+        this.entityClass = Payment.class;
         var deliverymanId = this.filter.getDeliverymanId();
         var deliverymanIds = this.filter.getDeliverymanIds();
 
@@ -66,7 +66,9 @@ public class PaymentFilterService extends FilterService<Payment, PaymentFilter> 
     }
 
     @Override
-    protected void initCriteriaQuery() {
+    protected void initializeCriteriaQuery() {
         this.criteriaQuery = criteriaBuilder.createQuery(Payment.class);
     }
+
+
 }

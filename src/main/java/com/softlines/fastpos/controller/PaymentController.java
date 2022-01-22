@@ -2,6 +2,7 @@ package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Payment;
 import com.softlines.fastpos.dto.*;
+import com.softlines.fastpos.dto.filters.Page;
 import com.softlines.fastpos.dto.filters.PaymentFilter;
 import com.softlines.fastpos.dto.mapping.PaymentMapper;
 import com.softlines.fastpos.dto.service.filtering.PaymentFilterService;
@@ -72,12 +73,12 @@ public class PaymentController {
     }
 
     @PostMapping(value = {"/getallbycriteria"})
-    ResponseEntity<List<PaymentDto>> getPaymentsByCriteria(@RequestBody PaymentFilter filter) throws ParseException {
-        TypedQuery<Payment> query = paymentFilterService.buildQuery(filter);
+    ResponseEntity<Page<PaymentDto>> getPaymentsByCriteria(@RequestBody PaymentFilter filter) throws ParseException {
+        var paymentPage = paymentFilterService.buildQuery(filter);
 
-        var payments= query.getResultList();
-        var paymentDTOs = paymentMapper.toPaymentDtos(payments);
-        return  ResponseEntity.ok(paymentDTOs);
+        var paymentDtoPage= paymentPage.toPageOf(c-> paymentMapper.toPaymentDtos(c));
+
+        return  ResponseEntity.ok(paymentDtoPage);
 
     }
 }

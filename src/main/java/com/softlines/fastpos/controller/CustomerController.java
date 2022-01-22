@@ -2,10 +2,8 @@ package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Customer;
 
-import com.softlines.fastpos.domain.Deliveryman;
 import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.dto.CustomerDto;
-import com.softlines.fastpos.dto.DeliverymanDto;
 import com.softlines.fastpos.dto.filters.OrderFilter;
 import com.softlines.fastpos.dto.mapping.CustomerMapper;
 import com.softlines.fastpos.dto.service.filtering.OrderFilterService;
@@ -128,11 +126,11 @@ public class CustomerController {
                     .orderTime(Optional.empty())
                     .build();
 
-            var orders = orderFilterService.buildQuery(filter).getResultList();
+            var orderPage = orderFilterService.buildQuery(filter);
 
             for (Customer customer : customerList) {
 
-                CreditService.calculateBalance(customer,orders);
+                CreditService.calculateBalance(customer,orderPage.getElements());
 
             }
 
@@ -205,9 +203,9 @@ public class CustomerController {
                         .orderTime(Optional.empty())
 
                         .build();
-                var orders = orderFilterService.buildQuery(filter).getResultList();
+                var orderPage = orderFilterService.buildQuery(filter);
 
-                CreditService.calculateBalance(customer,orders);
+                CreditService.calculateBalance(customer,orderPage.getElements());
                 customerRepository.save(customer);
                 return ResponseEntity.ok().body(customerMapper.toCustomerDto(customer));
             }else

@@ -27,9 +27,10 @@ public class OrderFilterService extends FilterService<Order, OrderFilter>{
 //    }
 
     @Override
-    protected void init() throws ParseException {
-        List<Predicate> predicates = new ArrayList<>();
+    protected void initializePredicates() throws ParseException {
+        this.predicates = new ArrayList<>();
         this.root = criteriaQuery.from(Order.class);
+        this.entityClass = Order.class;
         this.root.fetch("orderItems", JoinType.LEFT);
 
         var orderTime = this.filter.getOrderTime();
@@ -71,12 +72,13 @@ public class OrderFilterService extends FilterService<Order, OrderFilter>{
             predicates.add(customerIdsPredicate);
         }
 
-        //TODO Fix Issue: LEFT JOIN returning multiple instances of the same entity
-        criteriaQuery.where(predicates.toArray(Predicate[]::new)).distinct(true);
+
     }
 
     @Override
-    protected void initCriteriaQuery() {
+    protected void initializeCriteriaQuery() {
         this.criteriaQuery = criteriaBuilder.createQuery(Order.class);
     }
+
+
 }

@@ -4,6 +4,7 @@ import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.dto.*;
 import com.softlines.fastpos.dto.filters.OrderFilter;
+import com.softlines.fastpos.dto.filters.Page;
 import com.softlines.fastpos.dto.mapping.OrderMapper;
 import com.softlines.fastpos.dto.service.DtoServiceImpl;
 import com.softlines.fastpos.dto.service.filtering.OrderFilterService;
@@ -19,7 +20,6 @@ import com.softlines.fastpos.sse.model.SSEventType;
 import com.softlines.fastpos.sse.service.SseNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -179,12 +179,12 @@ public class OrderController {
     }
 
     @PostMapping(value = {"/getallbycriteria"})
-    ResponseEntity<List<OrderDto>> getOrdersByCriteria(@RequestBody OrderFilter filter) throws ParseException {
-        TypedQuery<Order> query = orderFilterService.buildQuery(filter);
-        var orders = query.getResultList();
-        var orderDtos = orderMapper.toOrderDTOs(orders);
+    ResponseEntity<Page<OrderDto>> getOrdersByCriteria(@RequestBody OrderFilter filter) throws ParseException {
+        var orderPage = orderFilterService.buildQuery(filter);
 
-        return ResponseEntity.ok(orderDtos);
+        var orderDtoPage = orderPage.toPageOf(c-> orderMapper.toOrderDTOs(c));
+
+        return ResponseEntity.ok(orderDtoPage);
     }
 
     @GetMapping(value = {"/getall", "/getall/{filterByState}"})
