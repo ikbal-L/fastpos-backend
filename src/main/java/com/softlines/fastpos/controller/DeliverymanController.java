@@ -96,7 +96,7 @@ public class DeliverymanController {
             states.add(OrderState.Delivered);
             states.add(OrderState.DeliveredPartiallyPaid);
 
-            if (deliverymanList == null || deliverymanList.isEmpty()) {
+            if (deliverymanList.isEmpty()) {
                 return ResponseEntity.noContent().build();
             } else {
                 var ids = deliverymanList.stream().map(Deliveryman::getId).collect(Collectors.toList());

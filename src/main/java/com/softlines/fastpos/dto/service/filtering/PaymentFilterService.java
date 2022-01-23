@@ -24,13 +24,12 @@ public class PaymentFilterService extends FilterService<Payment, PaymentFilter> 
 
     @Override
     protected void initializePredicates() throws ParseException {
-        predicates = new ArrayList<>();
         this.root = criteriaQuery.from(Payment.class);
         this.entityClass = Payment.class;
-        var deliverymanId = this.filter.getDeliverymanId();
+
         var deliverymanIds = this.filter.getDeliverymanIds();
 
-        var customerId = this.filter.getCustomerId();
+
         var customerIds = this.filter.getCustomerIds();
 
         var date = filter.getDate();
@@ -56,7 +55,7 @@ public class PaymentFilterService extends FilterService<Payment, PaymentFilter> 
             predicates.add(customerIdsPredicate);
         }
 
-        criteriaQuery.where(predicates.toArray(Predicate[]::new));
+
     }
 
     @Override

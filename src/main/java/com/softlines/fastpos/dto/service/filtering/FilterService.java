@@ -15,6 +15,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,11 +38,9 @@ public abstract class FilterService<T,F extends Filter<T>> {
 
     protected Class<?> entityClass;
 
-    protected List<Predicate> predicates;
+    protected List<Predicate> predicates ;
 
-//    public FilterService(EntityManagerFactory entityManagerFactory) {
-//        em = entityManagerFactory.createEntityManager();
-//    }
+
 
     protected void checkSortingCriteria( ){
 
@@ -76,15 +75,16 @@ public abstract class FilterService<T,F extends Filter<T>> {
 
     public Page<T>  buildQuery(F filter) throws ParseException {
         this.filter = filter;
+        this.predicates = new ArrayList<>();
         this.criteriaBuilder = em.getCriteriaBuilder();
         initializeCriteriaQuery();
-        if (filter.isPaginationRequested()){
-            this.pageCountCriteriaQuery = criteriaBuilder.createQuery(Long.class);
-        }
         initializePredicates();
         criteriaQuery.where(predicates.toArray(Predicate[]::new)).distinct(true);
-        pageCountCriteriaQuery.select(criteriaBuilder.count(pageCountCriteriaQuery.from(entityClass)));
-        pageCountCriteriaQuery.where(predicates.toArray(Predicate[]::new)).distinct(true);
+        if (filter.isPaginationRequested()){
+            this.pageCountCriteriaQuery = criteriaBuilder.createQuery(Long.class);
+            pageCountCriteriaQuery.select(criteriaBuilder.count(pageCountCriteriaQuery.from(entityClass)));
+            pageCountCriteriaQuery.where(predicates.toArray(Predicate[]::new)).distinct(true);
+        }
         checkSortingCriteria();
         createQuery();
         checkPaginationCriteria();

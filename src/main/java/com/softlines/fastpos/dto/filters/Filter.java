@@ -40,17 +40,6 @@ public  class Filter<T> {
     Optional<SortOrder> sortOrder = Optional.empty();
 
 
-    @Builder.Default
-    Optional<Map<String, Collection>> in = Optional.empty();
-
-
-
-    protected TypedQuery<T> query;
-
-    protected CriteriaQuery<T> criteriaQuery;
-
-    protected Root<T> root;
-
     public boolean isPaginationRequested(){
         return pageIndex.isPresent()&& pageSize.isPresent();
     }

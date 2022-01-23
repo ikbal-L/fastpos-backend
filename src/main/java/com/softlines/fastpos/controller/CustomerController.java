@@ -2,8 +2,10 @@ package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Customer;
 
+import com.softlines.fastpos.domain.Deliveryman;
 import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.dto.CustomerDto;
+import com.softlines.fastpos.dto.DeliverymanDto;
 import com.softlines.fastpos.dto.filters.OrderFilter;
 import com.softlines.fastpos.dto.mapping.CustomerMapper;
 import com.softlines.fastpos.dto.service.filtering.OrderFilterService;

@@ -28,7 +28,7 @@ public class OrderFilterService extends FilterService<Order, OrderFilter>{
 
     @Override
     protected void initializePredicates() throws ParseException {
-        this.predicates = new ArrayList<>();
+
         this.root = criteriaQuery.from(Order.class);
         this.entityClass = Order.class;
         this.root.fetch("orderItems", JoinType.LEFT);
@@ -48,8 +48,6 @@ public class OrderFilterService extends FilterService<Order, OrderFilter>{
             Predicate orderTimePredicate = this.criteriaBuilder.equal(root.get("orderTime").as(LocalDate.class), orderTime.get().toLocalDate());
             predicates.add(orderTimePredicate);
         }
-
-
 
         if (states.isPresent()){
 
@@ -71,8 +69,6 @@ public class OrderFilterService extends FilterService<Order, OrderFilter>{
             customerIds.get().forEach(customerIdsPredicate::value);
             predicates.add(customerIdsPredicate);
         }
-
-
     }
 
     @Override
