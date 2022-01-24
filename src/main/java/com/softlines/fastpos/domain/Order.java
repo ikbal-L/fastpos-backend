@@ -100,7 +100,7 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "customer_id")
     Customer customer;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     CashOperation cashOperation;
 
     @ManyToOne(fetch = FetchType.LAZY)

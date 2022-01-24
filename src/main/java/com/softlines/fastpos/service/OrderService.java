@@ -1,5 +1,6 @@
 package com.softlines.fastpos.service;
 
+import com.softlines.fastpos.domain.CashOperation;
 import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderInfo;
 import com.softlines.fastpos.domain.OrderState;
@@ -28,8 +29,7 @@ public class OrderService {
     @PersistenceContext
     EntityManager em;
 
-    @Language("HQL")
-    String orderCountQuery = "select info.orderCount from OrderInfo  info where info.date = :date";
+
     @Language("HQL")
     String selectOrderInfoQuery = "select info from OrderInfo  info where info.date = :date";
 
@@ -66,15 +66,7 @@ public class OrderService {
         session.saveOrUpdate(info);
     }
 
-    public Integer getOrderCountOfTheDay() {
-        var query = em.createQuery(orderCountQuery).setParameter("date", LocalDate.now());
-        var result = query.getResultList();
-        if (result.size() == 0) {
-            createOrderInfoOfTheDay();
-            return 0;
-        }
-        return (Integer) result.get(0);
-    }
+
 
     protected OrderInfo createOrderInfoOfTheDay() {
         var orderInfo = OrderInfo.builder().date(LocalDate.now()).build();
@@ -89,6 +81,9 @@ public class OrderService {
         order.setOrderNumber(orderInfo.getOrderCount());
         var code = maskOrderNumber(order);
         order.setOrderCode(code);
+        if (order.getState() == OrderState.Payed){
+            order.setCashOperation(CashOperation.builder().amount(order.getNewTotal()).order(order).build());
+        }
         var created = orderRepository.saveOrder(order);
         SaveOrderInfo(orderInfo);
         return created;

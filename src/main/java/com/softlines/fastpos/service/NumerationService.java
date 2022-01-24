@@ -20,6 +20,11 @@ public class NumerationService {
 
     public  String mask(int number, String format)
     {
+        if (number % roundCap == 0){
+            var round = (number-1) / roundCap;
+            var roundChar = rounds.get(round);
+            return String.format("%c-"+format,roundChar,number);
+        }
         var round = number / roundCap;
         var roundChar = rounds.get(round);
         var maskedValue = number % roundCap;

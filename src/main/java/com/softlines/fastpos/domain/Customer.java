@@ -15,7 +15,6 @@ import java.util.Set;
 @SQLDelete(sql = "UPDATE Customer SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
 @Entity
-
 public class Customer extends BaseEntity{
 
     @Id
@@ -38,4 +37,6 @@ public class Customer extends BaseEntity{
     @OneToMany(mappedBy ="customer" ,fetch = FetchType.LAZY)
     Set<Order> orders;
     double balance;
+    @Column(name = "address")
+    String address;
 }

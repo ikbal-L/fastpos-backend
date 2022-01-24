@@ -1,5 +1,6 @@
 package com.softlines.fastpos.controller;
 
+import com.softlines.fastpos.domain.CashOperation;
 import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.dto.*;
@@ -274,7 +275,9 @@ public class OrderController {
                     var canceledBy = sessionService.getUserFullNameFromSession(order.getModificationSessionId());
                     order.setCanceledInfo(previousState, canceledBy);
                 }
-
+                if (order.getState()== OrderState.Payed){
+                    order.setCashOperation(CashOperation.builder().amount(order.getNewTotal()).order(order).build());
+                }
                 Order updatedOrder = orderRepository.saveOrder(order);
 
                 var updatedOderDto = orderMapper.toOrderDto(updatedOrder);
