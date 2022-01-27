@@ -11,6 +11,11 @@ public class OrderDtoValidationOrderItemCountLessThanOneImpl implements Constrai
 
     @Override
     public boolean isValid(OrderDto value, ConstraintValidatorContext context) {
-        return !(value.getOrderItems().isEmpty())||((value.getOrderItems().isEmpty())&& value.getState() == OrderState.Splitted);
+
+        if (value.getOrderItems().isEmpty()&&(value.getState()!=OrderState.Splitted&& value.getState()!= OrderState.Temporary) ){
+            return  false;
+        }
+        return  true;
+
     }
 }

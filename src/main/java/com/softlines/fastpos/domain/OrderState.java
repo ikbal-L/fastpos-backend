@@ -1,6 +1,6 @@
 package com.softlines.fastpos.domain;
 public enum OrderState {
-
+    Temporary,
     Ordered,
     Prepared,
     Ready,

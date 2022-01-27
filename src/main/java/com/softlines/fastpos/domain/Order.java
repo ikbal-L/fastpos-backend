@@ -6,6 +6,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -40,7 +41,7 @@ public class Order extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
-    @Column(name = "order_number",nullable = false)
+    @Column(name = "order_number")
     Integer orderNumber;
 
     @Column(name = "order_code")
@@ -72,7 +73,7 @@ public class Order extends BaseEntity {
     boolean additivesVisibility;
 
     @Enumerated(EnumType.STRING)
-    @NotNull
+    @Nullable
     OrderState state;
 
     @Enumerated(EnumType.STRING)

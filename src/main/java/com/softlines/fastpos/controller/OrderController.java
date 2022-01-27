@@ -291,7 +291,13 @@ public class OrderController {
 
             if (optionalOrder.isPresent()) {
 
-                orderRepository.delete(optionalOrder.get());
+                if (optionalOrder.get().getState() == OrderState.Temporary){
+                    orderService.deleteTempOrder(id);
+                }else {
+                    orderRepository.delete(optionalOrder.get());
+
+                }
+
 
 
 
