@@ -58,7 +58,7 @@ public class OrderDto /*extends SyncDto*/ {
     LocalTime elapsedTime;
 
     @JsonProperty("Total")
-    @Min(value = 0, message = MessageKeyConstants.ORDER_RETURNED_AMOUNT_VALIDATION_ERROR)
+    @Min(value = 0, message = MessageKeyConstants.ORDER_TOTAL_VALIDATION_ERROR)
     @NotNull
     double total;
 

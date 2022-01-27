@@ -35,6 +35,8 @@ public class OrderService {
 
     @Language("HQL")
     String selectOrderInfoQuery = "select info from OrderInfo  info where info.date = :date";
+    @Language("HQL")
+    String deleteTempOrderQuery = "delete Order o where o.id = :id";
 
 
     private final SessionService sessionService;
@@ -78,7 +80,6 @@ public class OrderService {
     }
 
 
-
     protected OrderInfo createOrderInfoOfTheDay() {
         var orderInfo = OrderInfo.builder().date(LocalDate.now()).build();
         em.persist(orderInfo);
@@ -87,68 +88,84 @@ public class OrderService {
 
     @Transactional(transactionManager = "transactionManager")
     public Order saveOrder(Order order) {
+
+        OrderInfo orderInfo = null;
+        if (order.getState()!= OrderState.Temporary){
+            orderInfo = setOrderNumberAndCode(order);
+        }
+        if (order.getState() == OrderState.Payed) {
+            var cashOp = CashOperation.builder().amount(order.getNewTotal()).order(order).build();
+            order.setCashOperations(Set.of(cashOp));
+        }
+        var created = orderRepository.saveOrder(order);
+        if (orderInfo!= null) {
+            SaveOrderInfo(orderInfo);
+        }
+        return created;
+    }
+
+    @NotNull
+    private OrderInfo setOrderNumberAndCode(Order order) {
         var orderInfo = getOrderInfoOfTheDay();
         orderInfo.incrementOrderCount();
         order.setOrderNumber(orderInfo.getOrderCount());
         var code = maskOrderNumber(order);
         order.setOrderCode(code);
-        if (order.getState() == OrderState.Payed){
-            order.setCashOperations(Set.of(CashOperation.builder().amount(order.getNewTotal()).order(order).build()));
-        }
-        var created = orderRepository.saveOrder(order);
-        SaveOrderInfo(orderInfo);
-        return created;
+        return orderInfo;
     }
 
-    public List<Long> getAndUnlockOrdersLockedBy(String source){
+    public List<Long> getAndUnlockOrdersLockedBy(String source) {
         var orders = orderRepository.findLockedOrdersBySessionId(source);
         var ids = orders.stream().map(Order::getId).collect(Collectors.toList());
-        orders.forEach(o-> {
+        orders.forEach(o -> {
             o.setLocked(false);
             o.setLockedBy(null);
         });
         orderRepository.saveAll(orders);
-        return  ids;
+        return ids;
     }
 
-    public boolean isPaidOrderModified(Order incoming){
-        return orderRepository.existsByIdAndStateEquals(incoming.getId(),OrderState.Payed);
-    }
 
-    public Order onPaidOrderModified(Order original, Order incoming){
+    public Order onPaidOrderModified(Order original, Order incoming) {
 
         var cashOps = original.getCashOperations();
-        var amount = incoming.getNewTotal()- original.getNewTotal() ;
-        if (amount!= 0){
+        var amount = incoming.getNewTotal() - original.getNewTotal();
+        if (amount != 0) {
 
             cashOps.add(CashOperation.builder().amount(amount).order(incoming).build());
         }
         incoming.setCashOperations(cashOps);
         return incoming;
     }
-
-    public OrderDto updateOrder(Order order,Object pub){
+    @Transactional(transactionManager = "transactionManager")
+    public OrderDto updateOrder(Order order, Object pub) {
         var original = orderRepository.findByIdWithCashOperations(order.getId()).get();
         String eventType = SSEventType.UPDATE_ORDER;
-
+        OrderInfo orderInfo = null;
+        if (order.getOrderNumber() == null){
+            orderInfo = setOrderNumberAndCode(order);
+        }
         if (OrderService.IsActionCancel(original, order)) {
             order = onOrderCanceled(order, original);
             eventType = SSEventType.CANCEL_ORDER;
         }
-        if (OrderService.IsActionNewPayment(original,order)){
+        if (OrderService.IsActionNewPayment(original, order)) {
             order.setCashOperations(Set.of(CashOperation.builder().order(order).amount(order.getNewTotal()).build()));
             eventType = SSEventType.PAY_ORDER;
         }
 
-        if (OrderService.IsActionModifiedPayment(original,order)){
-            order = onPaidOrderModified(original,order);
+        if (OrderService.IsActionModifiedPayment(original, order)) {
+            order = onPaidOrderModified(original, order);
             eventType = SSEventType.PAY_ORDER;
         }
 
         order = orderRepository.saveOrder(order);
+        if (orderInfo!= null) {
+            SaveOrderInfo(orderInfo);
+        }
 
         var dto = orderMapper.toOrderDto(order);
-        sendOrderMessage(pub,eventType, order.getModificationSessionId(), dto);
+        sendOrderMessage(pub, eventType, order.getModificationSessionId(), dto);
 
         return dto;
     }
@@ -164,14 +181,20 @@ public class OrderService {
     }
 
 
-    private void sendOrderMessage(Object pub,String eventType, String source, OrderDto dto) {
+    private void sendOrderMessage(Object pub, String eventType, String source, OrderDto dto) {
 
         var message = Message.builder()
                 .type(eventType)
                 .content(dto)
                 .source(source)
                 .build();
-        notificationService.publish(pub,message);
+        notificationService.publish(pub, message);
+    }
+    @Transactional
+    public void deleteTempOrder(Long id){
+        var query = em.createQuery(deleteTempOrderQuery).setParameter("id",id);
+//        return query.executeUpdate() ==1;
+        query.executeUpdate() ;
     }
 
 }
