@@ -31,7 +31,7 @@ public class CashOperation extends  BaseEntity{
     @OneToOne(mappedBy = "cashOperation")
     Payment payment;
 
-    @OneToOne(mappedBy = "cashOperation")
+    @ManyToOne
     Order order;
 
     @OneToOne(mappedBy = "cashOperation")

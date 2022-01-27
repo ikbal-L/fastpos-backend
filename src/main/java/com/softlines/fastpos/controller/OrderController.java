@@ -16,18 +16,15 @@ import com.softlines.fastpos.repository.OrderRepository;
 import com.softlines.fastpos.security.securityservice.SessionService;
 import com.softlines.fastpos.service.NotificationService;
 import com.softlines.fastpos.service.OrderService;
-import com.softlines.fastpos.sse.model.EventDto;
 import com.softlines.fastpos.sse.model.SSEventType;
 import com.softlines.fastpos.sse.service.SseNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.support.PagedListHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.TypedQuery;
 import javax.validation.Valid;
 import java.text.ParseException;
 import java.util.*;
@@ -262,28 +259,16 @@ public class OrderController {
     public ResponseEntity<OrderDto> editOrder(@Valid @PathVariable long id, @Valid @RequestBody OrderDto orderDto, @RequestHeader(name = "Authorization") String token) {
 
         try {
-            var orderOptional = orderRepository.findById(id);
 
-            if (orderOptional.isPresent() && id != 0) {
+
+            if (orderRepository.existsById(orderDto.getId())) {
 
                 Order order = dtoService.orderDtoToOrder(orderDto);
 
-                if (OrderService.IsActionCancel(orderOptional.get(), order)) {
-                    var previousState = orderOptional.get().getState();
-                    order = orderRepository.saveOrder(order);
+                var dto = orderService.updateOrder(order,this);
 
-                    var canceledBy = sessionService.getUserFullNameFromSession(order.getModificationSessionId());
-                    order.setCanceledInfo(previousState, canceledBy);
-                }
-                if (order.getState()== OrderState.Payed){
-                    order.setCashOperation(CashOperation.builder().amount(order.getNewTotal()).order(order).build());
-                }
-                Order updatedOrder = orderRepository.saveOrder(order);
 
-                var updatedOderDto = orderMapper.toOrderDto(updatedOrder);
-                sendOrderMessage(orderOptional, order, updatedOrder, updatedOderDto);
-
-                return ResponseEntity.ok().body(updatedOderDto);
+                return ResponseEntity.ok().body(dto);
 
             } else {
                 return ResponseEntity.noContent().build();
@@ -295,27 +280,7 @@ public class OrderController {
 
     }
 
-    private void sendOrderMessage(Optional<Order> orderOptional, Order incomingOrder, Order updatedOrder, OrderDto updatedOderDto) {
-        String eventType;
-        if (OrderService.IsActionPayment(orderOptional.get(), incomingOrder)) {
-            eventType = SSEventType.PAY_ORDER;
 
-        } else if (OrderService.IsActionCancel(orderOptional.get(), incomingOrder)) {
-            eventType = SSEventType.CANCEL_ORDER;
-
-        } else {
-            eventType = SSEventType.UPDATE_ORDER;
-
-        }
-
-
-        var message = Message.builder()
-                .type(eventType)
-                .content(updatedOderDto)
-                .source(updatedOrder.getModificationSessionId())
-                .build();
-        notificationService.publish(this,message);
-    }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity deleteOrder(@Valid @PathVariable long id, @RequestHeader(name = "Authorization") String token) {

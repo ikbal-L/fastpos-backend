@@ -4,21 +4,24 @@ import com.softlines.fastpos.domain.CashOperation;
 import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderInfo;
 import com.softlines.fastpos.domain.OrderState;
+import com.softlines.fastpos.dto.Message;
+import com.softlines.fastpos.dto.OrderDto;
+import com.softlines.fastpos.dto.mapping.OrderMapper;
 import com.softlines.fastpos.repository.OrderRepository;
+import com.softlines.fastpos.security.securityservice.SessionService;
+import com.softlines.fastpos.sse.model.SSEventType;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
-import org.hibernate.mapping.Collection;
 import org.intellij.lang.annotations.Language;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,13 +37,21 @@ public class OrderService {
     String selectOrderInfoQuery = "select info from OrderInfo  info where info.date = :date";
 
 
+    private final SessionService sessionService;
+
+    private final NotificationService notificationService;
 
 
     private final NumerationService numerationService;
     private final OrderRepository orderRepository;
+    private final OrderMapper orderMapper;
 
-    public static boolean IsActionPayment(Order source, Order incoming) {
+    public static boolean IsActionNewPayment(Order source, Order incoming) {
         return source.getState() != OrderState.Payed && incoming.getState() == OrderState.Payed;
+    }
+
+    public static boolean IsActionModifiedPayment(Order source, Order incoming) {
+        return source.getState() == OrderState.Payed && incoming.getState() == OrderState.Payed;
     }
 
     public static boolean IsActionCancel(Order source, Order incoming) {
@@ -82,7 +93,7 @@ public class OrderService {
         var code = maskOrderNumber(order);
         order.setOrderCode(code);
         if (order.getState() == OrderState.Payed){
-            order.setCashOperation(CashOperation.builder().amount(order.getNewTotal()).order(order).build());
+            order.setCashOperations(Set.of(CashOperation.builder().amount(order.getNewTotal()).order(order).build()));
         }
         var created = orderRepository.saveOrder(order);
         SaveOrderInfo(orderInfo);
@@ -100,5 +111,67 @@ public class OrderService {
         return  ids;
     }
 
+    public boolean isPaidOrderModified(Order incoming){
+        return orderRepository.existsByIdAndStateEquals(incoming.getId(),OrderState.Payed);
+    }
+
+    public Order onPaidOrderModified(Order original, Order incoming){
+
+        var cashOps = original.getCashOperations();
+        var amount = incoming.getNewTotal()- original.getNewTotal() ;
+        if (amount!= 0){
+
+            cashOps.add(CashOperation.builder().amount(amount).order(incoming).build());
+        }
+        incoming.setCashOperations(cashOps);
+        return incoming;
+    }
+
+    public OrderDto updateOrder(Order order,Object pub){
+        var original = orderRepository.findByIdWithCashOperations(order.getId()).get();
+        String eventType = SSEventType.UPDATE_ORDER;
+
+        if (OrderService.IsActionCancel(original, order)) {
+            order = onOrderCanceled(order, original);
+            eventType = SSEventType.CANCEL_ORDER;
+        }
+        if (OrderService.IsActionNewPayment(original,order)){
+            order.setCashOperations(Set.of(CashOperation.builder().order(order).amount(order.getNewTotal()).build()));
+            eventType = SSEventType.PAY_ORDER;
+        }
+
+        if (OrderService.IsActionModifiedPayment(original,order)){
+            order = onPaidOrderModified(original,order);
+            eventType = SSEventType.PAY_ORDER;
+        }
+
+        order = orderRepository.saveOrder(order);
+
+        var dto = orderMapper.toOrderDto(order);
+        sendOrderMessage(pub,eventType, order.getModificationSessionId(), dto);
+
+        return dto;
+    }
+
+    @NotNull
+    private Order onOrderCanceled(Order order, Order original) {
+        var previousState = original.getState();
+        order = orderRepository.saveOrder(order);
+
+        var canceledBy = sessionService.getUserFullNameFromSession(order.getModificationSessionId());
+        order.setCanceledInfo(previousState, canceledBy);
+        return order;
+    }
+
+
+    private void sendOrderMessage(Object pub,String eventType, String source, OrderDto dto) {
+
+        var message = Message.builder()
+                .type(eventType)
+                .content(dto)
+                .source(source)
+                .build();
+        notificationService.publish(pub,message);
+    }
 
 }

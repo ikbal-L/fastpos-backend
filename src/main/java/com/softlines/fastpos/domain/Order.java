@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 
 @Setter
@@ -100,8 +101,8 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "customer_id")
     Customer customer;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    CashOperation cashOperation;
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "order")
+    Set<CashOperation> cashOperations;
 
     @ManyToOne(fetch = FetchType.LAZY)
     DailyEarningsReport dailyEarningsReport;
