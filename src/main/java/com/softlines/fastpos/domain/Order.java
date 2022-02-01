@@ -58,6 +58,9 @@ public class Order extends BaseEntity {
 
     double newTotal;
 
+    @Column(name = "pre_modify_new_total")
+    Double preModifyNewTotal;
+
     double discountAmount;
 
     double totalDiscountAmount;

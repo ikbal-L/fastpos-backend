@@ -90,9 +90,11 @@ public class OrderService {
     public Order saveOrder(Order order) {
 
         OrderInfo orderInfo = null;
-        if (order.getState()!= OrderState.Temporary){
-            orderInfo = setOrderNumberAndCode(order);
-        }
+//        if (order.getState()!= OrderState.Temporary){
+//            orderInfo = setOrderNumberAndCode(order);
+//        }
+        orderInfo = setOrderNumberAndCode(order);
+
         if (order.getState() == OrderState.Payed) {
             var cashOp = CashOperation.builder().amount(order.getNewTotal()).order(order).build();
             order.setCashOperations(Set.of(cashOp));

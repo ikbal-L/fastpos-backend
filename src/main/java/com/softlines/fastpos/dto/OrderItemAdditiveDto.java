@@ -32,6 +32,9 @@ public class OrderItemAdditiveDto {
     @NotNull
     AdditiveSate state;
 
+    @JsonProperty(value = "Modifier")
+    String modifier;
+
     @JsonProperty(value = "Timestamp", required = true)
     @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

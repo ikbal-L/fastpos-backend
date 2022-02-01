@@ -40,6 +40,8 @@ public class OrderItemAdditive {
     @Enumerated(EnumType.STRING)
     AdditiveSate state;
 
+    String modifier;
+
     Date timestamp;
 
     @Override

@@ -34,7 +34,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> ,CustomOrder
     @Query(value = "select DISTINCT o from Order o LEFT JOIN FETCH o.cashOperations co where  o.id = :id")
     Optional<Order> findByIdWithCashOperations(@Param("id") long id);
 
-    @Query(value = "select DISTINCT o from Order o LEFT JOIN FETCH o.orderItems oi LEFT JOIN FETCH  o.table  where o.state not in ('Payed','Refunded','Delivered','DeliveredPaid','DeliveredPartiallyPaid','Credit','CreditRePaid', 'CreditPartiallyRePaid','Canceled') " +
+    @Query(value = "select DISTINCT o from Order o LEFT JOIN FETCH o.orderItems oi LEFT JOIN FETCH  o.table  where o.state not in ('Payed','Refunded','DeliveredPaid','DeliveredPartiallyPaid','CreditRePaid', 'CreditPartiallyRePaid','Canceled') " +
             "and not (o.state  like 'Splitted' and o.orderItems is  empty) ")
     List<Order> findAllUnprocessedOrders();
 

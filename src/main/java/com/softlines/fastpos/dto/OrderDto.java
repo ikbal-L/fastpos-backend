@@ -69,6 +69,10 @@ public class OrderDto /*extends SyncDto*/ {
     @Min(0)
     double newTotal;
 
+    @JsonProperty("PreModifyNewTotal")
+    @Min(0)
+    Double preModifyNewTotal;
+
     @JsonProperty("DiscountAmount")
     @Min(0)
     @NotNull

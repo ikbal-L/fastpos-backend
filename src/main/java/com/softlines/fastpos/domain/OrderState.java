@@ -18,5 +18,6 @@ public enum OrderState {
     DeliveredPartiallyPaid,
     Credit,
     CreditRePaid,
-    CreditPartiallyRePaid
+    CreditPartiallyRePaid,
+    PaidModified
 }
