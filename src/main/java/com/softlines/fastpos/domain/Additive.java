@@ -49,6 +49,8 @@ public class Additive extends BaseEntity {
     @Min(1)
     Integer rank;
 
+    boolean favorite = false;
+
 //    @NotNull
 //    Date timestamp;
 //

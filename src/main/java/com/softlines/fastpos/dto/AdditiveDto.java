@@ -35,6 +35,8 @@ public class AdditiveDto {
     @NotNull
     @Min(1)
     Integer rank;
+    @JsonProperty("IsFavorite")
+    boolean favorite;
 
 //    @JsonProperty("TimeStamp")
 //    Date timestamp;
