@@ -2,6 +2,7 @@ package com.softlines.fastpos.domain;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -45,19 +47,9 @@ public class OrderItem extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     Product product;
 
-//    @ManyToMany(fetch = FetchType.EAGER)
-//    @JoinTable(
-//            name = "orderItems_additives",
-//            joinColumns = @JoinColumn(name = "orderItem_id"),
-//            inverseJoinColumns = @JoinColumn(name = "additive_id"))
-//    List<Additive> additive;
-
-//<<<<<<< HEAD
-//    @OneToMany(mappedBy = "orderItem",cascade = {CascadeType.ALL},fetch = FetchType.EAGER)
-//=======
-    @OneToMany(mappedBy = "orderItem", cascade = CascadeType.MERGE,
-             fetch = FetchType.EAGER)
-List<OrderItemAdditive> orderItemAdditives;
+    @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER)
+    List<OrderItemAdditive> orderItemAdditives;
 
     @ManyToOne
     @JoinColumn(name = "order_id")
@@ -73,23 +65,27 @@ List<OrderItemAdditive> orderItemAdditives;
     @NotNull
     private boolean deleted = false;
 
-//    @PersistenceContext
-//    EntityManager em;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderItem orderItem = (OrderItem) o;
+        return id == orderItem.id &&
+                Double.compare(orderItem.unitPrice, unitPrice) == 0 &&
+                quantity == orderItem.quantity &&
+                Double.compare(orderItem.total, total) == 0 &&
+                Double.compare(orderItem.discountAmount, discountAmount) == 0 &&
+                Double.compare(orderItem.totalDiscountAmount, totalDiscountAmount) == 0 &&
+                Double.compare(orderItem.discountPercentage, discountPercentage) == 0 &&
+                deleted == orderItem.deleted &&
+                productName.equals(orderItem.productName) &&
+                orderItemAdditives.equals(orderItem.orderItemAdditives) &&
+                timestamp.equals(orderItem.timestamp) &&
+                state == orderItem.state;
+    }
 
-
-//    public void addEmployee(Additive employee, AdditiveSate additiveSate) {
-//        OrderItemAdditive association = new OrderItemAdditive();
-//        association.setAdditive(employee);
-//        association.setOrderItem(this);
-//
-//        association.setAdditiveId(employee.getId());
-//        association.setOrderItemId(this.getId());
-//        association.setState(additiveSate);
-//        em.persist(association);
-//
-//        this.orderItemAdditives.add(association);
-//        employee.getOrderItemAdditives().add(association);
-//    }
-
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, unitPrice, quantity, total, discountAmount, totalDiscountAmount, discountPercentage, productName, orderItemAdditives, timestamp, state, deleted);
+    }
 }

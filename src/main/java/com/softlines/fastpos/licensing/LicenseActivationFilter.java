@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 @Singleton
 @Component
-@Order(1)
+//@Order(1)
 public class LicenseActivationFilter extends OncePerRequestFilter {
 
     private final LicenseState licenseState ;
@@ -26,16 +26,16 @@ public class LicenseActivationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
-        if (!licenseState.isOk()) {
-            request = new HttpServletRequestWrapper(request) {
-                @Override
-                public String getRequestURI() {
-                    return "/licensing/get-state";
-                }
-
-            };
-
-        }
+//        if (!licenseState.isOk()) {
+//            request = new HttpServletRequestWrapper(request) {
+//                @Override
+//                public String getRequestURI() {
+//                    return "/licensing/get-state";
+//                }
+//
+//            };
+//
+//        }
         filterChain.doFilter(request,response);
 
 

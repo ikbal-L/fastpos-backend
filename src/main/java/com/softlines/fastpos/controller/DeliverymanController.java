@@ -96,22 +96,21 @@ public class DeliverymanController {
             states.add(OrderState.Delivered);
             states.add(OrderState.DeliveredPartiallyPaid);
 
-            if (deliverymanList == null || deliverymanList.isEmpty()) {
+            if (deliverymanList.isEmpty()) {
                 return ResponseEntity.noContent().build();
             } else {
                 var ids = deliverymanList.stream().map(Deliveryman::getId).collect(Collectors.toList());
                 var filter = OrderFilter
                         .builder()
                         .states(Optional.of(states))
-                        .deliverymanIds(Optional.of(ids)).deliverymanId(Optional.empty())
+                        .deliverymanIds(Optional.of(ids))
                         .orderTime(Optional.empty())
-                        .state(Optional.empty())
                         .build();
-                var orders = orderFilterService.buildQuery(filter).getResultList();
+                var orderPage = orderFilterService.buildQuery(filter);
 
                 for (Deliveryman deliveryman : deliverymanList) {
 
-                    CreditService.calculateBalance(deliveryman,orders);
+                    CreditService.calculateBalance(deliveryman,orderPage.getElements());
 
                 }
 
@@ -160,13 +159,12 @@ public class DeliverymanController {
                 var filter = OrderFilter
                         .builder()
                         .states(Optional.of(states))
-                        .deliverymanId(Optional.of(deliveryman.getId()))
+                        .deliverymanIds(Optional.of(List.of(deliveryman.getId())))
                         .orderTime(Optional.empty())
-                        .state(Optional.empty())
                         .build();
-                var orders = orderFilterService.buildQuery(filter).getResultList();
+                var orderPage = orderFilterService.buildQuery(filter);
 
-                CreditService.calculateBalance(deliveryman,orders);
+                CreditService.calculateBalance(deliveryman,orderPage.getElements());
                 deliverymanRepository.save(deliveryman);
                 return ResponseEntity.ok().body(deliverymanMapper.toDeliverymanDto(deliveryman));
             }else

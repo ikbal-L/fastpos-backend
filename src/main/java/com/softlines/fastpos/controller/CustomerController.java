@@ -119,30 +119,26 @@ public class CustomerController {
             states.add(OrderState.CreditPartiallyRePaid);
 
 
-            if (customerList == null || customerList.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            } else {
-                var ids = customerList.stream().map(Customer::getId).collect(Collectors.toList());
-                var filter = OrderFilter
-                        .builder()
-                        .states(Optional.of(states))
-                        .customerIds(Optional.of(ids)).customerId(Optional.empty())
-                        .orderTime(Optional.empty())
-                        .state(Optional.empty())
-                        .build();
+            if (customerList.isEmpty())   return ResponseEntity.noContent().build();
+            var ids = customerList.stream().map(Customer::getId).collect(Collectors.toList());
+            var filter = OrderFilter
+                    .builder()
+                    .states(Optional.of(states))
+                    .customerIds(Optional.of(ids))
+                    .orderTime(Optional.empty())
+                    .build();
 
-                var orders = orderFilterService.buildQuery(filter).getResultList();
+            var orderPage = orderFilterService.buildQuery(filter);
 
-                for (Customer customer : customerList) {
+            for (Customer customer : customerList) {
 
-                    CreditService.calculateBalance(customer,orders);
+                CreditService.calculateBalance(customer,orderPage.getElements());
 
-                }
-
-                customerRepository.saveAll(customerList);
-
-                return ResponseEntity.ok().body(customerMapper.toCustomerDTOs(customerList));
             }
+
+            customerRepository.saveAll(customerList);
+
+            return ResponseEntity.ok().body(customerMapper.toCustomerDTOs(customerList));
 
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
@@ -205,13 +201,13 @@ public class CustomerController {
                 var filter = OrderFilter
                         .builder()
                         .states(Optional.of(states))
-                        .customerId(Optional.of(customer.getId()))
+                        .customerIds(Optional.of(List.of(customer.getId())))
                         .orderTime(Optional.empty())
-                        .state(Optional.empty())
-                        .build();
-                var orders = orderFilterService.buildQuery(filter).getResultList();
 
-                CreditService.calculateBalance(customer,orders);
+                        .build();
+                var orderPage = orderFilterService.buildQuery(filter);
+
+                CreditService.calculateBalance(customer,orderPage.getElements());
                 customerRepository.save(customer);
                 return ResponseEntity.ok().body(customerMapper.toCustomerDto(customer));
             }else

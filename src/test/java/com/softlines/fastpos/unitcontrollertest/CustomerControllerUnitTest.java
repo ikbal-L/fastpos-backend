@@ -271,7 +271,7 @@ public class CustomerControllerUnitTest {
     public void customerController_Put_WithIdNotExist() {
 
         var customer = Customer.builder()
-                .id(10l)
+                .id(10L)
                 .name("harrisa")
                 .build();
 

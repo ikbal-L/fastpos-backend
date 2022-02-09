@@ -13,11 +13,11 @@ import javax.persistence.MappedSuperclass;
 @AllArgsConstructor
 @Getter
 @Setter
-public class SyncEntity  extends BaseEntity{
+public class SyncEntity extends BaseEntity {
 
     @Column(name = "is_locked")
-    
-    boolean locked ;
+    boolean locked;
+
     @Column(name = "locked_by")
     String lockedBy;
 }

@@ -28,5 +28,6 @@ public class CustomerDto {
 
     double balance;
 
+    String address;
 
 }

@@ -23,14 +23,13 @@ public class PaymentFilterService extends FilterService<Payment, PaymentFilter> 
 //    }
 
     @Override
-    protected void init() throws ParseException {
-        List<Predicate> predicates = new ArrayList<>();
+    protected void initializePredicates() throws ParseException {
         this.root = criteriaQuery.from(Payment.class);
+        this.entityClass = Payment.class;
 
-        var deliverymanId = this.filter.getDeliverymanId();
         var deliverymanIds = this.filter.getDeliverymanIds();
 
-        var customerId = this.filter.getCustomerId();
+
         var customerIds = this.filter.getCustomerIds();
 
         var date = filter.getDate();
@@ -40,33 +39,29 @@ public class PaymentFilterService extends FilterService<Payment, PaymentFilter> 
             predicates.add(datePredicate);
         }
 
-        if (deliverymanId.isPresent()&& deliverymanIds.isEmpty()){
-            Predicate deliverymanIdPredicate = this.criteriaBuilder.equal(root.<Deliveryman>get("deliveryman").<Long>get("id"), deliverymanId.get());
-            predicates.add(deliverymanIdPredicate);
-        }
 
-        if (deliverymanIds.isPresent() && deliverymanId.isEmpty()){
+
+        if (deliverymanIds.isPresent()&& !deliverymanIds.get().isEmpty()){
             var deliverymanIdsPredicate = this.criteriaBuilder.in(root.<Deliveryman>get("deliveryman").<Long>get("id"));
             deliverymanIds.get().forEach(deliverymanIdsPredicate::value);
             predicates.add(deliverymanIdsPredicate);
         }
 
-        if (customerId.isPresent()&& customerIds.isEmpty()){
-            Predicate customerIdPredicate = this.criteriaBuilder.equal(root.<Deliveryman>get("customer").<Long>get("id"), customerId.get());
-            predicates.add(customerIdPredicate);
-        }
 
-        if (customerIds.isPresent() && customerId.isEmpty()){
+
+        if (customerIds.isPresent()&& !customerIds.get().isEmpty()){
             var customerIdsPredicate = this.criteriaBuilder.in(root.<Deliveryman>get("customer").<Long>get("id"));
             customerIds.get().forEach(customerIdsPredicate::value);
             predicates.add(customerIdsPredicate);
         }
 
-        criteriaQuery.where(predicates.toArray(Predicate[]::new));
+
     }
 
     @Override
-    protected void initCriteriaQuery() {
+    protected void initializeCriteriaQuery() {
         this.criteriaQuery = criteriaBuilder.createQuery(Payment.class);
     }
+
+
 }

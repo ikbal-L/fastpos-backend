@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
@@ -216,7 +217,7 @@ public class OrderControllerUnitTest {
                                 .product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
                         .elapsedTime(LocalTime.now())
-                        .orderTime(new Date())
+//                        .orderTime(new Date())
                         .table(Table.builder().build())
                         .deliveryman(Deliveryman.builder().build())
                         .waiter(Waiter.builder().build())
@@ -388,7 +389,7 @@ public class OrderControllerUnitTest {
                                 .product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
                         .elapsedTime(LocalTime.now())
-                        .orderTime(new Date())
+                        .orderTime(new LocalDateTime())
                         .table(Table.builder().build())
                         .build();
 

@@ -67,14 +67,11 @@ public class AdditiveController {
                 List<Additive> savedAdditve = additiveRepository.saveAll(additiveMapper.toAdditiveList(additiveDtoList));
                 List<AdditiveDto> savedAdditveDto = additiveMapper.toAdditiveDTOs(savedAdditve);
                 return ResponseEntity.status(HttpStatus.CREATED).body(savedAdditveDto);
-
-
             } else {
                 return ResponseEntity.status(HttpStatus.FOUND).build();
             }
 
-        } catch (
-                Exception exception) {
+        } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
 

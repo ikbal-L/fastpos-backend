@@ -8,15 +8,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> ,CustomOrderRepository{
@@ -24,15 +27,22 @@ public interface OrderRepository extends JpaRepository<Order, Long> ,CustomOrder
     @Query(value = "select DISTINCT o from Order o LEFT JOIN FETCH o.orderItems oi LEFT JOIN FETCH o.table")
     List<Order> findAllOrdersWithOrderItems();
 
-    @Query(value = "select DISTINCT o from Order o LEFT JOIN FETCH o.orderItems oi LEFT JOIN FETCH  o.table  where o.state not in ('Payed','Refunded','Delivered','DeliveredPaid','DeliveredPartiallyPaid','Credit','CreditRePaid', 'CreditPartiallyRePaid','Canceled') " +
+
+
+    boolean existsByIdAndStateEquals(long id, @NotNull OrderState state);
+
+    @Query(value = "select DISTINCT o from Order o LEFT JOIN FETCH o.cashOperations co where  o.id = :id")
+    Optional<Order> findByIdWithCashOperations(@Param("id") long id);
+
+    @Query(value = "select DISTINCT o from Order o LEFT JOIN FETCH o.orderItems oi LEFT JOIN FETCH  o.table  where o.state not in ('Payed','Refunded','DeliveredPaid','DeliveredPartiallyPaid','CreditRePaid', 'CreditPartiallyRePaid','Canceled') " +
             "and not (o.state  like 'Splitted' and o.orderItems is  empty) ")
     List<Order> findAllUnprocessedOrders();
+
 
     @Query(value = "select DISTINCT o from Order o where date_format(o.orderTime,'%Y-%m-%d') = ?1 order by o.orderTime")
     List<Order> findAllByOrderTime(String orderTime);
     @Query(value = "select DISTINCT o from Order o where CAST(o.orderTime as LocalDate) = ?1 order by o.orderTime")
     List<Order> findAllByOrderTime(LocalDate date);
-
 
 
     @Query(value = "select DISTINCT o from Order o where  o.state like ?1")
@@ -46,4 +56,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> ,CustomOrder
     List<Order> findByStateAndDeliveryman(OrderState state, Deliveryman deliveryman, Sort sort);
     Order findFirstByStateAndDeliveryman(OrderState state, Deliveryman deliveryman ,Sort sort);
 
+    @Query(value = "select DISTINCT o from Order o where o.locked=true and o.lockedBy like ?1")
+    List<Order> findLockedOrdersBySessionId(String  sessionId);
 }

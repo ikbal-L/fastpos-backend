@@ -46,4 +46,7 @@ public class CashRegisterExpense extends BaseEntity {
     @Builder.Default
     @NotNull
     private boolean deleted = false;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    CashOperation cashOperation;
 }

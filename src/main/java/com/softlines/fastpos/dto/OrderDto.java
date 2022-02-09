@@ -58,7 +58,7 @@ public class OrderDto /*extends SyncDto*/ {
     LocalTime elapsedTime;
 
     @JsonProperty("Total")
-    @Min(value = 0, message = MessageKeyConstants.ORDER_RETURNED_AMOUNT_VALIDATION_ERROR)
+    @Min(value = 0, message = MessageKeyConstants.ORDER_TOTAL_VALIDATION_ERROR)
     @NotNull
     double total;
 
@@ -68,6 +68,10 @@ public class OrderDto /*extends SyncDto*/ {
     @JsonProperty("NewTotal")
     @Min(0)
     double newTotal;
+
+    @JsonProperty("PreModifyNewTotal")
+    @Min(0)
+    Double preModifyNewTotal;
 
     @JsonProperty("DiscountAmount")
     @Min(0)
@@ -107,12 +111,12 @@ public class OrderDto /*extends SyncDto*/ {
 
     @JsonProperty("WaiterId")
     Long waiterId;
-
+    
     @JsonProperty("IsLocked")
     boolean locked;
 
     @JsonProperty("LockedBy")
-    protected String lockedBy;
+     String lockedBy;
 
 
 }

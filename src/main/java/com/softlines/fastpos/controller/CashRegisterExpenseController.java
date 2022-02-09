@@ -1,6 +1,7 @@
 package com.softlines.fastpos.controller;
 
 
+import com.softlines.fastpos.domain.CashOperation;
 import com.softlines.fastpos.domain.CashRegisterExpense;
 import com.softlines.fastpos.domain.ExpenseDescription;
 import com.softlines.fastpos.dto.CashRegisterExpenseDto;
@@ -43,6 +44,8 @@ public class CashRegisterExpenseController {
     public ResponseEntity<CashRegisterExpenseDto> save(@RequestBody CashRegisterExpenseDto expenseDto){
         if (expenseDto.getId()!=null&& cashRegisterExpenseRepository.existsById(expenseDto.getId())) return ResponseEntity.status(HttpStatus.FOUND).build();
         var expense = cashRegisterExpenseMapper.toCashRegisterExpense(expenseDto);
+        var cashOp = CashOperation.builder().amount(expense.getAmount()).cashRegisterExpense(expense).build();
+        expense.setCashOperation(cashOp);
         var savedExpense = cashRegisterExpenseRepository.save(expense);
         var createdExpenseDto = cashRegisterExpenseMapper.toCashRegisterExpenseDto(savedExpense);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdExpenseDto);

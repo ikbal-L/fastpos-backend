@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/config/annex")
-public class AnnexController {
+public class  AnnexController {
 
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 

@@ -70,10 +70,16 @@ public class SecurityConfiguration {
                     .successHandler(authSuccessHandler())
                     .failureHandler(authenticationFailureHandler()).and()
 
-                    .antMatcher("/api/**").addFilterBefore(licenseActivationFilter,AuthenticationFilter.class)
+                    .antMatcher("/api/**")
+//                    .addFilterBefore(licenseActivationFilter,AuthenticationFilter.class)
                     .cors().and().csrf().disable().authorizeRequests()
                     .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
                     .antMatchers(HttpMethod.POST, "/login").permitAll()
+
+                    .anyRequest()
+//                .permitAll()
+                    .authenticated()
+                    .and().formLogin().failureHandler(authenticationFailureHandler())
                     .and()
                     .addFilter(authenticationFilter)
                     .addFilter(new ApiAuthorizationFilter(authenticationManager(), sessionRepository))
@@ -133,7 +139,7 @@ public class SecurityConfiguration {
 
             http
                     .antMatcher("/config/**")
-                    .addFilterBefore(licenseActivationFilter,AuthenticationFilter.class)
+//                    .addFilterBefore(licenseActivationFilter,AuthenticationFilter.class)
                     .cors().and().csrf().disable().authorizeRequests()
                     //.antMatchers(HttpMethod.POST, "/user/save").permitAll()
                     .anyRequest()
