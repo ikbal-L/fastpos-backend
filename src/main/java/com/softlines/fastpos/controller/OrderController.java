@@ -73,9 +73,10 @@ public class OrderController {
     AdditiveRepository additiveRepository;
 
     private final NotificationService notificationService;
+
     public OrderController(NotificationService notificationService) {
         this.notificationService = notificationService;
-        notificationService.registerPublisher(this,"/topic/messages");
+        notificationService.registerPublisher(this, "/topic/messages");
     }
 
     @PostMapping(value = "/save")
@@ -115,7 +116,7 @@ public class OrderController {
                     .source(createdOder.getModificationSessionId())
                     .build();
 
-            notificationService.publish(this,message);
+            notificationService.publish(this, message);
         }
     }
 
@@ -132,7 +133,6 @@ public class OrderController {
                 List<Order> order = dtoService.orderDtoListToOrderList(orderDtoList);
 
                 List<Order> ListCreatedOder = orderRepository.saveListOrder(order);
-
 
 
                 List<OrderDto> orderDtos = orderMapper.toOrderDTOs(ListCreatedOder);
@@ -182,7 +182,13 @@ public class OrderController {
     ResponseEntity<Page<OrderDto>> getOrdersByCriteria(@RequestBody OrderFilter filter) throws ParseException {
         var orderPage = orderFilterService.buildQuery(filter);
 
-        var orderDtoPage = orderPage.toPageOf(c-> orderMapper.toOrderDTOs(c));
+        var orderDtoPage = orderPage.toPageOf(c -> orderMapper.toOrderDTOs(c));
+//        orderDtoPage.getElements().forEach(orderDto -> {
+//            if (orderDto.getOrderItems()==null) {
+//                System.out.println("null");
+//            }
+//        });
+
 
         return ResponseEntity.ok(orderDtoPage);
     }
@@ -311,7 +317,7 @@ public class OrderController {
                 .content(updatedOderDto)
                 .source(updatedOrder.getModificationSessionId())
                 .build();
-        notificationService.publish(this,message);
+        notificationService.publish(this, message);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -324,7 +330,6 @@ public class OrderController {
             if (optionalOrder.isPresent()) {
 
                 orderRepository.delete(optionalOrder.get());
-
 
 
                 return ResponseEntity.ok().build();

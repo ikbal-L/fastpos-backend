@@ -48,8 +48,7 @@ public class CustomerController {
     public ResponseEntity<Long> addCustomer(@Valid @RequestBody CustomerDto customerDto) {
         try {
 
-
-            if (customerDto.getId()==0) {
+            if (customerDto.getId() == 0) {
                 Customer customer = customerMapper.toCustomer(customerDto);
                 Customer savedCustomer = customerRepository.save(customer);
                 return ResponseEntity.status(HttpStatus.CREATED).body(savedCustomer.getId());
@@ -59,7 +58,6 @@ public class CustomerController {
 
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
-
         }
     }
 
@@ -85,7 +83,6 @@ public class CustomerController {
 
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
-
         }
     }
 
@@ -97,11 +94,10 @@ public class CustomerController {
             List<Customer> customers = customerRepository.findAll();
             if (customers == null || customers.isEmpty())
                 return ResponseEntity.noContent().build();
-            else{
+            else {
                 var customerDTOs = customerMapper.toCustomerDTOs(customers);
                 return ResponseEntity.ok().body(customerDTOs);
             }
-
 
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
@@ -118,9 +114,9 @@ public class CustomerController {
             states.add(OrderState.Credit);
             states.add(OrderState.CreditPartiallyRePaid);
 
-
-            if (customerList.isEmpty())   return ResponseEntity.noContent().build();
+            if (customerList.isEmpty()) return ResponseEntity.noContent().build();
             var ids = customerList.stream().map(Customer::getId).collect(Collectors.toList());
+
             var filter = OrderFilter
                     .builder()
                     .states(Optional.of(states))
@@ -131,9 +127,7 @@ public class CustomerController {
             var orderPage = orderFilterService.buildQuery(filter);
 
             for (Customer customer : customerList) {
-
-                CreditService.calculateBalance(customer,orderPage.getElements());
-
+                CreditService.calculateBalance(customer, orderPage.getElements());
             }
 
             customerRepository.saveAll(customerList);
@@ -207,10 +201,10 @@ public class CustomerController {
                         .build();
                 var orderPage = orderFilterService.buildQuery(filter);
 
-                CreditService.calculateBalance(customer,orderPage.getElements());
+                CreditService.calculateBalance(customer, orderPage.getElements());
                 customerRepository.save(customer);
                 return ResponseEntity.ok().body(customerMapper.toCustomerDto(customer));
-            }else
+            } else
                 return ResponseEntity.noContent().build();
 
         } catch (Exception exception) {
@@ -226,7 +220,7 @@ public class CustomerController {
             Optional<Customer> optionalCustomer = customerRepository.findById(id);
 
             if (optionalCustomer.isPresent() && customerDto.getName() != null) {
-               var customer= customerMapper.toCustomer(customerDto);
+                var customer = customerMapper.toCustomer(customerDto);
                 Customer savedCustomer = customerRepository.save(customer);
                 return ResponseEntity.ok().body(customerMapper.toCustomerDto(savedCustomer));
             } else {
@@ -253,8 +247,8 @@ public class CustomerController {
 //                q.executeUpdate();
 //                em.getTransaction().commit();
                 var em = entityManagerFactory.createEntityManager();
-                var repo = new RepositoryDecoratorImp<Customer,Long>(customerRepository,em,Customer.class );
-                repo.deleteSetNull(customerToDelete.get(),id);
+                var repo = new RepositoryDecoratorImp<Customer, Long>(customerRepository, em, Customer.class);
+                repo.deleteSetNull(customerToDelete.get(), id);
 
 
                 return ResponseEntity.ok().build();

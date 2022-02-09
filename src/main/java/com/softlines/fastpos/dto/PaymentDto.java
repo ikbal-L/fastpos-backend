@@ -27,7 +27,7 @@ public class PaymentDto {
 
     Long cashOperationId;
 
-    Long deliveryManId;
+    Long deliverymanId;
 
     Long customerId;
 

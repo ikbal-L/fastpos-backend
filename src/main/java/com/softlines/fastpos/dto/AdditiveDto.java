@@ -43,6 +43,7 @@ public class AdditiveDto {
 //    @JsonProperty("State")
 //    AdditiveSate sate;
 
-
+    @JsonProperty("ImageUrl")
+    String imageUrl;
 
 }

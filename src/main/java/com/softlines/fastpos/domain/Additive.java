@@ -74,5 +74,6 @@ public class Additive extends BaseEntity {
 //            }
 //        }
 //    }
+String imageUrl;
 
 }

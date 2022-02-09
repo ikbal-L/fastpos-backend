@@ -80,4 +80,6 @@ public class Product extends BaseEntity {
     @NotNull
     boolean deleted = false;
 
+    String imageUrl;
+
 }

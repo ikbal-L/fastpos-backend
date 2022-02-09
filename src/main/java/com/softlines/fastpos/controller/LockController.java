@@ -24,65 +24,64 @@ public class LockController {
 
     public LockController(NotificationService notificationService) {
         this.notificationService = notificationService;
-        notificationService.registerPublisher(this,"/topic/messages/locks");
+        notificationService.registerPublisher(this, "/topic/messages/locks");
     }
 
     @PostMapping("/lock/{type}/{id}")
     @Transactional(transactionManager = "transactionManager")
-    public ResponseEntity<?> lock(@PathVariable String type, @PathVariable Long id){
+    public ResponseEntity<?> lock(@PathVariable String type, @PathVariable Long id) {
 
         String source = getSession().getId().toString();
 
         int result = lockEntityById(type, id, source);
-        if (result !=1) return ResponseEntity.unprocessableEntity().build();
+        if (result != 1) return ResponseEntity.unprocessableEntity().build();
 
         var message = Message.builder()
                 .type("Lock." + StringUtils.capitalize(type))
                 .content(List.of(id))
                 .source(source)
                 .build();
-        notificationService.publish(this,message);
-        return  ResponseEntity.ok().build();
+        notificationService.publish(this, message);
+        return ResponseEntity.ok().build();
     }
-
 
 
     @PostMapping("/unlock/{type}/{id}")
     @Transactional(transactionManager = "transactionManager")
-    public ResponseEntity<?> unlock(@PathVariable String type, @PathVariable Long id){
+    public ResponseEntity<?> unlock(@PathVariable String type, @PathVariable Long id) {
 
 
         Query query = unlockEntityById(type, id);
         var result = query.executeUpdate();
 
-        if (result !=1) return ResponseEntity.unprocessableEntity().build();
+        if (result != 1) return ResponseEntity.unprocessableEntity().build();
         var message = Message.builder()
                 .type("Unlock." + StringUtils.capitalize(type))
                 .content(List.of(id))
                 .source(getSession().getId().toString())
                 .build();
-        notificationService.publish(this,message);
+        notificationService.publish(this, message);
 
-        return  ResponseEntity.ok().build();
+        return ResponseEntity.ok().build();
     }
 
 
-
-    public Session getSession(){
+    public Session getSession() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
-        return (Session)auth.getPrincipal();
+        return (Session) auth.getPrincipal();
     }
+
     @PostMapping("/unlockall/{type}")
     @Transactional(transactionManager = "transactionManager")
-    public ResponseEntity<?> unlockAll(@PathVariable String type/*, @RequestBody List<Long> ids*/){
+    public ResponseEntity<?> unlockAll(@PathVariable String type/*, @RequestBody List<Long> ids*/) {
         var source = getSession().getId().toString();
         List<Long> ids = getEntitiesLockedBySource(type, source);
         int result = unlockEntitiesLockedBySource(type, source);
-        if (result== ids.size()){
-            notificationService.sendUnlockOrderMessage(source,ids);
+        if (result == ids.size()) {
+            notificationService.sendUnlockOrderMessage(source, ids);
             return ResponseEntity.ok(ids);
         }
-        return  ResponseEntity.unprocessableEntity().build();
+        return ResponseEntity.unprocessableEntity().build();
     }
 
     private int lockEntityById(String type, Long id, String source) {
@@ -92,6 +91,7 @@ public class LockController {
                 .setParameter("source", source);
         return query.executeUpdate();
     }
+
     private Query unlockEntityById(String type, Long id) {
         var namedQuery = StringUtils.capitalize(type) + ".unlock";
         return entityManager.createNamedQuery(namedQuery).setParameter("id", id);
@@ -105,7 +105,7 @@ public class LockController {
 
     private List<Long> getEntitiesLockedBySource(String type, String source) {
         var namedFetchQuery = StringUtils.capitalize(type) + ".findAllLockedBySourceIds";
-        var fetchQuery = entityManager.createNamedQuery(namedFetchQuery,Long.class).setParameter("source", source);
+        var fetchQuery = entityManager.createNamedQuery(namedFetchQuery, Long.class).setParameter("source", source);
         return fetchQuery.getResultList();
     }
 }

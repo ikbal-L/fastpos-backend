@@ -29,7 +29,6 @@ public class PaymentFilterService extends FilterService<Payment, PaymentFilter> 
 
         var deliverymanIds = this.filter.getDeliverymanIds();
 
-
         var customerIds = this.filter.getCustomerIds();
 
         var date = filter.getDate();

@@ -39,11 +39,8 @@ public  class Filter<T> {
     @Builder.Default
     Optional<SortOrder> sortOrder = Optional.empty();
 
-
     public boolean isPaginationRequested(){
         return pageIndex.isPresent()&& pageSize.isPresent();
     }
-
-
 
 }

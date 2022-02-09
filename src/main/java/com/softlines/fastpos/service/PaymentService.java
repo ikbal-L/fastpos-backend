@@ -60,8 +60,6 @@ public class PaymentService {
         }
 
 
-
-
         double paymentAmount;
         if (savedPayment.getDiscountAmount()!= null){
             paymentAmount = savedPayment.getAmount()+ savedPayment.getDiscountAmount();

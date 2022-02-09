@@ -58,5 +58,7 @@ public class ProductDto {
     @JsonProperty("IdAdditives")
     List<Long> idAdditives;
 
+    @JsonProperty("ImageUrl")
+    String imageUrl;
 
 }
