@@ -33,5 +33,6 @@ public class CategoryDto {
     @JsonProperty("ProductIds")
     List<Long> productIds;
 
-
+    @JsonProperty("ImageUrl")
+    String imageUrl;
 }

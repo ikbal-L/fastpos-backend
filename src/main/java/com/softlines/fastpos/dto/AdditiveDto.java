@@ -35,6 +35,7 @@ public class AdditiveDto {
     @NotNull
     @Min(1)
     Integer rank;
+
     @JsonProperty("IsFavorite")
     boolean favorite;
 
@@ -45,6 +46,7 @@ public class AdditiveDto {
 //    @JsonProperty("State")
 //    AdditiveSate sate;
 
-
+    @JsonProperty("ImageUrl")
+    String imageUrl;
 
 }

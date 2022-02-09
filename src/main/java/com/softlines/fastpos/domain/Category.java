@@ -38,4 +38,7 @@ public class Category extends BaseEntity{
     @Builder.Default
     @NotNull
     private boolean deleted=false;
+
+    String imageUrl;
+
 }

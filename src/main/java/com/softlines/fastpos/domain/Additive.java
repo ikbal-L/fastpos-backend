@@ -51,30 +51,10 @@ public class Additive extends BaseEntity {
 
     boolean favorite = false;
 
-//    @NotNull
-//    Date timestamp;
-//
-//    @Enumerated(EnumType.STRING)
-//    @NotNull
-//    AdditiveSate sate;
-
-
-//    @OneToMany(mappedBy = "additive", cascade = CascadeType.MERGE, orphanRemoval = true)
-//    List<OrderItemAdditive> orderItemAdditives;
-
-
-
     @Builder.Default
     @NotNull
     private boolean deleted = false;
 
-//    @PreRemove
-//    public void preRemove(){
-//        if (products!= null && products.size()>0){
-//            for (Product product: products){
-//                product.additives.removeIf(additive -> additive.id == this.id);
-//            }
-//        }
-//    }
+    String imageUrl;
 
 }

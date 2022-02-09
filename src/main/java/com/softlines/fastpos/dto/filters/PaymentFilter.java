@@ -22,18 +22,18 @@ import java.util.Optional;
 public class PaymentFilter extends Filter<Payment>{
 
     @JsonProperty("Date")
-    Optional<LocalDateTime> date;
+    Optional<LocalDateTime> date=Optional.empty();
 
     @JsonProperty("DeliverymanId")
-    Optional<Long> deliverymanId;
+    Optional<Long> deliverymanId=Optional.empty();
 
     @JsonProperty("DeliverymanIds")
-    Optional<List<Long>> deliverymanIds;
+    Optional<List<Long>> deliverymanIds=Optional.empty();
 
 
     @JsonProperty("CustomerId")
-    Optional<Long> customerId;
+    Optional<Long> customerId=Optional.empty();
 
     @JsonProperty("CustomerIds")
-    Optional<List<Long>> customerIds;
+    Optional<List<Long>> customerIds=Optional.empty();
 }
