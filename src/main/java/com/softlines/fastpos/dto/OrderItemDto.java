@@ -24,6 +24,9 @@ public class OrderItemDto {
     @NotNull
     double unitPrice;
 
+    @JsonProperty("CustomPrice")
+    Double customPrice;
+
     @JsonProperty("Quantity")
     @NotNull
     @Min(1)

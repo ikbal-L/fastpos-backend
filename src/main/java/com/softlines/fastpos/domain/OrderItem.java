@@ -33,6 +33,8 @@ public class OrderItem extends BaseEntity {
 
     double unitPrice;
 
+    Double customPrice;
+
     int quantity;
 
     double total;

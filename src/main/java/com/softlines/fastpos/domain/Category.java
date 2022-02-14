@@ -5,7 +5,6 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -40,5 +39,8 @@ public class Category extends BaseEntity{
     private boolean deleted=false;
 
     String imageUrl;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    PrintingByCategoryConfiguration printingByCategoryConfiguration;
 
 }

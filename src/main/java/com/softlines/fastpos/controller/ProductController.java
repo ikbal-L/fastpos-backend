@@ -73,7 +73,7 @@ public class ProductController {
 
 
 
-    @PreAuthorize("@apiAuth.checkGrants(authentication, 'Read_Product')")
+//    @PreAuthorize("@apiAuth.checkGrants(authentication, 'Read_Product')")
     @GetMapping("/getall")
     public ResponseEntity<List<ProductDto>> getProducts() {
         try {

@@ -9,11 +9,13 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class MenuConfiguration {
 
-    int productRows=4;
-    int productColumns=5;
+    int productLayoutRows =4;
+    int productLayoutColumns =5;
 
-    int additiveRows=5;
-    int additiveColumns=6;
+    int additiveLayoutRows =4;
+    int additiveLayoutColumns =4;
 
-    int categoryPageSize=4;
+    int categoryLayoutRows =3;
+    int categoryLayoutColumns =5;
+    int categoryPageCount=1;
 }

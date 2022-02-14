@@ -16,11 +16,11 @@ public class AnnexConfiguration extends BaseEntity {
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride( name = "productRows", column = @Column(name = "product_menu_rows")),
-            @AttributeOverride( name = "productColumns", column = @Column(name = "product_menu_columns")),
-            @AttributeOverride( name = "additiveRows", column = @Column(name = "additive_menu_rows")),
-            @AttributeOverride( name = "additiveColumns", column = @Column(name = "additive_menu_columns")),
-            @AttributeOverride( name = "categoryPageSize", column = @Column(name = "category_menu_page_size")),
+            @AttributeOverride( name = "productLayoutRows", column = @Column(name = "product_menu_layout_rows")),
+            @AttributeOverride( name = "productLayoutColumns", column = @Column(name = "product_menu_layout_columns")),
+            @AttributeOverride( name = "additiveLayoutRows", column = @Column(name = "additive_menu_layout_rows")),
+            @AttributeOverride( name = "additiveLayoutColumns", column = @Column(name = "additive_menu_layout_columns")),
+            @AttributeOverride( name = "categoryPageCount", column = @Column(name = "category_menu_page_count")),
     })
     MenuConfiguration menu;
 
