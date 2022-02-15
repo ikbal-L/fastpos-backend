@@ -9,6 +9,6 @@ import java.util.Set;
 @Setter
 @Entity
 public class PrintingByCategoryConfiguration extends PrintingConfiguration {
-    @OneToMany(mappedBy = "printingByCategoryConfiguration")
+    @OneToMany(mappedBy = "printingByCategoryConfiguration",fetch = FetchType.EAGER)
     Set<Category> categories;
 }

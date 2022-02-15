@@ -14,6 +14,6 @@ public class PrintingConfiguration {
     @GeneratedValue(strategy = GenerationType.TABLE)
     Long id;
     String name;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     Printer printer;
 }
