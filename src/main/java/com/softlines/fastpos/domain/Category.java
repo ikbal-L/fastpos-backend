@@ -40,7 +40,7 @@ public class Category extends BaseEntity{
 
     String imageUrl;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.MERGE})
     PrintingByCategoryConfiguration printingByCategoryConfiguration;
 
 }

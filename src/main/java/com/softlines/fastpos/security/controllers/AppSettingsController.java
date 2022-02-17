@@ -2,6 +2,7 @@ package com.softlines.fastpos.security.controllers;
 
 import com.softlines.fastpos.domain.Printer;
 import com.softlines.fastpos.dto.PrintingByCategoryConfigurationDto;
+import com.softlines.fastpos.repository.CategoryRepository;
 import com.softlines.fastpos.repository.PrinterRepository;
 import com.softlines.fastpos.security.securitydomain.securitydto.PrinterDto;
 import com.softlines.fastpos.security.securitydomain.securitymapper.PrinterMapper;
@@ -11,10 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/config/app-settings")
@@ -29,6 +28,8 @@ public class AppSettingsController {
     PrinterMapper printerMapper;
     @Autowired
     PrinterRepository printerRepository;
+    @Autowired
+    CategoryRepository categoryRepository;
 
     @GetMapping("/printers/getall")
     public ResponseEntity<List<PrinterDto>> getPrinters(){
@@ -57,10 +58,14 @@ public class AppSettingsController {
 
     @PostMapping("/printing-by-category/save")
     public ResponseEntity<PrintingByCategoryConfigurationDto> createCategoryPrintingConfig(@RequestBody  PrintingByCategoryConfigurationDto dto){
-        var entity = printingByCategoryConfigurationMapper.toEntity(dto);
-        com.softlines.fastpos.domain.PrintingByCategoryConfiguration finalEntity = entity;
-        entity.getCategories().forEach(c->c.setPrintingByCategoryConfiguration(finalEntity));
+        var entity = printingByCategoryConfigurationMapper.toEntity(dto,categoryRepository);
+        var cats = categoryRepository.findAllById(dto.getCategoryIds());
+        entity.setCategories(Set.copyOf(cats));
+        com.softlines.fastpos.domain.PrintingByCategoryConfiguration finalEntity1 = entity;
+        entity.getCategories().forEach(c->c.setPrintingByCategoryConfiguration(finalEntity1));
+
         entity = printingByCategoryConfigurationRepository.save(entity);
+        categoryRepository.saveAll(entity.getCategories());
         printingByCategoryConfigurationMapper.toExistingDto(entity,dto);
         return ResponseEntity.ok(dto);
     }
@@ -68,7 +73,7 @@ public class AppSettingsController {
     @PutMapping("/printing-by-category/update/{id}")
     public ResponseEntity<PrintingByCategoryConfigurationDto> updateCategoryPrintingConfig(@RequestBody PrintingByCategoryConfigurationDto dto, @PathVariable Long id){
         if (!printingByCategoryConfigurationRepository.existsById(dto.getId())) return ResponseEntity.noContent().build();
-        var entity = printingByCategoryConfigurationMapper.toEntity(dto);
+        var entity = printingByCategoryConfigurationMapper.toEntity(dto,categoryRepository);
         entity = printingByCategoryConfigurationRepository.save(entity);
         printingByCategoryConfigurationMapper.toExistingDto(entity,dto);
         return ResponseEntity.ok(dto);

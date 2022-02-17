@@ -5,10 +5,21 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Set;
+
 @Getter
 @Setter
 @Entity
-public class PrintingByCategoryConfiguration extends PrintingConfiguration {
-    @OneToMany(mappedBy = "printingByCategoryConfiguration",fetch = FetchType.EAGER)
+public class PrintingByCategoryConfiguration {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+    String name;
+
+    @ManyToOne
+    Printer printer;
+
+
+    @OneToMany(mappedBy = "printingByCategoryConfiguration",fetch = FetchType.EAGER,cascade = {CascadeType.MERGE})
     Set<Category> categories;
 }

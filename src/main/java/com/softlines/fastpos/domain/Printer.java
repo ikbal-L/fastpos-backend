@@ -23,6 +23,6 @@ public class Printer {
     String name;
     @OneToMany
     @JoinColumn(name = "printer_id")
-    Set<PrintingConfiguration> printingConfigurations;
+    Set<PrintingByCategoryConfiguration> printingConfigurations;
     boolean deleted= false;
 }
