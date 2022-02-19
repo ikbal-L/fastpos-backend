@@ -1,6 +1,7 @@
 package com.softlines.fastpos.security.controllers;
 
 import com.softlines.fastpos.domain.Printer;
+import com.softlines.fastpos.domain.PrintingByCategoryConfiguration;
 import com.softlines.fastpos.dto.PrintingByCategoryConfigurationDto;
 import com.softlines.fastpos.repository.CategoryRepository;
 import com.softlines.fastpos.repository.PrinterRepository;
@@ -70,10 +71,14 @@ public class AppSettingsController {
         return ResponseEntity.ok(dto);
     }
 
-    @PutMapping("/printing-by-category/update/{id}")
+    @PutMapping("/printing-by-category/put/{id}")
     public ResponseEntity<PrintingByCategoryConfigurationDto> updateCategoryPrintingConfig(@RequestBody PrintingByCategoryConfigurationDto dto, @PathVariable Long id){
         if (!printingByCategoryConfigurationRepository.existsById(dto.getId())) return ResponseEntity.noContent().build();
         var entity = printingByCategoryConfigurationMapper.toEntity(dto,categoryRepository);
+        var cats = categoryRepository.findAllById(dto.getCategoryIds());
+        entity.setCategories(Set.copyOf(cats));
+        PrintingByCategoryConfiguration finalEntity = entity;
+        entity.getCategories().forEach(c->c.setPrintingByCategoryConfiguration(finalEntity));
         entity = printingByCategoryConfigurationRepository.save(entity);
         printingByCategoryConfigurationMapper.toExistingDto(entity,dto);
         return ResponseEntity.ok(dto);
