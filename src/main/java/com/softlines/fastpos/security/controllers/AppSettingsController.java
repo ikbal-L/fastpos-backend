@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/config/app-settings")
@@ -60,10 +61,7 @@ public class AppSettingsController {
     @PostMapping("/printing-by-category/save")
     public ResponseEntity<PrintingByCategoryConfigurationDto> createCategoryPrintingConfig(@RequestBody  PrintingByCategoryConfigurationDto dto){
         var entity = printingByCategoryConfigurationMapper.toEntity(dto,categoryRepository);
-        var cats = categoryRepository.findAllById(dto.getCategoryIds());
-        entity.setCategories(Set.copyOf(cats));
-        com.softlines.fastpos.domain.PrintingByCategoryConfiguration finalEntity1 = entity;
-        entity.getCategories().forEach(c->c.setPrintingByCategoryConfiguration(finalEntity1));
+        HandlePrintingConfigurationCategoryAssociation(dto, entity);
 
         entity = printingByCategoryConfigurationRepository.save(entity);
         categoryRepository.saveAll(entity.getCategories());
@@ -74,14 +72,27 @@ public class AppSettingsController {
     @PutMapping("/printing-by-category/put/{id}")
     public ResponseEntity<PrintingByCategoryConfigurationDto> updateCategoryPrintingConfig(@RequestBody PrintingByCategoryConfigurationDto dto, @PathVariable Long id){
         if (!printingByCategoryConfigurationRepository.existsById(dto.getId())) return ResponseEntity.noContent().build();
+        HandleRemovedCategories(dto);
         var entity = printingByCategoryConfigurationMapper.toEntity(dto,categoryRepository);
-        var cats = categoryRepository.findAllById(dto.getCategoryIds());
-        entity.setCategories(Set.copyOf(cats));
-        PrintingByCategoryConfiguration finalEntity = entity;
-        entity.getCategories().forEach(c->c.setPrintingByCategoryConfiguration(finalEntity));
+        HandlePrintingConfigurationCategoryAssociation(dto, entity);
         entity = printingByCategoryConfigurationRepository.save(entity);
         printingByCategoryConfigurationMapper.toExistingDto(entity,dto);
         return ResponseEntity.ok(dto);
+    }
+
+    private void HandlePrintingConfigurationCategoryAssociation(@RequestBody PrintingByCategoryConfigurationDto dto, PrintingByCategoryConfiguration entity) {
+        var cats = categoryRepository.findAllById(dto.getCategoryIds());
+        entity.setCategories(Set.copyOf(cats));
+        PrintingByCategoryConfiguration finalEntity = entity;
+        entity.getCategories().forEach(c -> c.setPrintingByCategoryConfiguration(finalEntity));
+    }
+
+    private void HandleRemovedCategories(PrintingByCategoryConfigurationDto dto) {
+        var previousConfigState = printingByCategoryConfigurationRepository.findById(dto.getId()).get();
+        var removedCats = previousConfigState.getCategories()
+                .stream().filter(c-> dto.getCategoryIds().stream().noneMatch(cId-> cId.equals(c.getId()))).collect(Collectors.toList());
+        removedCats.forEach(c->c.setPrintingByCategoryConfiguration(null));
+        categoryRepository.saveAll(removedCats);
     }
 
     @DeleteMapping("/printing-by-category/delete/{id}")
