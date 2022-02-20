@@ -27,7 +27,6 @@ import java.util.List;
 @OrderValidationTableIdExistIfOrderTypeEqualOnTable
 @OrderValidationOrderTypeNotEqualOnTable
 @OrderValidationTotalGreaterThanNewTotal
-@OrderDtoValidationDiscountPercentageAndDiscountAmount
 @OrderItemsDtoValidationDiscountPercentageAndDiscountAmount
 @OrderValidationCalculationNewTotalNotCorrect
 @ValidationOrderDtoDiscountWithOrderItemDiscount
@@ -82,9 +81,7 @@ public class OrderDto /*extends SyncDto*/ {
     @Min(0)
     double totalDiscountAmount;
 
-    @JsonProperty("DiscountPercentage")
-    @Range(min = 0, max = 100)
-    double discountPercentage;
+
 
     @JsonProperty("GivenAmount")
     @Min(0)

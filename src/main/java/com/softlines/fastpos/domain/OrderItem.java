@@ -53,7 +53,7 @@ public class OrderItem extends BaseEntity {
             fetch = FetchType.EAGER)
     List<OrderItemAdditive> orderItemAdditives;
 
-    @ManyToOne
+    @ManyToOne(cascade = {})
     @JoinColumn(name = "order_id")
     Order order;
 
