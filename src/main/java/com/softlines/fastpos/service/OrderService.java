@@ -7,6 +7,7 @@ import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.dto.Message;
 import com.softlines.fastpos.dto.OrderDto;
 import com.softlines.fastpos.dto.mapping.OrderMapper;
+import com.softlines.fastpos.repository.CashOperationRepository;
 import com.softlines.fastpos.repository.OrderRepository;
 import com.softlines.fastpos.security.securityservice.SessionService;
 import com.softlines.fastpos.sse.model.SSEventType;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,14 +48,15 @@ public class OrderService {
 
     private final NumerationService numerationService;
     private final OrderRepository orderRepository;
+    private final CashOperationRepository cashOperationRepository;
     private final OrderMapper orderMapper;
 
-    public static boolean IsActionNewPayment(Order source, Order incoming) {
-        return source.getState() != OrderState.Payed && incoming.getState() == OrderState.Payed;
+    public static boolean IsActionNewPayment(Order previous, Order current) {
+        return (previous.getState() != OrderState.Payed&& previous.getState()!= OrderState.PaidModified  ) && current.getState() == OrderState.Payed;
     }
 
-    public static boolean IsActionModifiedPayment(Order source, Order incoming) {
-        return source.getState() == OrderState.Payed && incoming.getState() == OrderState.Payed;
+    public static boolean IsActionModifiedPayment(Order previous, Order current) {
+        return previous.getState() == OrderState.PaidModified && current.getState() == OrderState.Payed;
     }
 
     public static boolean IsActionCancel(Order source, Order incoming) {
@@ -128,40 +131,48 @@ public class OrderService {
     }
 
 
-    public Order onPaidOrderModified(Order original, Order incoming) {
+    public Order onPaidOrderModified(Order previous, Order current) {
+        var payedAmount = current.getGivenAmount() - current.getReturnedAmount();
 
-        var cashOps = original.getCashOperations();
-        var amount = incoming.getNewTotal() - original.getNewTotal();
-        if (amount != 0) {
-
-            cashOps.add(CashOperation.builder().amount(amount).order(incoming).build());
+        if (payedAmount != 0) {
+            var cashOperation = CashOperation.builder().amount(payedAmount).order(current).build();
+            cashOperationRepository.saveAndFlush(cashOperation);
         }
-        incoming.setCashOperations(cashOps);
-        return incoming;
+
+        return current;
     }
     @Transactional(transactionManager = "transactionManager")
     public OrderDto updateOrder(Order order, Object pub) {
-        var original = orderRepository.findByIdWithCashOperations(order.getId()).get();
+        var previousState = orderRepository.findByIdWithCashOperations(order.getId()).get();
         String eventType = SSEventType.UPDATE_ORDER;
         OrderInfo orderInfo = null;
         if (order.getOrderNumber() == null){
             orderInfo = setOrderNumberAndCode(order);
         }
-        if (OrderService.IsActionCancel(original, order)) {
-            order = onOrderCanceled(order, original);
+        if (OrderService.IsActionCancel(previousState, order)) {
+            order = onOrderCanceled(order, previousState);
             eventType = SSEventType.CANCEL_ORDER;
-        }
-        if (OrderService.IsActionNewPayment(original, order)) {
-            order.setCashOperations(Set.of(CashOperation.builder().order(order).amount(order.getNewTotal()).build()));
-            eventType = SSEventType.PAY_ORDER;
-        }
-
-        if (OrderService.IsActionModifiedPayment(original, order)) {
-            order = onPaidOrderModified(original, order);
-            eventType = SSEventType.PAY_ORDER;
         }
 
         order = orderRepository.saveOrder(order);
+
+        if (OrderService.IsActionNewPayment(previousState, order)) {
+            var payedAmount = order.getGivenAmount() - order.getReturnedAmount();
+            Set<CashOperation> cashOperations = Set.of(CashOperation.builder().order(order).amount(payedAmount).build());
+//            order.setCashOperations(cashOperations);
+            Order finalOrder = order;
+            cashOperations.forEach(co->co.setOrder(finalOrder));
+            cashOperationRepository.saveAll(cashOperations);
+            cashOperationRepository.flush();
+            eventType = SSEventType.PAY_ORDER;
+        }
+
+        if (OrderService.IsActionModifiedPayment(previousState, order)) {
+            order = onPaidOrderModified(previousState, order);
+            eventType = SSEventType.PAY_ORDER;
+        }
+
+
         if (orderInfo!= null) {
             SaveOrderInfo(orderInfo);
         }

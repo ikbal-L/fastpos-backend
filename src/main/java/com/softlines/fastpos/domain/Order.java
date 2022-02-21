@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -105,8 +106,8 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "customer_id")
     Customer customer;
 
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "order")
-    Set<CashOperation> cashOperations;
+    @OneToMany(mappedBy = "order")
+    Set<CashOperation> cashOperations = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     DailyEarningsReport dailyEarningsReport;
