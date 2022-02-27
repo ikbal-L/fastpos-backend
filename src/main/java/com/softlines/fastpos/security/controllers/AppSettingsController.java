@@ -80,7 +80,7 @@ public class AppSettingsController {
         return ResponseEntity.ok(dto);
     }
 
-    private void HandlePrintingConfigurationCategoryAssociation(@RequestBody PrintingByCategoryConfigurationDto dto, PrintingByCategoryConfiguration entity) {
+    private void HandlePrintingConfigurationCategoryAssociation( PrintingByCategoryConfigurationDto dto, PrintingByCategoryConfiguration entity) {
         var cats = categoryRepository.findAllById(dto.getCategoryIds());
         entity.setCategories(Set.copyOf(cats));
         PrintingByCategoryConfiguration finalEntity = entity;
@@ -96,9 +96,13 @@ public class AppSettingsController {
     }
 
     @DeleteMapping("/printing-by-category/delete/{id}")
-    public ResponseEntity<Void> deleteCategoryPrintingConfig(@RequestBody PrintingByCategoryConfigurationDto dto,@PathVariable Long id){
-        if (!printingByCategoryConfigurationRepository.existsById(dto.getId())) return ResponseEntity.noContent().build();
-        printingByCategoryConfigurationRepository.deleteById(dto.getId());
+    public ResponseEntity<?> deleteCategoryPrintingConfig(@PathVariable Long id){
+        if (!printingByCategoryConfigurationRepository.existsById(id )) return ResponseEntity.noContent().build();
+        var categories = categoryRepository.findAllByPrintingByCategoryConfigurationId(id);
+        categories.forEach(category -> category.setPrintingByCategoryConfiguration(null));
+        categoryRepository.saveAll(categories);
+        categoryRepository.flush();
+        printingByCategoryConfigurationRepository.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

@@ -141,10 +141,17 @@ public class CategoryController {
     public ResponseEntity<CategoryDto> editCategory(@PathVariable long id,@Valid @RequestBody CategoryDto categoryDto) {
         try {
 
-            Category optionalCategory = categoryRepository.findByIdCategoryWithProducts(id);
+            var optionalCategory = categoryRepository.findByIdWithPrintingConfiguration(id);
 
-            if (optionalCategory != null && id != 0 && categoryDto.getName() != null) {
+            if (optionalCategory.isPresent() && id != 0 && categoryDto.getName() != null) {
                 var category = dtoService.categoryDtoToCategory(categoryDto, false);
+                var printingConfiguration = optionalCategory.get().getPrintingByCategoryConfiguration();
+                var categoryToReplace = printingConfiguration.getCategories().stream().filter(category1 -> category1.getId() == id).findFirst();
+                if (categoryToReplace.isPresent()){
+                    printingConfiguration.getCategories().remove(categoryToReplace.get());
+                    printingConfiguration.getCategories().add(category);
+                }
+                category.setPrintingByCategoryConfiguration(printingConfiguration);
                 var updatedCategory = categoryRepository.save(category);
                 var updatedCategoryDto = categoryMapper.toCategoryDto(updatedCategory);
                 return ResponseEntity.ok().body(updatedCategoryDto);
