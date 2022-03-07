@@ -5,7 +5,7 @@ plugins {
 	id 'java'
 //	id 'com.ewerk.gradle.plugins.querydsl' version "1.0.10"
 	id 'org.beryx.runtime' version '1.12.6'
-	id 'war'
+//	id 'war'
 
 }
 

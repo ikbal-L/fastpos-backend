@@ -172,7 +172,6 @@ public class OrderService {
             eventType = SSEventType.PAY_ORDER;
         }
 
-
         if (orderInfo!= null) {
             SaveOrderInfo(orderInfo);
         }
@@ -182,6 +181,7 @@ public class OrderService {
 
         return dto;
     }
+
 
     @NotNull
     private Order onOrderCanceled(Order order, Order original) {

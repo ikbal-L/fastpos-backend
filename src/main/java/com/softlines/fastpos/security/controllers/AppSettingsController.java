@@ -59,14 +59,14 @@ public class AppSettingsController {
     }
 
     @PostMapping("/printing-by-category/save")
-    public ResponseEntity<PrintingByCategoryConfigurationDto> createCategoryPrintingConfig(@RequestBody  PrintingByCategoryConfigurationDto dto){
+    public ResponseEntity<Long> createCategoryPrintingConfig(@RequestBody  PrintingByCategoryConfigurationDto dto){
         var entity = printingByCategoryConfigurationMapper.toEntity(dto,categoryRepository);
         HandlePrintingConfigurationCategoryAssociation(dto, entity);
 
         entity = printingByCategoryConfigurationRepository.save(entity);
         categoryRepository.saveAll(entity.getCategories());
         printingByCategoryConfigurationMapper.toExistingDto(entity,dto);
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(entity.getId());
     }
 
     @PutMapping("/printing-by-category/put/{id}")
