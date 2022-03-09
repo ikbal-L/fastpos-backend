@@ -146,12 +146,14 @@ public class CategoryController {
             if (optionalCategory.isPresent() && id != 0 && categoryDto.getName() != null) {
                 var category = dtoService.categoryDtoToCategory(categoryDto, false);
                 var printingConfiguration = optionalCategory.get().getPrintingByCategoryConfiguration();
-                var categoryToReplace = printingConfiguration.getCategories().stream().filter(category1 -> category1.getId() == id).findFirst();
-                if (categoryToReplace.isPresent()){
-                    printingConfiguration.getCategories().remove(categoryToReplace.get());
-                    printingConfiguration.getCategories().add(category);
+                if (printingConfiguration!= null) {
+                    var categoryToReplace = printingConfiguration.getCategories().stream().filter(category1 -> category1.getId() == id).findFirst();
+                    if (categoryToReplace.isPresent()){
+                        printingConfiguration.getCategories().remove(categoryToReplace.get());
+                        printingConfiguration.getCategories().add(category);
+                    }
+                    category.setPrintingByCategoryConfiguration(printingConfiguration);
                 }
-                category.setPrintingByCategoryConfiguration(printingConfiguration);
                 var updatedCategory = categoryRepository.save(category);
                 var updatedCategoryDto = categoryMapper.toCategoryDto(updatedCategory);
                 return ResponseEntity.ok().body(updatedCategoryDto);
