@@ -71,6 +71,8 @@ public class UserDTO {
     @NotBlank
     String backgroundString;
 
+    @JsonProperty("IsPredefined")
+    boolean predefined;
 
 
 }

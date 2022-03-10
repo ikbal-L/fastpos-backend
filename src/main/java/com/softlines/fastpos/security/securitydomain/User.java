@@ -81,5 +81,7 @@ public class User extends BaseEntity {
 
     private  boolean signedIn = false;
 
+    private  boolean predefined = false;
+
 
 }
