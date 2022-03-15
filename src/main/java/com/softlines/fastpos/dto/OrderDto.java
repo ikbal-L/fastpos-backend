@@ -88,7 +88,6 @@ public class OrderDto /*extends SyncDto*/ {
     double givenAmount;
 
     @JsonProperty("ReturnedAmount")
-    @Max(value = 0, message = MessageKeyConstants.ORDER_RETURNED_AMOUNT_VALIDATION_ERROR)
     double returnedAmount;
 
     @JsonProperty("State")

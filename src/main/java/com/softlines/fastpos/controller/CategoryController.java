@@ -32,23 +32,16 @@ public class CategoryController {
 
     @PostMapping("/save")
     public ResponseEntity<Long> addCategory(@Valid @RequestBody CategoryDto categoryDto) {
-        try {
+        if (categoryDto.getId()==0) {
+            Category category = dtoService.categoryDtoToCategory(categoryDto, false);
+            Category createdCategory = categoryRepository.save(category);
 
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory.getId());
 
-            if (categoryDto.getId()==0) {
-                Category category = dtoService.categoryDtoToCategory(categoryDto, false);
-                Category createdCategory = categoryRepository.save(category);
+        } else {
 
-                return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory.getId());
+            return ResponseEntity.status(HttpStatus.FOUND).build();
 
-            } else {
-
-                return ResponseEntity.status(HttpStatus.FOUND).build();
-
-            }
-
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
 
@@ -139,30 +132,25 @@ public class CategoryController {
 
     @PutMapping("/put/{id}")
     public ResponseEntity<CategoryDto> editCategory(@PathVariable long id,@Valid @RequestBody CategoryDto categoryDto) {
-        try {
 
-            var optionalCategory = categoryRepository.findByIdWithPrintingConfiguration(id);
+        var optionalCategory = categoryRepository.findByIdWithPrintingConfiguration(id);
 
-            if (optionalCategory.isPresent() && id != 0 && categoryDto.getName() != null) {
-                var category = dtoService.categoryDtoToCategory(categoryDto, false);
-                var printingConfiguration = optionalCategory.get().getPrintingByCategoryConfiguration();
-                if (printingConfiguration!= null) {
-                    var categoryToReplace = printingConfiguration.getCategories().stream().filter(category1 -> category1.getId() == id).findFirst();
-                    if (categoryToReplace.isPresent()){
-                        printingConfiguration.getCategories().remove(categoryToReplace.get());
-                        printingConfiguration.getCategories().add(category);
-                    }
-                    category.setPrintingByCategoryConfiguration(printingConfiguration);
+        if (optionalCategory.isPresent() && id != 0 && categoryDto.getName() != null) {
+            var category = dtoService.categoryDtoToCategory(categoryDto, false);
+            var printingConfiguration = optionalCategory.get().getPrintingByCategoryConfiguration();
+            if (printingConfiguration!= null) {
+                var categoryToReplace = printingConfiguration.getCategories().stream().filter(category1 -> category1.getId() == id).findFirst();
+                if (categoryToReplace.isPresent()){
+                    printingConfiguration.getCategories().remove(categoryToReplace.get());
+                    printingConfiguration.getCategories().add(category);
                 }
-                var updatedCategory = categoryRepository.save(category);
-                var updatedCategoryDto = categoryMapper.toCategoryDto(updatedCategory);
-                return ResponseEntity.ok().body(updatedCategoryDto);
-            } else {
-                return ResponseEntity.noContent().build();
+                category.setPrintingByCategoryConfiguration(printingConfiguration);
             }
-
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
+            var updatedCategory = categoryRepository.save(category);
+            var updatedCategoryDto = categoryMapper.toCategoryDto(updatedCategory);
+            return ResponseEntity.ok().body(updatedCategoryDto);
+        } else {
+            return ResponseEntity.noContent().build();
         }
 
     }

@@ -157,7 +157,7 @@ public class OrderService {
         order = orderRepository.saveOrder(order);
 
         if (OrderService.IsActionNewPayment(previousState, order)) {
-            var payedAmount = order.getGivenAmount() - order.getReturnedAmount();
+            var payedAmount = order.getGivenAmount() + order.getReturnedAmount();
             Set<CashOperation> cashOperations = Set.of(CashOperation.builder().order(order).amount(payedAmount).build());
 //            order.setCashOperations(cashOperations);
             Order finalOrder = order;

@@ -84,7 +84,9 @@ runtime {
 	modules = ['java.management', 'java.naming', 'java.instrument', 'java.sql', 'jdk.unsupported', 'jdk.security.jgss', 'java.desktop']
 }
 
-
 test {
 	useJUnitPlatform()
+//	onlyIf {false}
 }
+
+//compileTestJava.onlyIf {false}
