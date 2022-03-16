@@ -2,6 +2,7 @@ package com.softlines.fastpos.exceptionmanagement;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.softlines.fastpos.security.exceptions.RankDuplicationException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -63,5 +64,13 @@ public class FastposExceptionHandler {
         var message= mapper.writeValueAsString(e.getCause().getMessage());
         return  new ResponseEntity<Object>(message,HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(RankDuplicationException.class)
+    public final ResponseEntity<Object> handleRankDuplicationException(RankDuplicationException e) throws JsonProcessingException {
+//        var mapper = new ObjectMapper();
+//        var message= mapper.writeValueAsString(e.getCause().getMessage());
+        return  new ResponseEntity<Object>(e.getMessage(),HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
 
 }

@@ -49,25 +49,13 @@ public class ProductController {
     @PostMapping(value = "/savemany", consumes = "application/json")
     public ResponseEntity<List<Long>> addManyProduct(@Valid @RequestBody List<ProductDto> productDtoList) {
 
-        try {
-            List<Long> Ids = productDtoList.parallelStream().map(ProductDto::getId).collect(Collectors.toList());
-            List<Product> productList = productRepository.findAllById(Ids);
+        List<Long> Ids = productDtoList.parallelStream().map(ProductDto::getId).collect(Collectors.toList());
 
-            if (productList.size() == 0) {
+        List<Product> products = dtoService.productDtoListToProductList(productDtoList, false);
+        List<Product> savedProductList = productRepository.saveAll(products);
+        List<Long> savedIds = savedProductList.parallelStream().map(Product::getId).collect(Collectors.toList());
 
-                List<Product> products = dtoService.productDtoListToProductList(productDtoList, false);
-                List<Product> savedProductList = productRepository.saveAll(products);
-                List<Long> savedIds = savedProductList.parallelStream().map(Product::getId).collect(Collectors.toList());
-
-                return ResponseEntity.status(HttpStatus.CREATED).body(savedIds);
-
-            } else {
-                return ResponseEntity.status(HttpStatus.FOUND).build();
-            }
-
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedIds);
 
     }
 
@@ -176,7 +164,6 @@ public class ProductController {
             List<Product> products = productRepository.findAllById(ids);
 
             if (products.size() == productDtoList.size()) {
-
                 List<Product> savedProductList = dtoService.productDtoListToProductList(productDtoList, false);
                 List<Product> updatedProductList = productRepository.saveAll(savedProductList);
 
