@@ -1,16 +1,13 @@
 package com.softlines.fastpos.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softlines.fastpos.constants.MessageKeyConstants;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
-import org.hibernate.annotations.Table;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.*;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -32,6 +29,7 @@ import java.util.List;
 //        })
 //})
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"rank", "category_id"}))
 public class Product extends BaseEntity {
 
     @Id
@@ -39,7 +37,7 @@ public class Product extends BaseEntity {
     long id;
 
     @NotBlank(message = MessageKeyConstants.PRODUCT_NAME_VALIDATION_ERROR)
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false, unique = true)
     String name;
 
 
@@ -63,6 +61,7 @@ public class Product extends BaseEntity {
 
     @Column(name = "isPlatter")
     boolean platter;
+
     Integer rank;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -73,7 +72,8 @@ public class Product extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "additive_id", nullable = true))
     List<Additive> additives;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
+    @JoinColumn(name = "category_id")
     Category category;
 
     @Builder.Default

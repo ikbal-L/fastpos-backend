@@ -1,4 +1,5 @@
 package com.softlines.fastpos.controller;
+
 import com.softlines.fastpos.domain.Product;
 import com.softlines.fastpos.dto.ProductDto;
 import com.softlines.fastpos.dto.mapping.ProductMapper;
@@ -8,15 +9,17 @@ import com.softlines.fastpos.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/api/product",produces = "application/json; charset=UTF-8")
+@RequestMapping(value = "/api/product", produces = "application/json; charset=UTF-8")
 @RequiredArgsConstructor
 public class ProductController {
 
@@ -27,13 +30,12 @@ public class ProductController {
     private final ProductMapper productMapper;
 
 
-
     ExceptionManagement exceptionManagement = new ExceptionManagement();
 
     @PostMapping(value = "/save")
     public ResponseEntity<Long> addProduct(@Valid @RequestBody ProductDto productDto) {
 
-        if (productDto.getId()==0) {
+        if (productDto.getId() == 0) {
 
             Product product = dtoService.productDtoToProduct(productDto, false);
             var created = productRepository.save(product);
@@ -60,12 +62,16 @@ public class ProductController {
     }
 
 
-
-//    @PreAuthorize("@apiAuth.checkGrants(authentication, 'Read_Product')")
+    //    @PreAuthorize("@apiAuth.checkGrants(authentication, 'Read_Product')")
     @GetMapping("/getall")
     public ResponseEntity<List<ProductDto>> getProducts() {
         try {
             List<Product> products = productRepository.findAllProductsWithAdditives();
+
+            if (hasDuplicateRanks(products)) {
+                products = productRepository.findAllProductsWithAdditives();
+            }
+
 
             if (products == null || products.isEmpty())
                 return ResponseEntity.noContent().build();
@@ -179,6 +185,46 @@ public class ProductController {
 
     }
 
+
+    private boolean hasDuplicateRanks(List<Product> products) {
+        var productsWithDupRank =
+                products.stream()
+                        .filter(c -> c.getRank() != null && c.getCategory() != null)
+                        .collect(Collectors.groupingBy(Product::getCategory)).entrySet().stream()
+                        .collect(Collectors.toMap(Map.Entry::getKey, productsListEntry -> productsListEntry.getValue().stream()
+                                .collect(Collectors.groupingBy(Product::getRank))
+                        )).entrySet().stream()
+                        //filter products in the same category with the same rank
+                        .filter(productMapEntry -> productMapEntry.getValue().entrySet().stream().anyMatch(rankListEntry -> rankListEntry.getValue().size() > 1))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        if (productsWithDupRank.isEmpty()) {
+            return false;
+        }
+
+        List<Product> modifiedProductsWithDuplicateRanks = new ArrayList<>();
+        for (var categoryGrouping : productsWithDupRank.entrySet()) {
+            var rankGroupings = categoryGrouping.getValue().entrySet();
+            for (var rankGrouping : rankGroupings) {
+
+                var productsOfCategoryOfRank = rankGrouping.getValue();
+                if (products.size() > 1) {
+                    //keep only one product with the duplicate rank and "free" the rest
+                    productsOfCategoryOfRank.stream().skip(1).forEach(product -> {
+                        product.setRank(null);
+                        product.setCategory(null);
+                    });
+                    modifiedProductsWithDuplicateRanks.addAll(productsOfCategoryOfRank);
+                }
+
+            }
+        }
+
+        productRepository.saveAll(modifiedProductsWithDuplicateRanks);
+        return true;
+    }
+
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity deleteProduct(@Valid @PathVariable long id) {
 
@@ -196,6 +242,44 @@ public class ProductController {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
         }
     }
+
+
+
+
+
+    @PutMapping("/permutate")
+    public ResponseEntity<List<Long>> permutateProducts(@Valid @RequestBody List<ProductDto> productDtoList) {
+        try {
+
+            List<Long> ids = productDtoList.parallelStream().map(ProductDto::getId).collect(Collectors.toList());
+            List<Product> products = productRepository.findAllById(ids);
+            var productX =products.get(0);
+            var productY =products.get(1);
+            var productXRank = productX.getRank();
+            productX.setRank(null);
+            productRepository.save(productX);
+            productRepository.save(productY);
+            productX.setRank(productXRank);
+            productRepository.save(productX);
+
+            if (products.size() == productDtoList.size()) {
+                List<Product> savedProductList = dtoService.productDtoListToProductList(productDtoList, false);
+                List<Product> updatedProductList = productRepository.saveAll(savedProductList);
+
+                return ResponseEntity.status(HttpStatus.OK).build();
+
+            } else {
+                return ResponseEntity.noContent().build();
+            }
+
+        } catch (Exception exception) {
+            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+
+    }
+
+
+
 }
 
 

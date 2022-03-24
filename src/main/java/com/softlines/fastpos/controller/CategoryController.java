@@ -1,9 +1,7 @@
 package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Category;
-import com.softlines.fastpos.domain.Product;
 import com.softlines.fastpos.dto.CategoryDto;
-import com.softlines.fastpos.dto.ProductDto;
 import com.softlines.fastpos.dto.mapping.CategoryMapper;
 import com.softlines.fastpos.dto.service.DtoService;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
@@ -20,7 +18,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @RestController
@@ -79,7 +77,7 @@ public class CategoryController {
             List<Category> categories = categoryRepository.findAllCategoriesWithProducts();
 
 
-            if (_validateCategoryRanks(categories)) {
+            if (HasDuplicateRanks(categories)) {
                 categories = categoryRepository.findAllCategoriesWithProducts();
             }
 
@@ -96,48 +94,31 @@ public class CategoryController {
 
     }
 
-    private boolean _validateCategoryRanks(List<Category> categories) {
+    private boolean HasDuplicateRanks(List<Category> categories) {
         var categoriesWithDupRank =
                 categories.stream()
                         .filter(c -> c.getRank() != null)
                         .collect(Collectors.groupingBy(Category::getRank))
                         .entrySet().stream()
-                        .filter(e -> e.getValue().size() > 1)
+                        .filter(e -> e.getValue().size() > 1)//each rank has more that one category
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        List<List<Category>> _dupes = new ArrayList<>();
-        List<List<Product>> _productsOfDupes = new ArrayList<>();
+        if (categoriesWithDupRank.size() ==0){
+            return  false;
+        }
+        List<Category> modifiedCategoriesWithDuplicateRanks = new ArrayList<>();
+
+        AtomicInteger maxRank = new AtomicInteger(categories.stream().filter(c->c.getRank()!= null).mapToInt(Category::getRank).max().orElse(1));
         for (var entry : categoriesWithDupRank.entrySet()) {
 
-            var maxNumberOfProducts = entry
-                    .getValue()
-                    .stream()
-                    .mapToInt(category -> category.getProducts().size())
-                    .max()
-                    .orElse(1);
-            var _categoriesWithLeastNumberOfProducts = entry
-                    .getValue()
-                    .stream()
-                    .filter(category -> category.getProducts().size() < maxNumberOfProducts)
-                    .collect(Collectors.toList());
-            _categoriesWithLeastNumberOfProducts.forEach(category -> {
-                category.getProducts().forEach(product -> product.setRank(null));
-                _productsOfDupes.add(category.getProducts());
-                category.setRank(null);
-                category.setProducts(null);
+            entry.getValue().stream().skip(1).forEach(category -> {
+                var newRank = maxRank.incrementAndGet();
+                category.setRank(newRank);
             });
-            _dupes.add(_categoriesWithLeastNumberOfProducts);
+            modifiedCategoriesWithDuplicateRanks.addAll(entry.getValue());
         }
-        var _dupCategories = _dupes
-                .stream()
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
-        var _inactiveProducts = _productsOfDupes
-                .stream()
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
-        productRepository.saveAll(_inactiveProducts);
-        categoryRepository.saveAll(_dupCategories);
-        return _dupCategories.size() > 0;
+
+        categoryRepository.saveAll(modifiedCategoriesWithDuplicateRanks);
+        return true;
     }
 
 

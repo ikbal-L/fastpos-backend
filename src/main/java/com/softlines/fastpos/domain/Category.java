@@ -13,9 +13,6 @@ import java.util.List;
 
 @Setter @Getter @AllArgsConstructor @NoArgsConstructor
 @SuperBuilder
-
-@SQLDelete(sql = "UPDATE Category SET deleted=true ,rank=null WHERE id=?")
-@Where(clause = "deleted = false")
 @Entity
 public class Category extends BaseEntity{
 
@@ -28,15 +25,15 @@ public class Category extends BaseEntity{
     String name;
 
     String backgroundString;
+
+    @Column(unique = true)
     Integer rank;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY,orphanRemoval = true)
     @JoinColumn(name = "category_id")
     List<Product> products;
 
-    @Builder.Default
-    @NotNull
-    private boolean deleted=false;
+
 
     String imageUrl;
 
