@@ -9,6 +9,7 @@ import com.softlines.fastpos.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -248,32 +249,29 @@ public class ProductController {
 
 
     @PutMapping("/permutate")
+    @Transactional(transactionManager = "transactionManager")
     public ResponseEntity<List<Long>> permutateProducts(@Valid @RequestBody List<ProductDto> productDtoList) {
-        try {
+        List<Long> ids = productDtoList.parallelStream().map(ProductDto::getId).collect(Collectors.toList());
+        var  listedIdsCount = productRepository.findAllById(ids).size();
 
-            List<Long> ids = productDtoList.parallelStream().map(ProductDto::getId).collect(Collectors.toList());
-            List<Product> products = productRepository.findAllById(ids);
+
+        if (listedIdsCount == productDtoList.size()) {
+            List<Product> products = dtoService.productDtoListToProductList(productDtoList, false);
             var productX =products.get(0);
             var productY =products.get(1);
             var productXRank = productX.getRank();
             productX.setRank(null);
-            productRepository.save(productX);
-            productRepository.save(productY);
+            productRepository.saveAndFlush(productX);
+            productRepository.saveAndFlush(productY);
             productX.setRank(productXRank);
-            productRepository.save(productX);
+            productRepository.saveAndFlush(productX);
 
-            if (products.size() == productDtoList.size()) {
-                List<Product> savedProductList = dtoService.productDtoListToProductList(productDtoList, false);
-                List<Product> updatedProductList = productRepository.saveAll(savedProductList);
 
-                return ResponseEntity.status(HttpStatus.OK).build();
 
-            } else {
-                return ResponseEntity.noContent().build();
-            }
+            return ResponseEntity.status(HttpStatus.OK).build();
 
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        } else {
+            return ResponseEntity.noContent().build();
         }
 
     }

@@ -216,18 +216,14 @@ public class CustomerController {
     @PutMapping("/put/{id}")
     public ResponseEntity<CustomerDto> editCustomer(@Valid @PathVariable long id, @RequestBody CustomerDto customerDto) {
 
-        try {
-            Optional<Customer> optionalCustomer = customerRepository.findById(id);
+        Optional<Customer> optionalCustomer = customerRepository.findById(id);
 
-            if (optionalCustomer.isPresent() && customerDto.getName() != null) {
-                var customer = customerMapper.toCustomer(customerDto);
-                Customer savedCustomer = customerRepository.save(customer);
-                return ResponseEntity.ok().body(customerMapper.toCustomerDto(savedCustomer));
-            } else {
-                return ResponseEntity.noContent().build();
-            }
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        if (optionalCustomer.isPresent() && customerDto.getName() != null) {
+            var customer = customerMapper.toCustomer(customerDto);
+            Customer savedCustomer = customerRepository.save(customer);
+            return ResponseEntity.ok().body(customerMapper.toCustomerDto(savedCustomer));
+        } else {
+            return ResponseEntity.noContent().build();
         }
     }
 

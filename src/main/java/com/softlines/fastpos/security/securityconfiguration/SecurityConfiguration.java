@@ -3,7 +3,7 @@ package com.softlines.fastpos.security.securityconfiguration;
 import com.softlines.fastpos.security.securityfilters.ApiAuthorizationFilter;
 import com.softlines.fastpos.security.securityfilters.AuthenticationFilter;
 import com.softlines.fastpos.security.securityfilters.ConfigAuthorizationFilter;
-import com.softlines.fastpos.licensing.LicenseActivationFilter;
+//import com.softlines.fastpos.licensing.LicenseActivationFilter;
 import com.softlines.fastpos.security.securityrepository.AnnexRepository;
 import com.softlines.fastpos.security.securityrepository.SessionRepository;
 import com.softlines.fastpos.security.securityservice.UserDetailsServiceImpl;
@@ -45,8 +45,8 @@ public class SecurityConfiguration {
         private SessionRepository sessionRepository;
         @Autowired
         private AuthenticationFilter authenticationFilter;
-        @Autowired
-        private LicenseActivationFilter licenseActivationFilter;
+//        @Autowired
+//        private LicenseActivationFilter licenseActivationFilter;
 
         @Override
         protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -117,8 +117,8 @@ public class SecurityConfiguration {
         private AnnexRepository annexRepository;
         @Autowired
         private AuthenticationFilter authenticationFilter;
-        @Autowired
-        private LicenseActivationFilter licenseActivationFilter;
+//        @Autowired
+//        private LicenseActivationFilter licenseActivationFilter;
 
         @Override
         protected void configure(AuthenticationManagerBuilder auth) throws Exception {

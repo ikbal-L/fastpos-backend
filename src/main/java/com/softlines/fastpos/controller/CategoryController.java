@@ -1,7 +1,9 @@
 package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Category;
+import com.softlines.fastpos.domain.Product;
 import com.softlines.fastpos.dto.CategoryDto;
+import com.softlines.fastpos.dto.ProductDto;
 import com.softlines.fastpos.dto.mapping.CategoryMapper;
 import com.softlines.fastpos.dto.service.DtoService;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
@@ -234,6 +236,33 @@ public class CategoryController {
 
         } catch (Exception exception) {
             return exceptionManagement.getResponseEntityAccordingToException(exception);
+        }
+
+    }
+
+    @PutMapping("/permutate")
+    @Transactional(transactionManager = "transactionManager")
+    public ResponseEntity<List<Long>> permutateCategories(@Valid @RequestBody List<CategoryDto> categoryDtos) {
+        List<Long> ids = categoryDtos.parallelStream().map(CategoryDto::getId).collect(Collectors.toList());
+        var listedIdsCount = categoryRepository.findAllById(ids).size();
+
+
+        if (listedIdsCount == categoryDtos.size()) {
+            var categoryList = dtoService.categoriesDtoToCategories(categoryDtos, false);
+            var categoryX =categoryList.get(0);
+            var categoryY =categoryList.get(1);
+            var categoryXRank = categoryX.getRank();
+            categoryX.setRank(null);
+            categoryRepository.saveAndFlush(categoryX);
+            categoryRepository.saveAndFlush(categoryY);
+            categoryX.setRank(categoryXRank);
+            categoryRepository.saveAndFlush(categoryX);
+
+
+            return ResponseEntity.status(HttpStatus.OK).build();
+
+        } else {
+            return ResponseEntity.noContent().build();
         }
 
     }
