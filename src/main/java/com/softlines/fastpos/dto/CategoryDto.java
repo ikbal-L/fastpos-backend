@@ -10,13 +10,14 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 
-@CategoryValidationIfRank_EqualNull_Than_ProductIds_MustEqualNull
+//@CategoryValidationIfRank_EqualNull_Than_ProductIds_MustEqualNull
+//delegate the responsibility of management of category products to the backend either through and interceptor like PreUpdate or a Trigger
 @Data
 public class CategoryDto {
 
     @JsonProperty("Id")
     @Min(0)
-    long id;
+    Long id;
 
     @JsonProperty("Name")
     @NotBlank(message =MessageKeyConstants.CATEGORY_NAME_VALIDATION_ERROR)

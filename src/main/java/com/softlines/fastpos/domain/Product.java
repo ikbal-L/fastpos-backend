@@ -21,13 +21,6 @@ import java.util.List;
 @DynamicInsert
 @DynamicUpdate
 @SelectBeforeUpdate
-@SQLDelete(sql = "UPDATE Product SET deleted=true ,rank=null WHERE id=?")
-@Where(clause = "deleted = false")
-//@Table(uniqueConstraints = {
-//        @UniqueConstraint(columnNames = {
-//                "category_id", "rank"
-//        })
-//})
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"rank", "category_id"}))
 public class Product extends BaseEntity {
@@ -69,16 +62,14 @@ public class Product extends BaseEntity {
     @JoinTable(
             name = "products_additives",
             joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "additive_id", nullable = true))
+            inverseJoinColumns = @JoinColumn(name = "additive_id"))
     List<Additive> additives;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     Category category;
 
-    @Builder.Default
-    @NotNull
-    boolean deleted = false;
+
 
     String imageUrl;
 

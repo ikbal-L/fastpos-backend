@@ -24,4 +24,5 @@ public interface ProductRepository extends JpaRepository<Product, Long>, CustomO
     List<Product> findManyProductsWithAdditives(@Param("ids") List<Long> ProductIds);
 
 
+
 }

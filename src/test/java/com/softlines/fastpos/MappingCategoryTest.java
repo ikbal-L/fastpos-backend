@@ -96,7 +96,7 @@ public class MappingCategoryTest {
     @Test
     public void putCategory() throws Exception {
 
-        categoryDto.setId(2);
+        categoryDto.setId(2L);
         categoryDto.setBackgroundString("red");
         categoryDto.setName("boison");
         categoryDto.setRank(4);

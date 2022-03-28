@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,10 +41,12 @@ public class CategoryController {
     DtoService dtoService;
 
     ExceptionManagement exceptionManagement = new ExceptionManagement();
+    @PersistenceContext
+    EntityManager entityManager;
 
     @PostMapping("/save")
     public ResponseEntity<Long> addCategory(@Valid @RequestBody CategoryDto categoryDto) {
-        if (categoryDto.getId() == 0) {
+        if (categoryDto.getId() == null) {
             Category category = dtoService.categoryDtoToCategory(categoryDto, false);
             Category createdCategory = categoryRepository.save(category);
 
@@ -220,24 +224,20 @@ public class CategoryController {
 
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleteCategory(@Valid @PathVariable long id) {
+    @Transactional(transactionManager = "transactionManager")
+    public ResponseEntity deleteProduct(@Valid @PathVariable long id) {
 
-        try {
-
-            Category categoryToDel = categoryRepository.findByIdCategoryWithProducts(id);
-            if (categoryToDel != null) {
-
-                categoryRepository.delete(categoryToDel);
-                return ResponseEntity.ok().build();
-
-            } else {
-                return ResponseEntity.noContent().build();
-            }
-
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        if (!categoryRepository.existsById(id)){
+            return  ResponseEntity.notFound().build();
         }
+        var query =entityManager.createNativeQuery("update product set category_id = NULL  where category_id = :id").setParameter("id",id).executeUpdate();
+        //TODO decouple GroupingByCategory from category
+        //TODO update daily earning report service to reflect changes related to category
 
+        var query3 = entityManager.createNativeQuery("delete  from  category where id = :id").setParameter("id",id);
+
+
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/permutate")

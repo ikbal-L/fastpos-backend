@@ -18,7 +18,7 @@ public class Category extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    Long id;
 
     @NotBlank
     @Column(nullable = false,unique = true)
@@ -29,7 +29,7 @@ public class Category extends BaseEntity{
     @Column(unique = true)
     Integer rank;
 
-    @OneToMany(fetch = FetchType.LAZY,orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     List<Product> products;
 
@@ -39,5 +39,25 @@ public class Category extends BaseEntity{
 
     @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.MERGE})
     PrintingByCategoryConfiguration printingByCategoryConfiguration;
+    @PreRemove
+    public void onDeleteSetNull(){
+        if (products!= null){
+            products.forEach(product -> {
+                product.setCategory(null);
+                product.setRank(null);
+            });
+        }
+    }
+
+    @PreUpdate
+    public void onCategoryInactive(){
+        if (rank == null&& id!= null && products!= null){
+            products.forEach(product -> {
+                product.setCategory(null);
+                product.setRank(null);
+            });
+        }
+
+    }
 
 }

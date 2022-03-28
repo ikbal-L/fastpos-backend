@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,8 @@ public class ProductController {
 
 
     ExceptionManagement exceptionManagement = new ExceptionManagement();
+    @PersistenceContext
+    EntityManager entityManager;
 
     @PostMapping(value = "/save")
     public ResponseEntity<Long> addProduct(@Valid @RequestBody ProductDto productDto) {
@@ -227,21 +231,18 @@ public class ProductController {
 
 
     @DeleteMapping("/delete/{id}")
+    @Transactional(transactionManager = "transactionManager")
     public ResponseEntity deleteProduct(@Valid @PathVariable long id) {
 
-        try {
-            Product optionalProduct = productRepository.findByIdProductWithAdditives(id);
-
-            if (optionalProduct != null) {
-                productRepository.delete(optionalProduct);
-                return ResponseEntity.ok().build();
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        if (!productRepository.existsById(id)){
+            return  ResponseEntity.notFound().build();
         }
+        var query =entityManager.createNativeQuery("update orderitem set product_id = NULL  where product_id = :id").setParameter("id",id).executeUpdate();
+        var query2 =entityManager.createNativeQuery("update products_additives set product_id = NULL  where product_id = :id").setParameter("id",id).executeUpdate();
+        var query3 = entityManager.createNativeQuery("delete  from  product where id = :id").setParameter("id",id);
+
+
+        return ResponseEntity.ok().build();
     }
 
 
