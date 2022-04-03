@@ -118,7 +118,7 @@ public class DailyExpenseReportController {
     }
 
 
-    @GetMapping("/getallbycriteria")
+    @PostMapping("/getallbycriteria")
     public ResponseEntity<Page<DailyEarningsReportDto>> getReportsByPage(@RequestBody Filter filter) throws ParseException {
 
         dailyExpenseReportService.updateReportsInRange();
