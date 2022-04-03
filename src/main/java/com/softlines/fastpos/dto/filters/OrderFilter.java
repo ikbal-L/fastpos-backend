@@ -1,10 +1,8 @@
 package com.softlines.fastpos.dto.filters;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +19,7 @@ import java.util.*;
 @SuperBuilder
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
-public class OrderFilter extends Filter<Order> {
+public class OrderFilter extends Filter {
 
     @Builder.Default
     Optional<LocalDateTime> orderTime = Optional.empty();

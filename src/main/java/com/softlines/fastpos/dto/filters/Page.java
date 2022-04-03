@@ -21,8 +21,12 @@ public class Page<T> {
     Long totalPages;
 
 
+    public  boolean isEmpty(){
+        return  elements.isEmpty();
+    }
 
-    public <R> Page<R> toPageOf(Function<List<T>, List<R>> mapper) {
+
+    public <R> Page<R> mapToPage(Function<List<T>, List<R>> mapper) {
         return new Page<>(size,mapper.apply(elements), totalPages);
     }
 }

@@ -1,9 +1,7 @@
 package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Category;
-import com.softlines.fastpos.domain.Product;
 import com.softlines.fastpos.dto.CategoryDto;
-import com.softlines.fastpos.dto.ProductDto;
 import com.softlines.fastpos.dto.mapping.CategoryMapper;
 import com.softlines.fastpos.dto.service.DtoService;
 import com.softlines.fastpos.exceptionmanagement.ExceptionManagement;
@@ -225,16 +223,16 @@ public class CategoryController {
 
     @DeleteMapping("/delete/{id}")
     @Transactional(transactionManager = "transactionManager")
-    public ResponseEntity deleteProduct(@Valid @PathVariable long id) {
+    public ResponseEntity deleteCategory(@Valid @PathVariable long id) {
 
         if (!categoryRepository.existsById(id)){
-            return  ResponseEntity.notFound().build();
+            return  ResponseEntity.noContent().build();
         }
         var query =entityManager.createNativeQuery("update product set category_id = NULL  where category_id = :id").setParameter("id",id).executeUpdate();
-        //TODO decouple GroupingByCategory from category
-        //TODO update daily earning report service to reflect changes related to category
+//        TODO decouple GroupingByCategory from category
+//        TODO update daily earning report service to reflect changes related to category
 
-        var query3 = entityManager.createNativeQuery("delete  from  category where id = :id").setParameter("id",id);
+        var query3 = entityManager.createNativeQuery("delete  from  category where id = :id").setParameter("id",id).executeUpdate();
 
 
         return ResponseEntity.ok().build();

@@ -235,11 +235,11 @@ public class ProductController {
     public ResponseEntity deleteProduct(@Valid @PathVariable long id) {
 
         if (!productRepository.existsById(id)){
-            return  ResponseEntity.notFound().build();
+            return  ResponseEntity.noContent().build();
         }
         var query =entityManager.createNativeQuery("update orderitem set product_id = NULL  where product_id = :id").setParameter("id",id).executeUpdate();
         var query2 =entityManager.createNativeQuery("update products_additives set product_id = NULL  where product_id = :id").setParameter("id",id).executeUpdate();
-        var query3 = entityManager.createNativeQuery("delete  from  product where id = :id").setParameter("id",id);
+        var query3 = entityManager.createNativeQuery("delete  from  product where id = :id").setParameter("id",id).executeUpdate();
 
 
         return ResponseEntity.ok().build();

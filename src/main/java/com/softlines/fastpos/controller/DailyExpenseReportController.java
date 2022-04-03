@@ -2,12 +2,17 @@ package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.DailyEarningsReport;
 import com.softlines.fastpos.dto.DailyEarningsReportDto;
+import com.softlines.fastpos.dto.filters.Filter;
+import com.softlines.fastpos.dto.filters.Page;
 import com.softlines.fastpos.dto.mapping.DailyExpenseReportMapper;
+import com.softlines.fastpos.dto.service.filtering.DailyEarningsReportsFilterService;
 import com.softlines.fastpos.repository.DailyExpenseReportRepository;
 import com.softlines.fastpos.service.DailyExpenseReportService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
@@ -24,10 +29,13 @@ public class DailyExpenseReportController {
 
     DailyExpenseReportMapper dailyExpenseReportMapper;
 
-    public DailyExpenseReportController(DailyExpenseReportService dailyExpenseReportService, DailyExpenseReportRepository dailyExpenseReportRepository, DailyExpenseReportMapper dailyExpenseReportMapper) {
+    final  DailyEarningsReportsFilterService dailyEarningsReportsFilterService;
+
+    public DailyExpenseReportController(DailyExpenseReportService dailyExpenseReportService, DailyExpenseReportRepository dailyExpenseReportRepository, DailyExpenseReportMapper dailyExpenseReportMapper, DailyEarningsReportsFilterService dailyEarningsReportsFilterService) {
         this.dailyExpenseReportService = dailyExpenseReportService;
         this.dailyExpenseReportRepository = dailyExpenseReportRepository;
         this.dailyExpenseReportMapper = dailyExpenseReportMapper;
+        this.dailyEarningsReportsFilterService = dailyEarningsReportsFilterService;
     }
 
     @PostMapping("/save")
@@ -103,6 +111,23 @@ public class DailyExpenseReportController {
         if (!reports.isEmpty()) {
 
             return ResponseEntity.ok(dailyExpenseReportMapper.toDailyExpenseReportDtos(reports));
+        } else {
+
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+
+    @GetMapping("/getallbycriteria")
+    public ResponseEntity<Page<DailyEarningsReportDto>> getReportsByPage(@RequestBody Filter filter) throws ParseException {
+
+        dailyExpenseReportService.updateReportsInRange();
+
+        var page = dailyEarningsReportsFilterService.buildQuery(filter);
+
+        if (!page.isEmpty()) {
+
+            return ResponseEntity.ok(page.mapToPage(dailyExpenseReportMapper::toDailyExpenseReportDtos));
         } else {
 
             return ResponseEntity.noContent().build();

@@ -21,7 +21,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public  class Filter<T> {
+public  class Filter {
 
     @JsonProperty("PageSize")
     @Builder.Default

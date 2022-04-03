@@ -53,6 +53,8 @@ public class OrderItemDto {
     @JsonProperty("ProductId")
     @NotNull
     Long productId;
+    @JsonProperty("SplitFromOrderItemId")
+    Long splitFromOrderItemId;
 
     @JsonProperty("ProductName")
     @NotNull

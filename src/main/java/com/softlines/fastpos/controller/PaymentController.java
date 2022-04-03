@@ -1,6 +1,5 @@
 package com.softlines.fastpos.controller;
 
-import com.softlines.fastpos.domain.Payment;
 import com.softlines.fastpos.dto.*;
 import com.softlines.fastpos.dto.filters.Page;
 import com.softlines.fastpos.dto.filters.PaymentFilter;
@@ -74,7 +73,7 @@ public class PaymentController {
     ResponseEntity<Page<PaymentDto>> getPaymentsByCriteria(@RequestBody PaymentFilter filter) throws ParseException {
         var paymentPage = paymentFilterService.buildQuery(filter);
 
-        var paymentDtoPage= paymentPage.toPageOf(c-> paymentMapper.toPaymentDtos(c));
+        var paymentDtoPage= paymentPage.mapToPage(c-> paymentMapper.toPaymentDtos(c));
 
         return  ResponseEntity.ok(paymentDtoPage);
 

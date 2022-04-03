@@ -33,7 +33,6 @@ public class DailyEarningsReportDto {
 
     Set<PaymentDto> creditRePayments;
 
-    Map<String,Double> expenses;
 
     List<EarningsCategoryGrouping> earningsByCategory;
 

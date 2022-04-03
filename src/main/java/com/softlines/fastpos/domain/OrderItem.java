@@ -48,6 +48,7 @@ public class OrderItem extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     Product product;
+    Long splitFromOrderItemId;
 
     @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL,
             fetch = FetchType.EAGER)

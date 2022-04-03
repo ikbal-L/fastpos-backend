@@ -1,10 +1,8 @@
 package com.softlines.fastpos.dto.service.filtering;
 
-import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.dto.filters.Filter;
 import com.softlines.fastpos.dto.filters.Page;
 import com.softlines.fastpos.dto.filters.SortOrder;
-import org.javatuples.Pair;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -19,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public abstract class FilterService<T,F extends Filter<T>> {
+public abstract class FilterService<T,F extends Filter> {
 
     @PersistenceContext
     protected EntityManager em;

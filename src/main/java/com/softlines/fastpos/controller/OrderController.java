@@ -1,6 +1,5 @@
 package com.softlines.fastpos.controller;
 
-import com.softlines.fastpos.domain.CashOperation;
 import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.dto.*;
@@ -182,7 +181,7 @@ public class OrderController {
     ResponseEntity<Page<OrderDto>> getOrdersByCriteria(@RequestBody OrderFilter filter) throws ParseException {
         var orderPage = orderFilterService.buildQuery(filter);
 
-        var orderDtoPage = orderPage.toPageOf(c -> orderMapper.toOrderDTOs(c));
+        var orderDtoPage = orderPage.mapToPage(c -> orderMapper.toOrderDTOs(c));
 //        orderDtoPage.getElements().forEach(orderDto -> {
 //            if (orderDto.getOrderItems()==null) {
 //                System.out.println("null");
@@ -273,7 +272,7 @@ public class OrderController {
 
                 Order order = dtoService.orderDtoToOrder(orderDto);
 
-                var dto = orderService.updateOrder(order,this);
+                var dto = orderService.updateOrder(order, this);
 
 
                 return ResponseEntity.ok().body(dto);
@@ -298,13 +297,12 @@ public class OrderController {
 
             if (optionalOrder.isPresent()) {
 
-                if (optionalOrder.get().getState() == OrderState.Temporary){
+                if (optionalOrder.get().getState() == OrderState.Temporary) {
                     orderService.deleteTempOrder(id);
-                }else {
+                } else {
                     orderRepository.delete(optionalOrder.get());
 
                 }
-
 
 
                 return ResponseEntity.ok().build();
@@ -335,5 +333,22 @@ public class OrderController {
             return ResponseEntity.ok().body(new PageList<>(orderMapper.toOrderDTOs(orders.getValue1()), orders.getValue0()));
         }
         return ResponseEntity.noContent().build();
+    }
+
+
+    @PostMapping(value = "/split/{id}")
+    public ResponseEntity<OrderDto> splitOrder(@PathVariable long id, @Valid @RequestBody OrderDto subOrderDto) {
+
+        var originalOrder = orderRepository.findByIdOrderWithOrderItems(id);
+        if (originalOrder == null) return ResponseEntity.notFound().build();
+        Order subOrder = dtoService.orderDtoToOrder(subOrderDto);
+
+        orderService.splitOrderFrom(subOrder,originalOrder);
+
+
+        var originalOrderDto = orderMapper.toOrderDto(originalOrder);
+
+        return ResponseEntity.status(HttpStatus.OK).body(originalOrderDto);
+
     }
 }

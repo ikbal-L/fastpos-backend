@@ -21,8 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -208,6 +208,34 @@ public class OrderService {
         var query = em.createQuery(deleteTempOrderQuery).setParameter("id",id);
 //        return query.executeUpdate() ==1;
         query.executeUpdate() ;
+    }
+
+    @Transactional(transactionManager = "transactionManager")
+    public  void  splitOrderFrom(Order subOrder,Order originalOrder){
+        removeTransferredItemsFromOriginalOrder(subOrder, originalOrder);
+        updateOrderItemQuantitiesOfOriginalOrder(subOrder, originalOrder);
+        orderRepository.saveAll(List.of(originalOrder,subOrder));
+    }
+
+    private void removeTransferredItemsFromOriginalOrder(Order subOrder, Order originalOrder) {
+        originalOrder.getOrderItems().removeIf(orderItem -> {
+            if (orderItem.getQuantity()==1){
+                return subOrder.getOrderItems().stream().anyMatch(item -> Objects.equals(item.getSplitFromOrderItemId(), orderItem.getId()));
+            }
+            var count = subOrder.getOrderItems().stream().filter(item-> Objects.equals(item.getSplitFromOrderItemId(), orderItem.getId())).count();
+            return count == orderItem.getQuantity();
+        });
+    }
+
+    private void updateOrderItemQuantitiesOfOriginalOrder(Order subOrder, Order originalOrder) {
+        originalOrder.getOrderItems().forEach(orderItem -> {
+            if (orderItem.getQuantity()>1){
+                var count = (int)subOrder.getOrderItems().stream().filter(item-> Objects.equals(item.getSplitFromOrderItemId(), orderItem.getId())).count();
+                if(orderItem.getQuantity()>count){
+                    orderItem.setQuantity(orderItem.getQuantity()-count);
+                }
+            }
+        });
     }
 
 }
