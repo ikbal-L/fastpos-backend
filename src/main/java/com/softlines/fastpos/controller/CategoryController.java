@@ -250,7 +250,7 @@ public class CategoryController {
             var categoryX =categoryList.get(0);
             var categoryY =categoryList.get(1);
             var categoryXRank = categoryX.getRank();
-            categoryX.setRank(null);
+            categoryX.setRankNullOnPermutation();
             categoryRepository.saveAndFlush(categoryX);
             categoryRepository.saveAndFlush(categoryY);
             categoryX.setRank(categoryXRank);

@@ -48,16 +48,24 @@ public class Category extends BaseEntity{
             });
         }
     }
-
+    //Done Issue: conflict between the rank check and permutation endpoint
     @PreUpdate
     public void onCategoryInactive(){
-        if (rank == null&& id!= null && products!= null){
+        if (rank == null&& !beingPermutated && id!= null && products!= null){
             products.forEach(product -> {
                 product.setCategory(null);
                 product.setRank(null);
             });
         }
 
+    }
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private  boolean beingPermutated = false;
+
+    public void setRankNullOnPermutation(){
+        rank = null;
+        beingPermutated = true;
     }
 
 }
