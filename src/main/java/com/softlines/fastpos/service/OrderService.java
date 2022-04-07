@@ -212,9 +212,12 @@ public class OrderService {
 
     @Transactional(transactionManager = "transactionManager")
     public  void  splitOrderFrom(Order subOrder,Order originalOrder){
+        var orderInfo = setOrderNumberAndCode(subOrder);
         removeTransferredItemsFromOriginalOrder(subOrder, originalOrder);
         updateOrderItemQuantitiesOfOriginalOrder(subOrder, originalOrder);
+        originalOrder.setState(OrderState.Splitted);
         orderRepository.saveAll(List.of(originalOrder,subOrder));
+        SaveOrderInfo(orderInfo);
     }
 
     private void removeTransferredItemsFromOriginalOrder(Order subOrder, Order originalOrder) {
