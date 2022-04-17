@@ -228,7 +228,7 @@ public class CategoryController {
         if (!categoryRepository.existsById(id)){
             return  ResponseEntity.noContent().build();
         }
-        var query =entityManager.createNativeQuery("update product set category_id = NULL  where category_id = :id").setParameter("id",id).executeUpdate();
+        var query =entityManager.createNativeQuery("update product set category_id = NULL , rank = null  where category_id = :id").setParameter("id",id).executeUpdate();
 //        TODO decouple GroupingByCategory from category
 //        TODO update daily earning report service to reflect changes related to category
 
