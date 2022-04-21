@@ -43,7 +43,6 @@ public class OrderItem extends BaseEntity {
 
     double totalDiscountAmount;
 
-    double discountPercentage;
     String productName;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -79,7 +78,6 @@ public class OrderItem extends BaseEntity {
                 Double.compare(orderItem.total, total) == 0 &&
                 Double.compare(orderItem.discountAmount, discountAmount) == 0 &&
                 Double.compare(orderItem.totalDiscountAmount, totalDiscountAmount) == 0 &&
-                Double.compare(orderItem.discountPercentage, discountPercentage) == 0 &&
                 deleted == orderItem.deleted &&
                 productName.equals(orderItem.productName) &&
                 orderItemAdditives.equals(orderItem.orderItemAdditives) &&
@@ -89,6 +87,6 @@ public class OrderItem extends BaseEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, unitPrice, quantity, total, discountAmount, totalDiscountAmount, discountPercentage, productName, orderItemAdditives, timestamp, state, deleted);
+        return Objects.hash(id, unitPrice, quantity, total, discountAmount, totalDiscountAmount, productName, orderItemAdditives, timestamp, state, deleted);
     }
 }

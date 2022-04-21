@@ -46,9 +46,6 @@ public class OrderItemDto {
     @Min(0)
     double totalDiscountAmount;
 
-    @JsonProperty("DiscountPercentage")
-    @Range(min = 0, max = 100)
-    double discountPercentage;
 
     @JsonProperty("ProductId")
     @NotNull

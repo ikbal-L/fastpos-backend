@@ -343,10 +343,10 @@ public class OrderController {
         if (originalOrder == null) return ResponseEntity.notFound().build();
         Order subOrder = dtoService.orderDtoToOrder(subOrderDto);
 
-        orderService.splitOrderFrom(subOrder,originalOrder);
+        var savedOriginalOrder = orderService.splitOrderFrom(subOrder,originalOrder);
 
 
-        var originalOrderDto = orderMapper.toOrderDto(originalOrder);
+        var originalOrderDto = orderMapper.toOrderDto(savedOriginalOrder);
 
         return ResponseEntity.status(HttpStatus.OK).body(originalOrderDto);
 
