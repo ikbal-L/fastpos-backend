@@ -26,4 +26,6 @@ public class OrderRefund {
     private double amount;
 
     private String issuedBy;
+    @Builder.Default
+    private  boolean partial = false;
 }

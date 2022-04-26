@@ -2,13 +2,10 @@ package com.softlines.fastpos.service;
 
 import com.softlines.fastpos.domain.*;
 import com.softlines.fastpos.dto.mapping.DailyExpenseReportMapper;
+import com.softlines.fastpos.repository.*;
 import com.softlines.fastpos.security.securitydomain.User;
 import com.softlines.fastpos.security.securitydomain.Session;
 import com.softlines.fastpos.security.securityrepository.SessionRepository;
-import com.softlines.fastpos.repository.CashRegisterExpenseRepository;
-import com.softlines.fastpos.repository.DailyExpenseReportRepository;
-import com.softlines.fastpos.repository.OrderRepository;
-import com.softlines.fastpos.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 @Service
 @Transactional(transactionManager = "transactionManager")
@@ -25,11 +23,12 @@ public class DailyExpenseReportService {
 
     private final PaymentRepository paymentRepository;
 
-    private  final DailyExpenseReportRepository dailyExpenseReportRepository;
+    private final DailyExpenseReportRepository dailyExpenseReportRepository;
 
     private final SessionRepository sessionRepository;
 
     private final CashRegisterExpenseRepository cashRegisterExpenseRepository;
+    private final CashOperationRepository cashOperationRepository;
 
 //    private final DailyExpenseReportMapper dailyExpenseReportMapper;
 
@@ -124,7 +123,6 @@ public class DailyExpenseReportService {
     }
 
 
-
     public DailyEarningsReport updateDailyExpenseReport(DailyEarningsReport report) {
 
         var generated = generateDailyExpenseReport(true, report.getIssuedDate().toLocalDate());
@@ -138,7 +136,7 @@ public class DailyExpenseReportService {
         report.setCashRegisterActualAmount(generated.getCashRegisterActualAmount());
         report.setEarningsByCategory(generated.getEarningsByCategory());
         report.setRefunds(generated.getRefunds());
-        report.getCanceledOrders().forEach(c->c.setDailyEarningsReport(report));
+        report.getCanceledOrders().forEach(c -> c.setDailyEarningsReport(report));
         report.setCashRegisterExpenses(generated.getCashRegisterExpenses());
         report.getCashPayments().forEach(orderReportInfo -> orderReportInfo.setDailyEarningsReport(report));
         report.getCashRegisterExpenses().forEach(expense -> expense.setReport(report));
@@ -158,11 +156,21 @@ public class DailyExpenseReportService {
     }
 
     private LinkedHashSet<OrderRefund> getOrderRefunds(LinkedHashSet<Order> refundedOrders) {
-        return refundedOrders.stream().map(order ->
+        LinkedHashSet<OrderRefund> refunds = refundedOrders.stream().map(order ->
                 OrderRefund.builder()
                         .orderNumber(order.getOrderNumber())
                         .amount(order.getNewTotal())
                         .issuedBy(getUserFullNameFromSession(order.getModificationSessionId())).build()).collect(Collectors.toCollection(LinkedHashSet::new));
+        var cashops = cashOperationRepository.findAllByIssuedDate(LocalDate.now());
+        List<OrderRefund>  partialRefunds = cashops.stream()
+                .filter(cashOperation -> cashOperation.getOrder() != null && cashOperation.getOrder().getState() != OrderState.Refunded && cashOperation.getAmount() < 0).map(cashOperation ->
+                        OrderRefund.builder()
+                                .orderNumber(cashOperation.getOrder().getOrderNumber())
+                                .amount(cashOperation.getAmount())
+                                .partial(true)
+                                .issuedBy(getUserFullNameFromSession(cashOperation.getOrder().getModificationSessionId())).build()).collect(Collectors.toList());
+        refunds.addAll(partialRefunds);
+        return  refunds;
     }
 
     public List<EarningsCategoryGrouping> getGroupingByCategory(List<Order> orders) {
@@ -208,7 +216,7 @@ public class DailyExpenseReportService {
         var isCashRegisterExpensesCountUpToDate = cashRegisterExpensesCount == currentCashRegisterExpenses;
 
         var isReportUpToDate =
-                        isCashPaymentsCountUpToDate &&
+                isCashPaymentsCountUpToDate &&
                         isCanceledOrderCountUpToDate &&
                         isRefundCountUpToDate &&
                         isPaymentCountUpToDate &&

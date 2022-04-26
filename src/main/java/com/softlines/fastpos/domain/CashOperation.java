@@ -8,6 +8,7 @@ import org.hibernate.annotations.Where;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 
@@ -23,6 +24,9 @@ public class CashOperation extends  BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
+    @Column(nullable = false)
+    @Builder.Default
+    LocalDateTime issuedDate = LocalDateTime.now();
 
     double amount;
     @Builder.Default
@@ -41,21 +45,5 @@ public class CashOperation extends  BaseEntity{
     CashRegisterExpense cashRegisterExpense;
 
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        CashOperation that = (CashOperation) o;
-//        return id == that.id &&
-//                Double.compare(that.amount, amount) == 0 &&
-//                deleted == that.deleted &&
-//                Objects.equals(payment, that.payment) &&
-//                Objects.equals(order, that.order) &&
-//                Objects.equals(cashRegisterExpense, that.cashRegisterExpense);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(id, amount, deleted, payment, order, cashRegisterExpense);
-//    }
+
 }

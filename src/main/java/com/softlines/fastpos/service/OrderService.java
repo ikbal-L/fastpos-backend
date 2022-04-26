@@ -54,6 +54,9 @@ public class OrderService {
     public static boolean IsActionNewPayment(Order previous, Order current) {
         return (previous.getState() != OrderState.Payed&& previous.getState()!= OrderState.PaidModified  ) && current.getState() == OrderState.Payed;
     }
+    public static boolean IsActionRefund(Order previous, Order current) {
+        return previous.getState() == OrderState.Payed && current.getState() == OrderState.Refunded;
+    }
 
     public static boolean IsActionModifiedPayment(Order previous, Order current) {
         return previous.getState() == OrderState.PaidModified && current.getState() == OrderState.Payed;
@@ -133,10 +136,15 @@ public class OrderService {
 
     public Order onPaidOrderModified(Order previous, Order current) {
         var payedAmount = current.getGivenAmount() - current.getReturnedAmount();
-
+        var refunded = previous.getNewTotal()- current.getNewTotal();
         if (payedAmount != 0) {
             var cashOperation = CashOperation.builder().amount(payedAmount).order(current).build();
             cashOperationRepository.saveAndFlush(cashOperation);
+        }else {
+            if (refunded!= 0){
+                var cashOperation = CashOperation.builder().amount(refunded).order(current).build();
+                cashOperationRepository.saveAndFlush(cashOperation);
+            }
         }
 
         return current;
@@ -148,6 +156,12 @@ public class OrderService {
         OrderInfo orderInfo = null;
         if (order.getOrderNumber() == null){
             orderInfo = setOrderNumberAndCode(order);
+        }
+
+        if (OrderService.IsActionRefund(previousState,order)){
+           var amount = -previousState.getNewTotal();
+            var cashOperation = CashOperation.builder().amount(amount).order(order).build();
+            cashOperationRepository.saveAndFlush(cashOperation);
         }
         if (OrderService.IsActionCancel(previousState, order)) {
             order = onOrderCanceled(order, previousState);
