@@ -9,11 +9,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +21,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-
 @Entity
 @SQLDelete(sql = "UPDATE orders SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
@@ -66,7 +62,7 @@ public class Order extends BaseEntity {
 
     double totalDiscountAmount;
 
-    double discountPercentage;
+
 
     double givenAmount;
 
