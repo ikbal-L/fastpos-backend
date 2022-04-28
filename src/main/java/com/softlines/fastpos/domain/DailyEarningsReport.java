@@ -1,7 +1,4 @@
 package com.softlines.fastpos.domain;
-import java.time.LocalDateTime;
-import java.util.*;
-
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
@@ -10,6 +7,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -57,6 +57,7 @@ public class DailyEarningsReport extends BaseEntity {
     Set<EarningsCategoryGrouping> earningsByCategory;
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OrderBy("orderNumber asc ")
     Set<OrderRefund> refunds;
 
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "report")

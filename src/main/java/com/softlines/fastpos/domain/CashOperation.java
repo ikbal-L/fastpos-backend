@@ -7,10 +7,7 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Objects;
 
 @SuperBuilder
 @Getter
@@ -44,6 +41,9 @@ public class CashOperation extends  BaseEntity{
     @OneToOne(mappedBy = "cashOperation")
     CashRegisterExpense cashRegisterExpense;
 
-
+    @Enumerated(EnumType.STRING)
+    CashOperationType type;
 
 }
+
+

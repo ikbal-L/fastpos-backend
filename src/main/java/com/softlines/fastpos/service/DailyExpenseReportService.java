@@ -1,10 +1,9 @@
 package com.softlines.fastpos.service;
 
 import com.softlines.fastpos.domain.*;
-import com.softlines.fastpos.dto.mapping.DailyExpenseReportMapper;
 import com.softlines.fastpos.repository.*;
-import com.softlines.fastpos.security.securitydomain.User;
 import com.softlines.fastpos.security.securitydomain.Session;
+import com.softlines.fastpos.security.securitydomain.User;
 import com.softlines.fastpos.security.securityrepository.SessionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -156,21 +155,21 @@ public class DailyExpenseReportService {
     }
 
     private LinkedHashSet<OrderRefund> getOrderRefunds(LinkedHashSet<Order> refundedOrders) {
-        LinkedHashSet<OrderRefund> refunds = refundedOrders.stream().map(order ->
-                OrderRefund.builder()
-                        .orderNumber(order.getOrderNumber())
-                        .amount(order.getNewTotal())
-                        .issuedBy(getUserFullNameFromSession(order.getModificationSessionId())).build()).collect(Collectors.toCollection(LinkedHashSet::new));
-        var cashops = cashOperationRepository.findAllByIssuedDate(LocalDate.now());
-        List<OrderRefund>  partialRefunds = cashops.stream()
-                .filter(cashOperation -> cashOperation.getOrder() != null && cashOperation.getOrder().getState() != OrderState.Refunded && cashOperation.getAmount() < 0).map(cashOperation ->
+//        LinkedHashSet<OrderRefund> refunds = refundedOrders.stream().map(order ->
+//                OrderRefund.builder()
+//                        .orderNumber(order.getOrderNumber())
+//                        .amount(order.getNewTotal())
+//                        .issuedBy(getUserFullNameFromSession(order.getModificationSessionId())).build()).collect(Collectors.toCollection(LinkedHashSet::new));
+        var cashOps = cashOperationRepository.findAllByIssuedDate(LocalDate.now());
+        LinkedHashSet<OrderRefund> refunds = cashOps.stream()
+                .filter(cashOperation -> cashOperation.getType() == CashOperationType.PartialRefund || cashOperation.getType() == CashOperationType.Refund).map(cashOperation ->
                         OrderRefund.builder()
                                 .orderNumber(cashOperation.getOrder().getOrderNumber())
                                 .amount(cashOperation.getAmount())
-                                .partial(true)
-                                .issuedBy(getUserFullNameFromSession(cashOperation.getOrder().getModificationSessionId())).build()).collect(Collectors.toList());
-        refunds.addAll(partialRefunds);
-        return  refunds;
+                                .partial(cashOperation.getType() == CashOperationType.PartialRefund)
+                                .issuedBy(getUserFullNameFromSession(cashOperation.getOrder().getModificationSessionId())).build()).collect(Collectors.toCollection(LinkedHashSet::new));;
+
+        return refunds;
     }
 
     public List<EarningsCategoryGrouping> getGroupingByCategory(List<Order> orders) {

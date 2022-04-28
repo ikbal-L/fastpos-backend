@@ -1,9 +1,6 @@
 package com.softlines.fastpos.service;
 
-import com.softlines.fastpos.domain.CashOperation;
-import com.softlines.fastpos.domain.Order;
-import com.softlines.fastpos.domain.OrderInfo;
-import com.softlines.fastpos.domain.OrderState;
+import com.softlines.fastpos.domain.*;
 import com.softlines.fastpos.dto.Message;
 import com.softlines.fastpos.dto.OrderDto;
 import com.softlines.fastpos.dto.mapping.OrderMapper;
@@ -11,7 +8,6 @@ import com.softlines.fastpos.repository.CashOperationRepository;
 import com.softlines.fastpos.repository.OrderRepository;
 import com.softlines.fastpos.security.securityservice.SessionService;
 import com.softlines.fastpos.sse.model.SSEventType;
-import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
@@ -21,13 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Transactional(transactionManager = "transactionManager")
 public class OrderService {
 
@@ -51,16 +47,18 @@ public class OrderService {
     private final CashOperationRepository cashOperationRepository;
     private final OrderMapper orderMapper;
 
-    public static boolean IsActionNewPayment(Order previous, Order current) {
-        return (previous.getState() != OrderState.Payed&& previous.getState()!= OrderState.PaidModified  ) && current.getState() == OrderState.Payed;
-    }
-    public static boolean IsActionRefund(Order previous, Order current) {
-        return previous.getState() == OrderState.Payed && current.getState() == OrderState.Refunded;
+    public OrderService(SessionService sessionService, NotificationService notificationService, NumerationService numerationService, OrderRepository orderRepository, CashOperationRepository cashOperationRepository, OrderMapper orderMapper) {
+        this.sessionService = sessionService;
+        this.notificationService = notificationService;
+        this.numerationService = numerationService;
+        this.orderRepository = orderRepository;
+        this.cashOperationRepository = cashOperationRepository;
+        this.orderMapper = orderMapper;
+        notificationService.registerPublisher(this, "/topic/messages");
     }
 
-    public static boolean IsActionModifiedPayment(Order previous, Order current) {
-        return previous.getState() == OrderState.PaidModified && current.getState() == OrderState.Payed;
-    }
+
+
 
     public static boolean IsActionCancel(Order source, Order incoming) {
         return source.getState() != OrderState.Canceled && incoming.getState() == OrderState.Canceled;
@@ -93,12 +91,10 @@ public class OrderService {
     }
 
     @Transactional(transactionManager = "transactionManager")
-    public Order saveOrder(Order order) {
+    public OrderDto saveOrder(Order order) {
 
-        OrderInfo orderInfo = null;
-//        if (order.getState()!= OrderState.Temporary){
-//            orderInfo = setOrderNumberAndCode(order);
-//        }
+        OrderInfo orderInfo;
+
         orderInfo = setOrderNumberAndCode(order);
 
         if (order.getState() == OrderState.Payed) {
@@ -106,12 +102,27 @@ public class OrderService {
             order.setCashOperations(Set.of(cashOp));
         }
         var created = orderRepository.saveOrder(order);
-        if (orderInfo!= null) {
-            SaveOrderInfo(orderInfo);
-        }
-        return created;
+        SaveOrderInfo(orderInfo);
+        var dto  = orderMapper.toOrderDto(created);
+        sendCreateOrderMessage(created,dto);
+        return dto;
     }
 
+    private void sendCreateOrderMessage(Order createdOder, OrderDto createdOderDto) {
+        List<OrderState> states = new ArrayList<>();
+        states.add(OrderState.Payed);
+        states.add(OrderState.Delivered);
+        states.add(OrderState.Credit);
+        if (!states.contains(createdOderDto.getState())) {
+            var message = Message.builder()
+                    .type(SSEventType.CREATE_ORDER)
+                    .content(createdOderDto)
+                    .source(createdOder.getModificationSessionId())
+                    .build();
+
+            notificationService.publish(this, message);
+        }
+    }
     @NotNull
     private OrderInfo setOrderNumberAndCode(Order order) {
         var orderInfo = getOrderInfoOfTheDay();
@@ -134,23 +145,10 @@ public class OrderService {
     }
 
 
-    public Order onPaidOrderModified(Order previous, Order current) {
-        var payedAmount = current.getGivenAmount() - current.getReturnedAmount();
-        var refunded = previous.getNewTotal()- current.getNewTotal();
-        if (payedAmount != 0) {
-            var cashOperation = CashOperation.builder().amount(payedAmount).order(current).build();
-            cashOperationRepository.saveAndFlush(cashOperation);
-        }else {
-            if (refunded!= 0){
-                var cashOperation = CashOperation.builder().amount(refunded).order(current).build();
-                cashOperationRepository.saveAndFlush(cashOperation);
-            }
-        }
 
-        return current;
-    }
     @Transactional(transactionManager = "transactionManager")
-    public OrderDto updateOrder(Order order, Object pub) {
+    public OrderDto updateOrder(Order order) {
+        //noinspection OptionalGetWithoutIsPresent
         var previousState = orderRepository.findByIdWithCashOperations(order.getId()).get();
         String eventType = SSEventType.UPDATE_ORDER;
         OrderInfo orderInfo = null;
@@ -158,11 +156,6 @@ public class OrderService {
             orderInfo = setOrderNumberAndCode(order);
         }
 
-        if (OrderService.IsActionRefund(previousState,order)){
-           var amount = -previousState.getNewTotal();
-            var cashOperation = CashOperation.builder().amount(amount).order(order).build();
-            cashOperationRepository.saveAndFlush(cashOperation);
-        }
         if (OrderService.IsActionCancel(previousState, order)) {
             order = onOrderCanceled(order, previousState);
             eventType = SSEventType.CANCEL_ORDER;
@@ -170,29 +163,58 @@ public class OrderService {
 
         order = orderRepository.saveOrder(order);
 
-        if (OrderService.IsActionNewPayment(previousState, order)) {
-            var payedAmount = order.getGivenAmount() + order.getReturnedAmount();
-            Set<CashOperation> cashOperations = Set.of(CashOperation.builder().order(order).amount(payedAmount).build());
-//            order.setCashOperations(cashOperations);
-            Order finalOrder = order;
-            cashOperations.forEach(co->co.setOrder(finalOrder));
-            cashOperationRepository.saveAll(cashOperations);
-            cashOperationRepository.flush();
-            eventType = SSEventType.PAY_ORDER;
-        }
-
-        if (OrderService.IsActionModifiedPayment(previousState, order)) {
-            order = onPaidOrderModified(previousState, order);
-            eventType = SSEventType.PAY_ORDER;
-        }
-
         if (orderInfo!= null) {
             SaveOrderInfo(orderInfo);
         }
 
         var dto = orderMapper.toOrderDto(order);
-        sendOrderMessage(pub, eventType, order.getModificationSessionId(), dto);
+        sendOrderMessage(this, eventType, order.getModificationSessionId(), dto);
 
+        return dto;
+    }
+
+
+    @Transactional(transactionManager = "transactionManager")
+    public OrderDto payOrder(Order order) {
+        var payedAmount = order.getGivenAmount() + order.getReturnedAmount();
+        order.setState(OrderState.Payed);
+        order = orderRepository.saveOrder(order);
+        var cashOp = CashOperation.builder().order(order).amount(payedAmount).type(CashOperationType.Payment).build();
+        cashOperationRepository.saveAndFlush(cashOp);
+
+        var dto = orderMapper.toOrderDto(order);
+        sendOrderMessage(this, SSEventType.PAY_ORDER, order.getModificationSessionId(), dto);
+        return dto;
+    }
+    @Transactional(transactionManager = "transactionManager")
+    public OrderDto refundOder(Order order) {
+        //noinspection OptionalGetWithoutIsPresent
+        var previous  = orderRepository.findById(order.getId()).get();
+        var amount = -previous.getNewTotal();
+        order.setState(OrderState.Refunded);
+        order = orderRepository.saveOrder(order);
+        var cashOperation = CashOperation.builder().amount(amount).order(order).type(CashOperationType.Refund).build();
+        cashOperationRepository.saveAndFlush(cashOperation);
+
+        var dto = orderMapper.toOrderDto(order);
+        sendOrderMessage(this, SSEventType.PAY_ORDER, order.getModificationSessionId(), dto);
+        return dto;
+    }
+
+    @Transactional(transactionManager = "transactionManager")
+    public OrderDto partiallyRefundOrder(Order order) {
+        //noinspection OptionalGetWithoutIsPresent
+        var previous  = orderRepository.findById(order.getId()).get();
+        var refunded = order.getNewTotal()- order.getPreModifyNewTotal();
+        order.setState(OrderState.Payed);
+        order = orderRepository.saveOrder(order);
+        if (refunded!= 0){
+            var cashOperation = CashOperation.builder().amount(refunded).order(order).type(CashOperationType.PartialRefund).build();
+            cashOperationRepository.saveAndFlush(cashOperation);
+        }
+
+        var dto = orderMapper.toOrderDto(order);
+        sendOrderMessage(this, SSEventType.PAY_ORDER, order.getModificationSessionId(), dto);
         return dto;
     }
 
@@ -220,19 +242,18 @@ public class OrderService {
     @Transactional
     public void deleteTempOrder(Long id){
         var query = em.createQuery(deleteTempOrderQuery).setParameter("id",id);
-//        return query.executeUpdate() ==1;
         query.executeUpdate() ;
     }
 
     @Transactional(transactionManager = "transactionManager")
-    public Order splitOrderFrom(Order subOrder, Order originalOrder){
+    public OrderDto splitOrderFrom(Order subOrder, Order originalOrder){
         var orderInfo = setOrderNumberAndCode(subOrder);
         removeTransferredItemsFromOriginalOrder(subOrder, originalOrder);
         updateOrderItemQuantitiesOfOriginalOrder(subOrder, originalOrder);
         originalOrder.setState(OrderState.Splitted);
         var savedOriginalOrder = orderRepository.saveAll(List.of(originalOrder,subOrder)).get(0);
         SaveOrderInfo(orderInfo);
-        return savedOriginalOrder;
+        return orderMapper.toOrderDto(savedOriginalOrder);
     }
 
     private void removeTransferredItemsFromOriginalOrder(Order subOrder, Order originalOrder) {

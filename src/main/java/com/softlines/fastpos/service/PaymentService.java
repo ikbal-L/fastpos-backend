@@ -47,7 +47,8 @@ public class PaymentService {
         List<OrderDto> paymentOrders = new ArrayList<>();
 
         var payment=paymentMapper.toPayment(paymentDto);
-        payment.setCashOperation(CashOperation.builder().amount(payment.getAmount()).payment(payment).build());
+        var cashOp = CashOperation.builder().amount(payment.getAmount()).payment(payment).type(CashOperationType.Payment).build();
+        payment.setCashOperation(cashOp);
         var savedPayment=  paymentRepository.save(payment);
 
         if (paymentDto.getPaymentSource() == PaymentSource.Delivery){

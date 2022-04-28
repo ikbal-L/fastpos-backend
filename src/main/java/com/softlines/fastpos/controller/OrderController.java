@@ -2,7 +2,8 @@ package com.softlines.fastpos.controller;
 
 import com.softlines.fastpos.domain.Order;
 import com.softlines.fastpos.domain.OrderState;
-import com.softlines.fastpos.dto.*;
+import com.softlines.fastpos.dto.OrderDto;
+import com.softlines.fastpos.dto.PageList;
 import com.softlines.fastpos.dto.filters.OrderFilter;
 import com.softlines.fastpos.dto.filters.Page;
 import com.softlines.fastpos.dto.mapping.OrderMapper;
@@ -13,23 +14,20 @@ import com.softlines.fastpos.repository.AdditiveRepository;
 import com.softlines.fastpos.repository.OrderItemAdditiveRepository;
 import com.softlines.fastpos.repository.OrderRepository;
 import com.softlines.fastpos.security.securityservice.SessionService;
-import com.softlines.fastpos.service.NotificationService;
 import com.softlines.fastpos.service.OrderService;
-import com.softlines.fastpos.sse.model.SSEventType;
-//import com.softlines.fastpos.sse.service.SseNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityManagerFactory;
 import javax.validation.Valid;
 import java.text.ParseException;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+//import com.softlines.fastpos.sse.service.SseNotificationService;
 
 @RestController
 @RequestMapping(value = "/api/order", produces = "application/json; charset=UTF-8")
@@ -50,8 +48,6 @@ public class OrderController {
     @Autowired
     OrderFilterService orderFilterService;
 
-//    @Autowired
-//    SseNotificationService sseNotificationService;
 
     ExceptionManagement exceptionManagement = new ExceptionManagement();
     @Autowired
@@ -60,119 +56,72 @@ public class OrderController {
     @Autowired
     OrderService orderService;
 
-    @Autowired
-    private EntityManagerFactory entityManagerFactory;
-
-
-    private ExecutorService executor = Executors.newCachedThreadPool();
 
     @Autowired
     AdditiveRepository additiveRepository;
 
-    private final NotificationService notificationService;
-
-    public OrderController(NotificationService notificationService) {
-        this.notificationService = notificationService;
-        notificationService.registerPublisher(this, "/topic/messages");
-    }
 
     @PostMapping(value = "/save")
-    public ResponseEntity<OrderDto> saveOrder(@Valid @RequestBody OrderDto orderDto, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<OrderDto> saveOrder(@Valid @RequestBody OrderDto dto) {
 
-        try {
+        if (dto.getId() == 0) {
+            Order order = dtoService.orderDtoToOrder(dto);
+            dto = orderService.saveOrder(order);
 
-            if (orderDto.getId() == 0) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(dto);
 
-                Order order = dtoService.orderDtoToOrder(orderDto);
-
-                Order createdOder = orderService.saveOrder(order);
-                OrderDto createdOderDto = orderMapper.toOrderDto(createdOder);
-
-
-                sendCreateOrderMessage(createdOder, createdOderDto);
-
-                return ResponseEntity.status(HttpStatus.CREATED).body(createdOderDto);
-
-            } else {
-                return ResponseEntity.status(HttpStatus.FOUND).build();
-            }
-
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        } else {
+            return ResponseEntity.status(HttpStatus.FOUND).build();
         }
 
     }
 
-    private void sendCreateOrderMessage(Order createdOder, OrderDto createdOderDto) {
-        List<OrderState> states = new ArrayList<>();
-        states.add(OrderState.Payed);
-        states.add(OrderState.Delivered);
-        states.add(OrderState.Credit);
-        if (!states.contains(createdOderDto.getState())) {
-            var message = Message.builder()
-                    .type(SSEventType.CREATE_ORDER)
-                    .content(createdOderDto)
-                    .source(createdOder.getModificationSessionId())
-                    .build();
-
-            notificationService.publish(this, message);
-        }
-    }
 
     @PostMapping(value = "/savemany")
     public ResponseEntity<List<OrderDto>> saveManyOrder(@Valid @RequestBody List<OrderDto> orderDtoList) {
 
-        try {
-            List<Long> ids = orderDtoList.parallelStream().map(OrderDto::getId).collect(Collectors.toList());
-            List<Order> foundOrder = orderRepository.findAllById(ids);
+        List<Long> ids = orderDtoList.parallelStream().map(OrderDto::getId).collect(Collectors.toList());
+        List<Order> foundOrder = orderRepository.findAllById(ids);
 
 
-            if (foundOrder.size() == 0) {
+        if (foundOrder.size() == 0) {
 
-                List<Order> order = dtoService.orderDtoListToOrderList(orderDtoList);
+            List<Order> order = dtoService.orderDtoListToOrderList(orderDtoList);
 
-                List<Order> ListCreatedOder = orderRepository.saveListOrder(order);
+            List<Order> ListCreatedOder = orderRepository.saveListOrder(order);
 
 
-                List<OrderDto> orderDtos = orderMapper.toOrderDTOs(ListCreatedOder);
+            List<OrderDto> orderDtos = orderMapper.toOrderDTOs(ListCreatedOder);
 
-                return ResponseEntity.status(HttpStatus.CREATED).body(orderDtos);
+            return ResponseEntity.status(HttpStatus.CREATED).body(orderDtos);
 
-            } else {
-                return ResponseEntity.status(HttpStatus.FOUND).build();
-            }
-
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        } else {
+            return ResponseEntity.status(HttpStatus.FOUND).build();
         }
+
 
     }
 
     @PutMapping(value = "/updatemany")
     public ResponseEntity<List<OrderDto>> updateManyOrder(@Valid @RequestBody List<OrderDto> orderDtoList) {
 
-        try {
-            List<Long> ids = orderDtoList.parallelStream().map(OrderDto::getId).collect(Collectors.toList());
-            List<Order> foundOrder = orderRepository.findAllById(ids);
+        List<Long> ids = orderDtoList.parallelStream().map(OrderDto::getId).collect(Collectors.toList());
+        List<Order> foundOrder = orderRepository.findAllById(ids);
 
 
-            if (foundOrder.size() == orderDtoList.size()) {
+        if (foundOrder.size() == orderDtoList.size()) {
 
-                List<Order> order = dtoService.orderDtoListToOrderList(orderDtoList);
+            List<Order> order = dtoService.orderDtoListToOrderList(orderDtoList);
 
-                List<Order> ListCreatedOder = orderRepository.saveListOrder(order);
+            List<Order> ListCreatedOder = orderRepository.saveListOrder(order);
 
 
-                List<OrderDto> orderDtos = orderMapper.toOrderDTOs(ListCreatedOder);
+            List<OrderDto> orderDtos = orderMapper.toOrderDTOs(ListCreatedOder);
 
-                return ResponseEntity.status(HttpStatus.CREATED).body(orderDtos);
+            return ResponseEntity.status(HttpStatus.CREATED).body(orderDtos);
 
-            } else {
-                return ResponseEntity.status(HttpStatus.FOUND).build();
-            }
-
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        } else {
+            return ResponseEntity.status(HttpStatus.FOUND).build();
         }
 
     }
@@ -180,48 +129,35 @@ public class OrderController {
     @PostMapping(value = {"/getallbycriteria"})
     ResponseEntity<Page<OrderDto>> getOrdersByCriteria(@RequestBody OrderFilter filter) throws ParseException {
         var orderPage = orderFilterService.buildQuery(filter);
-
         var orderDtoPage = orderPage.mapToPage(c -> orderMapper.toOrderDTOs(c));
-//        orderDtoPage.getElements().forEach(orderDto -> {
-//            if (orderDto.getOrderItems()==null) {
-//                System.out.println("null");
-//            }
-//        });
-
-
         return ResponseEntity.ok(orderDtoPage);
     }
 
     @GetMapping(value = {"/getall", "/getall/{filterByState}"})
     public ResponseEntity<List<OrderDto>> getOrders(@PathVariable Optional<String> filterByState) {
 
-        try {
 
-            List<Order> orders;
+        List<Order> orders;
 
 
-            if (filterByState.isPresent()) {
-                var state = OrderState.valueOf(StringUtils.capitalize(filterByState.get()));
+        if (filterByState.isPresent()) {
+            var state = OrderState.valueOf(StringUtils.capitalize(filterByState.get()));
 
-                if (state.equals(OrderState.Unprocessed)) {
-                    orders = orderRepository.findAllUnprocessedOrders();
-                } else {
-
-                    orders = orderRepository.findAllByState(state);
-                }
-
+            if (state.equals(OrderState.Unprocessed)) {
+                orders = orderRepository.findAllUnprocessedOrders();
             } else {
-                orders = orderRepository.getAllOrder();
+
+                orders = orderRepository.findAllByState(state);
             }
-            if (orders == null || orders.isEmpty())
-                return ResponseEntity.noContent().build();
 
-            var orderDtos = orderMapper.toOrderDTOs(orders);
-            return ResponseEntity.ok().body(orderDtos);
-
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        } else {
+            orders = orderRepository.getAllOrder();
         }
+        if (orders == null || orders.isEmpty())
+            return ResponseEntity.noContent().build();
+
+        var orderDtos = orderMapper.toOrderDTOs(orders);
+        return ResponseEntity.ok().body(orderDtos);
 
     }
 
@@ -229,60 +165,41 @@ public class OrderController {
     @GetMapping("/getmany")
     public ResponseEntity<List<OrderDto>> getManyOrders(@Valid @RequestBody List<Long> ids) {
 
-        try {
+        List<Order> orders = orderRepository.findManyOrderWithOrderItems(ids);
 
-            List<Order> orders = orderRepository.findManyOrderWithOrderItems(ids);
-
-            if (orders == null || orders.isEmpty())
-                return ResponseEntity.noContent().build();
-            else
-                return ResponseEntity.ok().body(orderMapper.toOrderDTOs(orders));
-
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
-        }
+        if (orders == null || orders.isEmpty())
+            return ResponseEntity.noContent().build();
+        else
+            return ResponseEntity.ok().body(orderMapper.toOrderDTOs(orders));
 
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<OrderDto> getOrder(@Valid @PathVariable long id) {
-        try {
+        Order order = orderRepository.getOrder(id);
 
-            Order order = orderRepository.getOrder(id);
+        if (order != null && id != 0)
 
-            if (order != null && id != 0)
+            return ResponseEntity.ok().body(orderMapper.toOrderDto(order));
 
-                return ResponseEntity.ok().body(orderMapper.toOrderDto(order));
-
-            else
-                return ResponseEntity.noContent().build();
-
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
-        }
+        else
+            return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/put/{id}")
     public ResponseEntity<OrderDto> editOrder(@Valid @PathVariable long id, @Valid @RequestBody OrderDto orderDto, @RequestHeader(name = "Authorization") String token) {
 
-        try {
+        if (orderRepository.existsById(orderDto.getId())) {
+
+            Order order = dtoService.orderDtoToOrder(orderDto);
+
+            var dto = orderService.updateOrder(order);
 
 
-            if (orderRepository.existsById(orderDto.getId())) {
+            return ResponseEntity.ok().body(dto);
 
-                Order order = dtoService.orderDtoToOrder(orderDto);
-
-                var dto = orderService.updateOrder(order, this);
-
-
-                return ResponseEntity.ok().body(dto);
-
-            } else {
-                return ResponseEntity.noContent().build();
-            }
-
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
+        } else {
+            return ResponseEntity.noContent().build();
         }
 
     }
@@ -291,28 +208,22 @@ public class OrderController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity deleteOrder(@Valid @PathVariable long id, @RequestHeader(name = "Authorization") String token) {
 
-        try {
+        Optional<Order> optionalOrder = orderRepository.findById(id);
 
-            Optional<Order> optionalOrder = orderRepository.findById(id);
+        if (optionalOrder.isPresent()) {
 
-            if (optionalOrder.isPresent()) {
-
-                if (optionalOrder.get().getState() == OrderState.Temporary) {
-                    orderService.deleteTempOrder(id);
-                } else {
-                    orderRepository.delete(optionalOrder.get());
-
-                }
-
-
-                return ResponseEntity.ok().build();
-
+            if (optionalOrder.get().getState() == OrderState.Temporary) {
+                orderService.deleteTempOrder(id);
             } else {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+                orderRepository.delete(optionalOrder.get());
+
             }
 
-        } catch (Exception exception) {
-            return exceptionManagement.getResponseEntityAccordingToException(exception);
+
+            return ResponseEntity.ok().build();
+
+        } else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
 
     }
@@ -342,13 +253,39 @@ public class OrderController {
         var originalOrder = orderRepository.findByIdOrderWithOrderItems(id);
         if (originalOrder == null) return ResponseEntity.notFound().build();
         Order subOrder = dtoService.orderDtoToOrder(subOrderDto);
-
-        var savedOriginalOrder = orderService.splitOrderFrom(subOrder,originalOrder);
-
-
-        var originalOrderDto = orderMapper.toOrderDto(savedOriginalOrder);
-
+        var originalOrderDto = orderService.splitOrderFrom(subOrder, originalOrder);
         return ResponseEntity.status(HttpStatus.OK).body(originalOrderDto);
+
+    }
+
+
+    @PostMapping(value = "/pay/{id}")
+    public ResponseEntity<OrderDto> payOrder( @Valid @RequestBody OrderDto dto) {
+
+        if (!orderRepository.existsById(dto.getId())) return ResponseEntity.notFound().build();
+        Order order = dtoService.orderDtoToOrder(dto);
+        dto = orderService.payOrder(order);
+        return ResponseEntity.status(HttpStatus.OK).body(dto);
+
+    }
+
+    @PostMapping(value = "/refund/{id}")
+    public ResponseEntity<OrderDto> refundOrder(@Valid @RequestBody OrderDto dto) {
+
+        if (!orderRepository.existsById(dto.getId())) return ResponseEntity.notFound().build();
+        Order order = dtoService.orderDtoToOrder(dto);
+        dto = orderService.refundOder(order);
+        return ResponseEntity.status(HttpStatus.OK).body(dto);
+
+    }
+
+    @PostMapping(value = "/refund/partial/{id}")
+    public ResponseEntity<OrderDto> partiallyRefundOrder(@Valid @RequestBody OrderDto dto) {
+
+        if (!orderRepository.existsById(dto.getId())) return ResponseEntity.notFound().build();
+        Order order = dtoService.orderDtoToOrder(dto);
+        dto = orderService.partiallyRefundOrder(order);
+        return ResponseEntity.status(HttpStatus.OK).body(dto);
 
     }
 }
