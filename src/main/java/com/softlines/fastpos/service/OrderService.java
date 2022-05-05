@@ -7,7 +7,7 @@ import com.softlines.fastpos.dto.mapping.OrderMapper;
 import com.softlines.fastpos.repository.CashOperationRepository;
 import com.softlines.fastpos.repository.OrderRepository;
 import com.softlines.fastpos.security.securityservice.SessionService;
-import com.softlines.fastpos.sse.model.SSEventType;
+import com.softlines.fastpos.sse.model.EventType;
 import org.hibernate.Session;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
@@ -115,7 +115,7 @@ public class OrderService {
         states.add(OrderState.Credit);
         if (!states.contains(createdOderDto.getState())) {
             var message = Message.builder()
-                    .type(SSEventType.CREATE_ORDER)
+                    .type(EventType.CREATE_ORDER)
                     .content(createdOderDto)
                     .source(createdOder.getModificationSessionId())
                     .build();
@@ -150,7 +150,15 @@ public class OrderService {
     public OrderDto updateOrder(Order order) {
         //noinspection OptionalGetWithoutIsPresent
         var previousState = orderRepository.findByIdWithCashOperations(order.getId()).get();
-        String eventType = SSEventType.UPDATE_ORDER;
+        String eventType = EventType.UPDATE_ORDER;
+
+        if (previousState.getState()!= OrderState.PaidModified&& order.getState() == OrderState.PaidModified){
+            eventType = EventType.MODIFY_PAID_ORDER;
+        }
+
+        if (previousState.getState()== OrderState.PaidModified&& order.getState() == OrderState.Payed){
+            eventType = EventType.UNDO_MODIFY_PAID_ORDER;
+        }
         OrderInfo orderInfo = null;
         if (order.getOrderNumber() == null){
             orderInfo = setOrderNumberAndCode(order);
@@ -158,7 +166,7 @@ public class OrderService {
 
         if (OrderService.IsActionCancel(previousState, order)) {
             order = onOrderCanceled(order, previousState);
-            eventType = SSEventType.CANCEL_ORDER;
+            eventType = EventType.CANCEL_ORDER;
         }
 
         order = orderRepository.saveOrder(order);
@@ -183,7 +191,7 @@ public class OrderService {
         cashOperationRepository.saveAndFlush(cashOp);
 
         var dto = orderMapper.toOrderDto(order);
-        sendOrderMessage(this, SSEventType.PAY_ORDER, order.getModificationSessionId(), dto);
+        sendOrderMessage(this, EventType.PAY_ORDER, order.getModificationSessionId(), dto);
         return dto;
     }
     @Transactional(transactionManager = "transactionManager")
@@ -197,7 +205,7 @@ public class OrderService {
         cashOperationRepository.saveAndFlush(cashOperation);
 
         var dto = orderMapper.toOrderDto(order);
-        sendOrderMessage(this, SSEventType.PAY_ORDER, order.getModificationSessionId(), dto);
+        sendOrderMessage(this, EventType.PAY_ORDER, order.getModificationSessionId(), dto);
         return dto;
     }
 
@@ -214,7 +222,7 @@ public class OrderService {
         }
 
         var dto = orderMapper.toOrderDto(order);
-        sendOrderMessage(this, SSEventType.PAY_ORDER, order.getModificationSessionId(), dto);
+        sendOrderMessage(this, EventType.PAY_ORDER, order.getModificationSessionId(), dto);
         return dto;
     }
 
