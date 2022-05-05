@@ -13,7 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByUsername(String username);
 
     @Query(value= "SELECT DISTINCT u FROM User u " +
-            "JOIN FETCH u.roles r ")
+            "left JOIN FETCH u.roles r ")
     List<User> findAllUsers();
 
     @Query(value = "SELECT distinct u from User u left join fetch u.annexes where u.id = ?1")
