@@ -187,7 +187,7 @@ public class OrderController {
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<OrderDto> editOrder(@Valid @PathVariable long id, @Valid @RequestBody OrderDto orderDto, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<OrderDto> editOrder(@Valid @PathVariable long id, @Valid @RequestBody OrderDto orderDto) {
 
         if (orderRepository.existsById(orderDto.getId())) {
 
@@ -206,7 +206,7 @@ public class OrderController {
 
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleteOrder(@Valid @PathVariable long id, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity deleteOrder(@Valid @PathVariable long id) {
 
         Optional<Order> optionalOrder = orderRepository.findById(id);
 

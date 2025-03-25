@@ -306,8 +306,8 @@ public class OrderControllerUnitTest {
                         .id(1L)
                         .build();
 
-        when(orderRepository.findById(1l)).thenReturn(java.util.Optional.ofNullable(order));
-        orderController.deleteOrder(1);
+        when(orderRepository.findById(1L)).thenReturn(java.util.Optional.ofNullable(order));
+        orderController.deleteOrder(1l);
 
         verify(orderRepository, times(1)).delete(order);
 
@@ -319,7 +319,7 @@ public class OrderControllerUnitTest {
 
         when(orderRepository.findById(1L)).thenReturn(null);
 
-        orderController.deleteOrder(1);
+        orderController.deleteOrder(1L);
 
         verify(orderRepository, times(1)).findById(1L);
         verifyNoMoreInteractions(orderRepository);

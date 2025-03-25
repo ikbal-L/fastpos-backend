@@ -183,7 +183,7 @@ public class CategoryControllerUnitTest {
 
         var category =
                 Category.builder()
-                        .id(1)
+                        .id(1L)
                         .name("tacos")
                         .backgroundString("red")
                         .rank(2)
@@ -232,7 +232,7 @@ public class CategoryControllerUnitTest {
 
         var category =
                 Category.builder()
-                        .id(1)
+                        .id(1L)
                         .rank(5)
                         .name("tacos")
                         .build();
@@ -370,7 +370,7 @@ public class CategoryControllerUnitTest {
     @Order(18)
     public void categoryController_Put_WithNullData() {
 
-        var category = Category.builder().id(1).build();
+        var category = Category.builder().id(1L).build();
 
         when(categoryRepository.findByIdCategoryWithProducts(category.getId())).thenReturn(category);
         var returned = categoryController.editCategory(1,categoryMapper.toCategoryDto(category) );
