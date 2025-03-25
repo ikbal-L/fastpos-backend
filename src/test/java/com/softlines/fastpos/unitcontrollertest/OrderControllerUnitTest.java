@@ -259,7 +259,7 @@ public class OrderControllerUnitTest {
 
         var res = orderController.getOrder(1);
         assertEquals(res.getStatusCode(), HttpStatus.OK);
-        assertEquals((res.getBody()).getBuyerId(), order.getBuyerId());
+        assertEquals((res.getBody()).getCustomerId(), order.getCustomer().getId());
     }
 
 
@@ -360,7 +360,7 @@ public class OrderControllerUnitTest {
                         .product(Product.builder().build())
                         .order(Order.builder().id(1).build()).build()))
                 .elapsedTime(LocalTime.now())
-                .orderTime(new Date())
+                .orderTime(LocalDateTime.now())
                 .table(Table.builder().id(1).build())
                 .build();
 
@@ -387,7 +387,7 @@ public class OrderControllerUnitTest {
                                 .product(Product.builder().build())
                                 .order(Order.builder().build()).build()))
                         .elapsedTime(LocalTime.now())
-                        .orderTime(new LocalDateTime())
+                        .orderTime( LocalDateTime.now())
                         .table(Table.builder().build())
                         .build();
 

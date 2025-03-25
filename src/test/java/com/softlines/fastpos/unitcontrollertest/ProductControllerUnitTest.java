@@ -110,7 +110,7 @@ public class ProductControllerUnitTest {
                         .id(1l)
                         .name("Pizza")
                         .additives(Arrays.asList(Additive.builder().id(1).description("harrisa").build()))
-                        .category(Category.builder().id(14).build())
+                        .category(Category.builder().id(14L).build())
                         .build()
         );
         List<Long> listIds = new ArrayList<>();
@@ -152,7 +152,7 @@ public class ProductControllerUnitTest {
                         .id(1l)
                         .name("Pizza")
                         .additives(Arrays.asList(Additive.builder().id(1).description("harrisa").build()))
-                        .category(Category.builder().id(14).build())
+                        .category(Category.builder().id(14L).build())
                         .build()
         );
         List<Long> listIds = new ArrayList<>();
@@ -335,7 +335,7 @@ public class ProductControllerUnitTest {
                 .id(2l)
                 .name("harrisa")
                 .additives(Arrays.asList(Additive.builder().build()))
-                .category(Category.builder().id(1).build())
+                .category(Category.builder().id(1L).build())
                 .build();
 
         when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));

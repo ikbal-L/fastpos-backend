@@ -22,10 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -108,7 +105,7 @@ public class WaiterControllerUnitTest {
         Waiter waiter = new Waiter();
         waiter.setName("fatiha");
         waiter.setBackgroundString("red");
-        waiter.setPhoneNumber("0464150");
+        waiter.setPhoneNumbers(Set.of("0464150"));
 
         when(waiterRepository.save(any(Waiter.class))).thenReturn(waiter);
         var res = waiterController.addWaiter(waiterMapper.toWaiterDto(waiter));
@@ -163,7 +160,7 @@ public class WaiterControllerUnitTest {
 
         waiter.setName("fatiha");
         waiter.setBackgroundString("red");
-        waiter.setPhoneNumber("072064150");
+        waiter.setPhoneNumbers(Set.of("072064150"));
 
 
         when(waiterRepository.findById(1l)).thenReturn(Optional.ofNullable(waiter));
@@ -220,7 +217,7 @@ public class WaiterControllerUnitTest {
 
         waiter.setName("fatiha");
         waiter.setBackgroundString("red");
-        waiter.setPhoneNumber("072064150");
+        waiter.setPhoneNumbers(Set.of("072064150"));
 
         when(waiterRepository.findById(1l)).thenReturn(Optional.ofNullable(waiter));
         waiterController.deleteWaiter(1);
@@ -270,7 +267,7 @@ public class WaiterControllerUnitTest {
 
         waiter.setName("fatiha");
         waiter.setBackgroundString("red");
-        waiter.setPhoneNumber("072064150");
+        waiter.setPhoneNumbers(Set.of("072064150"));
 
         WaiterDto waiterDto= waiterMapper.toWaiterDto(waiter);
 
@@ -288,7 +285,7 @@ public class WaiterControllerUnitTest {
         Waiter waiter = new Waiter();
         waiter.setName("fatiha");
         waiter.setBackgroundString("red");
-        waiter.setPhoneNumber("072064150");
+        waiter.setPhoneNumbers(Set.of("072064150"));
 
      WaiterDto waiterDto= waiterMapper.toWaiterDto(waiter);
 
