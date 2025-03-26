@@ -5,11 +5,11 @@ import org.hibernate.metamodel.model.domain.internal.SetAttributeImpl;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.*;
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.ListAttribute;
-import javax.persistence.metamodel.Metamodel;
+import jakarta.persistence.*;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.Metamodel;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.*;

@@ -4,12 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import org.hibernate.type.descriptor.jdbc.VarcharJdbcType;
+
+import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.UUID;
 
@@ -25,7 +28,7 @@ public class Session {
 
     @Id
     @GeneratedValue
-    @Type(type = "uuid-char")
+    @JdbcType(VarcharJdbcType.class)
     private UUID id;
 
     @Column(nullable = false)

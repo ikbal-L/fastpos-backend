@@ -6,9 +6,9 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -24,7 +24,7 @@ import java.util.Set;
 @Entity
 @SQLDelete(sql = "UPDATE orders SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
-@javax.persistence.Table(name = "orders")
+@jakarta.persistence.Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)
 @NamedQueries({
         @NamedQuery(name = "Order.lock",query = "update Order set locked = true , lockedBy = :source  where id = :id"),

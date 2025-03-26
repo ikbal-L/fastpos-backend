@@ -1,7 +1,13 @@
 
 plugins {
-	id 'org.springframework.boot' version '2.3.4.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+
+//	id 'org.springframework.boot' version '2.3.4.RELEASE'
+//	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+
+
+	id 'org.springframework.boot' version '3.2.2' // Adjust the version as needed
+	id 'io.spring.dependency-management' version '1.1.3'
+
 	id 'java'
 //	id 'com.ewerk.gradle.plugins.querydsl' version "1.0.10"
 	id 'org.beryx.runtime' version '1.12.6'
@@ -9,10 +15,15 @@ plugins {
 
 }
 
+//java {
+//	toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+//}
 
 group = 'com.softlines'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+java {
+	sourceCompatibility = '21'
+}
 
 
 repositories {
@@ -22,24 +33,73 @@ repositories {
 dependencies {
 
 //	implementation group: 'com.querydsl', name: 'querydsl-apt', version: '4.2.1'
-	implementation group: 'com.querydsl', name: 'querydsl-jpa', version: '4.2.1'
+//	implementation group: 'com.querydsl', name: 'querydsl-jpa', version: '4.2.1'
+
+	implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
+	implementation("com.querydsl:querydsl-apt:5.0.0:jakarta")
+
+// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter
+	implementation 'org.springframework.boot:spring-boot-starter:3.2.2'
+
+
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test:3.2.2'
 
 	implementation group: 'org.javatuples', name: 'javatuples', version: '1.2'
 
 	implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.12.13'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.0.Final'
-	implementation group: 'org.mapstruct', name: 'mapstruct', version: '1.3.0.Final'
+	implementation 'org.springframework.boot:spring-boot-configuration-processor'
+//	annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.0.Final'
+//	implementation group: 'org.mapstruct', name: 'mapstruct', version: '1.3.0.Final'
 	implementation 'org.modelmapper:modelmapper:1.1.0'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation group: 'com.auth0', name: 'java-jwt', version: '3.11.0'
 	implementation 'junit:junit:4.12'
 	implementation 'org.jetbrains:annotations:19.0.0'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa
+//	implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.3.4.RELEASE'
+
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa
+//	implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.7.18'
+
+	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+//			{
+//		exclude group: 'org.springframework', module: 'spring-orm'
+//	}
+
+	// https://mvnrepository.com/artifact/org.springframework/spring-orm
+//	implementation 'org.springframework:spring-orm:6.1.18'
+
+	// https://mvnrepository.com/artifact/org.springframework/spring-orm
+//	implementation 'org.springframework:spring-orm:6.0.1'
+
+
+	// https://mvnrepository.com/artifact/org.springframework/spring-orm
+//	implementation 'org.springframework:spring-orm:5.3.39'
+
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
-	implementation 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+//	implementation 'org.projectlombok:lombok'
+//	annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
+//	compileOnly 'org.projectlombok:lombok:1.18.30'
+
+//	compileOnly 'org.projectlombok:lombok:1.18.30'
+//	annotationProcessor 'org.projectlombok:lombok:1.18.30'
+//	compileOnly 'org.projectlombok:lombok:1.18.30'
+//	annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+	// https://mvnrepository.com/artifact/org.projectlombok/lombok
+	compileOnly 'org.projectlombok:lombok:1.18.36'
+	annotationProcessor 'org.projectlombok:lombok:1.18.36'
+
+//	compileOnly 'org.mapstruct:mapstruct-jdk8:1.2.0.Final'
+
+	// https://mvnrepository.com/artifact/org.mapstruct/mapstruct
+	compileOnly 'org.mapstruct:mapstruct:1.6.3'
+	// https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+//	annotationProcessor 'org.mapstruct:mapstruct-processor:1.2.0.Final'
 
 
 	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
@@ -54,25 +114,50 @@ dependencies {
 	implementation files("lib/ProductKeyGen-1.0-jar-with-dependencies.jar")
 
 
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 
 	runtimeOnly 'mysql:mysql-connector-java'
 	implementation 'org.mariadb.jdbc:mariadb-java-client:2.1.2'
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+//	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor:3.2.2' // Adjust version as needed
 	testImplementation group: 'org.springframework', name: 'spring-test', version: '5.2.9.RELEASE'
 	testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.3.4.RELEASE'
 	testImplementation group: 'com.h2database', name: 'h2', version: '1.4.198'
-	implementation group: 'javax.validation', name: 'validation-api', version: '2.0.0.Final'
+
 	implementation group: 'org.hibernate.validator', name: 'hibernate-validator', version: '6.0.20.Final'
 	implementation group: 'org.hibernate', name: 'hibernate-validator-annotation-processor', version: '6.0.20.Final'
 	testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.17.1'
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.3.1.RELEASE'
 	implementation "org.springframework.boot:spring-boot-starter-actuator"
-	implementation group: 'org.springframework', name: 'spring-websocket', version: '5.2.2.RELEASE'
+//	implementation group: 'org.springframework', name: 'spring-websocket', version: '5.2.2.RELEASE'
 
-	implementation group: 'org.springframework', name: 'spring-messaging', version: '5.2.2.RELEASE'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+
+//	implementation group: 'org.springframework', name: 'spring-messaging', version: '5.2.2.RELEASE'
+
+//	// https://mvnrepository.com/artifact/org.springframework/spring-messaging
+//	implementation 'org.springframework:spring-messaging:6.2.5'
+//
+//	// https://mvnrepository.com/artifact/org.springframework/spring-websocket
+//	implementation 'org.springframework:spring-websocket:6.2.5'
+
+
 //	implementation group: 'org.springframework.security', name: 'spring-security-messaging', version: '5.6.1'
+
+	implementation 'org.xerial:sqlite-jdbc:3.41.2.1'
+	// https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-community-dialects
+	implementation 'org.hibernate.orm:hibernate-community-dialects:6.1.7.Final'
+
+	// https://mvnrepository.com/artifact/org.hibernate/hibernate-core
+	implementation 'org.hibernate:hibernate-core:6.1.7.Final'
+	implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
+	// https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api
+	implementation 'jakarta.validation:jakarta.validation-api:3.1.0'
+
+	implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
+
 
 
 }

@@ -4,8 +4,8 @@ import com.softlines.fastpos.dto.CategoryDto;
 import com.softlines.fastpos.dto.ProductDto;
 import com.softlines.fastpos.validation.product.ProductValidationIfCategoryIdEqualNullRankMustEqualNull;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class ImplCategoryValidationIfRankEqualNullProductIdsMustEqualNull implements ConstraintValidator<CategoryValidationIfRank_EqualNull_Than_ProductIds_MustEqualNull, CategoryDto> {
 

@@ -6,7 +6,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @SuperBuilder
 @NoArgsConstructor

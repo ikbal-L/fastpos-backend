@@ -1,5 +1,6 @@
 package com.softlines.fastpos;
 
+import com.softlines.fastpos.security.securitydomain.User;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -18,7 +19,6 @@ import java.io.IOException;
 @EnableTransactionManagement
 public class ModelApplication implements WebMvcConfigurer {
     public static void main(String[] args) {
-
 
 
 

@@ -13,18 +13,29 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.List;
 
 import static com.softlines.fastpos.security.securityfilters.SecurityConstants.SIGN_UP_URL;
 
@@ -36,7 +47,7 @@ public class SecurityConfiguration {
 
     @Order(1)
     @Configuration
-    public static class SecurityConfiguration1 extends WebSecurityConfigurerAdapter {
+    public static class SecurityConfiguration1  {
 //
 //        @Qualifier("UserDetailsServiceImpl")
         @Autowired
@@ -48,50 +59,100 @@ public class SecurityConfiguration {
 //        @Autowired
 //        private LicenseActivationFilter licenseActivationFilter;
 
-        @Override
-        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-            auth.userDetailsService(userDetailsService).passwordEncoder(getPasswordEncoder());
+//        @Override
+//        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//            auth.userDetailsService(userDetailsService).passwordEncoder(getPasswordEncoder());
+//        }
+
+        @Bean
+        public static UserDetailsService userDetailsService(PasswordEncoder bCryptPasswordEncoder) {
+            InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+            manager.createUser(User.withUsername("user")
+                    .password(bCryptPasswordEncoder.encode("userPass"))
+                    .roles("USER")
+                    .build());
+            manager.createUser(User.withUsername("admin")
+                    .password(bCryptPasswordEncoder.encode("adminPass"))
+                    .roles("USER", "ADMIN")
+                    .build());
+            return manager;
+        }
+//
+//        @Bean
+//        public AuthenticationManager getAuthenticationManager() throws Exception {
+//            return authenticationManager();
+//        }
+
+
+        @Bean
+        public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder bCryptPasswordEncoder)
+                throws Exception {
+            return new ProviderManager(
+                    List.of(new DaoAuthenticationProvider() {{
+                        setUserDetailsService(userDetailsService);
+                        setPasswordEncoder(bCryptPasswordEncoder);
+                    }})
+            );
         }
 
         @Bean
-        public AuthenticationManager getAuthenticationManager() throws Exception {
-            return authenticationManager();
-        }
-
-        private PasswordEncoder getPasswordEncoder() {
+        protected PasswordEncoder getPasswordEncoder() {
             return PasswordEncoderFactories.createDelegatingPasswordEncoder();
         }
 
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
 
-            http
-                    .formLogin()
+//        protected void configure(HttpSecurity http) throws Exception {
+//
+//            http
+//                    .formLogin()
+//                    .successHandler(authSuccessHandler())
+//                    .failureHandler(authenticationFailureHandler()).and()
+//
+//                    .antMatcher("/api/**")
+////                    .addFilterBefore(licenseActivationFilter,AuthenticationFilter.class)
+//                    .cors().and().csrf().disable().authorizeRequests()
+//                    .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
+//                    .antMatchers(HttpMethod.POST, "/login").permitAll()
+//
+//                    .anyRequest()
+////                .permitAll()
+//                    .authenticated()
+//                    .and().formLogin().failureHandler(authenticationFailureHandler())
+//                    .and()
+//                    .addFilter(authenticationFilter)
+//                    .addFilter(new ApiAuthorizationFilter(authenticationManager(), sessionRepository))
+//
+//                    // this disables session creation on Spring Security
+//                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+//
+//        }
+//
+//
+//
+//    }
+
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+            .cors(Customizer.withDefaults()) // Enable CORS
+            .csrf(csrf -> csrf.disable()) // Disable CSRF if needed
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(HttpMethod.POST, "/signup", "/login").permitAll()
+                    .requestMatchers("/api/**").authenticated()
+                    .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
                     .successHandler(authSuccessHandler())
-                    .failureHandler(authenticationFailureHandler()).and()
+                    .failureHandler(authenticationFailureHandler())
+            )
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+         .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new ApiAuthorizationFilter(authenticationManager(http,getPasswordEncoder()), sessionRepository), UsernamePasswordAuthenticationFilter.class);
 
-                    .antMatcher("/api/**")
-//                    .addFilterBefore(licenseActivationFilter,AuthenticationFilter.class)
-                    .cors().and().csrf().disable().authorizeRequests()
-                    .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
-                    .antMatchers(HttpMethod.POST, "/login").permitAll()
-
-                    .anyRequest()
-//                .permitAll()
-                    .authenticated()
-                    .and().formLogin().failureHandler(authenticationFailureHandler())
-                    .and()
-                    .addFilter(authenticationFilter)
-                    .addFilter(new ApiAuthorizationFilter(authenticationManager(), sessionRepository))
-
-                    // this disables session creation on Spring Security
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-        }
+    return http.build();
+}
 
 
-
-    }
     @Bean(name = "apiAuth")
     ApiSecurity webSecurity() {
         return new ApiSecurity();
@@ -108,7 +169,7 @@ public class SecurityConfiguration {
 
     @Order(2)
     @Configuration
-    public static class SecurityConfiguration2 extends WebSecurityConfigurerAdapter {
+    public static class SecurityConfiguration2   {
 
 //        @Qualifier("UserDetailsServiceImpl")
         @Autowired
@@ -119,38 +180,46 @@ public class SecurityConfiguration {
         private AuthenticationFilter authenticationFilter;
 //        @Autowired
 //        private LicenseActivationFilter licenseActivationFilter;
-
-        @Override
-        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-            auth.userDetailsService(userDetailsService).passwordEncoder(getPasswordEncoder());
-        }
+//
+//        @Override
+//        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//            auth.userDetailsService(userDetailsService).passwordEncoder(getPasswordEncoder());
+//        }
 
         @Bean
-        public AuthenticationManager getAuthenticationManager() throws Exception {
-            return authenticationManager();
+        public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder bCryptPasswordEncoder)
+                throws Exception {
+            return new ProviderManager(
+                    List.of(new DaoAuthenticationProvider() {{
+                        setUserDetailsService(userDetailsService);
+                        setPasswordEncoder(bCryptPasswordEncoder);
+                    }})
+            );
         }
+
+
 
         private PasswordEncoder getPasswordEncoder() {
             return PasswordEncoderFactories.createDelegatingPasswordEncoder();
         }
 
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
 
+        @Bean
+        public SecurityFilterChain configSecurityFilterChain(HttpSecurity http) throws Exception {
             http
-                    .antMatcher("/config/**")
-//                    .addFilterBefore(licenseActivationFilter,AuthenticationFilter.class)
-                    .cors().and().csrf().disable().authorizeRequests()
-                    //.antMatchers(HttpMethod.POST, "/user/save").permitAll()
-                    .anyRequest()
-//                .permitAll()
-                    .authenticated()
-                    .and()
+                    .securityMatcher("/config/**") // Equivalent to `antMatcher`
+                    .cors(Customizer.withDefaults()) // Enable CORS
+                    .csrf(csrf -> csrf.disable()) // Disable CSRF if needed
+                    .authorizeHttpRequests(auth -> auth
+                            .anyRequest().authenticated()
+                    )
+                    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                     .addFilter(authenticationFilter)
-                    .addFilter(new ConfigAuthorizationFilter(authenticationManager(), annexRepository))
-                    // this disables session creation on Spring Security
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                    .addFilterBefore(new ConfigAuthorizationFilter(authenticationManager(http,getPasswordEncoder()),annexRepository), UsernamePasswordAuthenticationFilter.class);
+
+            return http.build();
         }
 
     }
+}
 }

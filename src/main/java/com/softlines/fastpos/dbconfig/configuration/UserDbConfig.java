@@ -20,7 +20,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
 
@@ -52,18 +52,18 @@ public class UserDbConfig {
         try{
             DataSourceProperties authDataSourceProperties = authDataSourceProperties();
             return DataSourceBuilder.create()
-//                    .driverClassName("com.mysql.jdbc.Driver")
+//
                     .driverClassName(driverClassName)
                     .url(authDataSourceProperties.getUrl())
                     .username(authDataSourceProperties.getUsername())
                     .password(authDataSourceProperties.getPassword())
                     .build();
         }catch (Exception e){
-            throw new Exception("DB not Found Exception: "+ e);
+            throw new Exception("DB not Found Exception: "+ e.getMessage());
         }
     }
 
-    @Bean
+    @Bean()
     //@Primary
     public PlatformTransactionManager authTransactionManager() throws Exception {
         try{
@@ -77,8 +77,7 @@ public class UserDbConfig {
     @Bean
     public LocalContainerEntityManagerFactoryBean authEntityManagerFactory() throws Exception {
         try {
-            LocalContainerEntityManagerFactoryBean factory =
-                    new LocalContainerEntityManagerFactoryBean();
+            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setDataSource(authDataSource());
             factory.setPackagesToScan("com.softlines.fastpos.security.securitydomain");
             factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());

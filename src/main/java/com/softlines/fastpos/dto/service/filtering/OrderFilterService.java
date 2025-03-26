@@ -7,9 +7,9 @@ import com.softlines.fastpos.domain.OrderState;
 import com.softlines.fastpos.dto.filters.OrderFilter;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;

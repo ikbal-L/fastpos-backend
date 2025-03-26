@@ -2,8 +2,8 @@ package com.softlines.fastpos.validation.order;
 
 import com.softlines.fastpos.dto.OrderDto;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class ImplOrderItemValidationUnitPriceGreaterThanUnitPrice implements ConstraintValidator<OrderItemValidationDiscountAmountGreaterThanTotal, OrderDto> {
 

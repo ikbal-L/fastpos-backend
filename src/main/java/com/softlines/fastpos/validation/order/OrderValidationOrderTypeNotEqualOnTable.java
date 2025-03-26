@@ -2,8 +2,8 @@ package com.softlines.fastpos.validation.order;
 
 import com.softlines.fastpos.constants.MessageKeyConstants;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented

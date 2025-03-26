@@ -6,8 +6,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Set;
 
@@ -19,7 +19,7 @@ import java.util.Set;
 @SQLDelete(sql = "UPDATE Tables SET deleted=true WHERE id=?")
 @Where(clause = "deleted = false")
 
-@javax.persistence.Table(name = "Tables")
+@jakarta.persistence.Table(name = "Tables")
 public class Table extends BaseEntity{
 
     @Id

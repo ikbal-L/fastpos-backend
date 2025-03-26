@@ -5,8 +5,8 @@ import com.softlines.fastpos.domain.Payment;
 import com.softlines.fastpos.dto.filters.PaymentFilter;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.criteria.Predicate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;

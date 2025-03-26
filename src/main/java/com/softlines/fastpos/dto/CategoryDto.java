@@ -5,8 +5,8 @@ import com.softlines.fastpos.constants.MessageKeyConstants;
 import com.softlines.fastpos.validation.category.CategoryValidationIfRank_EqualNull_Than_ProductIds_MustEqualNull;
 import lombok.*;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
 

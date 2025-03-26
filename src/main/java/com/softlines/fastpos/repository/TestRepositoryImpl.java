@@ -1,9 +1,9 @@
 package com.softlines.fastpos.repository;
 
 import com.softlines.fastpos.domain.Order;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 
 public class TestRepositoryImpl implements TestRepository {
 

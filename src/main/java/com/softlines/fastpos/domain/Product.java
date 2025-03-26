@@ -5,11 +5,11 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
 
-import javax.persistence.Entity;
-import javax.persistence.*;
-import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Entity;
+import jakarta.persistence.*;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 @Setter

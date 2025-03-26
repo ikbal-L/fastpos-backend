@@ -7,7 +7,7 @@ import com.softlines.fastpos.constants.MessageKeyConstants;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
 @Data

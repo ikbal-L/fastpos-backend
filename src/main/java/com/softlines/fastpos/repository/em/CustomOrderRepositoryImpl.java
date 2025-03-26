@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.*;
-import javax.persistence.criteria.*;
+import jakarta.persistence.*;
+import jakarta.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

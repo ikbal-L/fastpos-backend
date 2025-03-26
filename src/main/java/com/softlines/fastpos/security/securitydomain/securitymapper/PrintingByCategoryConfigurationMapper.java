@@ -31,6 +31,7 @@ public interface PrintingByCategoryConfigurationMapper {
             ,nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     PrintingByCategoryConfiguration toEntity(PrintingByCategoryConfigurationDto entity,@Context CategoryRepository categoryRepository);
 
+    @Named("CategoryToId")
     public static  Long CategoryToId(Category category){
         return category.getId();
     }

@@ -8,6 +8,7 @@ import com.softlines.fastpos.security.securitydomain.securitydto.UserDTO;
 import com.softlines.fastpos.security.securityrepository.SessionRepository;
 import com.softlines.fastpos.security.securityrepository.TerminalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,9 +20,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.FilterChain;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -126,8 +127,35 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     @Autowired
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+    @Qualifier("authMan")
+    public void setAuthenticationManager( AuthenticationManager authenticationManager) {
 
         super.setAuthenticationManager(authenticationManager);
     }
+
+
+//    @Bean("authMan")
+//
+//    public static AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder bCryptPasswordEncoder,  @Qualifier("userDetailsService") UserDetailsService userDetailsService)
+//            throws Exception {
+//        return new ProviderManager(
+//                List.of(new DaoAuthenticationProvider() {{
+//                    setUserDetailsService(userDetailsService);
+//                    setPasswordEncoder(bCryptPasswordEncoder);
+//                }})
+//        );
+//    }
+//    @Bean("userDetailsService")
+//    public static UserDetailsService userDetailsService(PasswordEncoder bCryptPasswordEncoder) {
+//        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+//        manager.createUser(User.withUsername("user")
+//                .password(bCryptPasswordEncoder.encode("userPass"))
+//                .roles("USER")
+//                .build());
+//        manager.createUser(User.withUsername("admin")
+//                .password(bCryptPasswordEncoder.encode("adminPass"))
+//                .roles("USER", "ADMIN")
+//                .build());
+//        return manager;
+//    }
 }

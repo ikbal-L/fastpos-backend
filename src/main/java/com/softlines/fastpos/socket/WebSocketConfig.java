@@ -13,7 +13,9 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.DefaultManagedTaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -32,10 +34,19 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
+
         config.enableSimpleBroker("/topic")
-                .setTaskScheduler(new DefaultManagedTaskScheduler())
+//                .setTaskScheduler(new DefaultManagedTaskScheduler())
+                .setTaskScheduler(webSocketMessageBrokerTaskScheduler())
                 .setHeartbeatValue(new long[]{0, 10000});
         config.setApplicationDestinationPrefixes("/app");
+    }
+
+    public TaskScheduler webSocketMessageBrokerTaskScheduler() {
+        ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+        taskScheduler.setPoolSize(5);
+        taskScheduler.initialize();
+        return  taskScheduler;
     }
 
     @Override

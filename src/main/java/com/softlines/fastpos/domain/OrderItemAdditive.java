@@ -4,9 +4,9 @@ import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.*;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.Objects;
 

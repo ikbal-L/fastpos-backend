@@ -5,8 +5,8 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import com.softlines.fastpos.validation.customer.CustomerValidationPhoneNumber;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class ImplPersonValidationPhoneNumber implements ConstraintValidator<PersonValidationPhoneNumber, String> {
 
