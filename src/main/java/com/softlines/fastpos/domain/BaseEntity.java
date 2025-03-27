@@ -37,7 +37,7 @@ public class BaseEntity {
 
 
     @CreatedBy
-    @Column(name = "creation_session_id",nullable = false,updatable = false)
+    @Column(name = "creation_session_id",nullable = true,updatable = false)
     private String creationSessionId;
 
     @LastModifiedBy

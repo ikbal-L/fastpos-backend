@@ -75,6 +75,7 @@ public class OrderService {
 
             return createOrderInfoOfTheDay();
         }
+
         return (OrderInfo) result.get(0);
     }
 
@@ -101,8 +102,11 @@ public class OrderService {
             var cashOp = CashOperation.builder().amount(order.getNewTotal()).order(order).build();
             order.setCashOperations(Set.of(cashOp));
         }
+        
         var created = orderRepository.saveOrder(order);
+
         SaveOrderInfo(orderInfo);
+
         var dto  = orderMapper.toOrderDto(created);
         sendCreateOrderMessage(created,dto);
         return dto;

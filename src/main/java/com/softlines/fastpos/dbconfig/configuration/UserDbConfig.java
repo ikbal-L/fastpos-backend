@@ -15,12 +15,15 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import jakarta.persistence.EntityManagerFactory;
+import org.sqlite.SQLiteConfig;
+
 import javax.sql.DataSource;
 import java.util.Properties;
 
@@ -51,13 +54,25 @@ public class UserDbConfig {
     public DataSource authDataSource() throws Exception {
         try{
             DataSourceProperties authDataSourceProperties = authDataSourceProperties();
-            return DataSourceBuilder.create()
+
+            SQLiteConfig config = new SQLiteConfig();
+            config.setReadOnly(false);
+            DriverManagerDataSource dataSource = new DriverManagerDataSource();
+            dataSource.setDriverClassName(driverClassName);
+            dataSource.setUrl(authDataSourceProperties.getUrl());
+            dataSource.setUsername(authDataSourceProperties.getUsername());
+            dataSource.setPassword(authDataSourceProperties.getPassword());
+            dataSource.setConnectionProperties(config.toProperties());
+
+            return dataSource;
+//            return DataSourceBuilder.create()
+////
+//                    .driverClassName(driverClassName)
+//                    .url(authDataSourceProperties.getUrl())
+//                    .username(authDataSourceProperties.getUsername())
+//                    .password(authDataSourceProperties.getPassword())
 //
-                    .driverClassName(driverClassName)
-                    .url(authDataSourceProperties.getUrl())
-                    .username(authDataSourceProperties.getUsername())
-                    .password(authDataSourceProperties.getPassword())
-                    .build();
+//                    .build();
         }catch (Exception e){
             throw new Exception("DB not Found Exception: "+ e.getMessage());
         }

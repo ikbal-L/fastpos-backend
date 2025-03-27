@@ -1,5 +1,6 @@
 package com.softlines.fastpos.repository;
 
+import com.softlines.fastpos.domain.Category;
 import com.softlines.fastpos.domain.Product;
 import com.softlines.fastpos.repository.em.CustomOrderRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,6 +23,9 @@ public interface ProductRepository extends JpaRepository<Product, Long>, CustomO
 
     @Query(value = "select distinct p from Product p LEFT JOIN FETCH  p.additives where p.id IN :ids")
     List<Product> findManyProductsWithAdditives(@Param("ids") List<Long> ProductIds);
+
+
+    boolean existsByName(String name);
 
 
 

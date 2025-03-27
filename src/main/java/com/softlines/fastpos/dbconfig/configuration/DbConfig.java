@@ -25,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.sqlite.JDBC;
+import org.sqlite.SQLiteConfig;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -106,6 +107,10 @@ public class DbConfig {
             DriverManagerDataSource dataSource = new DriverManagerDataSource();
             dataSource.setUrl(dbrul.replace("securitydb","db1"));
 
+            SQLiteConfig config = new SQLiteConfig();
+            config.setReadOnly(false);
+            dataSource.setConnectionProperties(config.toProperties());
+
             customRoutingDataSource.setDefaultTargetDataSource(dataSource);
 
             return customRoutingDataSource;
@@ -133,8 +138,9 @@ public class DbConfig {
                     new LocalContainerEntityManagerFactoryBean();
 //            factory.setDataSource(customRoutingDataSource());
 
-
-            factory.setDataSource(new SimpleDriverDataSource(new JDBC(),"jdbc:sqlite:db1.sqlite"));
+            SQLiteConfig config = new SQLiteConfig();
+            config.setReadOnly(false);
+            factory.setDataSource(new SimpleDriverDataSource(new JDBC(),"jdbc:sqlite:db1.sqlite",config.toProperties()));
 
             factory.setPackagesToScan("com.softlines.fastpos.domain");
             factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
